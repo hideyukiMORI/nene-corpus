@@ -1,6 +1,6 @@
 # Commit Message Conventions
 
-NeNe Records uses Conventional Commits, inherited from [NENE2](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/commit-conventions.md).
+NeNe Corpus uses Conventional Commits, inherited from [NENE2](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/commit-conventions.md).
 
 ## Format
 

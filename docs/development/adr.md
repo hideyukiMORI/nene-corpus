@@ -1,12 +1,12 @@
 # ADR Policy
 
-NeNe Records uses lightweight Architecture Decision Records, inherited from [NENE2 ADR policy](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/adr.md).
+NeNe Corpus uses lightweight Architecture Decision Records, inherited from [NENE2 ADR policy](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/adr.md).
 
 ## When to write an ADR
 
 Write an ADR when a decision affects:
 
-- entity schema architecture or public API contracts
+- corpus, ingestion, chat architecture, or public API contracts
 - dependency or framework integration choices
 - authentication, authorization, or MCP safety boundaries
 - release, versioning, or compatibility policy
@@ -41,5 +41,5 @@ Use `docs/adr/0000-template.md`.
 ## Relationship to NENE2 ADRs
 
 - NENE2 ADRs describe **framework** decisions.
-- NeNe Records ADRs describe **product** decisions.
+- NeNe Corpus ADRs describe **product** decisions.
 - When consuming NENE2, prefer upstream ADRs for framework behavior; record local deviations here.

@@ -1,6 +1,6 @@
 # Self-Review Checklist Policy
 
-NeNe Records uses self-review checklists before push or PR, inherited from [NENE2](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/self-review.md).
+NeNe Corpus uses self-review checklists before push or PR, inherited from [NENE2](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/self-review.md).
 
 ## How to use
 
@@ -26,8 +26,9 @@ If an item is not applicable, mark it mentally as `N/A`. Do not delete checklist
 | `openapi-contract.md` | OpenAPI schemas, examples, contract tests |
 | `database.md` | Migrations, repositories, soft delete |
 | `middleware-security.md` | Auth, CORS, logging, rate limits |
-| `frontend.md` | Admin or consumer React/TypeScript |
 | `docs-policy.md` | Workflow, ADRs, roadmap, Cursor rules |
+
+When `frontend/` exists (Phase 3+), add a matching checklist under `docs/review/frontend.md`.
 
 ## AI agents
 
