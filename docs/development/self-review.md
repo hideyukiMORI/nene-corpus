@@ -27,8 +27,9 @@ If an item is not applicable, mark it mentally as `N/A`. Do not delete checklist
 | `database.md` | Migrations, repositories, soft delete |
 | `middleware-security.md` | Auth, CORS, logging, rate limits |
 | `docs-policy.md` | Workflow, ADRs, roadmap, Cursor rules |
+| `frontend.md` | **Phase 3 — not in repo yet.** Admin / consumer React/TypeScript (add when `frontend/` lands) |
 
-When `frontend/` exists (Phase 3+), add a matching checklist under `docs/review/frontend.md`.
+Do **not** use `frontend.md` until Phase 3 creates it under `docs/review/`. Until then, skip that checklist or mark `N/A`.
 
 ## AI agents
 

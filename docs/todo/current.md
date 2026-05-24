@@ -4,21 +4,20 @@ Last updated: 2026-05-25
 
 ## 状態サマリー
 
-**Phase 0 — Governance & Foundation: 進行中**
+**Phase 0 — Governance & Foundation: 完了（2026-05-25）**
 
-リポジトリ初期化完了。Runtime scaffold + CI セットアップ中。
+`composer check` ローカル / GitHub Actions Backend CI ともに green。
 
 ---
 
-## Phase 0 タスク
+## Phase 0 完了
 
-| 優先 | 項目 | 状態 |
-| --- | --- | --- |
-| P0 | ガバナンス docs（AGENTS, ADR, inheritance, Cursor rules） | ✅ |
-| P0 | NENE2 consumer scaffold + `GET /health` | 🔄 |
-| P0 | OpenAPI + MCP 最小契約 + `composer check` | 🔄 |
-| P0 | Backend CI (GitHub Actions) | 🔄 |
-| P1 | Issue #1 起票 → 初回 PR | 待ち |
+| 項目 | 状態 |
+| --- | --- |
+| ガバナンス docs（AGENTS, ADR, inheritance, Cursor rules） | ✅ |
+| NENE2 consumer scaffold + `GET /health` | ✅ |
+| OpenAPI + MCP 最小契約 + `composer check` | ✅ |
+| Backend CI (GitHub Actions) | ✅ |
 
 ---
 
@@ -26,6 +25,7 @@ Last updated: 2026-05-25
 
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
+| P0 | Issue 起票 + branch | `feat/N-schema-sources-documents-chunks` 等 |
 | P0 | Schema: sources, documents, chunks | 取り込み正本 |
 | P0 | Admin auth (JWT) | 管理 API 保護 |
 | P1 | CSV upload API | 列マッピング preview |
@@ -63,3 +63,5 @@ docker compose up --build -d
 curl -fsS http://localhost:8080/health
 curl -fsS http://localhost:8080/openapi.php
 ```
+
+NENE2 path dependency: see [`docs/development/docker.md`](../development/docker.md#path-dependency-nene2).

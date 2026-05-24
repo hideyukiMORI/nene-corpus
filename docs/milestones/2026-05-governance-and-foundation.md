@@ -2,6 +2,8 @@
 
 Goal: establish NeNe Corpus engineering discipline inherited from NENE2 before product features grow.
 
+**Status: complete (2026-05-25)**
+
 ## Acceptance Criteria
 
 - [x] GitHub repository created (`hideyukiMORI/nene-corpus`)
@@ -12,8 +14,8 @@ Goal: establish NeNe Corpus engineering discipline inherited from NENE2 before p
 - [x] `docs/review/` initial self-review checklists
 - [x] ADR 0001 and ADR 0002 accepted
 - [x] `docs/roadmap.md`, `docs/explanation/product-vision.md`, and `docs/todo/current.md` initialized
-- [ ] `composer check` green on `main` (health endpoint + OpenAPI + MCP)
-- [ ] Backend CI workflow passing on GitHub
+- [x] `composer check` green on `main` (health endpoint + OpenAPI + MCP)
+- [x] Backend CI workflow passing on GitHub ([run 26368111210](https://github.com/hideyukiMORI/nene-corpus/actions/runs/26368111210))
 
 ## Follow-up Milestone
 
