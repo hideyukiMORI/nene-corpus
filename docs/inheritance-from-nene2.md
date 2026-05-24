@@ -17,8 +17,8 @@ NeNe Corpus is a **consumer project**, not a fork of NENE2. Framework code stays
 
 | Topic | Local document |
 | --- | --- |
-| Issue-driven workflow | `docs/workflow.md` |
-| Conventional Commits | `docs/development/commit-conventions.md` |
+| Issue-driven workflow | `docs/workflow.md` (inherits [NENE2 workflow](https://github.com/hideyukiMORI/NENE2/blob/main/docs/workflow.md)) |
+| Conventional Commits | `docs/development/commit-conventions.md` (inherits [NENE2 commit conventions](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/commit-conventions.md)) |
 | Self-review before PR | `docs/development/self-review.md` |
 | ADR operation | `docs/development/adr.md` |
 | AI agent workflow | `docs/integrations/ai-tools.md`, `AGENTS.md` |

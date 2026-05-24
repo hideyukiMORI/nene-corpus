@@ -23,9 +23,11 @@ Last updated: 2026-05-25
 
 ## Up Next — Phase 1（Corpus & Ingestion）
 
+**運用:** Issue → `type/issue-number-summary` ブランチ → PR → merge（`main` 直 push 禁止）。Phase 0 bootstrap のみ historical exception — `docs/workflow.md` 参照。
+
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
-| P0 | Issue 起票 + branch | `feat/N-schema-sources-documents-chunks` 等 |
+| P0 | Issue 起票 + branch | 例: `feat/2-schema-sources-documents-chunks` |
 | P0 | Schema: sources, documents, chunks | 取り込み正本 |
 | P0 | Admin auth (JWT) | 管理 API 保護 |
 | P1 | CSV upload API | 列マッピング preview |
