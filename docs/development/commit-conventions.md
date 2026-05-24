@@ -16,13 +16,27 @@ NeNe Corpus uses Conventional Commits, inherited from [NENE2](https://github.com
 
 - Keep `type`, `scope`, `BREAKING CHANGE`, and other Conventional Commits keywords in **English**.
 - Write the **description and body in Japanese**.
-- Include the related GitHub Issue number in the subject when practical.
+- Include the related GitHub Issue number in the **subject** for all work after Phase 0 bootstrap.
 
 Example:
 
 ```text
-docs(governance): NENE2 系ワークフロー規約を継承する (#2)
+docs(governance): Issue 駆動ワークフローを NENE2 正本に整合する (#1)
 ```
+
+```text
+feat(ingestion): sources テーブルの migration を追加する (#5)
+```
+
+## Issue number
+
+| Situation | Rule |
+| --- | --- |
+| Normal work (Phase 1+) | Subject **must** include `(#issue)` |
+| Phase 0 bootstrap commits (historical) | Predate Issues — do not retroactively rewrite unless doing a dedicated history cleanup Issue |
+| Docs-only follow-up on same Issue | Reuse the same Issue number |
+
+If you start editing without an Issue, **stop and create one first** — see `docs/workflow.md`.
 
 ## Common Types
 

@@ -19,8 +19,10 @@ This file is the entry point for AI agents working on NeNe Corpus.
 
 ## Operating Rules
 
-- Work from GitHub Issues. Create an Issue before implementation or doc changes that lack one.
-- Do not commit directly to `main`. Use branches named like `type/issue-number-summary`.
+- **Issue-driven**: no substantive code, doc, or config change without a GitHub Issue. Create one first.
+- **No direct commits to `main`**. Branch `type/issue-number-summary` → PR → merge after checks.
+- **Commits**: Conventional Commits; type/scope English, description/body Japanese, `(#issue)` in subject.
+- **Full lifecycle** (unless user limits scope): Issue → branch → implement → verify → commit → push → PR → merge → sync `main`.
 - Read NENE2 upstream docs for framework behavior; read local docs for product rules.
 - **Never integrate this chat system into NeNe Records.** Dependency direction is `NeNe Corpus → upstream APIs`, never the reverse. See ADR 0002.
 - Keep `docs/todo/current.md` and milestones aligned with Issues and PRs.

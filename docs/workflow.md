@@ -13,16 +13,18 @@ See also: `docs/inheritance-from-nene2.md`.
 5. Update docs, roadmap, milestone, or TODO files when the decision or state changes.
 6. Review the relevant self-review checklist in `docs/review/`.
 7. Run the narrowest meaningful verification available.
-8. Commit with Conventional Commits and include the Issue number.
+8. Commit with [Conventional Commits](development/commit-conventions.md) and include the Issue number in the subject.
 9. Push the branch and create a PR linked to the Issue.
-10. Merge after review and checks.
+10. Merge after review and checks pass.
 11. Return local `main` to the merged, clean state.
+
+**Do not commit directly to `main`.** Every merge to `main` goes through a PR tied to an Issue (except the documented bootstrap below).
 
 ## Branch Names
 
 Use Conventional Commit style as the prefix:
 
-- `docs/1-initial-governance`
+- `docs/1-issue-driven-workflow-alignment`
 - `feat/5-pdf-ingestion`
 - `fix/12-rate-limit-bypass`
 - `test/8-chat-citation-format`
@@ -34,11 +36,9 @@ Every PR should include:
 - purpose
 - change summary
 - verification results
-- self-review checklist used, when applicable
-- related Issue, preferably `Closes #number`
+- self-review checklist used, when applicable (example: `Self-review: docs-policy`)
+- related Issue — prefer `Closes #number` in the PR body
 - remaining risks or follow-up work
-
-Do not commit directly to `main`.
 
 ## Local Project Memory
 
@@ -56,16 +56,26 @@ Use self-review checklists before push or PR. See `docs/development/self-review.
 
 ## AI Agent Responsibilities
 
-AI agents should manage the normal lifecycle when asked to complete work:
+When asked to complete work, AI agents should run the **full lifecycle** unless the user narrows scope (investigation only, no commit, no PR, etc.):
 
-1. Create or reuse an Issue.
-2. Branch from `main`.
-3. Implement focused changes.
-4. Run verification (`composer check` minimum when runtime exists).
-5. Commit, push, open PR with checklist name and `Closes #n`.
-6. Update `docs/todo/current.md` when state changes.
+- create or reuse the Issue
+- create the Issue branch from `main`
+- read `AGENTS.md` and relevant docs before editing
+- edit only relevant files
+- review relevant self-review checklists in `docs/review/`
+- verify the change (`composer check` when runtime code exists)
+- commit with `(#issue)` in the subject
+- push the branch and open a PR with checklist name and `Closes #number`
+- merge after checks pass and sync local `main`
+- update `docs/todo/current.md` and milestones when state changes
 
-When the user explicitly limits scope (investigation only, no commit, no PR), follow that instruction.
+Direct pushes to `main` are **not** part of the normal agent workflow.
+
+## Phase 0 bootstrap (historical exception)
+
+The initial repository bootstrap (2026-05-24 — 2026-05-25) landed on `main` via direct commits **before** GitHub Issues existed. That was a one-time scaffold exception.
+
+**From Phase 1 onward**, treat Issue → branch → PR → merge as mandatory. Do not repeat bootstrap-style direct commits.
 
 ## Language
 

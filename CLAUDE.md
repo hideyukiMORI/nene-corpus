@@ -17,10 +17,11 @@ Claude Code / AI agent guide for this repository. Cursor summaries live in `.cur
 
 ## Quick Rules
 
-- **Issue-driven**: no Issue, no code/doc change (except explicit user scope limits).
-- **Branch**: `type/issue-number-summary` from `main`; never commit directly to `main`.
-- **Commits**: Conventional Commits; type/scope English, description/body Japanese, include `(#issue)`.
-- **PR**: purpose, changes, verification, checklist name, `Closes #n`.
+- **Issue-driven**: no Issue, no code/doc/config change (except explicit user scope limits).
+- **Branch**: `type/issue-number-summary` from `main`; **never** commit or push directly to `main`.
+- **Commits**: Conventional Commits; type/scope English, description/body Japanese; subject includes `(#issue)`.
+- **PR → merge**: push branch, open PR with `Closes #n` and checklist name, merge after CI green, sync local `main`.
+- **Phase 0 note**: bootstrap commits predated Issues; **Phase 1+ must follow full workflow** (`docs/workflow.md`).
 - **Secrets**: never commit `.env`, tokens, API keys (`ANTHROPIC_API_KEY`, upstream JWTs), or credentials.
 - **Separation**: do not embed chat logic in NeNe Records; consume upstream via HTTP client only (ADR 0002).
 - **Framework**: NENE2 via Composer — read `vendor/hideyukimori/nene2/docs/` for runtime patterns.

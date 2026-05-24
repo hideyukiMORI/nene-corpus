@@ -4,6 +4,8 @@ Goal: establish NeNe Corpus engineering discipline inherited from NENE2 before p
 
 **Status: complete (2026-05-25)**
 
+> **Workflow note:** Phase 0 landed via direct `main` commits before Issues existed (bootstrap exception). Phase 1+ must use Issue → branch → PR → merge. See `docs/workflow.md`.
+
 ## Acceptance Criteria
 
 - [x] GitHub repository created (`hideyukiMORI/nene-corpus`)

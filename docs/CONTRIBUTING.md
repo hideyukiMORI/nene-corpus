@@ -20,9 +20,16 @@ NeNe Corpus is built through small, Issue-driven changes. This document is the s
 
 ## Collaboration Policy
 
-- Start work from a GitHub Issue.
+Follow [`docs/workflow.md`](workflow.md) — inherited from [NENE2](https://github.com/hideyukiMORI/NENE2/blob/main/docs/workflow.md):
+
+1. Create or reuse a GitHub Issue **before** editing.
+2. Branch from `main` as `type/issue-number-summary`.
+3. Implement, verify (`composer check` when applicable), commit with `(#issue)`.
+4. Push, open PR with `Closes #number`, merge after checks — **do not push directly to `main`**.
+
+Phase 0 bootstrap (2026-05-24 — 2026-05-25) used direct `main` commits as a one-time exception. **Phase 1 onward uses Issue → PR → merge only.**
+
 - Use one branch and one PR per focused work unit.
-- Do not commit directly to `main`.
 - Keep `docs/milestones/`, `docs/roadmap.md`, and `docs/todo/current.md` updated when direction changes.
 - Explain intent, impact, verification, and remaining risk in PRs.
 - Prefer documentation that helps the next developer or AI agent decide what to do without rereading chat history.
