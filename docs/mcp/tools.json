@@ -1,0 +1,24 @@
+{
+    "version": 1,
+    "source": "docs/openapi/openapi.yaml",
+    "tools": [
+        {
+            "name": "getHealth",
+            "title": "Health",
+            "description": "Operational health check for the NeNe Corpus API runtime.",
+            "safety": "read",
+            "source": {
+                "type": "openapi",
+                "operationId": "getHealth",
+                "method": "GET",
+                "path": "/health"
+            },
+            "inputSchema": {
+                "type": "object",
+                "properties": [],
+                "additionalProperties": false
+            },
+            "responseSchemaRef": "#/components/schemas/HealthResponse"
+        }
+    ]
+}

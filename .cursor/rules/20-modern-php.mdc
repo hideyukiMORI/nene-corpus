@@ -1,0 +1,15 @@
+---
+description: NeNe Corpus PHP/API コーディング規約
+globs: "**/*.php"
+alwaysApply: false
+---
+
+# Modern PHP — NeNe Corpus
+
+- 新規 PHP ファイルは `declare(strict_types=1);` を付け、PSR-12 を基本にする。
+- Namespace: `NeneCorpus\` — domain-grouped modules（`Chat/`, `Chunk/`, `Ingestion/` 等）。
+- Handler → UseCase → RepositoryInterface → PdoRepository。Handler にビジネスロジックを置かない。
+- PDO/SQL は `Pdo*Repository` 内のみ。LLM HTTP 呼び出しは `Llm/` アダプター内のみ。
+- Problem Details: `https://nene-corpus.dev/problems/{name}`
+- OpenAPI と MCP は同一 HTTP 契約。コンシューマーチャットに MCP を露出しない。
+- 正本は `docs/development/backend-standards.md`。

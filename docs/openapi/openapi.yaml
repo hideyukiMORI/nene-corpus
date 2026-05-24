@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: NeNe Corpus API
+  version: 0.1.0
+  description: >
+    NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
+    Phase 0 exposes system health; ingestion and chat endpoints follow in later phases.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: System
+    description: Runtime health endpoints.
+paths:
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health endpoint
+      description: Operational health check (NENE2 runtime).
+      operationId: getHealth
+      responses:
+        '200':
+          description: Healthy response (no checks configured).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                ok:
+                  summary: Healthy response
+                  value:
+                    status: ok
+                    service: NENE2
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  responses:
+    InternalServerError:
+      description: Internal server error.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            internal:
+              value:
+                type: https://nene-corpus.dev/problems/internal-server-error
+                title: Internal Server Error
+                status: 500
+                detail: An unexpected error occurred.
+                instance: /health
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+            - degraded
+        service:
+          type: string
+    ProblemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - instance
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

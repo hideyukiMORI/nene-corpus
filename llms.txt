@@ -1,0 +1,26 @@
+# NeNe Corpus
+
+> Self-hosted knowledge chat OSS on NENE2 — ingest PDF & CSV, chat with citations.
+
+## Documentation
+
+- README: https://github.com/hideyukiMORI/nene-corpus
+- Product vision: docs/explanation/product-vision.md
+- Agent guide: AGENTS.md
+- OpenAPI: docs/openapi/openapi.yaml
+- MCP tools: docs/mcp/tools.json
+
+## Stack
+
+- PHP 8.4, NENE2 framework
+- OpenAPI 3.1, RFC 9457 Problem Details
+- Planned: SSE chat, Claude tool_use, React admin
+
+## Related
+
+- NENE2: https://github.com/hideyukiMORI/NENE2
+- NeNe Records (optional upstream): https://github.com/hideyukiMORI/nene-records
+
+## License
+
+MIT
