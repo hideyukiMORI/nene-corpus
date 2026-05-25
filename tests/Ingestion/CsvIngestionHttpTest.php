@@ -86,6 +86,26 @@ CSV;
         self::assertSame(',', $payload['detected_delimiter']);
     }
 
+    public function test_preview_accepts_shift_jis_csv(): void
+    {
+        $csv = mb_convert_encoding(
+            "product_name,description\nWidget A,日本語テスト\n",
+            'SJIS-win',
+            'UTF-8',
+        );
+
+        $response = $this->authorizedPost('/admin/ingestion/csv/preview', [
+            'filename' => 'catalog.csv',
+            'content' => base64_encode($csv),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['product_name', 'description'], $payload['headers']);
+        self::assertSame('日本語テスト', $payload['sample_rows'][0][1]);
+    }
+
     public function test_create_source_persists_corpus_rows(): void
     {
         $csv = <<<'CSV'

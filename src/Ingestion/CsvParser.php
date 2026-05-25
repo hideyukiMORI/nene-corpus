@@ -8,6 +8,11 @@ final readonly class CsvParser
 {
     private const SAMPLE_ROW_LIMIT = 5;
 
+    public function __construct(
+        private CsvTextNormalizer $textNormalizer = new CsvTextNormalizer(),
+    ) {
+    }
+
     /**
      * @return array{
      *     headers: list<string>,
@@ -150,6 +155,7 @@ final readonly class CsvParser
      */
     private function readRows(string $bytes): array
     {
+        $bytes = $this->textNormalizer->normalize($bytes);
         $delimiter = $this->detectDelimiter($bytes);
         $lines = preg_split('/\R/', $bytes) ?: [];
         $rows = [];
