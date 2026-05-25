@@ -3,9 +3,10 @@ import { listSources, type SourceListItem } from '@nene-corpus/api-client';
 
 interface SourcesPanelProps {
   token: string;
+  reloadKey?: number;
 }
 
-export function SourcesPanel({ token }: SourcesPanelProps) {
+export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
   const [sources, setSources] = useState<SourceListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export function SourcesPanel({ token }: SourcesPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, reloadKey]);
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -50,7 +51,7 @@ export function SourcesPanel({ token }: SourcesPanelProps) {
       {isLoading && <p className="px-4 py-6 text-sm text-slate-600">Loading sources…</p>}
       {error !== null && <p className="px-4 py-6 text-sm text-red-600">{error}</p>}
       {!isLoading && error === null && sources.length === 0 && (
-        <p className="px-4 py-6 text-sm text-slate-600">No sources yet. Upload via API for now.</p>
+        <p className="px-4 py-6 text-sm text-slate-600">No sources yet. Upload a CSV or PDF above.</p>
       )}
       {!isLoading && sources.length > 0 && (
         <div className="overflow-x-auto">

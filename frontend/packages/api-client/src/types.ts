@@ -53,3 +53,29 @@ export interface SourceListItem {
 export interface ListSourcesResponse {
   sources: SourceListItem[];
 }
+
+export interface PreviewCsvIngestionResponse {
+  headers: string[];
+  sample_rows: string[][];
+  detected_delimiter: string;
+  row_count: number;
+}
+
+export interface PreviewPdfIngestionResponse {
+  page_count: number;
+  sample_text: string;
+}
+
+export interface CsvColumnMapping {
+  title_column: string;
+  content_columns: string[];
+  metadata_columns?: string[];
+}
+
+export interface CreateSourceResponse {
+  source_id: number;
+  name: string;
+  status: SourceListItem['status'];
+  document_count: number;
+  chunk_count: number;
+}
