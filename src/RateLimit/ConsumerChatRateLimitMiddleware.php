@@ -7,6 +7,7 @@ namespace NeneCorpus\RateLimit;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Chat\SendChatMessageHandler;
+use NeneCorpus\Http\RequestMetadataExtractor;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -35,7 +36,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         }
 
         $windowSeconds = $this->config->windowSeconds;
-        $ipKey = 'chat:ip:' . $this->clientIp($request);
+        $ipKey = 'chat:ip:' . (RequestMetadataExtractor::clientIp($request) ?? 'unknown');
         $ipResult = $this->storage->hit($ipKey, $windowSeconds);
 
         if ($ipResult['count'] > $this->config->ipLimit) {
@@ -80,13 +81,6 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
             max(0, $remaining),
             $resetAt,
         );
-    }
-
-    private function clientIp(ServerRequestInterface $request): string
-    {
-        $params = $request->getServerParams();
-
-        return (string) ($params['REMOTE_ADDR'] ?? 'unknown');
     }
 
     private function tooManyRequests(

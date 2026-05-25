@@ -72,7 +72,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 
 | 優先 | 項目 | メモ |
 | --- | --- | --- |
-| P2 | **セッション metadata** | #129 — `client_ip`・`user_agent`（任意で referer / 埋め込みページ）。`POST /chat/sessions` 作成時に記録。管理画面は一覧＋詳細パネル。IP/UA は個人データ — 保持期間・記録オフを docs に明記 |
+| P2 | **セッション metadata** | #129 — ✅ `client_ip`・`user_agent`・`referer`。`POST /chat/sessions` 作成時に記録。管理画面は一覧 IP + 詳細 UA/Referer。docs: [`shared-hosting.md`](../deployment/shared-hosting.md) § Conversation log metadata |
 
 ### オペレーター設定
 

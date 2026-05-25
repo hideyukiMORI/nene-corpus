@@ -9,6 +9,7 @@ import { adminApiBase } from './config';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { ROLE_MSG } from './i18nLabels';
+import { formatClientIp, hasSessionMetadata } from './conversationLogsFormat';
 
 interface ConversationLogsPanelProps {
   token: string;
@@ -130,6 +131,12 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                   </th>
                   <th className="px-4 py-2 font-medium">
                     <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnClientIp)}
+                      help={t(Msg.admin.conversationLogs.columnClientIpHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
                       label={t(Msg.admin.conversationLogs.columnLastActivity)}
                       help={t(Msg.admin.conversationLogs.columnLastActivityHelp)}
                     />
@@ -150,6 +157,9 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                     >
                       <td className="px-4 py-2 font-medium tabular-nums">#{session.session_id}</td>
                       <td className="px-4 py-2 tabular-nums">{session.message_count}</td>
+                      <td className="px-4 py-2 font-mono text-xs nc-text-muted" title={session.client_ip ?? undefined}>
+                        {formatClientIp(session.client_ip)}
+                      </td>
                       <td className="px-4 py-2 nc-text-timestamp">
                         {formatTimestamp(session.last_message_at ?? session.updated_at, locale)}
                       </td>
@@ -164,6 +174,42 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
             {selectedSessionId === null && (
               <p className="nc-text-muted">{t(Msg.admin.conversationLogs.selectSession)}</p>
             )}
+            {selectedSessionId !== null && (() => {
+              const selectedSession = sessions.find((session) => session.session_id === selectedSessionId);
+
+              return (
+                <>
+                  {selectedSession !== undefined && hasSessionMetadata(selectedSession) && (
+                    <div className="mb-4 rounded-admin border border-border bg-surface-muted px-3 py-3 text-sm">
+                      <dl className="space-y-2">
+                        {selectedSession.user_agent !== null && selectedSession.user_agent.trim() !== '' && (
+                          <div>
+                            <dt className="nc-text-muted">
+                              <HelpLabel
+                                label={t(Msg.admin.conversationLogs.sessionUserAgent)}
+                                help={t(Msg.admin.conversationLogs.sessionUserAgentHelp)}
+                              />
+                            </dt>
+                            <dd className="mt-0.5 break-all font-mono text-xs">{selectedSession.user_agent}</dd>
+                          </div>
+                        )}
+                        {selectedSession.referer !== null && selectedSession.referer.trim() !== '' && (
+                          <div>
+                            <dt className="nc-text-muted">
+                              <HelpLabel
+                                label={t(Msg.admin.conversationLogs.sessionReferer)}
+                                help={t(Msg.admin.conversationLogs.sessionRefererHelp)}
+                              />
+                            </dt>
+                            <dd className="mt-0.5 break-all text-xs">{selectedSession.referer}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
             {selectedSessionId !== null && isLoadingMessages && (
               <p className="nc-text-muted">{t(Msg.admin.conversationLogs.loadingMessages)}</p>
             )}

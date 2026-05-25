@@ -11,6 +11,9 @@ final readonly class ChatSession
         public ?int $id = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
+        public ?string $clientIp = null,
+        public ?string $userAgent = null,
+        public ?string $referer = null,
     ) {
     }
 }

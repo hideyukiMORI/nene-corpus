@@ -10,7 +10,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 final readonly class PdoChatSessionRepository implements ChatSessionRepositoryInterface
 {
     private const SELECT_COLUMNS = <<<'SQL'
-        id, public_token, created_at, updated_at
+        id, public_token, client_ip, user_agent, referer, created_at, updated_at
         SQL;
 
     public function __construct(
@@ -43,8 +43,8 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         $now = $this->now();
 
         $this->query->execute(
-            'INSERT INTO chat_sessions (public_token, created_at, updated_at) VALUES (?, ?, ?)',
-            [$session->publicToken, $now, $now],
+            'INSERT INTO chat_sessions (public_token, client_ip, user_agent, referer, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+            [$session->publicToken, $session->clientIp, $session->userAgent, $session->referer, $now, $now],
         );
 
         return $this->query->lastInsertId();
@@ -67,7 +67,8 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         $rows = $this->query->fetchAll(
             <<<'SQL'
                 SELECT
-                    s.id, s.public_token, s.created_at, s.updated_at,
+                    s.id, s.public_token, s.client_ip, s.user_agent, s.referer,
+                    s.created_at, s.updated_at,
                     (
                         SELECT COUNT(*)
                         FROM chat_messages m
@@ -105,6 +106,9 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
             id: (int) $row['id'],
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],
+            clientIp: isset($row['client_ip']) ? (string) $row['client_ip'] : null,
+            userAgent: isset($row['user_agent']) ? (string) $row['user_agent'] : null,
+            referer: isset($row['referer']) ? (string) $row['referer'] : null,
         );
     }
 

@@ -2,6 +2,9 @@
 CREATE TABLE chat_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     public_token VARCHAR(64) NOT NULL,
+    client_ip VARCHAR(45) NULL,
+    user_agent TEXT NULL,
+    referer TEXT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
 );

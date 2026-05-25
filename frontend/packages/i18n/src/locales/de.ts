@@ -123,6 +123,16 @@ export const de = defineMessages({
   'admin.conversationLogs.columnMessagesHelp':
     'Gesamtzahl der Nachrichten inkl. Besucherfragen und Assistentenantworten.',
   'admin.conversationLogs.columnLastActivityHelp': 'Zeitstempel der letzten Nachricht in dieser Sitzung.',
+  'admin.conversationLogs.columnClientIp': 'Client-IP',
+  'admin.conversationLogs.columnClientIpHelp':
+    'Beim Start der Sitzung erfasste Besucher-IP. Kann personenbezogene Daten sein — gemäß Datenschutzrichtlinie behandeln.',
+  'admin.conversationLogs.sessionUserAgent': 'User-Agent',
+  'admin.conversationLogs.sessionUserAgentHelp':
+    'Browser- oder Bot-Kennung der Sitzungsanfrage. Hilft bei der Erkennung automatisierter Zugriffe.',
+  'admin.conversationLogs.sessionReferer': 'Referer',
+  'admin.conversationLogs.sessionRefererHelp':
+    'Seiten-URL, von der aus der Chat gestartet wurde, sofern der Browser einen Referer-Header sendete.',
+  'admin.conversationLogs.metadataUnavailable': 'Für diese Sitzung wurden keine Client-Metadaten erfasst.',
   'admin.conversationLogs.selectSession': 'Wählen Sie eine Sitzung, um Nachrichten anzuzeigen.',
   'admin.conversationLogs.loadingMessages': 'Nachrichten werden geladen…',
   'admin.conversationLogs.emptyMessages': 'Keine Nachrichten in dieser Sitzung.',

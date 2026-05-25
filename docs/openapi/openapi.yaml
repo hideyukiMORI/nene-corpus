@@ -1333,6 +1333,18 @@ components:
           type: string
           format: date-time
           nullable: true
+        client_ip:
+          type: string
+          nullable: true
+          description: Client IP captured at session creation (REMOTE_ADDR).
+        user_agent:
+          type: string
+          nullable: true
+          description: User-Agent header captured at session creation.
+        referer:
+          type: string
+          nullable: true
+          description: Referer header captured at session creation, when present.
     ListChatSessionMessagesResponse:
       type: object
       required:
