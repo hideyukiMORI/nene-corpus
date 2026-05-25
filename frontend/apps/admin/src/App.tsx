@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { fetchJson, type HealthResponse } from '@nene-corpus/api-client';
 import { cssVars } from '@nene-corpus/tokens';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
+import { IngestionPanel } from './IngestionPanel';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
   const { token, profile, isReady, error, login, logout } = useAdminAuth();
   const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [sourcesReloadKey, setSourcesReloadKey] = useState(0);
 
   useEffect(() => {
     fetchJson<HealthResponse>('/health')
@@ -51,7 +53,8 @@ export function App() {
           <LoginForm error={error} onLogin={login} />
         ) : (
           <>
-            <SourcesPanel token={token} />
+            <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
+            <SourcesPanel token={token} reloadKey={sourcesReloadKey} />
             <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
               <h2 className="font-medium">Widget theme preview</h2>
               <p className="mt-2 text-sm text-slate-600">
