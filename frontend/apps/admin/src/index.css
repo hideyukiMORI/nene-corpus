@@ -1,1 +1,15 @@
 @import 'tailwindcss';
+
+@theme inline {
+  --font-sans: var(--nc-admin-font-family);
+}
+
+:root {
+  --nc-admin-font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}

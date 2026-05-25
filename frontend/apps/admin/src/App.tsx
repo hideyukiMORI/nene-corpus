@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchJson, type HealthResponse } from '@nene-corpus/api-client';
-import { Msg, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
+import { Msg, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
@@ -17,6 +17,7 @@ export function App() {
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
+    applyLocaleFontFamily(locale);
   }, [locale]);
 
   useEffect(() => {

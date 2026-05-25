@@ -12,6 +12,12 @@ export {
 } from './locale';
 export { formatTimestamp, toBcp47 } from './format';
 export {
+  ADMIN_FONT_FAMILY_VAR,
+  LOCALE_FONT_STACKS,
+  applyLocaleFontFamily,
+  getLocaleFontStack,
+} from './locale-fonts';
+export {
   DEFAULT_LOCALE,
   LOCALE_STORAGE_KEY,
   WIDGET_LOCALE_STORAGE_KEY,
