@@ -6,6 +6,7 @@ This file is the entry point for AI agents working on NeNe Corpus.
 
 - **Current work & status:** `docs/todo/current.md`
 - **Product vision:** `docs/explanation/product-vision.md`
+- **Deployment (dual Tier A/B):** `docs/deployment/README.md`, ADR 0003
 - Inheritance map: `docs/inheritance-from-nene2.md`
 - Human and AI collaboration: `docs/CONTRIBUTING.md`
 - Workflow: `docs/workflow.md`
@@ -35,11 +36,13 @@ This file is the entry point for AI agents working on NeNe Corpus.
 
 NeNe Corpus is a self-hosted knowledge chat OSS on NENE2:
 
+- **Primary operators:** Japan SMB on PHP shared hosting (Tier A); **also** Docker/VPS (Tier B). Same codebase — ADR 0003.
 - Ingest PDF, CSV, and structured sources into a searchable corpus.
-- Answer end-user questions with **cited** responses (SSE streaming).
+- Answer end-user questions with **cited** responses (sync JSON default; SSE optional on Tier B).
+- Embed consumer chat on existing homepages with one same-origin `<script>` (Phase 3 widget).
 - Admin UI for ingestion, corpus management, conversation logs, and settings.
 - OpenAPI as the contract; MCP for ops/read-only agent tooling only.
-- **Not** a CMS — sibling to [NeNe Records](https://github.com/hideyukiMORI/nene-records), not a module inside it.
+- **Not** a CMS or WordPress plugin — sibling to [NeNe Records](https://github.com/hideyukiMORI/nene-records), not a module inside it.
 
 ## Framework Reference
 

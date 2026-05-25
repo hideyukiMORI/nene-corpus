@@ -12,6 +12,7 @@ NeNe Corpus is built through small, Issue-driven changes. This document is the s
 | Coding standards | `docs/development/coding-standards.md` |
 | Backend standards (PHP/API) | `docs/development/backend-standards.md` |
 | Docker development | `docs/development/docker.md` |
+| Deployment (Tier A/B) | `docs/deployment/README.md` |
 | Commit messages | `docs/development/commit-conventions.md` |
 | AI tools | `docs/integrations/ai-tools.md` |
 | Agent entry point | `AGENTS.md` |

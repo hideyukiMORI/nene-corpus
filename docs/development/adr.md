@@ -20,6 +20,8 @@ Do **not** use ADRs for routine task detail — use Issues, PRs, and `docs/todo/
 docs/adr/
 ├── 0000-template.md
 ├── 0001-inherit-nene2-governance.md
+├── 0002-separate-from-nene-records.md
+├── 0003-dual-deployment-and-embed-widget.md
 └── NNNN-short-title.md
 ```
 
