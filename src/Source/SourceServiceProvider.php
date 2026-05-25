@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Document\DocumentRepositoryInterface;
 use Psr\Container\ContainerInterface;
@@ -31,6 +32,35 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                     }
 
                     return new PdoSourceRepository($query);
+                },
+            )
+            ->set(
+                ListSourcesUseCaseInterface::class,
+                static function (ContainerInterface $container): ListSourcesUseCaseInterface {
+                    $sources = $container->get(SourceRepositoryInterface::class);
+
+                    if (!$sources instanceof SourceRepositoryInterface) {
+                        throw new LogicException('Source repository service is invalid.');
+                    }
+
+                    return new ListSourcesUseCase($sources);
+                },
+            )
+            ->set(
+                ListSourcesHandler::class,
+                static function (ContainerInterface $container): ListSourcesHandler {
+                    $useCase = $container->get(ListSourcesUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof ListSourcesUseCaseInterface) {
+                        throw new LogicException('List sources use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new ListSourcesHandler($useCase, $response);
                 },
             )
             ->set(
@@ -88,12 +118,17 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                 self::ROUTE_REGISTRAR,
                 static function (ContainerInterface $container): SourceRouteRegistrar {
                     $delete = $container->get(DeleteSourceHandler::class);
+                    $list = $container->get(ListSourcesHandler::class);
 
                     if (!$delete instanceof DeleteSourceHandler) {
                         throw new LogicException('Delete source handler service is invalid.');
                     }
 
-                    return new SourceRouteRegistrar($delete);
+                    if (!$list instanceof ListSourcesHandler) {
+                        throw new LogicException('List sources handler service is invalid.');
+                    }
+
+                    return new SourceRouteRegistrar($delete, $list);
                 },
             );
     }

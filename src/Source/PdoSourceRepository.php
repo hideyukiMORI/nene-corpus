@@ -40,6 +40,42 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
         return array_map(fn (array $row): Source => $this->mapRow($row), $rows);
     }
 
+    public function findAllSummaries(int $limit, int $offset): array
+    {
+        $rows = $this->query->fetchAll(
+            <<<'SQL'
+                SELECT
+                    s.id, s.name, s.source_type, s.status, s.storage_path, s.original_filename,
+                    s.mime_type, s.byte_size, s.error_message, s.ingestion_config_json,
+                    s.created_at, s.updated_at, s.is_deleted, s.deleted_at,
+                    (
+                        SELECT COUNT(*)
+                        FROM documents d
+                        WHERE d.source_id = s.id AND d.is_deleted = 0
+                    ) AS document_count,
+                    (
+                        SELECT COUNT(*)
+                        FROM chunks c
+                        WHERE c.source_id = s.id
+                    ) AS chunk_count
+                FROM sources s
+                WHERE s.is_deleted = 0
+                ORDER BY s.id DESC
+                LIMIT ? OFFSET ?
+                SQL,
+            [$limit, $offset],
+        );
+
+        return array_map(
+            fn (array $row): SourceSummary => new SourceSummary(
+                source: $this->mapRow($row),
+                documentCount: (int) $row['document_count'],
+                chunkCount: (int) $row['chunk_count'],
+            ),
+            $rows,
+        );
+    }
+
     public function save(Source $source): int
     {
         $now = $this->now();

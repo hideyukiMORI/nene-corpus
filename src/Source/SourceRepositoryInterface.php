@@ -11,6 +11,9 @@ interface SourceRepositoryInterface
     /** @return list<Source> */
     public function findAll(int $limit, int $offset): array;
 
+    /** @return list<SourceSummary> */
+    public function findAllSummaries(int $limit, int $offset): array;
+
     public function save(Source $source): int;
 
     public function update(Source $source): void;

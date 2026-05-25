@@ -1,42 +1,66 @@
 import { useEffect, useState } from 'react';
 import { fetchJson, type HealthResponse } from '@nene-corpus/api-client';
 import { cssVars } from '@nene-corpus/tokens';
+import { LoginForm, SourcesPanel } from './SourcesPanel';
+import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
+  const { token, profile, isReady, error, login, logout } = useAdminAuth();
   const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchJson<HealthResponse>('/health')
       .then(setHealth)
-      .catch((cause: unknown) => {
-        setError(cause instanceof Error ? cause.message : 'Health check failed');
-      });
+      .catch(() => setHealth(null));
   }, []);
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">
+        Loading…
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white px-6 py-4">
-        <h1 className="text-xl font-semibold">NeNe Corpus Admin</h1>
-        <p className="text-sm text-slate-600">Phase 3 scaffold — sources, ingestion, and logs land here.</p>
-      </header>
-      <main className="mx-auto max-w-3xl px-6 py-8 space-y-4">
-        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="font-medium">API health</h2>
-          {health && (
-            <p className="mt-2 text-sm">
-              {health.service} — <span className="font-mono">{health.status}</span>
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold">NeNe Corpus Admin</h1>
+            <p className="text-sm text-slate-600">
+              {health ? `${health.service} — ${health.status}` : 'API health unavailable'}
             </p>
+          </div>
+          {profile && (
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-slate-600">{profile.email}</span>
+              <button
+                className="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-50"
+                type="button"
+                onClick={logout}
+              >
+                Sign out
+              </button>
+            </div>
           )}
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-        </section>
-        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="font-medium">Widget theme preview</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Admin uses Tailwind. The embed widget uses BEM + CSS variables such as{' '}
-            <code className="rounded bg-slate-100 px-1">{cssVars.colorPrimary}</code>.
-          </p>
-        </section>
+        </div>
+      </header>
+      <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">
+        {token === null ? (
+          <LoginForm error={error} onLogin={login} />
+        ) : (
+          <>
+            <SourcesPanel token={token} />
+            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <h2 className="font-medium">Widget theme preview</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Admin uses Tailwind. The embed widget uses BEM + CSS variables such as{' '}
+                <code className="rounded bg-slate-100 px-1">{cssVars.colorPrimary}</code>.
+              </p>
+            </section>
+          </>
+        )}
       </main>
     </div>
   );
