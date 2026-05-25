@@ -153,6 +153,24 @@ export const DEFAULT_WIDGET_CHAT: WidgetChat = {
   assistant_avatar_alt: null,
 };
 
+export type WidgetPosition = 'inline' | 'bottom_right' | 'bottom_left' | 'top_right' | 'top_left';
+
+export interface WidgetLayout {
+  max_height: string;
+  position: WidgetPosition;
+  offset_x: number;
+  offset_y: number;
+  floating_launcher: boolean;
+}
+
+export const DEFAULT_WIDGET_LAYOUT: WidgetLayout = {
+  max_height: '32rem',
+  position: 'inline',
+  offset_x: 16,
+  offset_y: 16,
+  floating_launcher: false,
+};
+
 export interface UploadHeroImageRequest {
   filename: string;
   content: string;
@@ -170,6 +188,7 @@ export interface AppearanceSettingsResponse {
   theme: WidgetTheme;
   hero: WidgetHero;
   chat: WidgetChat;
+  layout: WidgetLayout;
 }
 
 export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;

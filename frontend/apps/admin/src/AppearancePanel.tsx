@@ -11,8 +11,11 @@ import type {
   UserAvatarMode,
   WidgetChat,
   WidgetHero,
+  WidgetLayout,
+  WidgetPosition,
   WidgetTheme,
 } from '@nene-corpus/api-client/types';
+import { DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client/types';
 import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 import { APPEARANCE_CHAT_TOGGLE_FALLBACK } from './appearanceChatToggleFallback';
@@ -95,6 +98,14 @@ const DEFAULT_THEME: WidgetTheme = {
   radius_md: '0.5rem',
   max_width: '100%',
 };
+
+const WIDGET_POSITIONS: WidgetPosition[] = [
+  'inline',
+  'bottom_right',
+  'bottom_left',
+  'top_right',
+  'top_left',
+];
 
 const WIDGET_LOCALES = ['', 'en', 'ja', 'fr', 'zh-Hans', 'pt-BR', 'de'] as const;
 
@@ -192,6 +203,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
   const [chatForm, setChatForm] = useState<ChatFormState>(EMPTY_CHAT_FORM);
+  const [layoutForm, setLayoutForm] = useState<WidgetLayout>(DEFAULT_WIDGET_LAYOUT);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -250,6 +262,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       assistant_avatar_url: settings.chat.assistant_avatar_url ?? '',
       assistant_avatar_alt: settings.chat.assistant_avatar_alt ?? '',
     });
+    setLayoutForm(settings.layout);
   }
 
   function updateHeroField<K extends keyof HeroFormState>(field: K, value: HeroFormState[K]): void {
@@ -345,6 +358,27 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     setChatForm((current) => ({ ...current, [field]: value }));
   }
 
+  function layoutPayload(): WidgetLayout {
+    const isInline = layoutForm.position === 'inline';
+
+    return {
+      ...layoutForm,
+      floating_launcher: isInline ? false : layoutForm.floating_launcher,
+    };
+  }
+
+  function updateLayoutField<K extends keyof WidgetLayout>(field: K, value: WidgetLayout[K]): void {
+    setLayoutForm((current) => {
+      const next = { ...current, [field]: value };
+
+      if (field === 'position' && value === 'inline') {
+        next.floating_launcher = false;
+      }
+
+      return next;
+    });
+  }
+
   function updateThemeField(field: keyof WidgetTheme, value: string): void {
     setTheme((current) => ({ ...current, [field]: value }));
   }
@@ -361,6 +395,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
         theme,
         hero: heroPayload(),
         chat: chatPayload(),
+        layout: layoutPayload(),
       }, adminApiBase);
       applySettings(saved);
       setSuccess(t(Msg.admin.appearance.saveSuccess));
@@ -377,10 +412,11 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       widgetLocale === '' ? null : widgetLocale,
       heroPayload(),
       chatPayload(),
+      layoutPayload(),
     );
 
     return `${widgetPreviewOrigin()}?${query}`;
-  }, [theme, widgetLocale, heroForm, chatForm]);
+  }, [theme, widgetLocale, heroForm, chatForm, layoutForm]);
 
   function localeLabel(value: string): string {
     if (value === '') {
@@ -398,6 +434,20 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
 
     return map[value] ?? value;
   }
+
+  function positionLabel(value: WidgetPosition): string {
+    const map: Record<WidgetPosition, string> = {
+      inline: t(Msg.admin.appearance.layoutPositionInline),
+      bottom_right: t(Msg.admin.appearance.layoutPositionBottomRight),
+      bottom_left: t(Msg.admin.appearance.layoutPositionBottomLeft),
+      top_right: t(Msg.admin.appearance.layoutPositionTopRight),
+      top_left: t(Msg.admin.appearance.layoutPositionTopLeft),
+    };
+
+    return map[value];
+  }
+
+  const layoutFixed = layoutForm.position !== 'inline';
 
   return (
     <section className="nc-panel">
@@ -670,6 +720,75 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               </div>
             )}
           </div>
+          <div className="space-y-3 border-t border-border pt-4">
+            <div>
+              <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.layoutTitle)}</h3>
+              <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.layoutSubtitle)}</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutMaxHeight)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="text"
+                  value={layoutForm.max_height}
+                  onChange={(event) => updateLayoutField('max_height', event.target.value)}
+                  placeholder="32rem"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutPosition)}</span>
+                <select
+                  className="nc-input mt-1"
+                  value={layoutForm.position}
+                  onChange={(event) => updateLayoutField('position', event.target.value as WidgetPosition)}
+                >
+                  {WIDGET_POSITIONS.map((value) => (
+                    <option key={value} value={value}>
+                      {positionLabel(value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetX)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="number"
+                  min={0}
+                  max={256}
+                  value={layoutForm.offset_x}
+                  disabled={!layoutFixed}
+                  onChange={(event) => updateLayoutField('offset_x', Number(event.target.value))}
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetY)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="number"
+                  min={0}
+                  max={256}
+                  value={layoutForm.offset_y}
+                  disabled={!layoutFixed}
+                  onChange={(event) => updateLayoutField('offset_y', Number(event.target.value))}
+                />
+              </label>
+            </div>
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                className="mt-1"
+                type="checkbox"
+                checked={layoutForm.floating_launcher}
+                disabled={!layoutFixed}
+                onChange={(event) => updateLayoutField('floating_launcher', event.target.checked)}
+              />
+              <span>
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutFloatingLauncher)}</span>
+                <span className="mt-0.5 block nc-text-muted">{t(Msg.admin.appearance.layoutFloatingLauncherHelp)}</span>
+              </span>
+            </label>
+          </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <ColorField
               label={t(Msg.admin.appearance.colorPrimary)}
@@ -711,7 +830,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
           <div>
             <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.previewTitle)}</h3>
             <iframe
-              className="mt-2 h-80 w-full rounded-admin border border-border bg-surface"
+              className={`mt-2 w-full rounded-admin border border-border bg-surface ${layoutFixed ? 'h-[28rem]' : 'h-80'}`}
               title={t(Msg.admin.appearance.previewTitle)}
               src={previewSrc}
             />

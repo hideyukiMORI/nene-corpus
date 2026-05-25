@@ -8,6 +8,9 @@ export const cssVars = {
   spacingMd: '--nc-spacing-md',
   radiusMd: '--nc-radius-md',
   maxWidth: '--nc-max-width',
+  maxHeight: '--nc-max-height',
+  offsetX: '--nc-offset-x',
+  offsetY: '--nc-offset-y',
 } as const;
 
 export type CssVarName = (typeof cssVars)[keyof typeof cssVars];

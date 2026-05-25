@@ -11,7 +11,7 @@ export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingest
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
 export { fetchJson } from './fetch-json';
-export { DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT } from './types';
+export { DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_LAYOUT } from './types';
 export type {
   AdminMeResponse,
   Citation,
@@ -32,6 +32,8 @@ export type {
   WidgetTheme,
   WidgetHero,
   WidgetChat,
+  WidgetLayout,
+  WidgetPosition,
   UserAvatarMode,
   UploadHeroImageRequest,
   UploadHeroImageResponse,

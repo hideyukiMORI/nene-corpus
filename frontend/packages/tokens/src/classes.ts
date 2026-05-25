@@ -32,4 +32,11 @@ export const nc = {
   chatForm: 'nene-corpus-chat__form',
   chatInput: 'nene-corpus-chat__input',
   chatSubmit: 'nene-corpus-chat__submit',
+  widgetFixed: 'nene-corpus-widget--fixed',
+  widgetBottomRight: 'nene-corpus-widget--bottom-right',
+  widgetBottomLeft: 'nene-corpus-widget--bottom-left',
+  widgetTopRight: 'nene-corpus-widget--top-right',
+  widgetTopLeft: 'nene-corpus-widget--top-left',
+  chatLauncher: 'nene-corpus-chat__launcher',
+  chatClose: 'nene-corpus-chat__close',
 } as const;

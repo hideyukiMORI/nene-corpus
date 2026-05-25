@@ -8,6 +8,7 @@ import type {
   UploadAvatarImageResponse,
   WidgetChat,
   WidgetHero,
+  WidgetLayout,
   WidgetTheme,
 } from './types';
 
@@ -109,11 +110,20 @@ function appendChatPreviewParams(params: URLSearchParams, chat: WidgetChat): voi
   }
 }
 
+function appendLayoutPreviewParams(params: URLSearchParams, layout: WidgetLayout): void {
+  params.set('layout_max_height', layout.max_height);
+  params.set('layout_position', layout.position);
+  params.set('layout_offset_x', String(layout.offset_x));
+  params.set('layout_offset_y', String(layout.offset_y));
+  params.set('layout_floating_launcher', layout.floating_launcher ? '1' : '0');
+}
+
 export function buildWidgetPreviewSearchParams(
   theme: WidgetTheme,
   widgetLocale: string | null,
   hero?: WidgetHero | null,
   chat?: WidgetChat | null,
+  layout?: WidgetLayout | null,
 ): string {
   const params = new URLSearchParams({
     color_primary: theme.color_primary,
@@ -134,6 +144,10 @@ export function buildWidgetPreviewSearchParams(
 
   if (chat !== null && chat !== undefined) {
     appendChatPreviewParams(params, chat);
+  }
+
+  if (layout !== null && layout !== undefined) {
+    appendLayoutPreviewParams(params, layout);
   }
 
   return params.toString();

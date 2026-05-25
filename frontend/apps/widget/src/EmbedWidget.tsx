@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
-import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
+import type { WidgetChat, WidgetHero, WidgetLayout, WidgetTheme } from '@nene-corpus/api-client';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { ChatHero } from './ChatHero';
@@ -14,9 +14,19 @@ export interface EmbedWidgetProps {
   theme?: WidgetTheme;
   hero?: WidgetHero;
   chat?: WidgetChat;
+  layout?: WidgetLayout;
+  /** When true, render only the chat panel (theme/layout applied by a parent shell). */
+  bare?: boolean;
 }
 
-export function EmbedWidget({ apiBase, theme, hero, chat }: EmbedWidgetProps = {}) {
+export function EmbedWidget({
+  apiBase,
+  theme,
+  hero,
+  chat,
+  layout: _layout = DEFAULT_WIDGET_LAYOUT,
+  bare = false,
+}: EmbedWidgetProps = {}) {
   const t = useMsg();
   const rootRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -25,10 +35,12 @@ export function EmbedWidget({ apiBase, theme, hero, chat }: EmbedWidgetProps = {
   const [draft, setDraft] = useState('');
 
   useEffect(() => {
-    if (rootRef.current !== null && theme !== undefined) {
-      applyWidgetTheme(rootRef.current, theme);
+    if (bare || rootRef.current === null || theme === undefined) {
+      return;
     }
-  }, [theme]);
+
+    applyWidgetTheme(rootRef.current, theme);
+  }, [bare, theme]);
 
   useEffect(() => {
     const container = messagesRef.current;
@@ -55,33 +67,41 @@ export function EmbedWidget({ apiBase, theme, hero, chat }: EmbedWidgetProps = {
   const heroDisplay = resolveHeroDisplay(resolvedHero, t);
   const showHero = turns.length === 0 && !isLoading && hasHeroContent(heroDisplay);
 
+  const panel = (
+    <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
+      {showHero && <ChatHero hero={resolvedHero} apiBase={apiBase} onCtaClick={focusInput} />}
+      <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
+        {turns.map((turn) => (
+          <ChatMessageRow key={turn.id} turn={turn} chat={resolvedChat} apiBase={apiBase} />
+        ))}
+        {isLoading && <ChatPendingRow chat={resolvedChat} apiBase={apiBase} />}
+      </div>
+      {error !== null && <p className={nc.chatError}>{error}</p>}
+      <form className={nc.chatForm} onSubmit={(event) => void handleSubmit(event)}>
+        <input
+          ref={inputRef}
+          className={nc.chatInput}
+          type="text"
+          placeholder={t(Msg.widget.chat.inputPlaceholder)}
+          aria-label={t(Msg.widget.chat.inputLabel)}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          disabled={!isReady || isLoading}
+        />
+        <button className={nc.chatSubmit} type="submit" disabled={!isReady || isLoading}>
+          {t(Msg.widget.chat.send)}
+        </button>
+      </form>
+    </section>
+  );
+
+  if (bare) {
+    return panel;
+  }
+
   return (
     <div ref={rootRef} className={nc.widgetRoot}>
-      <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
-        {showHero && <ChatHero hero={resolvedHero} apiBase={apiBase} onCtaClick={focusInput} />}
-        <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
-          {turns.map((turn) => (
-            <ChatMessageRow key={turn.id} turn={turn} chat={resolvedChat} apiBase={apiBase} />
-          ))}
-          {isLoading && <ChatPendingRow chat={resolvedChat} apiBase={apiBase} />}
-        </div>
-        {error !== null && <p className={nc.chatError}>{error}</p>}
-        <form className={nc.chatForm} onSubmit={(event) => void handleSubmit(event)}>
-          <input
-            ref={inputRef}
-            className={nc.chatInput}
-            type="text"
-            placeholder={t(Msg.widget.chat.inputPlaceholder)}
-            aria-label={t(Msg.widget.chat.inputLabel)}
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            disabled={!isReady || isLoading}
-          />
-          <button className={nc.chatSubmit} type="submit" disabled={!isReady || isLoading}>
-            {t(Msg.widget.chat.send)}
-          </button>
-        </form>
-      </section>
+      {panel}
     </div>
   );
 }

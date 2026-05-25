@@ -32,12 +32,15 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
         $heroData = is_array($body['hero'] ?? null) ? $body['hero'] : [];
         /** @var array<string, mixed> $chatData */
         $chatData = is_array($body['chat'] ?? null) ? $body['chat'] : [];
+        /** @var array<string, mixed> $layoutData */
+        $layoutData = is_array($body['layout'] ?? null) ? $body['layout'] : [];
 
         $settings = new AppearanceSettings(
             widgetLocale: $normalizedLocale,
             theme: WidgetTheme::fromArray($themeData),
             hero: WidgetHero::fromArray($heroData),
             chat: WidgetChat::fromArray($chatData),
+            layout: WidgetLayout::fromArray($layoutData),
         );
 
         $this->repository->save($settings);
@@ -53,6 +56,10 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
     {
         if (!is_array($body['chat'] ?? null)) {
             $body['chat'] = WidgetChat::defaults()->toArray();
+        }
+
+        if (!is_array($body['layout'] ?? null)) {
+            $body['layout'] = WidgetLayout::defaults()->toArray();
         }
 
         return $body;
