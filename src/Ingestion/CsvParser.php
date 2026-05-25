@@ -157,7 +157,8 @@ final readonly class CsvParser
     {
         $bytes = $this->textNormalizer->normalize($bytes);
         $delimiter = $this->detectDelimiter($bytes);
-        $lines = preg_split('/\R/', $bytes) ?: [];
+        // Do not use \R: it matches U+0085 (NEL), which appears inside UTF-8 CJK bytes (e.g. 項, 配).
+        $lines = preg_split('/\r\n|\n|\r/', $bytes) ?: [];
         $rows = [];
 
         foreach ($lines as $line) {

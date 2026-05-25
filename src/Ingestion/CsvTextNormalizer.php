@@ -11,10 +11,9 @@ final readonly class CsvTextNormalizer
     private const UTF8 = 'UTF-8';
 
     /** @var list<string> */
-    private const FALLBACK_ENCODINGS = [
+    private const LEGACY_ENCODINGS = [
         'SJIS-win',
         'SJIS',
-        'Windows-1252',
         'EUC-JP',
         'ISO-2022-JP',
     ];
@@ -26,7 +25,6 @@ final readonly class CsvTextNormalizer
         'SJIS',
         'EUC-JP',
         'ISO-2022-JP',
-        'Windows-1252',
         'ASCII',
     ];
 
@@ -36,21 +34,32 @@ final readonly class CsvTextNormalizer
             return $bytes;
         }
 
-        $bytes = $this->stripUtf8Bom($bytes);
+        $bytes = $this->stripBom($bytes);
 
         if ($this->isJsonSafeUtf8($bytes)) {
             return $bytes;
         }
 
-        foreach ($this->encodingCandidates($bytes) as $encoding) {
-            if ($encoding === self::UTF8) {
-                continue;
+        if (mb_check_encoding($bytes, self::UTF8)) {
+            $scrubbed = $this->scrubUtf8($bytes);
+
+            if ($this->isJsonSafeUtf8($scrubbed)) {
+                return $scrubbed;
             }
+        } elseif ($this->headerLooksLikeUtf8($bytes)) {
+            // UTF-8 export with isolated bad bytes (e.g. WooCommerce); do not misread as Shift-JIS.
+            $scrubbed = $this->scrubUtf8($bytes);
 
-            $converted = mb_convert_encoding($bytes, self::UTF8, $encoding);
+            if ($this->isJsonSafeUtf8($scrubbed)) {
+                return $scrubbed;
+            }
+        } else {
+            foreach ($this->legacyEncodingCandidates($bytes) as $encoding) {
+                $converted = mb_convert_encoding($bytes, self::UTF8, $encoding);
 
-            if (is_string($converted) && $this->isJsonSafeUtf8($converted)) {
-                return $converted;
+                if (is_string($converted) && $this->isJsonSafeUtf8($converted)) {
+                    return $converted;
+                }
             }
         }
 
@@ -68,24 +77,8 @@ final readonly class CsvTextNormalizer
 
     public function scrubCell(string $value): string
     {
-        if ($value === '') {
+        if ($value === '' || $this->isJsonSafeUtf8($value)) {
             return $value;
-        }
-
-        if ($this->isJsonSafeUtf8($value)) {
-            return $value;
-        }
-
-        foreach ($this->encodingCandidates($value) as $encoding) {
-            if ($encoding === self::UTF8) {
-                continue;
-            }
-
-            $converted = mb_convert_encoding($value, self::UTF8, $encoding);
-
-            if (is_string($converted) && $this->isJsonSafeUtf8($converted)) {
-                return $converted;
-            }
         }
 
         $scrubbed = $this->scrubUtf8($value);
@@ -96,16 +89,16 @@ final readonly class CsvTextNormalizer
     /**
      * @return list<string>
      */
-    private function encodingCandidates(string $bytes): array
+    private function legacyEncodingCandidates(string $bytes): array
     {
         $detected = mb_detect_encoding($bytes, implode(', ', self::DETECT_ENCODINGS), true);
         $candidates = [];
 
-        if (is_string($detected) && $detected !== '') {
+        if (is_string($detected) && $detected !== '' && $detected !== self::UTF8) {
             $candidates[] = $detected;
         }
 
-        foreach (self::FALLBACK_ENCODINGS as $encoding) {
+        foreach (self::LEGACY_ENCODINGS as $encoding) {
             if (!in_array($encoding, $candidates, true)) {
                 $candidates[] = $encoding;
             }
@@ -114,7 +107,25 @@ final readonly class CsvTextNormalizer
         return $candidates;
     }
 
-    private function stripUtf8Bom(string $bytes): string
+    private function headerLooksLikeUtf8(string $bytes): bool
+    {
+        $firstLine = $this->firstLine($bytes);
+
+        if ($firstLine === '' || !mb_check_encoding($firstLine, self::UTF8)) {
+            return false;
+        }
+
+        return preg_match('/[^\x00-\x7F]/', $firstLine) === 1;
+    }
+
+    private function firstLine(string $bytes): string
+    {
+        $length = strcspn($bytes, "\r\n");
+
+        return substr($bytes, 0, $length);
+    }
+
+    private function stripBom(string $bytes): string
     {
         if (str_starts_with($bytes, "\xEF\xBB\xBF")) {
             return substr($bytes, 3);
