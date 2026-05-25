@@ -11,6 +11,7 @@ final readonly class AppearanceSettings
         public WidgetTheme $theme,
         public WidgetHero $hero,
         public WidgetChat $chat,
+        public WidgetLayout $layout,
     ) {
     }
 
@@ -21,6 +22,7 @@ final readonly class AppearanceSettings
             theme: WidgetTheme::defaults(),
             hero: WidgetHero::defaults(),
             chat: WidgetChat::defaults(),
+            layout: WidgetLayout::defaults(),
         );
     }
 
@@ -44,6 +46,13 @@ final readonly class AppearanceSettings
      *         show_assistant_avatar: bool,
      *         assistant_avatar_url: string|null,
      *         assistant_avatar_alt: string|null
+     *     },
+     *     layout: array{
+     *         max_height: string,
+     *         position: string,
+     *         offset_x: int,
+     *         offset_y: int,
+     *         floating_launcher: bool
      *     }
      * }
      */
@@ -54,6 +63,7 @@ final readonly class AppearanceSettings
             'theme' => $this->theme->toArray(),
             'hero' => $this->hero->toArray(),
             'chat' => $this->chat->toArray(),
+            'layout' => $this->layout->toArray(),
         ];
     }
 }

@@ -1,8 +1,8 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { fetchWidgetAppearance } from '@nene-corpus/api-client/appearance';
-import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client/types';
-import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client/types';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client/types';
+import type { WidgetChat, WidgetHero, WidgetLayout, WidgetTheme } from '@nene-corpus/api-client/types';
 import {
   LocaleProvider,
   WIDGET_LOCALE_STORAGE_KEY,
@@ -12,9 +12,10 @@ import {
   type SupportedLocale,
 } from '@nene-corpus/i18n';
 import '../../../themes/default.css';
-import { EmbedWidget } from './EmbedWidget';
+import { WidgetChrome } from './WidgetChrome';
 import { prepareEmbedMount } from './embedBootstrap';
 import { resolveWidgetConfig } from './config';
+import { readPreviewLayoutFromSearchParams } from './layout';
 import { DEFAULT_WIDGET_THEME, readPreviewChatFromSearchParams, readPreviewHeroFromSearchParams, readPreviewThemeFromSearchParams } from './theme';
 import './widget.css';
 
@@ -24,14 +25,26 @@ export interface WidgetInitOptions {
   apiBase?: string;
 }
 
-function WidgetRoot({ apiBase, theme, hero, chat }: { apiBase?: string; theme: WidgetTheme; hero: WidgetHero; chat: WidgetChat }) {
+function WidgetRoot({
+  apiBase,
+  theme,
+  hero,
+  chat,
+  layout,
+}: {
+  apiBase?: string;
+  theme: WidgetTheme;
+  hero: WidgetHero;
+  chat: WidgetChat;
+  layout: WidgetLayout;
+}) {
   const { locale } = useLocale();
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
   }, [locale]);
 
-  return <EmbedWidget apiBase={apiBase} theme={theme} hero={hero} chat={chat} />;
+  return <WidgetChrome apiBase={apiBase} theme={theme} hero={hero} chat={chat} layout={layout} />;
 }
 
 function resolveInitialLocale(
@@ -66,6 +79,7 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
   let theme: WidgetTheme = DEFAULT_WIDGET_THEME;
   let hero: WidgetHero = DEFAULT_WIDGET_HERO;
   let chat: WidgetChat = DEFAULT_WIDGET_CHAT;
+  let layout: WidgetLayout = DEFAULT_WIDGET_LAYOUT;
   let configuredLocale: string | null = null;
 
   try {
@@ -73,10 +87,13 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
     theme = appearance.theme;
     hero = appearance.hero;
     chat = appearance.chat;
+    layout = appearance.layout;
     configuredLocale = appearance.widget_locale;
   } catch {
     // Keep defaults when appearance API is unavailable.
   }
+
+  const previewLayout = readPreviewLayoutFromSearchParams();
 
   if (previewTheme !== null) {
     theme = previewTheme;
@@ -90,12 +107,16 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
     chat = previewChat;
   }
 
+  if (previewLayout !== null) {
+    layout = previewLayout;
+  }
+
   const initialLocale = resolveInitialLocale(previewLocale, configuredLocale);
 
   createRoot(target).render(
     <StrictMode>
       <LocaleProvider storageKey={WIDGET_LOCALE_STORAGE_KEY} initialLocale={initialLocale}>
-        <WidgetRoot apiBase={config.apiBase} theme={theme} hero={hero} chat={chat} />
+        <WidgetRoot apiBase={config.apiBase} theme={theme} hero={hero} chat={chat} layout={layout} />
       </LocaleProvider>
     </StrictMode>,
   );

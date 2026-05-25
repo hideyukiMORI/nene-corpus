@@ -5,6 +5,7 @@ CREATE TABLE appearance_settings (
     theme_json TEXT NOT NULL,
     hero_json TEXT NULL,
     chat_json TEXT NULL,
+    layout_json TEXT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
 );

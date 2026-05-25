@@ -11,4 +11,7 @@
   --nc-spacing-md: 1rem;
   --nc-radius-md: 0.5rem;
   --nc-max-width: 100%;
+  --nc-max-height: 32rem;
+  --nc-offset-x: 16px;
+  --nc-offset-y: 16px;
 }

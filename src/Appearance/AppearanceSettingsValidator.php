@@ -72,6 +72,86 @@ final readonly class AppearanceSettingsValidator
 
         $errors = [...$errors, ...$this->validateChat($chat)];
 
+        $layout = $body['layout'] ?? null;
+
+        if (!is_array($layout)) {
+            $errors[] = new ValidationError('layout', 'Layout object is required.', 'required');
+
+            return $errors;
+        }
+
+        $errors = [...$errors, ...$this->validateLayout($layout)];
+
+        return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $layout
+     * @return list<ValidationError>
+     */
+    private function validateLayout(array $layout): array
+    {
+        $errors = [];
+
+        $maxHeight = $layout['max_height'] ?? null;
+
+        if (!is_string($maxHeight) || $maxHeight === '') {
+            $errors[] = new ValidationError('layout.max_height', 'Max height is required.', 'required');
+        } elseif (!preg_match('/^\d+(\.\d+)?(px|rem|em|%)$/', $maxHeight)) {
+            $errors[] = new ValidationError('layout.max_height', 'Must be a CSS length (e.g. 32rem or 480px).', 'invalid');
+        }
+
+        if (array_key_exists('position', $layout)) {
+            $value = $layout['position'];
+
+            if (!is_string($value) || !in_array($value, WidgetLayout::POSITIONS, true)) {
+                $errors[] = new ValidationError(
+                    'layout.position',
+                    'Position must be one of: ' . implode(', ', WidgetLayout::POSITIONS) . '.',
+                    'invalid',
+                );
+            }
+        }
+
+        foreach (['offset_x', 'offset_y'] as $key) {
+            if (!array_key_exists($key, $layout)) {
+                continue;
+            }
+
+            $value = $layout[$key];
+
+            if (!is_int($value) && !(is_string($value) && ctype_digit($value))) {
+                $errors[] = new ValidationError("layout.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' must be an integer.', 'invalid');
+
+                continue;
+            }
+
+            $parsed = (int) $value;
+
+            if ($parsed < 0 || $parsed > 256) {
+                $errors[] = new ValidationError("layout.{$key}", 'Must be between 0 and 256.', 'invalid');
+            }
+        }
+
+        if (array_key_exists('floating_launcher', $layout) && !AppearanceBoolean::isValid($layout['floating_launcher'])) {
+            $errors[] = new ValidationError(
+                'layout.floating_launcher',
+                'Floating launcher must be a boolean.',
+                'invalid',
+            );
+        }
+
+        $position = is_string($layout['position'] ?? null) ? $layout['position'] : WidgetLayout::POSITION_INLINE;
+        $floatingLauncher = AppearanceBoolean::toBool($layout['floating_launcher'] ?? false, false);
+
+        if ($floatingLauncher && $position === WidgetLayout::POSITION_INLINE) {
+            $errors[] = new ValidationError(
+                'layout.floating_launcher',
+                'Floating launcher requires a fixed position (not inline).',
+                'invalid',
+            );
+        }
+
         return $errors;
     }
 

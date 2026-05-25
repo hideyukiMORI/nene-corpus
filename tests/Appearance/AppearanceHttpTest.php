@@ -79,6 +79,60 @@ final class AppearanceHttpTest extends TestCase
         self::assertNull($payload['hero']['image_url']);
         self::assertSame('silhouette', $payload['chat']['user_avatar_mode']);
         self::assertTrue($payload['chat']['show_assistant_avatar']);
+        self::assertSame('32rem', $payload['layout']['max_height']);
+        self::assertSame('inline', $payload['layout']['position']);
+        self::assertSame(16, $payload['layout']['offset_x']);
+        self::assertFalse($payload['layout']['floating_launcher']);
+    }
+
+    public function test_admin_can_update_layout_settings(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => [
+                ...self::defaultLayoutPayload(),
+                'max_height' => '28rem',
+                'position' => 'bottom_right',
+                'offset_x' => 24,
+                'offset_y' => 32,
+                'floating_launcher' => true,
+            ],
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('28rem', $payload['layout']['max_height']);
+        self::assertSame('bottom_right', $payload['layout']['position']);
+        self::assertSame(24, $payload['layout']['offset_x']);
+        self::assertSame(32, $payload['layout']['offset_y']);
+        self::assertTrue($payload['layout']['floating_launcher']);
+
+        $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
+        self::assertSame('bottom_right', $public['layout']['position']);
+    }
+
+    public function test_update_rejects_floating_launcher_with_inline_position(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => [
+                ...self::defaultLayoutPayload(),
+                'floating_launcher' => true,
+            ],
+        ]);
+
+        self::assertSame(422, $response->getStatusCode());
     }
 
     public function test_admin_can_update_chat_display_settings(): void
@@ -472,6 +526,20 @@ final class AppearanceHttpTest extends TestCase
             'show_assistant_avatar' => true,
             'assistant_avatar_url' => null,
             'assistant_avatar_alt' => null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function defaultLayoutPayload(): array
+    {
+        return [
+            'max_height' => '32rem',
+            'position' => 'inline',
+            'offset_x' => 16,
+            'offset_y' => 16,
+            'floating_launcher' => false,
         ];
     }
 

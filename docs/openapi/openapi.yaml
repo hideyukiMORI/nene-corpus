@@ -1071,6 +1071,45 @@ components:
             - 'null'
           maxLength: 120
           description: Optional alt text for the assistant avatar image.
+    WidgetLayout:
+      type: object
+      required:
+        - max_height
+        - position
+        - offset_x
+        - offset_y
+        - floating_launcher
+      properties:
+        max_height:
+          type: string
+          description: Maximum height of the chat panel (CSS length).
+          example: 32rem
+        position:
+          type: string
+          enum:
+            - inline
+            - bottom_right
+            - bottom_left
+            - top_right
+            - top_left
+          default: inline
+          description: Inline embeds in page flow; fixed positions pin the widget to a viewport corner.
+        offset_x:
+          type: integer
+          minimum: 0
+          maximum: 256
+          default: 16
+          description: Distance in pixels from the left or right viewport edge (depends on position).
+        offset_y:
+          type: integer
+          minimum: 0
+          maximum: 256
+          default: 16
+          description: Distance in pixels from the top or bottom viewport edge (depends on position).
+        floating_launcher:
+          type: boolean
+          default: false
+          description: When true with a fixed position, show a launcher button first; click to open the chat panel.
     UploadHeroImageRequest:
       type: object
       required:
@@ -1116,6 +1155,7 @@ components:
         - theme
         - hero
         - chat
+        - layout
       properties:
         widget_locale:
           type:
@@ -1135,12 +1175,15 @@ components:
           $ref: '#/components/schemas/WidgetHero'
         chat:
           $ref: '#/components/schemas/WidgetChat'
+        layout:
+          $ref: '#/components/schemas/WidgetLayout'
     UpdateAppearanceSettingsRequest:
       type: object
       required:
         - theme
         - hero
         - chat
+        - layout
       properties:
         widget_locale:
           type:
@@ -1160,6 +1203,8 @@ components:
           $ref: '#/components/schemas/WidgetHero'
         chat:
           $ref: '#/components/schemas/WidgetChat'
+        layout:
+          $ref: '#/components/schemas/WidgetLayout'
     PreviewCsvIngestionRequest:
       type: object
       required:
