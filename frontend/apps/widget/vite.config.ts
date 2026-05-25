@@ -20,6 +20,9 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: true,
+    watch: {
+      ignored: ['**/node_modules/**', '!**/packages/**'],
+    },
     proxy: {
       '/chat': 'http://localhost:8080',
       '/widget/appearance': 'http://localhost:8080',

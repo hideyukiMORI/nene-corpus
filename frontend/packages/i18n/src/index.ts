@@ -1,3 +1,4 @@
+export { resolveMsgKey } from './resolve-msg-key';
 export { Msg } from './keys';
 export { LocaleProvider, useLocaleContext, type LocaleContextValue } from './LocaleProvider';
 export { useLocale, useMsg } from './useMsg';

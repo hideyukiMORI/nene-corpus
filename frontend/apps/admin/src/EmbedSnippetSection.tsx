@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Msg, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 import { buildEmbedSnippet } from './embedSnippet';
 
@@ -17,7 +17,7 @@ export function EmbedSnippetSection() {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      setCopyError(t(Msg.admin.appearance.embedCopyFailed));
+      setCopyError(t(resolveMsgKey(Msg.admin.appearance.embedCopyFailed, 'admin.appearance.embedCopyFailed')));
     }
   }
 
@@ -32,7 +32,9 @@ export function EmbedSnippetSection() {
       </pre>
       <div className="flex flex-wrap items-center gap-2">
         <button className="nc-btn-primary" type="button" onClick={() => void handleCopy()}>
-          {copied ? t(Msg.admin.appearance.embedCopied) : t(Msg.admin.appearance.embedCopy)}
+          {copied
+            ? t(resolveMsgKey(Msg.admin.appearance.embedCopied, 'admin.appearance.embedCopied'))
+            : t(resolveMsgKey(Msg.admin.appearance.embedCopy, 'admin.appearance.embedCopy'))}
         </button>
         {copyError !== null && <p className="text-sm text-red-600">{copyError}</p>}
       </div>
