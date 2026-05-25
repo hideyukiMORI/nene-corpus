@@ -33,6 +33,10 @@ wait_for_mysql() {
 composer install --no-interaction --prefer-dist
 wait_for_mysql
 
+mkdir -p storage/uploads var
+chown -R www-data:www-data storage var
+chmod -R 775 storage var
+
 if [ "${NENE_CORPUS_SKIP_MIGRATE:-0}" != "1" ]; then
   composer migrations:migrate || true
 fi
