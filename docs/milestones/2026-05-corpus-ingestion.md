@@ -13,7 +13,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 1.
 - [x] Domain entities + `Pdo*Repository` adapters + service providers
 - [x] Repository tests (SQLite `:memory:`)
 - [x] Admin auth (JWT) for mutating routes (#9)
-- [ ] CSV upload API + column mapping preview
+- [x] CSV upload API + column mapping preview (#11)
 - [ ] PDF text extraction (text PDF first)
 - [ ] Admin HTTP routes + OpenAPI
 - [ ] Reindex / delete **source** operations API
