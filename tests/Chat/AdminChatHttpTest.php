@@ -20,6 +20,7 @@ use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -89,6 +90,9 @@ final class AdminChatHttpTest extends TestCase
         self::assertSame(2, $first['message_count']);
         self::assertNotEmpty($first['last_message_at']);
         self::assertNotEmpty($first['created_at']);
+        self::assertSame('203.0.113.42', $first['client_ip']);
+        self::assertSame('Mozilla/5.0 NeNeCorpusTest/1.0', $first['user_agent']);
+        self::assertSame('https://example.test/products', $first['referer']);
     }
 
     public function test_list_session_messages_returns_user_and_assistant_messages(): void
@@ -136,7 +140,17 @@ final class AdminChatHttpTest extends TestCase
         $application = $this->application();
 
         $sessionResponse = $application->handle(
-            $factory->createServerRequest('POST', 'https://example.test/chat/sessions'),
+            new ServerRequest(
+                'POST',
+                'https://example.test/chat/sessions',
+                [
+                    'User-Agent' => ['Mozilla/5.0 NeNeCorpusTest/1.0'],
+                    'Referer' => ['https://example.test/products'],
+                ],
+                null,
+                '1.1',
+                ['REMOTE_ADDR' => '203.0.113.42'],
+            ),
         );
         $sessionPayload = $this->decodeJson($sessionResponse);
         self::assertSame(201, $sessionResponse->getStatusCode());

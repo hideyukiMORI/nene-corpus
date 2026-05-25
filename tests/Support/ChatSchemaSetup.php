@@ -15,6 +15,9 @@ final class ChatSchemaSetup
                 CREATE TABLE chat_sessions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     public_token TEXT NOT NULL,
+                    client_ip TEXT NULL,
+                    user_agent TEXT NULL,
+                    referer TEXT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )

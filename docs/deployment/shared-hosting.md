@@ -215,6 +215,18 @@ Prefer the **web installer** when FTP-only access is enough.
 
 ---
 
+## Conversation log metadata
+
+When a visitor starts a chat session, NeNe Corpus records the client IP (`REMOTE_ADDR`), `User-Agent`, and optional `Referer` header on the `chat_sessions` row. Admins view these in **Conversation logs**.
+
+| Topic | Guidance |
+| --- | --- |
+| **Personal data** | IP addresses and User-Agent strings may identify individuals or devices. Handle logs according to your privacy policy and applicable law (e.g. APPI, GDPR). |
+| **Retention** | Sessions persist until you delete them (a configurable retention policy may be added later). Do not enable chat if your policy forbids storing this metadata. |
+| **Reverse proxies** | Client IP is taken from `REMOTE_ADDR` only — the same policy as chat rate limiting. Behind nginx or a load balancer, configure the web server so `REMOTE_ADDR` reflects the real visitor IP; otherwise the logged value will be the proxy address. |
+
+---
+
 ## Troubleshooting
 
 | Symptom | Check |

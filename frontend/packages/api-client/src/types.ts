@@ -86,6 +86,9 @@ export interface ChatSessionSummary {
   created_at: string;
   updated_at: string;
   last_message_at: string | null;
+  client_ip: string | null;
+  user_agent: string | null;
+  referer: string | null;
 }
 
 export interface ListChatSessionsResponse {

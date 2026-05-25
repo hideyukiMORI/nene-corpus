@@ -124,6 +124,16 @@ export const en = defineMessages({
     'Total messages in the session, including both visitor questions and assistant replies.',
   'admin.conversationLogs.columnLastActivityHelp':
     'Timestamp of the most recent message in this session.',
+  'admin.conversationLogs.columnClientIp': 'Client IP',
+  'admin.conversationLogs.columnClientIpHelp':
+    'Visitor IP captured when the session started. May be personal data — handle according to your privacy policy.',
+  'admin.conversationLogs.sessionUserAgent': 'User-Agent',
+  'admin.conversationLogs.sessionUserAgentHelp':
+    'Browser or bot identifier sent with the session request. Useful to spot automated traffic.',
+  'admin.conversationLogs.sessionReferer': 'Referer',
+  'admin.conversationLogs.sessionRefererHelp':
+    'Page URL the visitor was on when they started the chat, when the browser sent a Referer header.',
+  'admin.conversationLogs.metadataUnavailable': 'No client metadata was recorded for this session.',
   'admin.conversationLogs.selectSession': 'Select a session to view messages.',
   'admin.conversationLogs.loadingMessages': 'Loading messages…',
   'admin.conversationLogs.emptyMessages': 'No messages in this session.',

@@ -123,6 +123,16 @@ export const ja = defineMessages({
   'admin.conversationLogs.columnMessagesHelp':
     'セッション内のメッセージ総数（訪問者の質問とアシスタントの回答を含む）です。',
   'admin.conversationLogs.columnLastActivityHelp': 'このセッションで最後に送られたメッセージの日時です。',
+  'admin.conversationLogs.columnClientIp': 'クライアント IP',
+  'admin.conversationLogs.columnClientIpHelp':
+    'セッション開始時に記録した訪問者の IP です。個人データに該当する場合があります。プライバシーポリシーに従って取り扱ってください。',
+  'admin.conversationLogs.sessionUserAgent': 'User-Agent',
+  'admin.conversationLogs.sessionUserAgentHelp':
+    'セッション作成リクエストに含まれたブラウザまたはボット識別子です。自動アクセスの判別に使えます。',
+  'admin.conversationLogs.sessionReferer': 'Referer',
+  'admin.conversationLogs.sessionRefererHelp':
+    'チャット開始時にブラウザが送った Referer ヘッダー（埋め込み元ページの URL）です。',
+  'admin.conversationLogs.metadataUnavailable': 'このセッションにはクライアント metadata が記録されていません。',
   'admin.conversationLogs.selectSession': 'セッションを選ぶとメッセージが表示されます。',
   'admin.conversationLogs.loadingMessages': 'メッセージを読み込み中…',
   'admin.conversationLogs.emptyMessages': 'このセッションにメッセージはありません。',

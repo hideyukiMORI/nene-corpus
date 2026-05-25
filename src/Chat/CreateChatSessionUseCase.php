@@ -14,10 +14,13 @@ final readonly class CreateChatSessionUseCase implements CreateChatSessionUseCas
     ) {
     }
 
-    public function execute(): CreateChatSessionOutput
+    public function execute(CreateChatSessionInput $input): CreateChatSessionOutput
     {
         $sessionId = $this->sessions->save(new ChatSession(
             publicToken: bin2hex(random_bytes(32)),
+            clientIp: $input->clientIp,
+            userAgent: $input->userAgent,
+            referer: $input->referer,
         ));
 
         $session = $this->sessions->findById($sessionId);

@@ -119,6 +119,16 @@ export const zhHans = defineMessages({
   'admin.conversationLogs.columnSessionHelp': '访客通过嵌入聊天组件创建的匿名会话。',
   'admin.conversationLogs.columnMessagesHelp': '会话中的消息总数，包括访客提问和助手回复。',
   'admin.conversationLogs.columnLastActivityHelp': '此会话中最后一条消息的时间。',
+  'admin.conversationLogs.columnClientIp': '客户端 IP',
+  'admin.conversationLogs.columnClientIpHelp':
+    '会话开始时记录的访客 IP。可能属于个人数据，请按隐私政策处理。',
+  'admin.conversationLogs.sessionUserAgent': 'User-Agent',
+  'admin.conversationLogs.sessionUserAgentHelp':
+    '创建会话请求中的浏览器或机器人标识，可用于识别自动化访问。',
+  'admin.conversationLogs.sessionReferer': 'Referer',
+  'admin.conversationLogs.sessionRefererHelp':
+    '访客开始聊天时浏览器发送的 Referer 头（嵌入页面 URL）。',
+  'admin.conversationLogs.metadataUnavailable': '此会话未记录客户端 metadata。',
   'admin.conversationLogs.selectSession': '选择会话以查看消息。',
   'admin.conversationLogs.loadingMessages': '正在加载消息…',
   'admin.conversationLogs.emptyMessages': '此会话中没有消息。',

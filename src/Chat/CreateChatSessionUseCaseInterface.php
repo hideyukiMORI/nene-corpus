@@ -6,5 +6,5 @@ namespace NeneCorpus\Chat;
 
 interface CreateChatSessionUseCaseInterface
 {
-    public function execute(): CreateChatSessionOutput;
+    public function execute(CreateChatSessionInput $input): CreateChatSessionOutput;
 }

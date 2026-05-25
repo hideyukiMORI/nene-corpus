@@ -123,6 +123,16 @@ export const ptBr = defineMessages({
   'admin.conversationLogs.columnMessagesHelp':
     'Total de mensagens na sessão, incluindo perguntas e respostas do assistente.',
   'admin.conversationLogs.columnLastActivityHelp': 'Data e hora da mensagem mais recente nesta sessão.',
+  'admin.conversationLogs.columnClientIp': 'IP do cliente',
+  'admin.conversationLogs.columnClientIpHelp':
+    'IP do visitante capturado ao iniciar a sessão. Pode ser dado pessoal — trate conforme sua política de privacidade.',
+  'admin.conversationLogs.sessionUserAgent': 'User-Agent',
+  'admin.conversationLogs.sessionUserAgentHelp':
+    'Identificador de navegador ou bot enviado na requisição da sessão. Útil para detectar tráfego automatizado.',
+  'admin.conversationLogs.sessionReferer': 'Referer',
+  'admin.conversationLogs.sessionRefererHelp':
+    'URL da página em que o visitante estava ao iniciar o chat, quando o navegador enviou o cabeçalho Referer.',
+  'admin.conversationLogs.metadataUnavailable': 'Nenhum metadado de cliente foi registrado para esta sessão.',
   'admin.conversationLogs.selectSession': 'Selecione uma sessão para ver mensagens.',
   'admin.conversationLogs.loadingMessages': 'Carregando mensagens…',
   'admin.conversationLogs.emptyMessages': 'Nenhuma mensagem nesta sessão.',
