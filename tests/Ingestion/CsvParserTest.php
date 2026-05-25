@@ -93,4 +93,31 @@ CSV;
         self::assertSame(['product_name', 'description'], $preview['headers']);
         self::assertSame(1, $preview['row_count']);
     }
+
+    public function test_preview_preserves_utf8_woocommerce_headers(): void
+    {
+        $csv = <<<'CSV'
+ID,タイプ,SKU,名前,注意事項,配送クラス
+47,simple,2019-s0030940-01,オオタニヨシミ A3ポスター「花の玉章」,説明文,通常
+CSV;
+
+        $preview = $this->parser->preview($csv);
+
+        self::assertSame(
+            ['ID', 'タイプ', 'SKU', '名前', '注意事項', '配送クラス'],
+            $preview['headers'],
+        );
+        self::assertSame('オオタニヨシミ A3ポスター「花の玉章」', $preview['sample_rows'][0][3]);
+    }
+
+    public function test_preview_does_not_mojibake_utf8_headers_with_invalid_byte_in_row(): void
+    {
+        $csv = "ID,タイプ,注意事項,配送クラス\n1,simple,\xED\xA0\x80,通常\n";
+
+        $preview = $this->parser->preview($csv);
+
+        self::assertSame('注意事項', $preview['headers'][2]);
+        self::assertSame('配送クラス', $preview['headers'][3]);
+        self::assertStringNotContainsString('æ', $preview['headers'][2]);
+    }
 }

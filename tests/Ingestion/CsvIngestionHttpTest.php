@@ -123,6 +123,26 @@ CSV;
         self::assertSame('日本語の商品説明', $payload['sample_rows'][0][5]);
     }
 
+    public function test_preview_preserves_utf8_woocommerce_export(): void
+    {
+        $csv = <<<'CSV'
+ID,タイプ,SKU,GTIN、UPC、EAN、ISBN,名前,注意事項,配送クラス
+47,simple,2019-s0030940-01,,オオタニヨシミ A3ポスター「花の玉章」,0,通常
+CSV;
+
+        $response = $this->authorizedPost('/admin/ingestion/csv/preview', [
+            'filename' => 'wc-product-export.csv',
+            'content' => base64_encode($csv),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('注意事項', $payload['headers'][5]);
+        self::assertSame('配送クラス', $payload['headers'][6]);
+        self::assertSame('オオタニヨシミ A3ポスター「花の玉章」', $payload['sample_rows'][0][4]);
+    }
+
     public function test_create_source_persists_corpus_rows(): void
     {
         $csv = <<<'CSV'
