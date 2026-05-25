@@ -249,10 +249,16 @@ export const en = defineMessages({
   'admin.help.open': 'Help',
   'admin.help.quickStart.title': 'Quick start',
   'admin.help.quickStart.body':
-    '1. Sign in with your operator email and password.\n2. Ingestion — upload CSV/PDF or paste text to build the corpus.\n3. Sources — confirm status is Ready.\n4. Appearance — tune colors and copy the embed snippet.\n5. Paste the snippet into your homepage (same domain) and test the chat widget.',
+    '1. Sign in with your operator email and password.\n2. Ingestion — upload CSV/PDF or paste text to build the corpus.\n3. Sources — confirm status is Ready.\n4. LLM settings — verify your Anthropic API key and model (Test connection before Save).\n5. Appearance — tune colors and copy the embed snippet.\n6. Paste the snippet into your homepage (same domain) and test the chat widget.',
   'admin.help.ingestion.title': 'Ingestion (CSV, PDF, text)',
   'admin.help.ingestion.body':
     'File upload — CSV needs a preview and column mapping (title + content columns). PDF text is extracted per page. Max file size is 5 MB.\n\nPaste text — use the Text tab for FAQ answers or short notes. Each paste becomes one searchable document.\n\nWhen status shows Ready in Sources, the corpus is available to chat.',
+  'admin.help.llmSettings.title': 'LLM settings',
+  'admin.help.llmSettings.body':
+    'Update your Anthropic API key, model, and max tokens from the LLM settings panel. The current key is shown masked only — it is never returned in full.\n\nLeave the key field blank when saving to keep the existing key. Use Test connection before Save to verify credentials.\n\nChanges are written to .env on the server. Prefer this UI over manual FTP edits when your host allows the web user to update .env.',
+  'admin.help.conversationLogs.title': 'Conversation logs',
+  'admin.help.conversationLogs.body':
+    'Lists consumer chat sessions from the embed widget. Select a session to read messages and cited sources.\n\nEach session stores client IP, User-Agent, and optional Referer for support and audit. Treat this metadata as personal data under your privacy policy.\n\nIP is taken from REMOTE_ADDR — behind a reverse proxy, configure the web server so the logged address reflects the real visitor.',
   'admin.help.embed.title': 'Embed on your homepage',
   'admin.help.embed.body':
     'NeNe Corpus is not a WordPress plugin. Install it on the same origin as your site, then add one HTML block from Appearance → embed snippet.\n\nThe snippet loads widget.css + widget.js and auto-starts the chat UI. data-endpoint must point at your install base path (e.g. /nene-corpus).\n\nTest on a staging URL before production. HTTPS is recommended.',
@@ -261,7 +267,7 @@ export const en = defineMessages({
     'Set widget colors, corner radius, max width, and optional HERO welcome copy.\n\nWidget locale can follow the visitor browser or stay fixed.\n\nThe preview iframe shows the live widget. Click Save to persist — the embed snippet reflects your install path automatically.',
   'admin.help.troubleshooting.title': 'Troubleshooting',
   'admin.help.troubleshooting.body':
-    'Admin login fails — check operator credentials and that the API responds at /health on your base URL.\n\nSources stay Failed — re-upload or fix CSV mapping; for PDF, confirm text is extractable.\n\nWidget is blank — open browser devtools; ensure widget.js and widget.css load from the same origin.\n\nAfter a product update — run database migrations (installer docs or docker compose exec app composer migrations:migrate).\n\nLocal dev preview white — restart admin (:5173) and widget (:5174) dev servers after pulling i18n changes.',
+    'Admin login fails — check operator credentials and that the API responds at /health on your base URL.\n\nSources stay Failed — re-upload or fix CSV mapping; for PDF, confirm text is extractable.\n\nLLM settings shows HTML or Non-JSON — rebuild admin so admin/.htaccess includes the settings API route, then hard-refresh the browser.\n\nChat errors — run Test connection in LLM settings; confirm outbound HTTPS to Anthropic is allowed.\n\nWidget is blank — open browser devtools; ensure widget.js and widget.css load from the same origin.\n\nAfter a product update — run database migrations (installer docs or docker compose exec app composer migrations:migrate).\n\nLocal dev preview white — restart admin (:5173) and widget (:5174) dev servers after pulling i18n changes.',
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Does data leave my server? — Your corpus stays in your database. Only retrieved text chunks are sent to the Claude API when visitors ask questions.\n\nCan I use a subdomain? — Yes. Point the subdomain document root at public_html and set the embed base path accordingly.\n\nStreaming responses? — NeNe Corpus uses sync JSON chat (loading indicator in the widget), not SSE token streaming.\n\nMore detail — see shared-hosting operator docs shipped with the release ZIP.',

@@ -248,10 +248,16 @@ export const fr = defineMessages({
   'admin.help.open': 'Aide',
   'admin.help.quickStart.title': 'Démarrage rapide',
   'admin.help.quickStart.body':
-    '1. Connectez-vous avec l’e-mail et le mot de passe opérateur.\n2. Ingestion — téléversez CSV/PDF ou collez du texte.\n3. Sources — vérifiez le statut Ready.\n4. Apparence — ajustez les couleurs et copiez le snippet d’intégration.\n5. Collez le snippet sur votre page d’accueil (même origine) et testez le chat.',
+    '1. Connectez-vous avec l’e-mail et le mot de passe opérateur.\n2. Ingestion — téléversez CSV/PDF ou collez du texte.\n3. Sources — vérifiez le statut Ready.\n4. Paramètres LLM — vérifiez la clé API Anthropic et le modèle (Test de connexion avant Enregistrer).\n5. Apparence — ajustez les couleurs et copiez le snippet d’intégration.\n6. Collez le snippet sur votre page d’accueil (même origine) et testez le chat.',
   'admin.help.ingestion.title': 'Ingestion (CSV, PDF, texte)',
   'admin.help.ingestion.body':
     'Fichier — le CSV exige un aperçu et un mapping de colonnes. Le PDF extrait le texte par page. Taille max. 5 Mo.\n\nTexte — onglet Coller du texte pour FAQ ou notes courtes. Chaque collage devient un document consultable.\n\nQuand Sources affiche Ready, le corpus est prêt pour le chat.',
+  'admin.help.llmSettings.title': 'Paramètres LLM',
+  'admin.help.llmSettings.body':
+    'Mettez à jour la clé API Anthropic, le modèle et le nombre max. de tokens depuis le panneau Paramètres LLM. La clé actuelle n’est affichée que masquée.\n\nLaissez le champ clé vide pour conserver la clé existante. Utilisez Test de connexion avant Enregistrer.\n\nLes changements sont écrits dans .env sur le serveur — préférez cette interface aux edits FTP manuels.',
+  'admin.help.conversationLogs.title': 'Journaux de conversation',
+  'admin.help.conversationLogs.body':
+    'Liste les sessions de chat du widget. Sélectionnez une session pour lire les messages et les citations.\n\nChaque session enregistre l’IP client, le User-Agent et le Referer optionnel. Traitez ces métadonnées comme des données personnelles.\n\nL’IP provient de REMOTE_ADDR — derrière un proxy inverse, configurez le serveur web pour refléter l’IP réelle du visiteur.',
   'admin.help.embed.title': 'Intégrer sur votre site',
   'admin.help.embed.body':
     'Ce n’est pas un plugin WordPress. Installez sur la même origine, puis ajoutez le snippet HTML depuis Apparence.\n\nLe snippet charge widget.css + widget.js et démarre le chat. data-endpoint doit correspondre à votre chemin d’installation.\n\nTestez en staging avant la production. HTTPS recommandé.',
@@ -260,7 +266,7 @@ export const fr = defineMessages({
     'Couleurs, rayon, largeur max. et texte HERO du widget.\n\nLocale du widget : navigateur du visiteur ou fixe.\n\nL’iframe d’aperçu montre le widget en direct. Enregistrez pour persister — le snippet suit votre chemin d’installation.',
   'admin.help.troubleshooting.title': 'Dépannage',
   'admin.help.troubleshooting.body':
-    'Connexion impossible — vérifiez les identifiants et /health sur votre URL de base.\n\nSources en Failed — revoyez le mapping CSV ou le PDF.\n\nWidget vide — vérifiez que widget.js et widget.css se chargent depuis la même origine.\n\nAprès mise à jour — exécutez les migrations de base de données.\n\nAperçu dev blanc — redémarrez les serveurs dev admin (:5173) et widget (:5174) après un pull.',
+    'Connexion impossible — vérifiez les identifiants et /health sur votre URL de base.\n\nSources en Failed — revoyez le mapping CSV ou le PDF.\n\nParamètres LLM en HTML / Non-JSON — reconstruisez admin pour inclure la route settings dans admin/.htaccess, puis rechargez le navigateur.\n\nErreurs de chat — lancez Test de connexion ; vérifiez HTTPS sortant vers Anthropic.\n\nWidget vide — vérifiez que widget.js et widget.css se chargent depuis la même origine.\n\nAprès mise à jour — exécutez les migrations de base de données.\n\nAperçu dev blanc — redémarrez les serveurs dev admin (:5173) et widget (:5174) après un pull.',
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Les données quittent-elles mon serveur ? — Le corpus reste dans votre base. Seuls les extraits pertinents partent vers l’API Claude.\n\nSous-domaine ? — Oui, pointez la racine documentaire vers public_html.\n\nStreaming ? — Chat JSON synchrone uniquement, pas de streaming SSE.\n\nPlus de détails — docs hébergement mutualisé fournis avec le ZIP de release.',

@@ -260,6 +260,14 @@ export const Msg = {
         title: 'admin.help.ingestion.title',
         body: 'admin.help.ingestion.body',
       },
+      llmSettings: {
+        title: 'admin.help.llmSettings.title',
+        body: 'admin.help.llmSettings.body',
+      },
+      conversationLogs: {
+        title: 'admin.help.conversationLogs.title',
+        body: 'admin.help.conversationLogs.body',
+      },
       embed: {
         title: 'admin.help.embed.title',
         body: 'admin.help.embed.body',

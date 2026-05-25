@@ -248,10 +248,16 @@ export const de = defineMessages({
   'admin.help.open': 'Hilfe',
   'admin.help.quickStart.title': 'Schnellstart',
   'admin.help.quickStart.body':
-    '1. Mit Betreiber-E-Mail und Passwort anmelden.\n2. Ingestion — CSV/PDF hochladen oder Text einfügen.\n3. Quellen — Status Ready prüfen.\n4. Erscheinungsbild — Farben anpassen und Embed-Snippet kopieren.\n5. Snippet auf der Homepage (gleiche Origin) einfügen und Chat testen.',
+    '1. Mit Betreiber-E-Mail und Passwort anmelden.\n2. Ingestion — CSV/PDF hochladen oder Text einfügen.\n3. Quellen — Status Ready prüfen.\n4. LLM-Einstellungen — Anthropic-API-Schlüssel und Modell prüfen (Verbindung testen vor Speichern).\n5. Erscheinungsbild — Farben anpassen und Embed-Snippet kopieren.\n6. Snippet auf der Homepage (gleiche Origin) einfügen und Chat testen.',
   'admin.help.ingestion.title': 'Ingestion (CSV, PDF, Text)',
   'admin.help.ingestion.body':
     'Datei — CSV braucht Vorschau und Spalten-Mapping. PDF extrahiert Text pro Seite. Max. 5 MB.\n\nText — Tab Text einfügen für FAQ oder Kurznotizen. Jeder Eintrag wird ein durchsuchbares Dokument.\n\nWenn Quellen Ready zeigt, ist das Korpus für den Chat bereit.',
+  'admin.help.llmSettings.title': 'LLM-Einstellungen',
+  'admin.help.llmSettings.body':
+    'Anthropic-API-Schlüssel, Modell und max. Tokens im Panel LLM-Einstellungen aktualisieren. Der aktuelle Schlüssel wird nur maskiert angezeigt.\n\nSchlüsselfeld leer lassen, um den bestehenden Schlüssel zu behalten. Vor Speichern Verbindung testen.\n\nÄnderungen werden in .env auf dem Server geschrieben — bevorzugen Sie diese UI gegenüber manuellen FTP-Edits.',
+  'admin.help.conversationLogs.title': 'Gesprächsprotokolle',
+  'admin.help.conversationLogs.body':
+    'Listet Chat-Sitzungen des Embed-Widgets. Sitzung wählen, um Nachrichten und Zitate zu lesen.\n\nPro Sitzung werden Client-IP, User-Agent und optional Referer gespeichert. Als personenbezogene Daten behandeln.\n\nIP stammt aus REMOTE_ADDR — hinter Reverse-Proxy Webserver so konfigurieren, dass die Besucher-IP erfasst wird.',
   'admin.help.embed.title': 'Auf der Homepage einbetten',
   'admin.help.embed.body':
     'Kein WordPress-Plugin. Auf gleicher Origin installieren, dann HTML-Snippet aus Erscheinungsbild einfügen.\n\nSnippet lädt widget.css + widget.js und startet den Chat. data-endpoint muss zum Installationspfad passen.\n\nVor Produktion auf Staging testen. HTTPS empfohlen.',
@@ -260,7 +266,7 @@ export const de = defineMessages({
     'Widget-Farben, Radius, max. Breite und optionaler HERO-Willkommenstext.\n\nWidget-Sprache: Browser des Besuchers oder fest.\n\nVorschau-iframe zeigt das live Widget. Speichern zum Übernehmen — Snippet-Pfad wird automatisch gesetzt.',
   'admin.help.troubleshooting.title': 'Fehlerbehebung',
   'admin.help.troubleshooting.body':
-    'Login schlägt fehl — Zugangsdaten und /health an der Basis-URL prüfen.\n\nQuellen Failed — CSV-Mapping oder PDF prüfen.\n\nWidget leer — widget.js und widget.css müssen von gleicher Origin laden.\n\nNach Update — Datenbank-Migrationen ausführen.\n\nDev-Vorschau weiß — Admin- (:5173) und Widget-Dev-Server (:5174) nach Pull neu starten.',
+    'Login schlägt fehl — Zugangsdaten und /health an der Basis-URL prüfen.\n\nQuellen Failed — CSV-Mapping oder PDF prüfen.\n\nLLM-Einstellungen HTML / Non-JSON — Admin neu bauen, damit admin/.htaccess die settings-Route enthält; Browser hart neu laden.\n\nChat-Fehler — Verbindung testen in LLM-Einstellungen; ausgehendes HTTPS zu Anthropic prüfen.\n\nWidget leer — widget.js und widget.css müssen von gleicher Origin laden.\n\nNach Update — Datenbank-Migrationen ausführen.\n\nDev-Vorschau weiß — Admin- (:5173) und Widget-Dev-Server (:5174) nach Pull neu starten.',
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Verlassen Daten meinen Server? — Korpus bleibt in Ihrer DB. Nur relevante Textausschnitte gehen an die Claude-API.\n\nSubdomain? — Ja, Document Root auf public_html zeigen.\n\nStreaming? — Nur synchroner JSON-Chat, kein SSE-Streaming.\n\nMehr — Shared-Hosting-Docs im Release-ZIP.',

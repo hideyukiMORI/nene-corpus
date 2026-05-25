@@ -248,10 +248,16 @@ export const ja = defineMessages({
   'admin.help.open': 'ヘルプ',
   'admin.help.quickStart.title': 'クイックスタート',
   'admin.help.quickStart.body':
-    '1. オペレーターのメールとパスワードでログイン\n2. 取り込み — CSV/PDF をアップロード、またはテキストを貼り付け\n3. ソース — ステータスが Ready になることを確認\n4. 外観 — 色を調整し、embed スニペットをコピー\n5. 自サイト（同一ドメイン）の HTML に貼り付けてチャットを試す',
+    '1. オペレーターのメールとパスワードでログイン\n2. 取り込み — CSV/PDF をアップロード、またはテキストを貼り付け\n3. ソース — ステータスが Ready になることを確認\n4. LLM 設定 — Anthropic API キーとモデルを確認（保存前に接続テスト）\n5. 外観 — 色を調整し、embed スニペットをコピー\n6. 自サイト（同一ドメイン）の HTML に貼り付けてチャットを試す',
   'admin.help.ingestion.title': '取り込み（CSV / PDF / テキスト）',
   'admin.help.ingestion.body':
     'ファイル — CSV はプレビュー後に列マッピング（タイトル列・本文列）が必要です。PDF はページ単位でテキスト抽出。最大 5 MB。\n\nテキスト — 「テキスト入力」タブで FAQ や短文を貼り付け。1 回の入力が 1 件の検索用ドキュメントになります。\n\nソース一覧が Ready になればチャットで検索できます。',
+  'admin.help.llmSettings.title': 'LLM 設定',
+  'admin.help.llmSettings.body':
+    'Anthropic API キー・モデル・最大トークン数を LLM 設定パネルから更新できます。現在のキーはマスク表示のみで、全文は API から返しません。\n\nキー欄を空欄のまま保存すると既存キーを維持します。保存前に「接続テスト」で疎通を確認してください。\n\n変更はサーバーの .env に書き込まれます。共用ホスティングでは FTP 手編集よりこの画面での更新を推奨します。',
+  'admin.help.conversationLogs.title': '会話ログ',
+  'admin.help.conversationLogs.body':
+    '埋め込みウィジェットのチャットセッション一覧です。セッションを選ぶとメッセージと引用付き回答を確認できます。\n\n各セッションにはクライアント IP・User-Agent・任意の Referer が記録されます。サポート・監査用ですが、プライバシーポリシーに沿って個人データとして扱ってください。\n\nIP は REMOTE_ADDR から取得します。リバースプロキシ配下では、訪問者の実 IP が記録されるよう Web サーバーを設定してください。',
   'admin.help.embed.title': 'ホームページへの埋め込み',
   'admin.help.embed.body':
     'WordPress プラグインではありません。同一オリジンに NeNe Corpus を置き、外観設定の embed スニペットを HTML に 1 ブロック追加します。\n\nwidget.css と widget.js がチャット UI を自動起動します。data-endpoint はインストールパス（例: /nene-corpus）に合わせてください。\n\n本番前にステージング URL で確認することをおすすめします。HTTPS 推奨。',
@@ -260,7 +266,7 @@ export const ja = defineMessages({
     'ウィジェットの色・角丸・最大幅・HERO ウェルカム文を設定できます。\n\nウィジェット言語は訪問者のブラウザに合わせるか固定できます。\n\nプレビュー iframe で確認後、保存で反映。スニペットのパスはインストール先に合わせて自動生成されます。',
   'admin.help.troubleshooting.title': 'トラブルシュート',
   'admin.help.troubleshooting.body':
-    'ログインできない — 認証情報と、ベース URL の /health が応答するか確認。\n\nソースが Failed — CSV の列設定や PDF のテキスト抽出を見直し。\n\nウィジェットが真っ白 — 開発者ツールで widget.js / widget.css が同一オリジンから読めているか確認。\n\nアップデート後に Admin が 500 — DB マイグレーションを実行（docker compose exec app composer migrations:migrate など）。\n\nローカル dev でプレビュー真っ白 — git pull 後は admin (:5173) と widget (:5174) の dev サーバーを再起動。',
+    'ログインできない — 認証情報と、ベース URL の /health が応答するか確認。\n\nソースが Failed — CSV の列設定や PDF のテキスト抽出を見直し。\n\nLLM 設定が HTML / Non-JSON エラー — admin を再ビルドし admin/.htaccess に settings ルートが含まれることを確認。ブラウザをスーパーリロード。\n\nチャットエラー — LLM 設定で接続テストを実行。Anthropic への outbound HTTPS が許可されているか確認。\n\nウィジェットが真っ白 — 開発者ツールで widget.js / widget.css が同一オリジンから読めているか確認。\n\nアップデート後に Admin が 500 — DB マイグレーションを実行（docker compose exec app composer migrations:migrate など）。\n\nローカル dev でプレビュー真っ白 — git pull 後は admin (:5173) と widget (:5174) の dev サーバーを再起動。',
   'admin.help.faq.title': 'よくある質問',
   'admin.help.faq.body':
     'データは外部に出る？ — コーパスは自社 DB に保存。質問時に検索でヒットしたテキスト断片のみ Claude API に送られます。\n\nサブドメインは使える？ — 可能です。サブドメインの document root を public_html に向け、embed のベースパスを合わせてください。\n\nストリーミング応答は？ — sync JSON チャット（ローディング表示）のみ。SSE の逐次表示は非対応です。\n\n詳細 — リリース ZIP 同梱の shared-hosting 運用ドキュメントを参照。',

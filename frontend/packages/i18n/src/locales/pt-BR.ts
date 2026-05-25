@@ -248,10 +248,16 @@ export const ptBr = defineMessages({
   'admin.help.open': 'Ajuda',
   'admin.help.quickStart.title': 'Início rápido',
   'admin.help.quickStart.body':
-    '1. Entre com e-mail e senha do operador.\n2. Ingestão — envie CSV/PDF ou cole texto.\n3. Fontes — confirme status Ready.\n4. Aparência — ajuste cores e copie o snippet de embed.\n5. Cole o snippet na homepage (mesma origem) e teste o chat.',
+    '1. Entre com e-mail e senha do operador.\n2. Ingestão — envie CSV/PDF ou cole texto.\n3. Fontes — confirme status Ready.\n4. Configurações LLM — verifique chave API Anthropic e modelo (Testar conexão antes de Salvar).\n5. Aparência — ajuste cores e copie o snippet de embed.\n6. Cole o snippet na homepage (mesma origem) e teste o chat.',
   'admin.help.ingestion.title': 'Ingestão (CSV, PDF, texto)',
   'admin.help.ingestion.body':
     'Arquivo — CSV exige prévia e mapeamento de colunas. PDF extrai texto por página. Máx. 5 MB.\n\nTexto — aba Colar texto para FAQ ou notas curtas. Cada colagem vira um documento pesquisável.\n\nQuando Fontes mostrar Ready, o corpus está pronto para o chat.',
+  'admin.help.llmSettings.title': 'Configurações LLM',
+  'admin.help.llmSettings.body':
+    'Atualize chave API Anthropic, modelo e max tokens no painel Configurações LLM. A chave atual aparece apenas mascarada.\n\nDeixe o campo de chave vazio ao salvar para manter a chave existente. Use Testar conexão antes de Salvar.\n\nAlterações são gravadas em .env no servidor — prefira esta UI a edits FTP manuais.',
+  'admin.help.conversationLogs.title': 'Logs de conversa',
+  'admin.help.conversationLogs.body':
+    'Lista sessões de chat do widget embed. Selecione uma sessão para ver mensagens e citações.\n\nCada sessão armazena IP do cliente, User-Agent e Referer opcional. Trate como dados pessoais conforme sua política de privacidade.\n\nIP vem de REMOTE_ADDR — atrás de proxy reverso, configure o servidor web para refletir o IP real do visitante.',
   'admin.help.embed.title': 'Embutir na homepage',
   'admin.help.embed.body':
     'Não é plugin WordPress. Instale na mesma origem e adicione o snippet HTML em Aparência.\n\nO snippet carrega widget.css + widget.js e inicia o chat. data-endpoint deve apontar ao caminho da instalação.\n\nTeste em staging antes da produção. HTTPS recomendado.',
@@ -260,7 +266,7 @@ export const ptBr = defineMessages({
     'Cores, raio, largura máx. e texto HERO do widget.\n\nIdioma do widget: navegador do visitante ou fixo.\n\nA prévia em iframe mostra o widget ao vivo. Salve para persistir — o snippet segue o caminho da instalação.',
   'admin.help.troubleshooting.title': 'Solução de problemas',
   'admin.help.troubleshooting.body':
-    'Falha no login — verifique credenciais e /health na URL base.\n\nFontes Failed — revise mapeamento CSV ou PDF.\n\nWidget em branco — confirme widget.js e widget.css na mesma origem.\n\nApós atualização — execute migrações do banco.\n\nPrévia dev em branco — reinicie servidores dev admin (:5173) e widget (:5174) após pull.',
+    'Falha no login — verifique credenciais e /health na URL base.\n\nFontes Failed — revise mapeamento CSV ou PDF.\n\nConfigurações LLM HTML / Non-JSON — reconstrua admin para incluir rota settings em admin/.htaccess; recarregue o navegador.\n\nErros no chat — execute Testar conexão; confirme HTTPS de saída para Anthropic.\n\nWidget em branco — confirme widget.js e widget.css na mesma origem.\n\nApós atualização — execute migrações do banco.\n\nPrévia dev em branco — reinicie servidores dev admin (:5173) e widget (:5174) após pull.',
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Os dados saem do meu servidor? — O corpus fica no seu banco. Apenas trechos relevantes vão à API Claude.\n\nSubdomínio? — Sim, aponte o document root para public_html.\n\nStreaming? — Apenas chat JSON síncrono, sem SSE.\n\nMais detalhes — docs de shared hosting no ZIP de release.',
