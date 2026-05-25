@@ -33,7 +33,7 @@ wait_for_mysql() {
 composer install --no-interaction --prefer-dist
 wait_for_mysql
 
-mkdir -p storage/uploads/hero var
+mkdir -p storage/uploads/hero storage/uploads/avatar var
 chown -R www-data:www-data storage var
 chmod -R 775 storage var
 

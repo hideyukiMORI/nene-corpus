@@ -4,6 +4,7 @@ export {
   updateAppearanceSettings,
   fetchWidgetAppearance,
   uploadHeroImage,
+  uploadAvatarImage,
   buildWidgetPreviewSearchParams,
 } from './appearance';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
@@ -34,6 +35,8 @@ export type {
   UserAvatarMode,
   UploadHeroImageRequest,
   UploadHeroImageResponse,
+  UploadAvatarImageRequest,
+  UploadAvatarImageResponse,
   AppearanceSettingsResponse,
   UpdateAppearanceSettingsRequest,
 } from './types';

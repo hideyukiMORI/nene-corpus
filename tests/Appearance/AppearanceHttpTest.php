@@ -200,6 +200,70 @@ final class AppearanceHttpTest extends TestCase
         self::assertTrue($public['hero']['show_image']);
     }
 
+    public function test_admin_can_upload_and_serve_avatar_image(): void
+    {
+        $token = $this->loginToken();
+        $factory = new Psr17Factory();
+
+        $upload = $this->handler()->handle(
+            $factory->createServerRequest('POST', '/admin/appearance/avatar-image')
+                ->withHeader('Authorization', 'Bearer ' . $token)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($factory->createStream(json_encode([
+                    'filename' => 'avatar.png',
+                    'content' => SampleHeroImage::base64(),
+                ], JSON_THROW_ON_ERROR))),
+        );
+
+        $uploadPayload = $this->decodeJson($upload);
+
+        self::assertSame(201, $upload->getStatusCode());
+        self::assertIsString($uploadPayload['image_url']);
+        self::assertStringStartsWith('/media/avatar/', $uploadPayload['image_url']);
+
+        $filename = basename($uploadPayload['image_url']);
+        $serve = $this->dispatch('GET', '/media/avatar/' . $filename);
+
+        self::assertSame(200, $serve->getStatusCode());
+        self::assertStringStartsWith('image/', $serve->getHeaderLine('Content-Type'));
+        self::assertSame(SampleHeroImage::bytes(), (string) $serve->getBody());
+    }
+
+    public function test_admin_can_save_avatar_image_in_chat_settings(): void
+    {
+        $token = $this->loginToken();
+        $factory = new Psr17Factory();
+
+        $uploadPayload = $this->decodeJson(
+            $this->handler()->handle(
+                $factory->createServerRequest('POST', '/admin/appearance/avatar-image')
+                    ->withHeader('Authorization', 'Bearer ' . $token)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withBody($factory->createStream(json_encode([
+                        'filename' => 'bot.png',
+                        'content' => SampleHeroImage::base64(),
+                    ], JSON_THROW_ON_ERROR))),
+            ),
+        );
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => [
+                ...self::defaultChatPayload(),
+                'assistant_avatar_url' => $uploadPayload['image_url'],
+                'assistant_avatar_alt' => 'Support bot',
+            ],
+        ]);
+
+        self::assertSame(200, $response->getStatusCode());
+
+        $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
+        self::assertSame($uploadPayload['image_url'], $public['chat']['assistant_avatar_url']);
+        self::assertSame('Support bot', $public['chat']['assistant_avatar_alt']);
+    }
+
     public function test_upload_rejects_invalid_image(): void
     {
         $token = $this->loginToken();
@@ -406,6 +470,8 @@ final class AppearanceHttpTest extends TestCase
         return [
             'user_avatar_mode' => 'silhouette',
             'show_assistant_avatar' => true,
+            'assistant_avatar_url' => null,
+            'assistant_avatar_alt' => null,
         ];
     }
 

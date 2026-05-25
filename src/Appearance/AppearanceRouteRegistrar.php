@@ -15,6 +15,8 @@ final readonly class AppearanceRouteRegistrar
         private GetWidgetAppearanceHandler $getWidgetHandler,
         private UploadHeroImageHandler $uploadHeroImageHandler,
         private ServeHeroImageHandler $serveHeroImageHandler,
+        private UploadAvatarImageHandler $uploadAvatarImageHandler,
+        private ServeAvatarImageHandler $serveAvatarImageHandler,
     ) {
     }
 
@@ -25,6 +27,8 @@ final readonly class AppearanceRouteRegistrar
         $getWidget = $this->getWidgetHandler;
         $uploadHeroImage = $this->uploadHeroImageHandler;
         $serveHeroImage = $this->serveHeroImageHandler;
+        $uploadAvatarImage = $this->uploadAvatarImageHandler;
+        $serveAvatarImage = $this->serveAvatarImageHandler;
 
         $router->get(
             '/admin/appearance',
@@ -41,6 +45,11 @@ final readonly class AppearanceRouteRegistrar
             static fn (ServerRequestInterface $request) => $uploadHeroImage->handle($request),
         );
 
+        $router->post(
+            '/admin/appearance/avatar-image',
+            static fn (ServerRequestInterface $request) => $uploadAvatarImage->handle($request),
+        );
+
         $router->get(
             '/widget/appearance',
             static fn (ServerRequestInterface $request) => $getWidget->handle($request),
@@ -49,6 +58,11 @@ final readonly class AppearanceRouteRegistrar
         $router->get(
             '/media/hero/{filename}',
             static fn (ServerRequestInterface $request) => $serveHeroImage->handle($request),
+        );
+
+        $router->get(
+            '/media/avatar/{filename}',
+            static fn (ServerRequestInterface $request) => $serveAvatarImage->handle($request),
         );
     }
 }

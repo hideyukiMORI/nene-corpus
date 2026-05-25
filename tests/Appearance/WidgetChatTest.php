@@ -56,6 +56,28 @@ final class WidgetChatTest extends TestCase
         self::assertSame([
             'user_avatar_mode' => WidgetChat::USER_AVATAR_NONE,
             'show_assistant_avatar' => false,
+            'assistant_avatar_url' => null,
+            'assistant_avatar_alt' => null,
         ], $chat->toArray());
+    }
+
+    public function test_from_array_parses_assistant_avatar_url(): void
+    {
+        $chat = WidgetChat::fromArray([
+            'assistant_avatar_url' => '/media/avatar/a1b2c3d4e5f67890_bot.png',
+            'assistant_avatar_alt' => 'Support',
+        ]);
+
+        self::assertSame('/media/avatar/a1b2c3d4e5f67890_bot.png', $chat->assistantAvatarUrl);
+        self::assertSame('Support', $chat->assistantAvatarAlt);
+    }
+
+    public function test_from_array_rejects_invalid_assistant_avatar_url(): void
+    {
+        $chat = WidgetChat::fromArray([
+            'assistant_avatar_url' => 'https://evil.example/avatar.png',
+        ]);
+
+        self::assertNull($chat->assistantAvatarUrl);
     }
 }

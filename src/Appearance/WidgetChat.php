@@ -16,6 +16,8 @@ final readonly class WidgetChat
     public function __construct(
         public string $userAvatarMode = self::USER_AVATAR_SILHOUETTE,
         public bool $showAssistantAvatar = true,
+        public ?string $assistantAvatarUrl = null,
+        public ?string $assistantAvatarAlt = null,
     ) {
     }
 
@@ -24,17 +26,26 @@ final readonly class WidgetChat
         return new self(
             userAvatarMode: self::USER_AVATAR_SILHOUETTE,
             showAssistantAvatar: true,
+            assistantAvatarUrl: null,
+            assistantAvatarAlt: null,
         );
     }
 
     /**
-     * @return array{user_avatar_mode: string, show_assistant_avatar: bool}
+     * @return array{
+     *     user_avatar_mode: string,
+     *     show_assistant_avatar: bool,
+     *     assistant_avatar_url: string|null,
+     *     assistant_avatar_alt: string|null
+     * }
      */
     public function toArray(): array
     {
         return [
             'user_avatar_mode' => $this->userAvatarMode,
             'show_assistant_avatar' => $this->showAssistantAvatar,
+            'assistant_avatar_url' => $this->assistantAvatarUrl,
+            'assistant_avatar_alt' => $this->assistantAvatarAlt,
         ];
     }
 
@@ -48,6 +59,8 @@ final readonly class WidgetChat
         return new self(
             userAvatarMode: self::userAvatarMode($data, $fallback->userAvatarMode),
             showAssistantAvatar: self::nullableBool($data, 'show_assistant_avatar', $fallback->showAssistantAvatar),
+            assistantAvatarUrl: self::nullableAvatarUrl($data, 'assistant_avatar_url', $fallback->assistantAvatarUrl),
+            assistantAvatarAlt: self::nullableString($data, 'assistant_avatar_alt', $fallback->assistantAvatarAlt),
         );
     }
 
@@ -63,6 +76,46 @@ final readonly class WidgetChat
         $value = $data['user_avatar_mode'];
 
         if (!is_string($value) || !in_array($value, self::USER_AVATAR_MODES, true)) {
+            return $fallback;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function nullableString(array $data, string $key, ?string $fallback): ?string
+    {
+        if (!array_key_exists($key, $data)) {
+            return $fallback;
+        }
+
+        $value = $data[$key];
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return is_string($value) ? $value : $fallback;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function nullableAvatarUrl(array $data, string $key, ?string $fallback): ?string
+    {
+        if (!array_key_exists($key, $data)) {
+            return $fallback;
+        }
+
+        $value = $data[$key];
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (!is_string($value) || !AvatarImagePath::isValidPublicPath($value)) {
             return $fallback;
         }
 

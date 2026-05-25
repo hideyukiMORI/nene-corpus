@@ -226,6 +226,34 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/appearance/avatar-image:
+    post:
+      tags:
+        - Admin
+      summary: Upload assistant avatar image
+      description: Stores a JPEG, PNG, or WebP image (max 2 MB) and returns its public path. Does not update appearance settings until PUT /admin/appearance.
+      operationId: uploadAvatarImage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAvatarImageRequest'
+      responses:
+        '201':
+          description: Stored avatar image path.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAvatarImageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /media/hero/{filename}:
     get:
       tags:
@@ -242,6 +270,39 @@ paths:
       responses:
         '200':
           description: Hero image bytes.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /media/avatar/{filename}:
+    get:
+      tags:
+        - System
+      summary: Serve assistant avatar image
+      description: Returns a stored assistant avatar image file. No authentication.
+      operationId: serveAvatarImage
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Avatar image bytes.
           content:
             image/jpeg:
               schema:
@@ -999,6 +1060,17 @@ components:
           type: boolean
           default: true
           description: When false, the assistant avatar is hidden in chat bubbles.
+        assistant_avatar_url:
+          type:
+            - string
+            - 'null'
+          description: Public path to a stored assistant avatar (e.g. /media/avatar/abc123_bot.png). Null uses the default silhouette.
+        assistant_avatar_alt:
+          type:
+            - string
+            - 'null'
+          maxLength: 120
+          description: Optional alt text for the assistant avatar image.
     UploadHeroImageRequest:
       type: object
       required:
@@ -1018,6 +1090,25 @@ components:
         image_url:
           type: string
           description: Public path to the stored hero image.
+    UploadAvatarImageRequest:
+      type: object
+      required:
+        - filename
+        - content
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          description: Base64-encoded image bytes (JPEG, PNG, or WebP; max 2 MB decoded).
+    UploadAvatarImageResponse:
+      type: object
+      required:
+        - image_url
+      properties:
+        image_url:
+          type: string
+          description: Public path to the stored assistant avatar image.
     AppearanceSettingsResponse:
       type: object
       required:

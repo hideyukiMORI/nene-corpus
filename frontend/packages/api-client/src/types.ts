@@ -142,11 +142,15 @@ export type UserAvatarMode = 'silhouette' | 'none';
 export interface WidgetChat {
   user_avatar_mode: UserAvatarMode;
   show_assistant_avatar: boolean;
+  assistant_avatar_url: string | null;
+  assistant_avatar_alt: string | null;
 }
 
 export const DEFAULT_WIDGET_CHAT: WidgetChat = {
   user_avatar_mode: 'silhouette',
   show_assistant_avatar: true,
+  assistant_avatar_url: null,
+  assistant_avatar_alt: null,
 };
 
 export interface UploadHeroImageRequest {
@@ -157,6 +161,9 @@ export interface UploadHeroImageRequest {
 export interface UploadHeroImageResponse {
   image_url: string;
 }
+
+export type UploadAvatarImageRequest = UploadHeroImageRequest;
+export type UploadAvatarImageResponse = UploadHeroImageResponse;
 
 export interface AppearanceSettingsResponse {
   widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;

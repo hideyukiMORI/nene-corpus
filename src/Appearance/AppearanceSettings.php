@@ -39,7 +39,12 @@ final readonly class AppearanceSettings
      *         image_url: string|null,
      *         image_alt: string|null
      *     },
-     *     chat: array{user_avatar_mode: string, show_assistant_avatar: bool}
+     *     chat: array{
+     *         user_avatar_mode: string,
+     *         show_assistant_avatar: bool,
+     *         assistant_avatar_url: string|null,
+     *         assistant_avatar_alt: string|null
+     *     }
      * }
      */
     public function toArray(): array

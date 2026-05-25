@@ -9,8 +9,24 @@ export interface ChatBubbleTurn {
   citations?: Citation[];
 }
 
-function AssistantAvatar() {
+interface AssistantAvatarProps {
+  chat: WidgetChat;
+  apiBase?: string;
+}
+
+function AssistantAvatar({ chat, apiBase }: AssistantAvatarProps) {
   const t = useMsg();
+  const imageUrl = chat.assistant_avatar_url?.trim();
+
+  if (imageUrl) {
+    const alt = chat.assistant_avatar_alt?.trim() || t(Msg.widget.chat.assistantAvatarLabel);
+
+    return (
+      <span className={`${nc.chatAvatar} ${nc.chatAvatarAssistant}`} aria-hidden="true">
+        <img className={nc.chatAvatarImage} src={`${apiBase ?? ''}${imageUrl}`} alt={alt} />
+      </span>
+    );
+  }
 
   return (
     <span className={`${nc.chatAvatar} ${nc.chatAvatarAssistant}`} aria-hidden="true">
@@ -44,9 +60,10 @@ function UserAvatar() {
 export interface ChatMessageRowProps {
   turn: ChatBubbleTurn;
   chat: WidgetChat;
+  apiBase?: string;
 }
 
-export function ChatMessageRow({ turn, chat }: ChatMessageRowProps) {
+export function ChatMessageRow({ turn, chat, apiBase }: ChatMessageRowProps) {
   const t = useMsg();
   const isUser = turn.role === 'user';
   const showUserAvatar = isUser && chat.user_avatar_mode === 'silhouette';
@@ -72,7 +89,7 @@ export function ChatMessageRow({ turn, chat }: ChatMessageRowProps) {
 
   return (
     <div className={rowClassName}>
-      {showAssistantAvatar && <AssistantAvatar />}
+      {showAssistantAvatar && <AssistantAvatar chat={chat} apiBase={apiBase} />}
       <article
         className={bubbleClassName}
         aria-label={isUser ? t(Msg.role.user) : t(Msg.role.assistant)}
@@ -100,9 +117,10 @@ export function ChatMessageRow({ turn, chat }: ChatMessageRowProps) {
 
 export interface ChatPendingRowProps {
   chat: WidgetChat;
+  apiBase?: string;
 }
 
-export function ChatPendingRow({ chat }: ChatPendingRowProps) {
+export function ChatPendingRow({ chat, apiBase }: ChatPendingRowProps) {
   const t = useMsg();
   const showAssistantAvatar = chat.show_assistant_avatar;
   const rowClassName = [
@@ -123,7 +141,7 @@ export function ChatPendingRow({ chat }: ChatPendingRowProps) {
 
   return (
     <div className={rowClassName}>
-      {showAssistantAvatar && <AssistantAvatar />}
+      {showAssistantAvatar && <AssistantAvatar chat={chat} apiBase={apiBase} />}
       <div className={bubbleClassName}>
         <span className={nc.chatTypingDots} aria-hidden="true">
           <span />
