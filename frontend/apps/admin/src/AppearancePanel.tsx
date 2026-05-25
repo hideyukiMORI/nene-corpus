@@ -177,7 +177,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
           <div>
             <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.previewTitle)}</h3>
             <iframe
-              className="mt-2 h-80 w-full rounded-admin border border-border bg-white"
+              className="mt-2 h-80 w-full rounded-admin border border-border bg-surface"
               title={t(Msg.admin.appearance.previewTitle)}
               src={previewSrc}
             />
