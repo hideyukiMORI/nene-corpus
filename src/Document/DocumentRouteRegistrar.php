@@ -12,6 +12,7 @@ final readonly class DocumentRouteRegistrar
     public function __construct(
         private ListDocumentsHandler $listHandler,
         private GetDocumentHandler $getHandler,
+        private ListDocumentChunksHandler $listChunksHandler,
         private UpdateDocumentHandler $updateHandler,
         private DeleteDocumentHandler $deleteHandler,
     ) {
@@ -21,12 +22,18 @@ final readonly class DocumentRouteRegistrar
     {
         $list = $this->listHandler;
         $get = $this->getHandler;
+        $listChunks = $this->listChunksHandler;
         $update = $this->updateHandler;
         $delete = $this->deleteHandler;
 
         $router->get(
             '/admin/sources/{sourceId}/documents',
             static fn (ServerRequestInterface $request) => $list->handle($request),
+        );
+
+        $router->get(
+            '/admin/documents/{id}/chunks',
+            static fn (ServerRequestInterface $request) => $listChunks->handle($request),
         );
 
         $router->get(

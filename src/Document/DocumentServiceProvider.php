@@ -117,6 +117,15 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                 },
             )
             ->set(
+                ListDocumentChunksUseCaseInterface::class,
+                static function (ContainerInterface $container): ListDocumentChunksUseCaseInterface {
+                    return new ListDocumentChunksUseCase(
+                        self::documents($container),
+                        self::chunks($container),
+                    );
+                },
+            )
+            ->set(
                 ListDocumentsHandler::class,
                 static function (ContainerInterface $container): ListDocumentsHandler {
                     return new ListDocumentsHandler(
@@ -130,6 +139,15 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): GetDocumentHandler {
                     return new GetDocumentHandler(
                         self::getDocumentUseCase($container),
+                        self::jsonResponse($container),
+                    );
+                },
+            )
+            ->set(
+                ListDocumentChunksHandler::class,
+                static function (ContainerInterface $container): ListDocumentChunksHandler {
+                    return new ListDocumentChunksHandler(
+                        self::listDocumentChunksUseCase($container),
                         self::jsonResponse($container),
                     );
                 },
@@ -170,6 +188,7 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                     return new DocumentRouteRegistrar(
                         self::listDocumentsHandler($container),
                         self::getDocumentHandler($container),
+                        self::listDocumentChunksHandler($container),
                         self::updateDocumentHandler($container),
                         self::deleteDocumentHandler($container),
                     );
@@ -298,6 +317,17 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
         return $useCase;
     }
 
+    private static function listDocumentChunksUseCase(ContainerInterface $container): ListDocumentChunksUseCaseInterface
+    {
+        $useCase = $container->get(ListDocumentChunksUseCaseInterface::class);
+
+        if (!$useCase instanceof ListDocumentChunksUseCaseInterface) {
+            throw new LogicException('List document chunks use case service is invalid.');
+        }
+
+        return $useCase;
+    }
+
     private static function listDocumentsHandler(ContainerInterface $container): ListDocumentsHandler
     {
         $handler = $container->get(ListDocumentsHandler::class);
@@ -315,6 +345,17 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
 
         if (!$handler instanceof GetDocumentHandler) {
             throw new LogicException('Get document handler service is invalid.');
+        }
+
+        return $handler;
+    }
+
+    private static function listDocumentChunksHandler(ContainerInterface $container): ListDocumentChunksHandler
+    {
+        $handler = $container->get(ListDocumentChunksHandler::class);
+
+        if (!$handler instanceof ListDocumentChunksHandler) {
+            throw new LogicException('List document chunks handler service is invalid.');
         }
 
         return $handler;

@@ -1,5 +1,5 @@
 export { loginAdmin, getAdminMe, listSources, listChatSessions, listChatSessionMessages } from './admin';
-export { listDocuments, getDocument, updateDocument, deleteDocument } from './documents';
+export { listDocuments, getDocument, listDocumentChunks, updateDocument, deleteDocument } from './documents';
 export {
   getAppearanceSettings,
   updateAppearanceSettings,
@@ -25,6 +25,8 @@ export type {
   ListDocumentsResponse,
   DocumentListItem,
   DocumentDetailResponse,
+  DocumentChunkItem,
+  ListDocumentChunksResponse,
   UpdateDocumentRequest,
   ListChatSessionsResponse,
   ListChatSessionMessagesResponse,

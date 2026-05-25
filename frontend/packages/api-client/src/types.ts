@@ -85,6 +85,19 @@ export interface UpdateDocumentRequest {
   content: string;
 }
 
+export interface DocumentChunkItem {
+  chunk_id: number;
+  chunk_index: number;
+  content: string;
+  page_number?: number | null;
+  section_label?: string | null;
+  token_count?: number | null;
+}
+
+export interface ListDocumentChunksResponse {
+  chunks: DocumentChunkItem[];
+}
+
 export interface PreviewCsvIngestionResponse {
   headers: string[];
   sample_rows: string[][];
