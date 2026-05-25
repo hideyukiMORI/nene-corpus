@@ -38,6 +38,7 @@ export function buildWidgetPreviewSearchParams(
     color_surface: theme.color_surface,
     color_text: theme.color_text,
     radius_md: theme.radius_md,
+    max_width: theme.max_width,
     preview: '1',
   });
 

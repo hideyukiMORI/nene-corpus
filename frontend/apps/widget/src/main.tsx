@@ -16,6 +16,7 @@ import { DEFAULT_WIDGET_THEME, readPreviewThemeFromSearchParams } from './theme'
 import './widget.css';
 
 const mountId = 'nene-corpus-widget-root';
+const mountedAttr = 'data-nene-corpus-mounted';
 
 export interface WidgetInitOptions {
   apiBase?: string;
@@ -47,6 +48,12 @@ function resolveInitialLocale(
 }
 
 export async function init(target: HTMLElement, options?: WidgetInitOptions): Promise<void> {
+  if (target.hasAttribute(mountedAttr)) {
+    return;
+  }
+
+  target.setAttribute(mountedAttr, '');
+
   const config = resolveWidgetConfig(options);
   const previewTheme = readPreviewThemeFromSearchParams();
   const previewLocale =
@@ -78,11 +85,21 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
   );
 }
 
-if (import.meta.env.DEV) {
+function tryAutoInit(): void {
   const container = document.getElementById(mountId);
 
-  if (container) {
-    void init(container);
+  if (container === null || container.hasAttribute(mountedAttr)) {
+    return;
+  }
+
+  void init(container);
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryAutoInit);
+  } else {
+    tryAutoInit();
   }
 }
 

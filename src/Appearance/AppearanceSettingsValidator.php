@@ -42,6 +42,7 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateThemeField($theme, 'color_surface', 'hex_color')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'color_text', 'hex_color')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'radius_md', 'css_length')];
+        $errors = [...$errors, ...$this->validateThemeField($theme, 'max_width', 'css_length')];
 
         return $errors;
     }
@@ -62,8 +63,8 @@ final readonly class AppearanceSettingsValidator
             return [new ValidationError("theme.{$key}", 'Must be a 6-digit hex color (e.g. #2563eb).', 'invalid')];
         }
 
-        if ($type === 'css_length' && !preg_match('/^\d+(\.\d+)?(px|rem|em)$/', $value)) {
-            return [new ValidationError("theme.{$key}", 'Must be a CSS length (e.g. 0.5rem).', 'invalid')];
+        if ($type === 'css_length' && !preg_match('/^\d+(\.\d+)?(px|rem|em|%)$/', $value)) {
+            return [new ValidationError("theme.{$key}", 'Must be a CSS length (e.g. 0.5rem or 100%).', 'invalid')];
         }
 
         return [];

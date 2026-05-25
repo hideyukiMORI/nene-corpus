@@ -838,6 +838,7 @@ components:
         - color_surface
         - color_text
         - radius_md
+        - max_width
       properties:
         color_primary:
           type: string
@@ -854,6 +855,10 @@ components:
         radius_md:
           type: string
           example: 0.5rem
+        max_width:
+          type: string
+          example: 100%
+          description: Maximum width of the embed widget (CSS length, e.g. 480px or 100%).
     AppearanceSettingsResponse:
       type: object
       required:
