@@ -4,6 +4,7 @@ export const en = defineMessages({
   'common.loading': 'Loading…',
   'common.signOut': 'Sign out',
   'common.genericError': 'Something went wrong.',
+  'common.showHelp': 'Help',
   'locale.en': 'English',
   'locale.ja': 'Japanese',
   'locale.fr': 'French',
@@ -39,19 +40,35 @@ export const en = defineMessages({
   'admin.sources.columnDocuments': 'Documents',
   'admin.sources.columnChunks': 'Chunks',
   'admin.sources.columnUpdated': 'Updated',
+  'admin.sources.columnStatusHelp':
+    'Pending = queued, Processing = running, Ready = available to chat, Failed = check the upload or column mapping.',
+  'admin.sources.columnDocumentsHelp':
+    'Logical documents created from this source — usually one per CSV row or one PDF.',
+  'admin.sources.columnChunksHelp':
+    'Searchable text segments the chat widget uses. More chunks allow finer citation snippets.',
   'admin.ingestion.title': 'Upload source',
   'admin.ingestion.subtitle': 'Add CSV or PDF files to the corpus.',
   'admin.ingestion.sourceName': 'Source name',
   'admin.ingestion.sourceNamePlaceholder': 'Product catalog',
+  'admin.ingestion.sourceNameHelp':
+    'Friendly name shown in the sources list. Choose a label your team will recognize.',
   'admin.ingestion.file': 'File',
+  'admin.ingestion.fileHelp':
+    'Upload a CSV spreadsheet or PDF. The file stays on your server and is converted into searchable text.',
   'admin.ingestion.unsupportedFile': 'Only .csv and .pdf files are supported.',
   'admin.ingestion.previewFile': 'Preview file',
   'admin.ingestion.previewing': 'Previewing…',
   'admin.ingestion.csvSummary': '{count} rows · delimiter "{delimiter}"',
   'admin.ingestion.pdfPageCount': '{count} pages detected',
   'admin.ingestion.titleColumn': 'Title column',
+  'admin.ingestion.titleColumnHelp':
+    'CSV column used as each row’s title (e.g. product name). Shown in admin and citation context.',
   'admin.ingestion.contentColumns': 'Content columns',
+  'admin.ingestion.contentColumnsHelp':
+    'Columns combined into the answer text. Select every column that should help answer user questions.',
   'admin.ingestion.metadataColumns': 'Metadata columns (optional)',
+  'admin.ingestion.metadataColumnsHelp':
+    'Optional extra columns stored with the row (URL, category, etc.) but not used as the main answer body.',
   'admin.ingestion.ingest': 'Ingest into corpus',
   'admin.ingestion.ingesting': 'Ingesting…',
   'admin.ingestion.ingestSuccess': 'Source ingested successfully.',
@@ -70,6 +87,12 @@ export const en = defineMessages({
   'admin.conversationLogs.columnSession': 'Session',
   'admin.conversationLogs.columnMessages': 'Messages',
   'admin.conversationLogs.columnLastActivity': 'Last activity',
+  'admin.conversationLogs.columnSessionHelp':
+    'Anonymous chat session created by a visitor using the embed widget on your site.',
+  'admin.conversationLogs.columnMessagesHelp':
+    'Total messages in the session, including both visitor questions and assistant replies.',
+  'admin.conversationLogs.columnLastActivityHelp':
+    'Timestamp of the most recent message in this session.',
   'admin.conversationLogs.selectSession': 'Select a session to view messages.',
   'admin.conversationLogs.loadingMessages': 'Loading messages…',
   'admin.conversationLogs.emptyMessages': 'No messages in this session.',

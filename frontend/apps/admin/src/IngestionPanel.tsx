@@ -8,6 +8,7 @@ import {
   type PreviewPdfIngestionResponse,
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
+import { HelpLabel } from './HelpLabel';
 import { detectSourceType, readFileAsBase64 } from './fileBase64';
 
 interface IngestionPanelProps {
@@ -152,7 +153,11 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       </div>
       <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handlePreview(event)}>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.sourceName)}</span>
+          <HelpLabel
+            className="font-medium text-slate-700"
+            label={t(Msg.admin.ingestion.sourceName)}
+            help={t(Msg.admin.ingestion.sourceNameHelp)}
+          />
           <input
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
             type="text"
@@ -162,7 +167,11 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.file)}</span>
+          <HelpLabel
+            className="font-medium text-slate-700"
+            label={t(Msg.admin.ingestion.file)}
+            help={t(Msg.admin.ingestion.fileHelp)}
+          />
           <input
             className="mt-1 block w-full text-sm text-slate-600"
             type="file"
@@ -277,7 +286,11 @@ function ColumnMappingEditor({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <label className="block text-sm">
-        <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.titleColumn)}</span>
+        <HelpLabel
+          className="font-medium text-slate-700"
+          label={t(Msg.admin.ingestion.titleColumn)}
+          help={t(Msg.admin.ingestion.titleColumnHelp)}
+        />
         <select
           className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
           value={titleColumn}
@@ -291,7 +304,12 @@ function ColumnMappingEditor({
         </select>
       </label>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">{t(Msg.admin.ingestion.contentColumns)}</legend>
+        <legend className="font-medium text-slate-700">
+          <HelpLabel
+            label={t(Msg.admin.ingestion.contentColumns)}
+            help={t(Msg.admin.ingestion.contentColumnsHelp)}
+          />
+        </legend>
         <div className="mt-2 space-y-1">
           {headers.map((header) => (
             <label key={header} className="flex items-center gap-2">
@@ -306,7 +324,12 @@ function ColumnMappingEditor({
         </div>
       </fieldset>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">{t(Msg.admin.ingestion.metadataColumns)}</legend>
+        <legend className="font-medium text-slate-700">
+          <HelpLabel
+            label={t(Msg.admin.ingestion.metadataColumns)}
+            help={t(Msg.admin.ingestion.metadataColumnsHelp)}
+          />
+        </legend>
         <div className="mt-2 space-y-1">
           {headers.map((header) => (
             <label key={header} className="flex items-center gap-2">

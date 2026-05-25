@@ -59,6 +59,7 @@ frontend/
 - OpenAPI / API error `code` / Problem Details stay **English** (NENE2 language policy); only client UI is localized.
 - Wrap admin (and later widget) roots with `LocaleProvider`. Initial locale: `localStorage` → browser language → `en`.
 - Use `formatTimestamp(value, locale)` for locale-aware dates.
+- Pair labels with optional help via `HelpLabel` (`label` + `help` strings from `Msg.*Help` keys). Tooltip opens on hover and keyboard focus.
 
 ---
 

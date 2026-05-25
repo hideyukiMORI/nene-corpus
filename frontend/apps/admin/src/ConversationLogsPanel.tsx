@@ -6,6 +6,7 @@ import {
   type ChatSessionSummary,
 } from '@nene-corpus/api-client';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
+import { HelpLabel } from './HelpLabel';
 import { ROLE_MSG } from './i18nLabels';
 
 interface ConversationLogsPanelProps {
@@ -114,10 +115,23 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50 text-left text-slate-600">
                 <tr>
-                  <th className="px-4 py-2 font-medium">{t(Msg.admin.conversationLogs.columnSession)}</th>
-                  <th className="px-4 py-2 font-medium">{t(Msg.admin.conversationLogs.columnMessages)}</th>
                   <th className="px-4 py-2 font-medium">
-                    {t(Msg.admin.conversationLogs.columnLastActivity)}
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnSession)}
+                      help={t(Msg.admin.conversationLogs.columnSessionHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnMessages)}
+                      help={t(Msg.admin.conversationLogs.columnMessagesHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnLastActivity)}
+                      help={t(Msg.admin.conversationLogs.columnLastActivityHelp)}
+                    />
                   </th>
                 </tr>
               </thead>

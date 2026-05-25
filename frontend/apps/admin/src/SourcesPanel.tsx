@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { listSources, type SourceListItem } from '@nene-corpus/api-client';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
+import { HelpLabel } from './HelpLabel';
 import { SOURCE_STATUS_MSG, SOURCE_TYPE_MSG } from './i18nLabels';
 
 interface SourcesPanelProps {
@@ -64,9 +65,24 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
               <tr>
                 <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnName)}</th>
                 <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnType)}</th>
-                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnStatus)}</th>
-                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnDocuments)}</th>
-                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnChunks)}</th>
+                <th className="px-4 py-2 font-medium">
+                  <HelpLabel
+                    label={t(Msg.admin.sources.columnStatus)}
+                    help={t(Msg.admin.sources.columnStatusHelp)}
+                  />
+                </th>
+                <th className="px-4 py-2 font-medium">
+                  <HelpLabel
+                    label={t(Msg.admin.sources.columnDocuments)}
+                    help={t(Msg.admin.sources.columnDocumentsHelp)}
+                  />
+                </th>
+                <th className="px-4 py-2 font-medium">
+                  <HelpLabel
+                    label={t(Msg.admin.sources.columnChunks)}
+                    help={t(Msg.admin.sources.columnChunksHelp)}
+                  />
+                </th>
                 <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnUpdated)}</th>
               </tr>
             </thead>
