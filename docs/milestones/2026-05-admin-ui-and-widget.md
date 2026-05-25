@@ -12,6 +12,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 3.
 - [x] `docs/development/frontend-standards.md` (#33)
 - [ ] Admin: sources, ingestion status, conversation logs
 - [x] **embed widget** wired to **sync JSON chat** (#37)
+- [x] Admin sources list UI (#39)
 - [ ] Appearance settings (operator theme overrides)
 - [ ] **web installer** + **release ZIP** (Tier A)
 - [ ] Shared-hosting operator docs update
@@ -28,5 +29,6 @@ composer check
 
 - Issue #33 — frontend scaffold
 - Issue #37 — embed widget sync JSON chat
+- Issue #39 — admin sources list API + UI
 - [`docs/development/frontend-standards.md`](../development/frontend-standards.md)
 - ADR 0003 — dual deployment and embed widget

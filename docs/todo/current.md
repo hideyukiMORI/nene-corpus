@@ -29,7 +29,8 @@ Last updated: 2026-05-25
 
 - ✅ Frontend scaffold（#33）
 - ✅ embed widget → sync JSON chat 接続（#37）
-- 🔜 Admin sources UI（#39 進行中）
+- ✅ Admin sources 一覧 UI（#39）
+- 🔜 Admin ingestion / conversation logs
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -69,7 +70,8 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 | --- | --- |
 | Frontend monorepo scaffold | ✅ (#33) |
 | embed widget + sync JSON chat | ✅ (#37) |
-| Admin UI (sources, logs) | 🔜 |
+| Admin sources list UI | ✅ (#39) |
+| Admin UI (ingestion, logs) | 🔜 |
 | Appearance settings | 🔜 |
 | Tier A installer + release ZIP | 🔜 |
 
