@@ -5,6 +5,7 @@ NeNe Corpus supports **dual deployment** — same product, two installation path
 | Tier | Document | Audience |
 | --- | --- | --- |
 | **Tier A — shared hosting** | [`shared-hosting.md`](./shared-hosting.md) | Japan SMB — FTP + web installer |
+| **Tier A — day-2 operations** | [`../operations/operator-guide.md`](../operations/operator-guide.md) | Post-install ingest, embed, LLM, logs |
 | **Tier B — Docker / VPS** | [`../development/docker.md`](../development/docker.md) | Developers, reproducible stacks |
 | **Tier B — git clone** | [`developer.md`](./developer.md) | Engineers beside an existing system |
 
