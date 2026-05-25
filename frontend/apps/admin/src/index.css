@@ -119,7 +119,7 @@
   }
 
   .dark .nc-help-body {
-    @apply text-fg-muted;
+    @apply text-fg/85;
   }
 
   .nc-text-timestamp {
