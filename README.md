@@ -17,7 +17,7 @@ NeNe Corpus is a self-hosted, open-source knowledge chat platform built on [NENE
 
 - **Self-hosted OSS** — MIT licensed; shared hosting or VPS/private cloud
 - **Cited answers** — every response links back to document chunks
-- **Easy embed** — one `<script>` for the **embed widget** on same-origin pages (Phase 3)
+- **Easy embed** — **embed widget** on same-origin pages ([`docs/deployment/shared-hosting.md`](./docs/deployment/shared-hosting.md))
 - **Secure by design** — audit logs, tenant boundaries, no DB bypass for AI tools
 - **AI-readable** — OpenAPI contract, MCP for ops, explicit Clean Architecture
 - **Sibling to NeNe Records** — optional CMS upstream; never merged into the CMS repo
@@ -38,7 +38,9 @@ curl -fsS http://localhost:8080/health
 
 ### Shared hosting — Japan SMB (Tier A)
 
-Web installer and release ZIP ship in Phase 3. Requirements and planned flow:
+1. Download the **release ZIP** and upload via FTP.
+2. Run the **web installer** at `/install/`.
+3. Manage corpus and chat from **Admin**; embed the widget on your existing site.
 
 > [`docs/deployment/shared-hosting.md`](./docs/deployment/shared-hosting.md)
 
@@ -62,15 +64,15 @@ Ops / AI (MCP)         ───────────────────
 
 ## Current Status
 
-**Phase 0 — Governance & Foundation: complete (2026-05-25)**
+Phases 1–3 core deliverables are complete. See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
 | Area | State |
 | --- | --- |
-| Governance docs | ADR 0001/0002/0003, inheritance map, Cursor rules |
-| Runtime scaffold | NENE2 consumer, `GET /health`, CI |
-| Ingestion API | Planned (Phase 1) |
-| Chat + citations | Planned (Phase 2) |
-| Admin UI + embed widget + Tier A installer | Planned (Phase 3) |
+| Corpus ingestion + admin API | ✅ |
+| Sync JSON chat + citations | ✅ |
+| Admin UI + embed widget | ✅ |
+| Tier A — installer + release ZIP + operator docs | ✅ |
+| Phase 4 — upstream integrations | Planned |
 
 See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 

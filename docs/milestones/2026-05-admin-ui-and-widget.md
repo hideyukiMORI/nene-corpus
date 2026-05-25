@@ -2,7 +2,7 @@
 
 Goal: operable product without curl — React admin, **embed widget**, Tier A install path.
 
-**Status: in progress**
+**Status: complete (2026-05-25)**
 
 Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 3.
 
@@ -17,7 +17,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 3.
 - [x] Appearance settings (operator theme overrides)
 - [x] **web installer** (#101)
 - [x] **release ZIP** (#103)
-- [ ] Shared-hosting operator docs update
+- [x] Shared-hosting operator docs (#105)
 
 ## Phase 3+ backlog (agreed, not started)
 
@@ -29,6 +29,7 @@ See [`docs/todo/current.md`](../todo/current.md) — operator docs, text paste i
 npm run check --prefix frontend
 npm run build --prefix frontend
 composer check
+composer release:zip
 ```
 
 ## Related
@@ -37,5 +38,9 @@ composer check
 - Issue #37 — embed widget sync JSON chat
 - Issue #39 — admin sources list API + UI
 - Issue #45 — admin CSV/PDF upload UI
+- Issue #101 — web installer
+- Issue #103 — release ZIP
+- Issue #105 — shared-hosting operator docs
+- [`docs/deployment/shared-hosting.md`](../deployment/shared-hosting.md)
 - [`docs/development/frontend-standards.md`](../development/frontend-standards.md)
 - ADR 0003 — dual deployment and embed widget

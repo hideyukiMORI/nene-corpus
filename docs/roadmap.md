@@ -58,6 +58,8 @@ Goal: operable product without curl; Tier A install path.
 - Prompt / scope / fallback settings UI
 - **Tier A deliverables:** **web installer**, **release ZIP** (vendor bundled), shared-hosting operator docs
 
+**Status: complete (2026-05-25).** Milestone: [`milestones/2026-05-admin-ui-and-widget.md`](./milestones/2026-05-admin-ui-and-widget.md).
+
 ## Phase 4: Upstream Integrations
 
 Goal: optional NeNe Records and export APIs.
@@ -71,7 +73,7 @@ Goal: optional NeNe Records and export APIs.
 | Tier | Phase | Deliverable |
 | --- | --- | --- |
 | **Tier B — Docker / VPS** | 0 (now) | `docker compose up`, `docs/development/docker.md` |
-| **Tier A — shared hosting** | 3 | **web installer**, **release ZIP**, `docs/deployment/shared-hosting.md` |
+| **Tier A — shared hosting** | 3 ✅ | **web installer**, **release ZIP**, [`docs/deployment/shared-hosting.md`](./deployment/shared-hosting.md) |
 
 Same API and **embed widget** for both tiers. Chat uses **sync JSON chat** by default.
 
