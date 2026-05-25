@@ -66,4 +66,21 @@ final class CorpusSchemaSetup
                 SQL,
         );
     }
+
+    public static function createAdminUsers(PdoDatabaseQueryExecutor $executor): void
+    {
+        $executor->execute(
+            <<<'SQL'
+                CREATE TABLE admin_users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                SQL,
+        );
+
+        $executor->execute('CREATE UNIQUE INDEX uniq_admin_users_email ON admin_users (email)');
+    }
 }

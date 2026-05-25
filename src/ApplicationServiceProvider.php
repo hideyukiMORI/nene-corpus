@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace NeneCorpus;
 
+use LogicException;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\DomainExceptionHandlerInterface;
+use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
+use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
+use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
 use NeneCorpus\Chunk\ChunkServiceProvider;
 use NeneCorpus\Document\DocumentServiceProvider;
 use NeneCorpus\Source\SourceServiceProvider;
@@ -24,17 +28,29 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new SourceServiceProvider())
             ->addProvider(new DocumentServiceProvider())
             ->addProvider(new ChunkServiceProvider())
+            ->addProvider(new AdminAuthServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
-                static fn (ContainerInterface $container): array => [],
+                static function (ContainerInterface $container): array {
+                    $adminAuth = $container->get(AdminAuthServiceProvider::ROUTE_REGISTRAR);
+
+                    if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
+                        throw new LogicException('Admin auth route registrar service is invalid.');
+                    }
+
+                    return [$adminAuth];
+                },
             )
             ->set(
                 self::EXCEPTION_HANDLERS,
                 static function (ContainerInterface $container): array {
-                    /** @var list<DomainExceptionHandlerInterface> $handlers */
-                    $handlers = [];
+                    $invalidCredentials = $container->get(InvalidAdminCredentialsExceptionHandler::class);
 
-                    return $handlers;
+                    if (!$invalidCredentials instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Invalid admin credentials exception handler service is invalid.');
+                    }
+
+                    return [$invalidCredentials];
                 },
             );
     }

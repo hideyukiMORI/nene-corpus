@@ -1,16 +1,18 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.1.0
+  version: 0.2.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
-    Phase 0 exposes system health; ingestion and chat endpoints follow in later phases.
+    Phase 1 adds admin auth and corpus storage foundations.
 servers:
   - url: http://localhost:8080
     description: Local development server
 tags:
   - name: System
     description: Runtime health endpoints.
+  - name: Admin
+    description: Admin authentication for mutating routes.
 paths:
   /health:
     get:
@@ -34,7 +36,76 @@ paths:
                     service: NENE2
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/auth/login:
+    post:
+      tags:
+        - Admin
+      summary: Admin login
+      description: Issue a Bearer JWT for admin routes. Requires `NENE2_LOCAL_JWT_SECRET` on the server.
+      operationId: loginAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginAdminRequest'
+            examples:
+              valid:
+                value:
+                  email: admin@example.com
+                  password: secret-password
+      responses:
+        '200':
+          description: Access token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginAdminResponse'
+              examples:
+                ok:
+                  value:
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example
+                    token_type: Bearer
+                    expires_at: '2026-05-25T13:00:00+00:00'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/auth/me:
+    get:
+      tags:
+        - Admin
+      summary: Current admin profile
+      description: Returns JWT claims for the authenticated admin.
+      operationId: getAdminMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Admin profile from JWT claims.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMeResponse'
+              examples:
+                ok:
+                  value:
+                    id: 1
+                    email: admin@example.com
+                    role: admin
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: HS256 admin JWT from `POST /admin/auth/login`.
   responses:
     InternalServerError:
       description: Internal server error.
@@ -50,6 +121,37 @@ components:
                 status: 500
                 detail: An unexpected error occurred.
                 instance: /health
+    Unauthorized:
+      description: Missing or invalid Bearer token, or invalid credentials.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            unauthorized:
+              value:
+                type: https://nene-corpus.dev/problems/unauthorized
+                title: Unauthorized
+                status: 401
+                detail: Invalid email or password.
+                instance: /admin/auth/login
+    ValidationFailed:
+      description: Request validation failed.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblemDetails'
+          examples:
+            validationFailed:
+              value:
+                type: https://nene-corpus.dev/problems/validation-failed
+                title: Validation Failed
+                status: 422
+                detail: The request body contains invalid values.
+                errors:
+                  - field: email
+                    message: Email is required.
+                    code: required
   schemas:
     HealthResponse:
       type: object
@@ -63,6 +165,86 @@ components:
             - ok
             - degraded
         service:
+          type: string
+    LoginAdminRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginAdminResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_at
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          enum:
+            - Bearer
+        expires_at:
+          type: string
+          format: date-time
+    AdminMeResponse:
+      type: object
+      required:
+        - id
+        - email
+        - role
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+    ValidationProblemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+        - instance
+        - errors
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      type: object
+      required:
+        - field
+        - message
+        - code
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        code:
           type: string
     ProblemDetails:
       type: object

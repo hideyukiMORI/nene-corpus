@@ -21,6 +21,8 @@ use Nene2\Http\ResponseEmitter;
 use Nene2\Http\RuntimeApplicationFactory;
 use Nene2\Log\MonologLoggerFactory;
 use Nene2\Log\RequestIdHolder;
+use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
+use NeneCorpus\AdminAuth\AdminBearerTokenMiddleware;
 use NeneCorpus\ApplicationServiceProvider;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
@@ -212,6 +214,12 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         throw new LogicException('RequestIdHolder service is invalid.');
                     }
 
+                    $authMiddleware = $container->get(AdminAuthServiceProvider::AUTH_MIDDLEWARE);
+
+                    if ($authMiddleware !== null && !$authMiddleware instanceof AdminBearerTokenMiddleware) {
+                        throw new LogicException('Admin auth middleware service is invalid.');
+                    }
+
                     return new RuntimeApplicationFactory(
                         $responseFactory,
                         $streamFactory,
@@ -220,7 +228,7 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         $exceptionHandlers,
                         $requestIdHolder,
                         $routeRegistrars,
-                        [],
+                        $authMiddleware,
                         [],
                         null,
                         $config->debug,
