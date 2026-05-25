@@ -22,6 +22,7 @@ export type {
   SendChatMessageResponse,
   SourceListItem,
   WidgetTheme,
+  WidgetHero,
   AppearanceSettingsResponse,
   UpdateAppearanceSettingsRequest,
 } from './types';

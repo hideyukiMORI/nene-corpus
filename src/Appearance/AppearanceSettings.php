@@ -9,6 +9,7 @@ final readonly class AppearanceSettings
     public function __construct(
         public ?string $widgetLocale,
         public WidgetTheme $theme,
+        public WidgetHero $hero,
     ) {
     }
 
@@ -17,17 +18,23 @@ final readonly class AppearanceSettings
         return new self(
             widgetLocale: null,
             theme: WidgetTheme::defaults(),
+            hero: WidgetHero::defaults(),
         );
     }
 
     /**
-     * @return array{widget_locale: string|null, theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string, max_width: string}}
+     * @return array{
+     *     widget_locale: string|null,
+     *     theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string, max_width: string},
+     *     hero: array{title: string|null, description: string|null, cta_label: string|null}
+     * }
      */
     public function toArray(): array
     {
         return [
             'widget_locale' => $this->widgetLocale,
             'theme' => $this->theme->toArray(),
+            'hero' => $this->hero->toArray(),
         ];
     }
 }

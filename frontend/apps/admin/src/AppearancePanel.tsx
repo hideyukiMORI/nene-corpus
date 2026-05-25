@@ -4,11 +4,24 @@ import {
   getAppearanceSettings,
   updateAppearanceSettings,
   type AppearanceSettingsResponse,
+  type WidgetHero,
   type WidgetTheme,
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
+
+interface HeroFormState {
+  title: string;
+  description: string;
+  cta_label: string;
+}
+
+const EMPTY_HERO_FORM: HeroFormState = {
+  title: '',
+  description: '',
+  cta_label: '',
+};
 
 const DEFAULT_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -36,6 +49,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const t = useMsg();
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
+  const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +89,23 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   function applySettings(settings: AppearanceSettingsResponse): void {
     setWidgetLocale(settings.widget_locale ?? '');
     setTheme(settings.theme);
+    setHeroForm({
+      title: settings.hero.title ?? '',
+      description: settings.hero.description ?? '',
+      cta_label: settings.hero.cta_label ?? '',
+    });
+  }
+
+  function updateHeroField(field: keyof HeroFormState, value: string): void {
+    setHeroForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function heroPayload(): WidgetHero {
+    return {
+      title: heroForm.title.trim() === '' ? null : heroForm.title.trim(),
+      description: heroForm.description.trim() === '' ? null : heroForm.description.trim(),
+      cta_label: heroForm.cta_label.trim() === '' ? null : heroForm.cta_label.trim(),
+    };
   }
 
   function updateThemeField(field: keyof WidgetTheme, value: string): void {
@@ -91,6 +122,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       const saved = await updateAppearanceSettings(token, {
         widget_locale: widgetLocale === '' ? null : (widgetLocale as AppearanceSettingsResponse['widget_locale']),
         theme,
+        hero: heroPayload(),
       }, adminApiBase);
       applySettings(saved);
       setSuccess(t(Msg.admin.appearance.saveSuccess));
@@ -105,10 +137,11 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     const query = buildWidgetPreviewSearchParams(
       theme,
       widgetLocale === '' ? null : widgetLocale,
+      heroPayload(),
     );
 
     return `${widgetPreviewOrigin()}?${query}`;
-  }, [theme, widgetLocale]);
+  }, [theme, widgetLocale, heroForm]);
 
   function localeLabel(value: string): string {
     if (value === '') {
@@ -151,6 +184,41 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               ))}
             </select>
           </label>
+          <div className="space-y-3 rounded-admin border border-border p-4">
+            <div>
+              <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.heroTitle)}</h3>
+              <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.heroSubtitle)}</p>
+            </div>
+            <label className="block text-sm">
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroWelcomeTitle)}</span>
+              <input
+                className="nc-input"
+                type="text"
+                value={heroForm.title}
+                onChange={(event) => updateHeroField('title', event.target.value)}
+                placeholder={t(Msg.admin.appearance.heroWelcomeTitlePlaceholder)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroWelcomeDescription)}</span>
+              <textarea
+                className="nc-input min-h-20 resize-y"
+                value={heroForm.description}
+                onChange={(event) => updateHeroField('description', event.target.value)}
+                placeholder={t(Msg.admin.appearance.heroWelcomeDescriptionPlaceholder)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroCtaLabel)}</span>
+              <input
+                className="nc-input"
+                type="text"
+                value={heroForm.cta_label}
+                onChange={(event) => updateHeroField('cta_label', event.target.value)}
+                placeholder={t(Msg.admin.appearance.heroCtaLabelPlaceholder)}
+              />
+            </label>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <ColorField
               label={t(Msg.admin.appearance.colorPrimary)}

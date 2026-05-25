@@ -113,9 +113,16 @@ export interface WidgetTheme {
   max_width: string;
 }
 
+export interface WidgetHero {
+  title: string | null;
+  description: string | null;
+  cta_label: string | null;
+}
+
 export interface AppearanceSettingsResponse {
   widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;
   theme: WidgetTheme;
+  hero: WidgetHero;
 }
 
 export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;

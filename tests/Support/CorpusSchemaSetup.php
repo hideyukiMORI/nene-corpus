@@ -93,6 +93,7 @@ final class CorpusSchemaSetup
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     widget_locale TEXT NULL,
                     theme_json TEXT NOT NULL,
+                    hero_json TEXT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )
