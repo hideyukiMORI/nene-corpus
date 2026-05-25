@@ -24,6 +24,8 @@ use Nene2\Log\RequestIdHolder;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\AdminBearerTokenMiddleware;
 use NeneCorpus\ApplicationServiceProvider;
+use NeneCorpus\RateLimit\ConsumerChatRateLimitMiddleware;
+use NeneCorpus\RateLimit\RateLimitServiceProvider;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -215,10 +217,21 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                     }
 
                     $authMiddleware = $container->get(AdminAuthServiceProvider::AUTH_MIDDLEWARE);
+                    $chatRateLimit = $container->get(RateLimitServiceProvider::CHAT_RATE_LIMIT_MIDDLEWARE);
 
                     if ($authMiddleware !== null && !$authMiddleware instanceof AdminBearerTokenMiddleware) {
                         throw new LogicException('Admin auth middleware service is invalid.');
                     }
+
+                    if (!$chatRateLimit instanceof ConsumerChatRateLimitMiddleware) {
+                        throw new LogicException('Chat rate limit middleware service is invalid.');
+                    }
+
+                    /** @var list<\Psr\Http\Server\MiddlewareInterface> $requestMiddleware */
+                    $requestMiddleware = array_values(array_filter([
+                        $authMiddleware,
+                        $chatRateLimit,
+                    ]));
 
                     return new RuntimeApplicationFactory(
                         $responseFactory,
@@ -228,7 +241,7 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         $exceptionHandlers,
                         $requestIdHolder,
                         $routeRegistrars,
-                        $authMiddleware,
+                        $requestMiddleware !== [] ? $requestMiddleware : null,
                         [],
                         null,
                         $config->debug,

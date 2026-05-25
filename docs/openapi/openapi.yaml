@@ -317,6 +317,8 @@ paths:
                         excerpt: Pairing guide for dry ginjo and white fish.
                         page_number: 2
                         section_label: Pairings
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
         '404':
           $ref: '#/components/responses/ChatSessionNotFound'
         '422':
@@ -408,6 +410,35 @@ components:
                 title: Not Found
                 status: 404
                 detail: The requested chat session was not found.
+                instance: /chat/messages
+    RateLimitExceeded:
+      description: Chat session or IP rate limit exceeded.
+      headers:
+        Retry-After:
+          description: Seconds until the client may retry.
+          schema:
+            type: integer
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Unix timestamp when the window resets.
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            rateLimitExceeded:
+              value:
+                type: https://nene-corpus.dev/problems/rate-limit-exceeded
+                title: Too Many Requests
+                status: 429
+                detail: Chat session rate limit exceeded.
                 instance: /chat/messages
   schemas:
     HealthResponse:

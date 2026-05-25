@@ -21,6 +21,7 @@ use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
 use NeneCorpus\Llm\LlmServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
+use NeneCorpus\RateLimit\RateLimitServiceProvider;
 use NeneCorpus\Search\SearchServiceProvider;
 use NeneCorpus\Session\SessionServiceProvider;
 use NeneCorpus\Source\SourceNotFoundExceptionHandler;
@@ -45,6 +46,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new SearchServiceProvider())
             ->addProvider(new LlmServiceProvider())
             ->addProvider(new ChatServiceProvider())
+            ->addProvider(new RateLimitServiceProvider())
             ->addProvider(new AdminAuthServiceProvider())
             ->addProvider(new IngestionServiceProvider())
             ->set(
