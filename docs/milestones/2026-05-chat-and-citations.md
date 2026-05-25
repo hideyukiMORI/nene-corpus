@@ -13,9 +13,9 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 - [x] Domain entities + `Pdo*Repository` adapters + service providers
 - [x] Repository tests (SQLite `:memory:`)
 - [x] Full-text chunk search (#19)
-- [ ] Claude tool_use orchestration (server-side)
-- [ ] **sync JSON chat** endpoint + OpenAPI
-- [ ] **Citation** payload in responses
+- [ ] Claude tool_use orchestration (server-side) (#25)
+- [ ] **sync JSON chat** endpoint + OpenAPI (#25)
+- [ ] **Citation** payload in responses (#25)
 - [ ] Rate limiting (session / IP)
 
 ## Verification
@@ -29,5 +29,6 @@ composer check
 
 - Issue #17 — chat session/message schema
 - Issue #19 — chunk full-text search
+- Issue #25 — sync JSON chat + Claude tool_use
 - [`docs/explanation/glossary.md`](../explanation/glossary.md) — sync JSON chat, citation, consumer session token
 - ADR 0003 — sync JSON chat as Tier A/B default

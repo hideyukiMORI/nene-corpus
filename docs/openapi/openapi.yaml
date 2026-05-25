@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.5.0
+  version: 0.6.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
-    Phase 1 adds admin auth, CSV/PDF ingestion, source operations, and corpus storage foundations.
+    Phase 2 adds consumer sync JSON chat with citations.
 servers:
   - url: http://localhost:8080
     description: Local development server
@@ -15,6 +15,8 @@ tags:
     description: Admin authentication for mutating routes.
   - name: Ingestion
     description: CSV and PDF upload, preview, and ingestion.
+  - name: Chat
+    description: Consumer sync JSON chat with citations.
 paths:
   /health:
     get:
@@ -247,6 +249,80 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /chat/sessions:
+    post:
+      tags:
+        - Chat
+      summary: Create chat session
+      description: Issue a consumer session token for sync JSON chat. Never use admin JWT.
+      operationId: createChatSession
+      responses:
+        '201':
+          description: Chat session created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateChatSessionResponse'
+              examples:
+                ok:
+                  value:
+                    session_id: 1
+                    session_token: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /chat/messages:
+    post:
+      tags:
+        - Chat
+      summary: Send chat message
+      description: >
+        Sync JSON chat — POST a user message and receive the full assistant reply with citations.
+        Requires `X-Session-Token` from `POST /chat/sessions`.
+      operationId: sendChatMessage
+      parameters:
+        - name: X-Session-Token
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Consumer session token (`session_token` from session creation).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendChatMessageRequest'
+            examples:
+              question:
+                value:
+                  content: Which products pair well with seafood?
+      responses:
+        '200':
+          description: Assistant reply with citations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendChatMessageResponse'
+              examples:
+                ok:
+                  value:
+                    message_id: 2
+                    session_id: 1
+                    role: assistant
+                    content: Here is an answer grounded in the corpus search results.
+                    citations:
+                      - chunk_id: 10
+                        document_id: 3
+                        source_id: 1
+                        excerpt: Pairing guide for dry ginjo and white fish.
+                        page_number: 2
+                        section_label: Pairings
+        '404':
+          $ref: '#/components/responses/ChatSessionNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:
@@ -254,6 +330,11 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: HS256 admin JWT from `POST /admin/auth/login`.
+    sessionTokenAuth:
+      type: apiKey
+      in: header
+      name: X-Session-Token
+      description: Consumer session token from `POST /chat/sessions`. Not admin JWT.
   responses:
     InternalServerError:
       description: Internal server error.
@@ -314,6 +395,20 @@ components:
                 status: 404
                 detail: The requested source was not found.
                 instance: /admin/sources/999
+    ChatSessionNotFound:
+      description: Chat session not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            chatSessionNotFound:
+              value:
+                type: https://nene-corpus.dev/problems/chat-session-not-found
+                title: Not Found
+                status: 404
+                detail: The requested chat session was not found.
+                instance: /chat/messages
   schemas:
     HealthResponse:
       type: object
@@ -499,6 +594,75 @@ components:
         chunk_count:
           type: integer
           format: int64
+    CreateChatSessionResponse:
+      type: object
+      required:
+        - session_id
+        - session_token
+      properties:
+        session_id:
+          type: integer
+          format: int64
+        session_token:
+          type: string
+          description: Consumer session token for `X-Session-Token` header.
+    SendChatMessageRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          description: End-user message text.
+    SendChatMessageResponse:
+      type: object
+      required:
+        - message_id
+        - session_id
+        - role
+        - content
+        - citations
+      properties:
+        message_id:
+          type: integer
+          format: int64
+        session_id:
+          type: integer
+          format: int64
+        role:
+          type: string
+          enum:
+            - assistant
+        content:
+          type: string
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+    Citation:
+      type: object
+      required:
+        - chunk_id
+        - document_id
+        - source_id
+        - excerpt
+      properties:
+        chunk_id:
+          type: integer
+          format: int64
+        document_id:
+          type: integer
+          format: int64
+        source_id:
+          type: integer
+          format: int64
+        excerpt:
+          type: string
+        page_number:
+          type: integer
+          format: int64
+        section_label:
+          type: string
     ValidationProblemDetails:
       type: object
       required:

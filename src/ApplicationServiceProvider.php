@@ -11,11 +11,15 @@ use Nene2\Error\DomainExceptionHandlerInterface;
 use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
+use NeneCorpus\Chat\ChatRouteRegistrar;
+use NeneCorpus\Chat\ChatServiceProvider;
+use NeneCorpus\Chat\ChatSessionNotFoundExceptionHandler;
 use NeneCorpus\Chunk\ChunkServiceProvider;
 use NeneCorpus\Document\DocumentServiceProvider;
 use NeneCorpus\Ingestion\CsvIngestionExceptionHandler;
 use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
+use NeneCorpus\Llm\LlmServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
 use NeneCorpus\Search\SearchServiceProvider;
 use NeneCorpus\Session\SessionServiceProvider;
@@ -39,17 +43,24 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new SessionServiceProvider())
             ->addProvider(new MessageServiceProvider())
             ->addProvider(new SearchServiceProvider())
+            ->addProvider(new LlmServiceProvider())
+            ->addProvider(new ChatServiceProvider())
             ->addProvider(new AdminAuthServiceProvider())
             ->addProvider(new IngestionServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
                     $adminAuth = $container->get(AdminAuthServiceProvider::ROUTE_REGISTRAR);
+                    $chat = $container->get(ChatServiceProvider::ROUTE_REGISTRAR);
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
                     $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
+                    }
+
+                    if (!$chat instanceof ChatRouteRegistrar) {
+                        throw new LogicException('Chat route registrar service is invalid.');
                     }
 
                     if (!$ingestion instanceof IngestionRouteRegistrar) {
@@ -60,18 +71,23 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source route registrar service is invalid.');
                     }
 
-                    return [$adminAuth, $ingestion, $source];
+                    return [$adminAuth, $chat, $ingestion, $source];
                 },
             )
             ->set(
                 self::EXCEPTION_HANDLERS,
                 static function (ContainerInterface $container): array {
                     $invalidCredentials = $container->get(InvalidAdminCredentialsExceptionHandler::class);
+                    $chatSessionNotFound = $container->get(ChatSessionNotFoundExceptionHandler::class);
                     $csvIngestion = $container->get(CsvIngestionExceptionHandler::class);
                     $sourceNotFound = $container->get(SourceNotFoundExceptionHandler::class);
 
                     if (!$invalidCredentials instanceof DomainExceptionHandlerInterface) {
                         throw new LogicException('Invalid admin credentials exception handler service is invalid.');
+                    }
+
+                    if (!$chatSessionNotFound instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Chat session not found exception handler service is invalid.');
                     }
 
                     if (!$csvIngestion instanceof DomainExceptionHandlerInterface) {
@@ -82,7 +98,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source not found exception handler service is invalid.');
                     }
 
-                    return [$invalidCredentials, $csvIngestion, $sourceNotFound];
+                    return [$invalidCredentials, $chatSessionNotFound, $csvIngestion, $sourceNotFound];
                 },
             );
     }
