@@ -58,6 +58,11 @@ export const fr = defineMessages({
   'admin.ingestion.file': 'Fichier',
   'admin.ingestion.fileHelp':
     'Téléversez un CSV ou PDF.\n\nFormats pris en charge : .csv / .pdf\nLe fichier reste sur votre serveur et devient du texte searchable.',
+  'admin.ingestion.fileChoose': 'Cliquez pour choisir un fichier',
+  'admin.ingestion.fileDrop': 'ou glissez-déposez ici',
+  'admin.ingestion.fileFormats': 'CSV ou PDF',
+  'admin.ingestion.fileChange': 'Modifier',
+  'admin.ingestion.fileRemove': 'Retirer',
   'admin.ingestion.unsupportedFile': 'Seuls les fichiers .csv et .pdf sont pris en charge.',
   'admin.ingestion.previewFile': 'Aperçu',
   'admin.ingestion.previewing': 'Aperçu…',

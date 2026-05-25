@@ -10,6 +10,7 @@ import {
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { ColumnMappingGuide } from './ColumnMappingGuide';
+import { FileUploadField } from './FileUploadField';
 import { detectSourceType, readFileAsBase64 } from './fileBase64';
 
 interface IngestionPanelProps {
@@ -167,19 +168,14 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
             placeholder={t(Msg.admin.ingestion.sourceNamePlaceholder)}
           />
         </label>
-        <label className="block text-sm">
+        <div className="block text-sm">
           <HelpLabel
             className="font-medium text-fg"
             label={t(Msg.admin.ingestion.file)}
             help={t(Msg.admin.ingestion.fileHelp)}
           />
-          <input
-            className="mt-1 block w-full nc-text-muted"
-            type="file"
-            accept=".csv,.pdf,text/csv,application/pdf"
-            onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
-          />
-        </label>
+          <FileUploadField file={file} onFileChange={handleFileChange} />
+        </div>
         {sourceType === null && file !== null && (
           <p className="text-sm text-red-600">{t(Msg.admin.ingestion.unsupportedFile)}</p>
         )}
