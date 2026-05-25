@@ -61,7 +61,11 @@ export function App() {
         ) : (
           <>
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
-            <SourcesPanel token={token} reloadKey={sourcesReloadKey} />
+            <SourcesPanel
+              token={token}
+              reloadKey={sourcesReloadKey}
+              onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
+            />
             <ConversationLogsPanel token={token} />
             <LlmSettingsPanel token={token} />
             <AppearancePanel token={token} />

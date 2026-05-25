@@ -1,4 +1,5 @@
 export { loginAdmin, getAdminMe, listSources, listChatSessions, listChatSessionMessages } from './admin';
+export { listDocuments, getDocument, updateDocument, deleteDocument } from './documents';
 export {
   getAppearanceSettings,
   updateAppearanceSettings,
@@ -21,6 +22,10 @@ export type {
   CsvColumnMapping,
   HealthResponse,
   ListSourcesResponse,
+  ListDocumentsResponse,
+  DocumentListItem,
+  DocumentDetailResponse,
+  UpdateDocumentRequest,
   ListChatSessionsResponse,
   ListChatSessionMessagesResponse,
   ChatSessionSummary,

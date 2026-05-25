@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 final class AdminHtaccessTest extends TestCase
 {
-    private const REQUIRED_API_PREFIXES = ['auth', 'sources', 'ingestion', 'appearance', 'chat', 'settings'];
+    private const REQUIRED_API_PREFIXES = ['auth', 'sources', 'ingestion', 'appearance', 'chat', 'settings', 'documents'];
 
     public function test_admin_htaccess_files_route_api_prefixes_to_php(): void
     {

@@ -594,6 +594,141 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/sources/{sourceId}/documents:
+    get:
+      tags:
+        - Ingestion
+      summary: List documents for a source
+      description: Paginated documents belonging to a source, with chunk counts and content previews.
+      operationId: listDocumentsBySourceId
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sourceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 200
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Document list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDocumentsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/documents/{id}:
+    get:
+      tags:
+        - Ingestion
+      summary: Get document
+      description: Document metadata and assembled searchable content from its chunks.
+      operationId: getDocumentById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Document detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/DocumentNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Ingestion
+      summary: Update document
+      description: Update title and content; replaces chunks for search. Text sources also update the stored upload file.
+      operationId: updateDocumentById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDocumentRequest'
+      responses:
+        '200':
+          description: Updated document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/DocumentNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Ingestion
+      summary: Delete document
+      description: Soft delete a document and remove its chunks from search.
+      operationId: deleteDocumentById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Document deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/DocumentNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/chat/sessions:
     get:
       tags:
@@ -844,6 +979,20 @@ components:
                 status: 404
                 detail: The requested source was not found.
                 instance: /admin/sources/999
+    DocumentNotFound:
+      description: Document not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            documentNotFound:
+              value:
+                type: https://nene-corpus.dev/problems/document-not-found
+                title: Not Found
+                status: 404
+                detail: The requested document was not found.
+                instance: /admin/documents/999
     ChatSessionNotFound:
       description: Chat session not found.
       content:
@@ -1492,6 +1641,93 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SourceListItem'
+    ListDocumentsResponse:
+      type: object
+      required:
+        - documents
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentListItem'
+    DocumentListItem:
+      type: object
+      required:
+        - document_id
+        - source_id
+        - title
+        - position
+        - chunk_count
+        - content_preview
+        - created_at
+        - updated_at
+      properties:
+        document_id:
+          type: integer
+          format: int64
+        source_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        position:
+          type: integer
+          format: int32
+        chunk_count:
+          type: integer
+          format: int64
+        content_preview:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    DocumentDetailResponse:
+      type: object
+      required:
+        - document_id
+        - source_id
+        - title
+        - position
+        - chunk_count
+        - content
+        - created_at
+        - updated_at
+      properties:
+        document_id:
+          type: integer
+          format: int64
+        source_id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        position:
+          type: integer
+          format: int32
+        chunk_count:
+          type: integer
+          format: int64
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UpdateDocumentRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+        content:
+          type: string
     ListChatSessionsResponse:
       type: object
       required:

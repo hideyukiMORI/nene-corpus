@@ -18,7 +18,10 @@ use NeneCorpus\Chat\ChatRouteRegistrar;
 use NeneCorpus\Chat\ChatServiceProvider;
 use NeneCorpus\Chat\ChatSessionNotFoundExceptionHandler;
 use NeneCorpus\Chunk\ChunkServiceProvider;
+use NeneCorpus\Document\DocumentNotFoundExceptionHandler;
+use NeneCorpus\Document\DocumentRouteRegistrar;
 use NeneCorpus\Document\DocumentServiceProvider;
+use NeneCorpus\Document\DocumentValidationExceptionHandler;
 use NeneCorpus\Ingestion\CsvIngestionExceptionHandler;
 use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
@@ -69,6 +72,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $chat = $container->get(ChatServiceProvider::ROUTE_REGISTRAR);
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
                     $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
+                    $document = $container->get(DocumentServiceProvider::ROUTE_REGISTRAR);
                     $adminChat = $container->get(SessionServiceProvider::ROUTE_REGISTRAR);
                     $appearance = $container->get(AppearanceServiceProvider::ROUTE_REGISTRAR);
                     $settings = $container->get(SettingsServiceProvider::ROUTE_REGISTRAR);
@@ -90,6 +94,10 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source route registrar service is invalid.');
                     }
 
+                    if (!$document instanceof DocumentRouteRegistrar) {
+                        throw new LogicException('Document route registrar service is invalid.');
+                    }
+
                     if (!$adminChat instanceof AdminChatRouteRegistrar) {
                         throw new LogicException('Admin chat route registrar service is invalid.');
                     }
@@ -106,7 +114,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Install route registrar service is invalid.');
                     }
 
-                    return [$install, $adminAuth, $chat, $ingestion, $source, $adminChat, $appearance, $settings];
+                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings];
                 },
             )
             ->set(
@@ -117,6 +125,8 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $chatSessionNotFound = $container->get(ChatSessionNotFoundExceptionHandler::class);
                     $csvIngestion = $container->get(CsvIngestionExceptionHandler::class);
                     $sourceNotFound = $container->get(SourceNotFoundExceptionHandler::class);
+                    $documentNotFound = $container->get(DocumentNotFoundExceptionHandler::class);
+                    $documentValidation = $container->get(DocumentValidationExceptionHandler::class);
                     $installAlreadyCompleted = $container->get(InstallAlreadyCompletedExceptionHandler::class);
                     $installRuntime = $container->get(InstallRuntimeExceptionHandler::class);
 
@@ -140,6 +150,14 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source not found exception handler service is invalid.');
                     }
 
+                    if (!$documentNotFound instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Document not found exception handler service is invalid.');
+                    }
+
+                    if (!$documentValidation instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Document validation exception handler service is invalid.');
+                    }
+
                     if (!$installAlreadyCompleted instanceof DomainExceptionHandlerInterface) {
                         throw new LogicException('Install already completed exception handler service is invalid.');
                     }
@@ -154,6 +172,8 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         $chatSessionNotFound,
                         $csvIngestion,
                         $sourceNotFound,
+                        $documentNotFound,
+                        $documentValidation,
                         $installAlreadyCompleted,
                         $installRuntime,
                     ];
