@@ -5,6 +5,7 @@ import {
   type ChatMessageListItem,
   type ChatSessionSummary,
 } from '@nene-corpus/api-client';
+import { adminApiBase } from './config';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { ROLE_MSG } from './i18nLabels';
@@ -31,7 +32,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
       setError(null);
 
       try {
-        const response = await listChatSessions(token);
+        const response = await listChatSessions(token, adminApiBase);
 
         if (!cancelled) {
           setSessions(response.sessions);
@@ -68,7 +69,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
       setError(null);
 
       try {
-        const response = await listChatSessionMessages(token, sessionId);
+        const response = await listChatSessionMessages(token, sessionId, adminApiBase);
 
         if (!cancelled) {
           setMessages(response.messages);

@@ -165,7 +165,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Admin SPA routing uses `public_html/admin/.htaccess` similarly.
+Admin SPA routing uses `public_html/admin/.htaccess`. API routes under the same `/admin/` prefix (`/admin/auth/login`, `/admin/sources`, …) are rewritten to the PHP front controller before the SPA fallback.
 
 ---
 
@@ -229,6 +229,7 @@ Prefer the **web installer** when FTP-only access is enough.
 
 | Symptom | Check |
 | --- | --- |
+| Admin login shows “Non-JSON response” / HTML | `public_html/admin/.htaccess` must route `auth`, `sources`, etc. to `../index.php` — not SPA `index.html` |
 | 404 on `/admin/` routes | `public_html/admin/.htaccess` present; `mod_rewrite` enabled |
 | 404 on API (`/health`, `/chat/…`) | `public_html/.htaccess` present; requests reach `index.php` |
 | Installer returns “already installed” | `var/installed.lock` exists — delete only if intentionally re-installing |

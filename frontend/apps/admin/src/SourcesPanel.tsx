@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { listSources, type SourceListItem } from '@nene-corpus/api-client';
+import { adminApiBase } from './config';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { SOURCE_STATUS_MSG, SOURCE_TYPE_MSG } from './i18nLabels';
@@ -24,7 +25,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
       setError(null);
 
       try {
-        const response = await listSources(token);
+        const response = await listSources(token, adminApiBase);
 
         if (!cancelled) {
           setSources(response.sources);
