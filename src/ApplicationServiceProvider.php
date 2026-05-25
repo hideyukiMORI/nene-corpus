@@ -23,6 +23,7 @@ use NeneCorpus\Llm\LlmServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
 use NeneCorpus\RateLimit\RateLimitServiceProvider;
 use NeneCorpus\Search\SearchServiceProvider;
+use NeneCorpus\Session\AdminChatRouteRegistrar;
 use NeneCorpus\Session\SessionServiceProvider;
 use NeneCorpus\Source\SourceNotFoundExceptionHandler;
 use NeneCorpus\Source\SourceRouteRegistrar;
@@ -56,6 +57,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $chat = $container->get(ChatServiceProvider::ROUTE_REGISTRAR);
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
                     $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
+                    $adminChat = $container->get(SessionServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -73,7 +75,11 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source route registrar service is invalid.');
                     }
 
-                    return [$adminAuth, $chat, $ingestion, $source];
+                    if (!$adminChat instanceof AdminChatRouteRegistrar) {
+                        throw new LogicException('Admin chat route registrar service is invalid.');
+                    }
+
+                    return [$adminAuth, $chat, $ingestion, $source, $adminChat];
                 },
             )
             ->set(

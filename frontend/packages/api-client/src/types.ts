@@ -79,3 +79,28 @@ export interface CreateSourceResponse {
   document_count: number;
   chunk_count: number;
 }
+
+export interface ChatSessionSummary {
+  session_id: number;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+  last_message_at: string | null;
+}
+
+export interface ListChatSessionsResponse {
+  sessions: ChatSessionSummary[];
+}
+
+export interface ChatMessageListItem {
+  message_id: number;
+  role: 'user' | 'assistant';
+  content: string;
+  citations: Citation[];
+  created_at: string;
+}
+
+export interface ListChatSessionMessagesResponse {
+  session_id: number;
+  messages: ChatMessageListItem[];
+}

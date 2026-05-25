@@ -62,6 +62,39 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         );
     }
 
+    public function findAllSummaries(int $limit, int $offset): array
+    {
+        $rows = $this->query->fetchAll(
+            <<<'SQL'
+                SELECT
+                    s.id, s.public_token, s.created_at, s.updated_at,
+                    (
+                        SELECT COUNT(*)
+                        FROM chat_messages m
+                        WHERE m.session_id = s.id
+                    ) AS message_count,
+                    (
+                        SELECT MAX(m.created_at)
+                        FROM chat_messages m
+                        WHERE m.session_id = s.id
+                    ) AS last_message_at
+                FROM chat_sessions s
+                ORDER BY s.id DESC
+                LIMIT ? OFFSET ?
+                SQL,
+            [$limit, $offset],
+        );
+
+        return array_map(
+            fn (array $row): ChatSessionSummary => new ChatSessionSummary(
+                session: $this->mapRow($row),
+                messageCount: (int) $row['message_count'],
+                lastMessageAt: isset($row['last_message_at']) ? (string) $row['last_message_at'] : null,
+            ),
+            $rows,
+        );
+    }
+
     /**
      * @param array<string, mixed> $row
      */
