@@ -13,9 +13,9 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 - [x] Domain entities + `Pdo*Repository` adapters + service providers
 - [x] Repository tests (SQLite `:memory:`)
 - [x] Full-text chunk search (#19)
-- [ ] Claude tool_use orchestration (server-side) (#25)
-- [ ] **sync JSON chat** endpoint + OpenAPI (#25)
-- [ ] **Citation** payload in responses (#25)
+- [x] Claude tool_use orchestration (server-side) (#25)
+- [x] **sync JSON chat** endpoint + OpenAPI (#25)
+- [x] **Citation** payload in responses (#25)
 - [ ] Rate limiting (session / IP)
 
 ## Verification
