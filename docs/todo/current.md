@@ -67,17 +67,19 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | --- | --- | --- |
 | P1 | **HERO / ウェルカム** | チャット開始前のタイトル・説明文・CTA |
 | P1 | **吹き出し UI** | アバター、user/assistant バブル、モダンなレイアウト |
-| P2 | **ストリーミング表示** | 文字の逐次表示・スクロール挙動（SSE は Phase 2 P2 と連動） |
+| P2 | **CSS アニメーション UX** | 応答待ちインジケータ、吹き出し fade/slide-in、スムーズスクロール。**文字の逐次表示は不要** |
 | P2 | **アバター登録** | Appearance または operator アップロード |
 | P2 | **カスタム CSS** | WordPress 系向け。widget スコープ限定・サニタイズ必須 |
 
+**チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
+
 ---
 
-## Phase 2 残（任意）
+## 非ゴール（再確認）
 
-| 優先 | 項目 | 説明 |
-| --- | --- | --- |
-| P2 | SSE streaming | Tier B 任意 — Widget ストリーミング UX とセットで検討 |
+| 項目 | 方針 |
+| --- | --- |
+| SSE streaming | 実装しない。FAQ 低頻度トラフィック向けに sync JSON + ローディング/CSS で十分 |
 
 ---
 

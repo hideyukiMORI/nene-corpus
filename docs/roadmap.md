@@ -47,7 +47,7 @@ Goal: grounded Q&A with cited responses.
 - **sync JSON chat** endpoint (default for Tier A and Tier B)
 - **Citation** payload in responses
 - **Rate limit** per session/IP
-- Optional: **SSE streaming** endpoint (Tier B — not required for low-frequency FAQ traffic)
+- **sync JSON chat** only — consumer UX via widget CSS (loading, bubble motion, scroll). **SSE streaming is a non-goal** (see ADR 0003 note in `docs/todo/current.md`)
 
 ## Phase 3: Admin UI & Widget
 
