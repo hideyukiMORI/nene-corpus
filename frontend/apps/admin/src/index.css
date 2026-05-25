@@ -29,12 +29,12 @@
   /* Sage Teal — 知識・アーカイブ感。Widget 青とは Admin だけ別アクセント */
   --nc-admin-brand: #4d8f7f;
   --nc-admin-brand-muted: #e6f2ef;
-  --nc-admin-page: #c4c9d0;
+  --nc-admin-page: #eff0f2;
   --nc-admin-bg-gradient: linear-gradient(
     165deg,
-    #d2d6dc 0%,
-    #c4c9d0 42%,
-    #b8bec6 100%
+    #f5f6f7 0%,
+    #eff0f2 42%,
+    #e8e9ec 100%
   );
   --nc-admin-surface: #ffffff;
   --nc-admin-surface-muted: #eef1f0;
