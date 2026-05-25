@@ -8,6 +8,7 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 export const DEFAULT_LOCALE: SupportedLocale = 'en';
 
 export const LOCALE_STORAGE_KEY = 'nene-corpus.admin.locale';
+export const WIDGET_LOCALE_STORAGE_KEY = 'nene-corpus.widget.locale';
 
 type LeafValues<T> = T extends string
   ? T

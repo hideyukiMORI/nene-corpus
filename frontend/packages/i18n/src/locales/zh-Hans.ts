@@ -111,4 +111,13 @@ export const zhHans = defineMessages({
   'admin.conversationLogs.citationPage': '第 {page} 页',
   'admin.widgetPreview.title': '组件主题预览',
   'admin.widgetPreview.body': '管理后台使用 Tailwind。嵌入组件使用 BEM + CSS 变量，例如 {cssVar}。',
+  'widget.chat.panelLabel': 'NeNe Corpus 聊天',
+  'widget.chat.emptyPrompt': '请提问有关我们产品的问题。',
+  'widget.chat.loading': '正在搜索语料库…',
+  'widget.chat.inputPlaceholder': '输入您的问题…',
+  'widget.chat.inputLabel': '聊天消息',
+  'widget.chat.send': '发送',
+  'widget.chat.citationPage': '第 {page} 页',
+  'widget.errors.sessionStartFailed': '无法开始聊天会话。',
+  'widget.errors.sendFailed': '无法发送消息。',
 });

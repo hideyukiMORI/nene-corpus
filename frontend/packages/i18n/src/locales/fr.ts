@@ -115,4 +115,13 @@ export const fr = defineMessages({
   'admin.widgetPreview.title': 'Aperçu du thème widget',
   'admin.widgetPreview.body':
     'L’admin utilise Tailwind. Le widget embarqué utilise BEM + variables CSS comme {cssVar}.',
+  'widget.chat.panelLabel': 'Chat NeNe Corpus',
+  'widget.chat.emptyPrompt': 'Posez une question sur nos produits.',
+  'widget.chat.loading': 'Recherche dans le corpus…',
+  'widget.chat.inputPlaceholder': 'Saisissez votre question…',
+  'widget.chat.inputLabel': 'Message de chat',
+  'widget.chat.send': 'Envoyer',
+  'widget.chat.citationPage': 'p. {page}',
+  'widget.errors.sessionStartFailed': 'Impossible de démarrer la session de chat.',
+  'widget.errors.sendFailed': 'Impossible d’envoyer le message.',
 });
