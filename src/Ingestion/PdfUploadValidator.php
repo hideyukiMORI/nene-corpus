@@ -6,17 +6,14 @@ namespace NeneCorpus\Ingestion;
 
 use finfo;
 
-final readonly class CsvUploadValidator
+final readonly class PdfUploadValidator
 {
     public const MAX_FILE_BYTES = 5_242_880;
 
     /** @var list<string> */
     private const ALLOWED_MIME_TYPES = [
-        'text/plain',
-        'text/csv',
-        'application/csv',
-        'text/x-csv',
-        'application/vnd.ms-excel',
+        'application/pdf',
+        'application/x-pdf',
     ];
 
     public function __construct(
@@ -29,36 +26,40 @@ final readonly class CsvUploadValidator
         $base64Content = trim($base64Content);
 
         if ($base64Content === '') {
-            throw new CsvIngestionException('CSV content is required.', 'content');
+            throw new CsvIngestionException('PDF content is required.', 'content');
         }
 
         $bytes = base64_decode($base64Content, true);
 
         if ($bytes === false) {
-            throw new CsvIngestionException('CSV content must be valid base64.', 'content');
+            throw new CsvIngestionException('PDF content must be valid base64.', 'content');
         }
 
         $size = strlen($bytes);
 
         if ($size === 0) {
-            throw new CsvIngestionException('CSV file is empty.', 'content');
+            throw new CsvIngestionException('PDF file is empty.', 'content');
         }
 
         if ($size > self::MAX_FILE_BYTES) {
             throw new CsvIngestionException(
-                sprintf('CSV file must be %d bytes or smaller.', self::MAX_FILE_BYTES),
+                sprintf('PDF file must be %d bytes or smaller.', self::MAX_FILE_BYTES),
                 'content',
             );
+        }
+
+        if (!str_starts_with($bytes, '%PDF-')) {
+            throw new CsvIngestionException('Uploaded file must be a PDF document.', 'content');
         }
 
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($bytes);
 
         if (!is_string($mimeType) || !in_array($mimeType, self::ALLOWED_MIME_TYPES, true)) {
-            throw new CsvIngestionException('Uploaded file must be a CSV document.', 'content');
+            throw new CsvIngestionException('Uploaded file must be a PDF document.', 'content');
         }
 
-        $sanitized = $this->filenameSanitizer->sanitize($filename, 'csv');
+        $sanitized = $this->filenameSanitizer->sanitize($filename, 'pdf');
         $storedFilename = bin2hex(random_bytes(8)) . '_' . $sanitized;
 
         return new UploadedFilePayload(

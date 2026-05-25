@@ -11,14 +11,14 @@ final readonly class UploadStorage
     ) {
     }
 
-    public function store(CsvFilePayload $file): string
+    public function store(UploadedFilePayload $file): string
     {
         $this->ensureDirectoryExists();
 
         $absolutePath = $this->uploadDirectory . '/' . $file->storedFilename;
 
         if (file_put_contents($absolutePath, $file->bytes) === false) {
-            throw new CsvIngestionException('Failed to store uploaded CSV file.', 'content');
+            throw new CsvIngestionException('Failed to store uploaded file.', 'content');
         }
 
         return 'storage/uploads/' . $file->storedFilename;

@@ -10,19 +10,25 @@ use Psr\Http\Message\ServerRequestInterface;
 final readonly class IngestionRouteRegistrar
 {
     public function __construct(
-        private PreviewCsvIngestionHandler $previewHandler,
-        private CreateCsvSourceHandler $createSourceHandler,
+        private PreviewCsvIngestionHandler $previewCsvHandler,
+        private PreviewPdfIngestionHandler $previewPdfHandler,
+        private CreateSourceHandler $createSourceHandler,
     ) {
     }
 
     public function __invoke(Router $router): void
     {
-        $preview = $this->previewHandler;
+        $previewCsv = $this->previewCsvHandler;
+        $previewPdf = $this->previewPdfHandler;
         $createSource = $this->createSourceHandler;
 
         $router->post(
             '/admin/ingestion/csv/preview',
-            static fn (ServerRequestInterface $request) => $preview->handle($request),
+            static fn (ServerRequestInterface $request) => $previewCsv->handle($request),
+        );
+        $router->post(
+            '/admin/ingestion/pdf/preview',
+            static fn (ServerRequestInterface $request) => $previewPdf->handle($request),
         );
         $router->post(
             '/admin/sources',

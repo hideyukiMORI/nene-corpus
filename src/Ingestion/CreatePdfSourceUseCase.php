@@ -13,27 +13,27 @@ use NeneCorpus\Source\SourceRepositoryInterface;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 
-final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInterface
+final readonly class CreatePdfSourceUseCase implements CreatePdfSourceUseCaseInterface
 {
     public function __construct(
         private SourceRepositoryInterface $sources,
         private DocumentRepositoryInterface $documents,
         private ChunkRepositoryInterface $chunks,
-        private CsvUploadValidator $validator,
-        private CsvParser $parser,
+        private PdfUploadValidator $validator,
+        private PdfTextExtractor $extractor,
         private UploadStorage $uploadStorage,
     ) {
     }
 
-    public function execute(CreateCsvSourceInput $input): CreateSourceOutput
+    public function execute(CreatePdfSourceInput $input): CreateSourceOutput
     {
         $file = $this->validator->decode($input->content, $input->filename);
-        $rows = $this->parser->parseRows($file->bytes, $input->columnMapping);
+        $pages = $this->extractor->extractPages($file->bytes);
         $storagePath = $this->uploadStorage->store($file);
 
         $sourceId = $this->sources->save(new Source(
             name: $input->name,
-            sourceType: SourceType::Csv,
+            sourceType: SourceType::Pdf,
             status: SourceStatus::Processing,
             storagePath: $storagePath,
             originalFilename: $file->originalFilename,
@@ -41,35 +41,29 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
             byteSize: $file->byteSize(),
         ));
 
-        $documentCount = 0;
-        $chunkCount = 0;
-
         try {
-            foreach ($rows as $position => $row) {
-                $documentId = $this->documents->save(new Document(
-                    sourceId: $sourceId,
-                    title: $row['title'],
-                    position: $position,
-                    metadataJson: json_encode($row['metadata'], JSON_THROW_ON_ERROR),
-                ));
+            $documentId = $this->documents->save(new Document(
+                sourceId: $sourceId,
+                title: $input->name,
+                position: 0,
+                metadataJson: json_encode(['page_count' => count($pages)], JSON_THROW_ON_ERROR),
+            ));
 
-                ++$documentCount;
-
-                $content = $row['content'];
+            foreach ($pages as $index => $page) {
+                $content = $page['text'];
                 $this->chunks->save(new Chunk(
                     documentId: $documentId,
                     sourceId: $sourceId,
                     content: $content,
-                    chunkIndex: 0,
+                    chunkIndex: $index,
+                    pageNumber: $page['page_number'],
                     tokenCount: $this->estimateTokenCount($content),
                 ));
-
-                ++$chunkCount;
             }
 
             $this->sources->update(new Source(
                 name: $input->name,
-                sourceType: SourceType::Csv,
+                sourceType: SourceType::Pdf,
                 status: SourceStatus::Ready,
                 storagePath: $storagePath,
                 originalFilename: $file->originalFilename,
@@ -80,7 +74,7 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
         } catch (\Throwable $exception) {
             $this->sources->update(new Source(
                 name: $input->name,
-                sourceType: SourceType::Csv,
+                sourceType: SourceType::Pdf,
                 status: SourceStatus::Failed,
                 storagePath: $storagePath,
                 originalFilename: $file->originalFilename,
@@ -97,8 +91,8 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
             sourceId: $sourceId,
             name: $input->name,
             status: SourceStatus::Ready,
-            documentCount: $documentCount,
-            chunkCount: $chunkCount,
+            documentCount: 1,
+            chunkCount: count($pages),
         );
     }
 
