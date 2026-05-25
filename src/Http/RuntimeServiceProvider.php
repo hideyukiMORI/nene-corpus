@@ -232,6 +232,12 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         [],
                         null,
                         $config->debug,
+                        [],
+                        [],
+                        ['/machine/health'],
+                        [],
+                        [],
+                        10 * 1024 * 1024,
                     );
                 },
             )

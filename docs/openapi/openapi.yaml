@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.2.0
+  version: 0.3.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
-    Phase 1 adds admin auth and corpus storage foundations.
+    Phase 1 adds admin auth, CSV ingestion, and corpus storage foundations.
 servers:
   - url: http://localhost:8080
     description: Local development server
@@ -13,6 +13,8 @@ tags:
     description: Runtime health endpoints.
   - name: Admin
     description: Admin authentication for mutating routes.
+  - name: Ingestion
+    description: CSV upload and column mapping preview.
 paths:
   /health:
     get:
@@ -97,6 +99,62 @@ paths:
                     role: admin
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/ingestion/csv/preview:
+    post:
+      tags:
+        - Ingestion
+      summary: Preview CSV columns
+      description: Parse CSV headers and sample rows for column mapping UI. No database writes.
+      operationId: previewCsvIngestion
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewCsvIngestionRequest'
+      responses:
+        '200':
+          description: Parsed CSV preview.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreviewCsvIngestionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/sources:
+    post:
+      tags:
+        - Ingestion
+      summary: Create CSV source
+      description: Store CSV file, create source, and sync parse into documents and chunks.
+      operationId: createSource
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSourceRequest'
+      responses:
+        '201':
+          description: Source created and ingested.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSourceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
@@ -209,6 +267,100 @@ components:
           format: email
         role:
           type: string
+    PreviewCsvIngestionRequest:
+      type: object
+      required:
+        - filename
+        - content
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          description: Base64-encoded CSV bytes.
+    PreviewCsvIngestionResponse:
+      type: object
+      required:
+        - headers
+        - sample_rows
+        - detected_delimiter
+        - row_count
+      properties:
+        headers:
+          type: array
+          items:
+            type: string
+        sample_rows:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        detected_delimiter:
+          type: string
+        row_count:
+          type: integer
+          format: int64
+    CreateSourceRequest:
+      type: object
+      required:
+        - name
+        - filename
+        - content
+        - column_mapping
+      properties:
+        name:
+          type: string
+        filename:
+          type: string
+        content:
+          type: string
+          description: Base64-encoded CSV bytes.
+        column_mapping:
+          $ref: '#/components/schemas/CsvColumnMapping'
+    CsvColumnMapping:
+      type: object
+      required:
+        - title_column
+        - content_columns
+      properties:
+        title_column:
+          type: string
+        content_columns:
+          type: array
+          items:
+            type: string
+        metadata_columns:
+          type: array
+          items:
+            type: string
+    CreateSourceResponse:
+      type: object
+      required:
+        - source_id
+        - name
+        - status
+        - document_count
+        - chunk_count
+      properties:
+        source_id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - ready
+            - failed
+        document_count:
+          type: integer
+          format: int64
+        chunk_count:
+          type: integer
+          format: int64
     ValidationProblemDetails:
       type: object
       required:

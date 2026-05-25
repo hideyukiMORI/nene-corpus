@@ -12,8 +12,9 @@ Last updated: 2026-05-25
 **Phase 1 — Corpus & Ingestion: 進行中（2026-05-25）**
 
 - ✅ Schema: `sources`, `documents`, `chunks`（#7）
-- ✅ Admin auth (JWT)（#9 — PR 待ち）
-- 🔜 CSV / PDF ingestion API
+- ✅ Admin auth (JWT)（#9）
+- ✅ CSV upload API（#11 — PR 待ち）
+- 🔜 PDF ingestion API
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -25,7 +26,7 @@ Last updated: 2026-05-25
 | --- | --- |
 | Schema: sources, documents, chunks | ✅ (#7) |
 | Admin auth (JWT) | ✅ (#9) |
-| CSV upload API | 🔜 |
+| CSV upload API | ✅ (#11) |
 | PDF text extraction | 🔜 |
 | Reindex / delete source | 🔜 |
 
@@ -52,8 +53,8 @@ Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05
 | --- | --- | --- |
 | ~~P0~~ | ~~Schema: sources, documents, chunks~~ | ✅ #7 |
 | ~~P0~~ | ~~Admin auth (JWT)~~ | ✅ #9 |
-| P0 | CSV upload API | 列マッピング preview |
-| P1 | PDF text extraction | テキスト PDF のみ（Phase 1） |
+| ~~P0~~ | ~~CSV upload API~~ | ✅ #11 |
+| P0 | PDF text extraction | テキスト PDF のみ（Phase 1） |
 | P2 | Reindex / delete source | 運用 API |
 
 詳細は [`docs/roadmap.md`](../roadmap.md)。
