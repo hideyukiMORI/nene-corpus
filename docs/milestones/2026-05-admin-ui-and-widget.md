@@ -13,10 +13,14 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 3.
 - [x] Admin sources list UI (#39)
 - [x] Admin CSV/PDF upload UI (#45)
 - [x] **embed widget** wired to **sync JSON chat** (#37)
-- [ ] conversation logs
-- [ ] Appearance settings (operator theme overrides)
+- [x] conversation logs
+- [x] Appearance settings (operator theme overrides)
 - [ ] **web installer** + **release ZIP** (Tier A)
 - [ ] Shared-hosting operator docs update
+
+## Phase 3+ backlog (agreed, not started)
+
+See [`docs/todo/current.md`](../todo/current.md) — operator docs, text paste ingestion, document CRUD, widget chat UX (bubbles, HERO, custom CSS).
 
 ## Verification
 
