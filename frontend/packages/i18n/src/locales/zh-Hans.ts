@@ -155,6 +155,27 @@ export const zhHans = defineMessages({
   'admin.appearance.saveSuccess': '外观设置已保存。',
   'admin.appearance.loadFailed': '加载外观设置失败。',
   'admin.appearance.saveFailed': '保存外观设置失败。',
+  'admin.help.title': '帮助与运营指南',
+  'admin.help.subtitle': '在此屏幕查看快速入门、嵌入设置与故障排除。',
+  'admin.help.open': '帮助',
+  'admin.help.quickStart.title': '快速入门',
+  'admin.help.quickStart.body':
+    '1. 使用运营账号登录。\n2. 导入 — 上传 CSV/PDF 或粘贴文本。\n3. 数据源 — 确认状态为 Ready。\n4. 外观 — 调整颜色并复制嵌入代码片段。\n5. 将片段粘贴到同域首页并测试聊天。',
+  'admin.help.ingestion.title': '导入（CSV、PDF、文本）',
+  'admin.help.ingestion.body':
+    '文件 — CSV 需预览并映射列；PDF 按页提取文本。最大 5 MB。\n\n文本 — 使用「粘贴文本」标签页导入 FAQ 或短文，每次粘贴为一个可搜索文档。\n\n数据源列表显示 Ready 后即可用于聊天检索。',
+  'admin.help.embed.title': '嵌入到首页',
+  'admin.help.embed.body':
+    '不是 WordPress 插件。请安装在同一源站，然后从外观设置复制 HTML 片段。\n\n片段加载 widget.css 与 widget.js 并自动启动聊天。data-endpoint 需与安装路径一致。\n\n建议先在预发环境测试。推荐使用 HTTPS。',
+  'admin.help.appearance.title': '外观与预览',
+  'admin.help.appearance.body':
+    '设置组件颜色、圆角、最大宽度及可选 HERO 欢迎语。\n\n组件语言可跟随访客浏览器或固定。\n\n预览 iframe 显示实时效果，保存后生效；嵌入片段路径自动匹配安装位置。',
+  'admin.help.troubleshooting.title': '故障排除',
+  'admin.help.troubleshooting.body':
+    '无法登录 — 检查账号与基础 URL 的 /health。\n\n数据源 Failed — 检查 CSV 列映射或 PDF 文本。\n\n组件空白 — 确认 widget.js / widget.css 从同域加载。\n\n更新后 Admin 500 — 执行数据库迁移。\n\n本地预览空白 — git pull 后重启 admin (:5173) 与 widget (:5174) 开发服务器。',
+  'admin.help.faq.title': '常见问题',
+  'admin.help.faq.body':
+    '数据会离开服务器吗？ — 语料库保存在您的数据库；仅将检索到的文本片段发送至 Claude API。\n\n可用子域名吗？ — 可以，将 document root 指向 public_html。\n\n流式响应？ — 仅同步 JSON 聊天，不支持 SSE 逐字流。\n\n更多说明 — 见发布 ZIP 中的共享主机运营文档。',
   'widget.chat.panelLabel': 'NeNe Corpus 聊天',
   'widget.chat.emptyPrompt': '请提问有关我们产品的问题。',
   'widget.chat.loading': '正在搜索语料库…',

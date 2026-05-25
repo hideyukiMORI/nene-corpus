@@ -161,6 +161,27 @@ export const en = defineMessages({
   'admin.appearance.saveSuccess': 'Appearance settings saved.',
   'admin.appearance.loadFailed': 'Failed to load appearance settings.',
   'admin.appearance.saveFailed': 'Failed to save appearance settings.',
+  'admin.help.title': 'Help & operator guide',
+  'admin.help.subtitle': 'Quick start, embed setup, and troubleshooting from this screen.',
+  'admin.help.open': 'Help',
+  'admin.help.quickStart.title': 'Quick start',
+  'admin.help.quickStart.body':
+    '1. Sign in with your operator email and password.\n2. Ingestion — upload CSV/PDF or paste text to build the corpus.\n3. Sources — confirm status is Ready.\n4. Appearance — tune colors and copy the embed snippet.\n5. Paste the snippet into your homepage (same domain) and test the chat widget.',
+  'admin.help.ingestion.title': 'Ingestion (CSV, PDF, text)',
+  'admin.help.ingestion.body':
+    'File upload — CSV needs a preview and column mapping (title + content columns). PDF text is extracted per page. Max file size is 5 MB.\n\nPaste text — use the Text tab for FAQ answers or short notes. Each paste becomes one searchable document.\n\nWhen status shows Ready in Sources, the corpus is available to chat.',
+  'admin.help.embed.title': 'Embed on your homepage',
+  'admin.help.embed.body':
+    'NeNe Corpus is not a WordPress plugin. Install it on the same origin as your site, then add one HTML block from Appearance → embed snippet.\n\nThe snippet loads widget.css + widget.js and auto-starts the chat UI. data-endpoint must point at your install base path (e.g. /nene-corpus).\n\nTest on a staging URL before production. HTTPS is recommended.',
+  'admin.help.appearance.title': 'Appearance & preview',
+  'admin.help.appearance.body':
+    'Set widget colors, corner radius, max width, and optional HERO welcome copy.\n\nWidget locale can follow the visitor browser or stay fixed.\n\nThe preview iframe shows the live widget. Click Save to persist — the embed snippet reflects your install path automatically.',
+  'admin.help.troubleshooting.title': 'Troubleshooting',
+  'admin.help.troubleshooting.body':
+    'Admin login fails — check operator credentials and that the API responds at /health on your base URL.\n\nSources stay Failed — re-upload or fix CSV mapping; for PDF, confirm text is extractable.\n\nWidget is blank — open browser devtools; ensure widget.js and widget.css load from the same origin.\n\nAfter a product update — run database migrations (installer docs or docker compose exec app composer migrations:migrate).\n\nLocal dev preview white — restart admin (:5173) and widget (:5174) dev servers after pulling i18n changes.',
+  'admin.help.faq.title': 'FAQ',
+  'admin.help.faq.body':
+    'Does data leave my server? — Your corpus stays in your database. Only retrieved text chunks are sent to the Claude API when visitors ask questions.\n\nCan I use a subdomain? — Yes. Point the subdomain document root at public_html and set the embed base path accordingly.\n\nStreaming responses? — NeNe Corpus uses sync JSON chat (loading indicator in the widget), not SSE token streaming.\n\nMore detail — see shared-hosting operator docs shipped with the release ZIP.',
   'widget.chat.panelLabel': 'NeNe Corpus chat',
   'widget.chat.emptyPrompt': 'Ask a question about our products.',
   'widget.chat.loading': 'Searching the corpus…',

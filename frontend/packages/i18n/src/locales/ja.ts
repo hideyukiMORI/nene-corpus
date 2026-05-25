@@ -160,6 +160,27 @@ export const ja = defineMessages({
   'admin.appearance.saveSuccess': '設定を保存しました。',
   'admin.appearance.loadFailed': '設定の読み込みに失敗しました。',
   'admin.appearance.saveFailed': '設定の保存に失敗しました。',
+  'admin.help.title': 'ヘルプ・運用ガイド',
+  'admin.help.subtitle': 'この画面から、使い方・埋め込み・トラブルシュートを確認できます。',
+  'admin.help.open': 'ヘルプ',
+  'admin.help.quickStart.title': 'クイックスタート',
+  'admin.help.quickStart.body':
+    '1. オペレーターのメールとパスワードでログイン\n2. 取り込み — CSV/PDF をアップロード、またはテキストを貼り付け\n3. ソース — ステータスが Ready になることを確認\n4. 外観 — 色を調整し、embed スニペットをコピー\n5. 自サイト（同一ドメイン）の HTML に貼り付けてチャットを試す',
+  'admin.help.ingestion.title': '取り込み（CSV / PDF / テキスト）',
+  'admin.help.ingestion.body':
+    'ファイル — CSV はプレビュー後に列マッピング（タイトル列・本文列）が必要です。PDF はページ単位でテキスト抽出。最大 5 MB。\n\nテキスト — 「テキスト入力」タブで FAQ や短文を貼り付け。1 回の入力が 1 件の検索用ドキュメントになります。\n\nソース一覧が Ready になればチャットで検索できます。',
+  'admin.help.embed.title': 'ホームページへの埋め込み',
+  'admin.help.embed.body':
+    'WordPress プラグインではありません。同一オリジンに NeNe Corpus を置き、外観設定の embed スニペットを HTML に 1 ブロック追加します。\n\nwidget.css と widget.js がチャット UI を自動起動します。data-endpoint はインストールパス（例: /nene-corpus）に合わせてください。\n\n本番前にステージング URL で確認することをおすすめします。HTTPS 推奨。',
+  'admin.help.appearance.title': '外観とプレビュー',
+  'admin.help.appearance.body':
+    'ウィジェットの色・角丸・最大幅・HERO ウェルカム文を設定できます。\n\nウィジェット言語は訪問者のブラウザに合わせるか固定できます。\n\nプレビュー iframe で確認後、保存で反映。スニペットのパスはインストール先に合わせて自動生成されます。',
+  'admin.help.troubleshooting.title': 'トラブルシュート',
+  'admin.help.troubleshooting.body':
+    'ログインできない — 認証情報と、ベース URL の /health が応答するか確認。\n\nソースが Failed — CSV の列設定や PDF のテキスト抽出を見直し。\n\nウィジェットが真っ白 — 開発者ツールで widget.js / widget.css が同一オリジンから読めているか確認。\n\nアップデート後に Admin が 500 — DB マイグレーションを実行（docker compose exec app composer migrations:migrate など）。\n\nローカル dev でプレビュー真っ白 — git pull 後は admin (:5173) と widget (:5174) の dev サーバーを再起動。',
+  'admin.help.faq.title': 'よくある質問',
+  'admin.help.faq.body':
+    'データは外部に出る？ — コーパスは自社 DB に保存。質問時に検索でヒットしたテキスト断片のみ Claude API に送られます。\n\nサブドメインは使える？ — 可能です。サブドメインの document root を public_html に向け、embed のベースパスを合わせてください。\n\nストリーミング応答は？ — sync JSON チャット（ローディング表示）のみ。SSE の逐次表示は非対応です。\n\n詳細 — リリース ZIP 同梱の shared-hosting 運用ドキュメントを参照。',
   'widget.chat.panelLabel': 'NeNe Corpus チャット',
   'widget.chat.emptyPrompt': '商品やサービスについて質問してみてください。',
   'widget.chat.loading': '資料を検索しています…',
