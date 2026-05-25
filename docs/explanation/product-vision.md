@@ -4,7 +4,7 @@ NeNe Corpus is a self-hosted knowledge chat platform built on [NENE2](https://gi
 
 ## Origin
 
-Many small and medium businesses sit on valuable information — PDF manuals, CSV catalogs, internal FAQs — that never becomes searchable or conversational. SaaS chatbots rent access to your data and charge recurring fees. NeNe Corpus offers an alternative: **run the corpus and chat stack on infrastructure you control**, with source code you can audit.
+Many small and medium businesses sit on valuable **public-facing** information — product catalogs, PDF spec sheets, pairing guides, FAQs — that never becomes searchable or conversational on their own website. SaaS chatbots rent access to your data and charge recurring fees. NeNe Corpus offers an alternative: **run the corpus and chat stack on infrastructure you control**, with source code you can audit, and pay for the **LLM API** on usage rather than a fixed chatbot subscription.
 
 The product showcases NENE2's strengths: OpenAPI-first APIs, Clean Architecture, MCP-ready ops boundaries, and field-trial-grade security discipline — in a **real application**, not a demo endpoint.
 
@@ -35,6 +35,24 @@ Docker Compose for local dev and production on VPS. Same API and **embed widget*
 **Later — international**
 
 Southeast Asia and EU operators who value data sovereignty. May need multilingual UI and messaging-app channels; not Phase 1 blockers.
+
+## Primary use case
+
+NeNe Corpus optimizes for **consumer-facing search assistants on an existing company website**:
+
+- Corpus content is **already public or intended for the site** — product lines, spec PDFs, how-to guides, pairing or usage notes.
+- Visitors ask questions through the **embed widget**; answers include **citations** back to ingested chunks.
+- Operators accept that matched corpus text is sent to the **Claude API** server-side for reasoning — appropriate for public marketing and support content, not for undisclosed trade secrets.
+
+**Not the primary story:** internal LAN deployments where confidential documents must never leave the network, then exposing the same assistant anonymously on the public web. Tier B (Docker/VPS) serves developers and controlled hosting; the **product narrative** leads with Tier A SMB operators who want a homepage assistant without a SaaS subscription.
+
+## Primary persona
+
+A fictional but representative operator:
+
+> A small regional **food or beverage maker** with a wide product range (many SKUs, seasonal labels). The company site runs on **shared hosting**. A **non-engineer** staff member — often general affairs or marketing — already publishes updates through WordPress or a similar CMS. Leadership asks for an **AI search assistant on the homepage** so visitors can ask about products, ingredients, and serving suggestions. Budget allows **initial setup** and **pay-as-you-go LLM usage**; a **monthly chatbot SaaS** is a hard sell. After Phase 3, they should install via **web installer**, upload PDFs/CSV, copy the **embed widget** snippet, and report success without hiring a developer.
+
+The same pattern applies to **equipment manufacturers**, **specialty retailers**, and other catalog-heavy SMBs: many products, modest web budget, staff who can manage uploads but not Docker.
 
 ## Dual deployment
 
@@ -101,14 +119,17 @@ Explicit domain modules, small use cases, typed DTOs, ADRs, Issue-driven workflo
 
 ## Comparison
 
-| Aspect | SaaS chatbot (Notion AI, etc.) | NeNe Corpus |
-| --- | --- | --- |
-| Data location | Vendor cloud | Your DB + storage |
-| Cost model | Subscription | OSS + infra + LLM API usage |
-| Customization | Limited | Fork, extend, self-host |
-| Citations | Varies | Core product promise |
-| CMS | Bundled or separate | Optional NeNe Records upstream |
-| Deploy | Vendor-hosted | **Tier A** shared hosting or **Tier B** Docker/VPS |
+| Aspect | SaaS chatbot | Self-hosted RAG (Docker-first) | NeNe Corpus |
+| --- | --- | --- | --- |
+| License / initial cost | Subscription | OSS (no license fee) | OSS (no license fee) |
+| Running cost | Fixed monthly fee | Infra + LLM API usage | Hosting + **LLM API usage** |
+| Data location | Vendor cloud | Your infra | Your DB + storage |
+| Typical adoption | Low (vendor onboarding) | Often requires Docker / ops comfort | **WordPress-like** on Tier A (target) |
+| Homepage embed | Vendor widget | Varies | **embed widget** — one same-origin `<script>` |
+| Citations | Varies | Varies | **Core product promise** |
+| Japanese admin UI | Vendor-dependent | Varies | Planned (Phase 3) |
+| CMS upstream | Bundled or separate | N/A | Optional NeNe Records (HTTP) |
+| Deploy | Vendor-hosted | Usually Tier B–style | **Tier A** shared hosting or **Tier B** Docker/VPS |
 
 ## Relationship to NENE2
 
@@ -132,6 +153,7 @@ NeNe Records   → sibling CMS (optional upstream)
 - Direct database access for LLM or MCP tools
 - Subscription-only SaaS as the primary delivery model
 - Docker-only deployment (shared hosting must remain a first-class path)
+- **Primary positioning** as an internal confidential-document appliance whose answers are exposed to anonymous public visitors — operators must ingest only content suitable for public Q&A and Claude API transmission
 
 ## Naming
 
