@@ -144,7 +144,7 @@ export const en = defineMessages({
   'admin.appearance.previewTitle': 'Preview',
   'admin.appearance.embedTitle': 'Embed on your site',
   'admin.appearance.embedSubtitle':
-    'Copy this HTML into a WordPress custom HTML block, theme footer, or any same-origin page. The widget starts automatically.',
+    'Copy this single script tag into a WordPress custom HTML block, theme footer, or any same-origin page. The widget loads its CSS and starts automatically.',
   'admin.appearance.embedCopy': 'Copy snippet',
   'admin.appearance.embedCopied': 'Copied!',
   'admin.appearance.embedCopyFailed': 'Could not copy to clipboard.',

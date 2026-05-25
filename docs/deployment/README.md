@@ -36,8 +36,6 @@ Details: [`../development/docker.md`](../development/docker.md)
 After install, add the **embed widget** on any **same-origin** page. Replace `/nene-corpus` with your base path:
 
 ```html
-<link rel="stylesheet" href="/nene-corpus/widget.css" />
-<div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
 ```
 

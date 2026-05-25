@@ -134,12 +134,10 @@ Add the following to any page on the **same origin** (WordPress custom HTML bloc
 Replace `/nene-corpus` with your **base path** if different (installer shows detected paths at `/install/`):
 
 ```html
-<link rel="stylesheet" href="/nene-corpus/widget.css" />
-<div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
 ```
 
-- `data-endpoint` — public API base path (same as base path; **no** `/api` suffix). The widget **auto-starts** when the script loads — no extra init block required.
+- `data-endpoint` — public API base path (same as base path; **no** `/api` suffix). The widget **auto-starts** when the script loads — no extra init block required. The script also injects `widget.css` and the mount `<div>` when they are not already on the page.
 - Widget appearance (colors, default language) — configure in Admin → Appearance
 
 The **embed widget** uses **sync JSON chat** (full reply + citations). A loading indicator and CSS motion appear while waiting — no token streaming.
