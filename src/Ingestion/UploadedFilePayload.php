@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Ingestion;
 
-final readonly class CsvFilePayload
+final readonly class UploadedFilePayload
 {
     public function __construct(
         public string $bytes,

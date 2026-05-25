@@ -8,12 +8,13 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\AdminHttpTestSupport;
+use NeneCorpus\Tests\Support\SampleTextPdf;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class CsvIngestionHttpTest extends TestCase
+final class PdfIngestionHttpTest extends TestCase
 {
     private const JWT_SECRET = 'test-admin-jwt-secret';
 
@@ -24,7 +25,7 @@ final class CsvIngestionHttpTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->databasePath = sys_get_temp_dir() . '/nene-corpus-csv-ingestion-' . uniqid('', true) . '.sqlite';
+        $this->databasePath = sys_get_temp_dir() . '/nene-corpus-pdf-ingestion-' . uniqid('', true) . '.sqlite';
 
         $_ENV['NENE2_LOCAL_JWT_SECRET'] = self::JWT_SECRET;
         $_SERVER['NENE2_LOCAL_JWT_SECRET'] = self::JWT_SECRET;
@@ -66,52 +67,35 @@ final class CsvIngestionHttpTest extends TestCase
         }
     }
 
-    public function test_preview_returns_headers_and_sample_rows(): void
+    public function test_preview_returns_page_count_and_sample_text(): void
     {
-        $csv = <<<'CSV'
-product_name,description,price
-Widget A,Great widget,100
-CSV;
-
-        $response = $this->authorizedPost('/admin/ingestion/csv/preview', [
-            'filename' => 'catalog.csv',
-            'content' => base64_encode($csv),
+        $response = $this->authorizedPost('/admin/ingestion/pdf/preview', [
+            'filename' => 'sample-text.pdf',
+            'content' => SampleTextPdf::base64(),
         ]);
 
         $payload = $this->decodeJson($response);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame(['product_name', 'description', 'price'], $payload['headers']);
-        self::assertSame(1, $payload['row_count']);
-        self::assertSame(',', $payload['detected_delimiter']);
+        self::assertSame(1, $payload['page_count']);
+        self::assertStringContainsString('Sample PDF', $payload['sample_text']);
     }
 
-    public function test_create_source_persists_corpus_rows(): void
+    public function test_create_pdf_source_persists_corpus_rows(): void
     {
-        $csv = <<<'CSV'
-product_name,description,price
-Widget A,Great widget,100
-Widget B,Another widget,200
-CSV;
-
         $response = $this->authorizedPost('/admin/sources', [
-            'source_type' => 'csv',
-            'name' => 'Product catalog',
-            'filename' => 'catalog.csv',
-            'content' => base64_encode($csv),
-            'column_mapping' => [
-                'title_column' => 'product_name',
-                'content_columns' => ['description'],
-                'metadata_columns' => ['price'],
-            ],
+            'source_type' => 'pdf',
+            'name' => 'Sample manual',
+            'filename' => 'sample-text.pdf',
+            'content' => SampleTextPdf::base64(),
         ]);
 
         $payload = $this->decodeJson($response);
 
         self::assertSame(201, $response->getStatusCode());
         self::assertSame('ready', $payload['status']);
-        self::assertSame(2, $payload['document_count']);
-        self::assertSame(2, $payload['chunk_count']);
+        self::assertSame(1, $payload['document_count']);
+        self::assertSame(1, $payload['chunk_count']);
 
         $container = (new RuntimeContainerFactory())->create();
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
@@ -120,17 +104,6 @@ CSV;
         $source = $executor->fetchOne('SELECT storage_path FROM sources WHERE id = ?', [$payload['source_id']]);
         self::assertIsArray($source);
         $this->uploadedFiles[] = (string) $source['storage_path'];
-    }
-
-    public function test_preview_requires_bearer_token(): void
-    {
-        $response = $this->application()->handle(
-            $this->factory()->createServerRequest('POST', 'https://example.test/admin/ingestion/csv/preview')
-                ->withHeader('Content-Type', 'application/json')
-                ->withBody($this->factory()->createStream('{}')),
-        );
-
-        self::assertSame(401, $response->getStatusCode());
     }
 
     /**

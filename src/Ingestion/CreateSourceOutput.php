@@ -6,7 +6,7 @@ namespace NeneCorpus\Ingestion;
 
 use NeneCorpus\Source\SourceStatus;
 
-final readonly class CreateCsvSourceOutput
+final readonly class CreateSourceOutput
 {
     public function __construct(
         public int $sourceId,

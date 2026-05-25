@@ -14,7 +14,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 1.
 - [x] Repository tests (SQLite `:memory:`)
 - [x] Admin auth (JWT) for mutating routes (#9)
 - [x] CSV upload API + column mapping preview (#11)
-- [ ] PDF text extraction (text PDF first)
+- [x] PDF text extraction (text PDF first) (#13)
 - [ ] Admin HTTP routes + OpenAPI
 - [ ] Reindex / delete **source** operations API
 

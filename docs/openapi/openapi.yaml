@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.3.0
+  version: 0.4.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
-    Phase 1 adds admin auth, CSV ingestion, and corpus storage foundations.
+    Phase 1 adds admin auth, CSV/PDF ingestion, and corpus storage foundations.
 servers:
   - url: http://localhost:8080
     description: Local development server
@@ -14,7 +14,7 @@ tags:
   - name: Admin
     description: Admin authentication for mutating routes.
   - name: Ingestion
-    description: CSV upload and column mapping preview.
+    description: CSV and PDF upload, preview, and ingestion.
 paths:
   /health:
     get:
@@ -129,12 +129,40 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/ingestion/pdf/preview:
+    post:
+      tags:
+        - Ingestion
+      summary: Preview PDF text
+      description: Extract page count and sample text from a text-based PDF. No database writes.
+      operationId: previewPdfIngestion
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewPdfIngestionRequest'
+      responses:
+        '200':
+          description: Parsed PDF preview.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreviewPdfIngestionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/sources:
     post:
       tags:
         - Ingestion
-      summary: Create CSV source
-      description: Store CSV file, create source, and sync parse into documents and chunks.
+      summary: Create source
+      description: Store uploaded file and sync parse into documents and chunks. Supports CSV and text PDF.
       operationId: createSource
       security:
         - bearerAuth: []
@@ -307,17 +335,45 @@ components:
         - name
         - filename
         - content
-        - column_mapping
       properties:
+        source_type:
+          type: string
+          enum:
+            - csv
+            - pdf
+          default: csv
         name:
           type: string
         filename:
           type: string
         content:
           type: string
-          description: Base64-encoded CSV bytes.
+          description: Base64-encoded file bytes.
         column_mapping:
           $ref: '#/components/schemas/CsvColumnMapping'
+          description: Required when `source_type` is `csv`.
+    PreviewPdfIngestionRequest:
+      type: object
+      required:
+        - filename
+        - content
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          description: Base64-encoded PDF bytes.
+    PreviewPdfIngestionResponse:
+      type: object
+      required:
+        - page_count
+        - sample_text
+      properties:
+        page_count:
+          type: integer
+          format: int64
+        sample_text:
+          type: string
     CsvColumnMapping:
       type: object
       required:

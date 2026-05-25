@@ -6,5 +6,5 @@ namespace NeneCorpus\Ingestion;
 
 interface CreateCsvSourceUseCaseInterface
 {
-    public function execute(CreateCsvSourceInput $input): CreateCsvSourceOutput;
+    public function execute(CreateCsvSourceInput $input): CreateSourceOutput;
 }
