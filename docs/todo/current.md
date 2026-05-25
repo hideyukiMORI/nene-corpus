@@ -5,131 +5,79 @@ Last updated: 2026-05-25
 ## 最近の docs 更新
 
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
-- Phase 2 開始 — chat sessions/messages schema (#17), chunk search (#19)
-- Primary persona と公開 corpus 訴求を product vision に追記 (#23)
-- sync JSON chat API + Claude tool_use (#25)
-- consumer chat rate limiting (#29)
-- **Phase 2 完了**
-- Phase 3 開始 — frontend monorepo scaffold (#33)
+- Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
+- Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
+- Phase 3+ バックログ追記 — オペレーター docs、テキスト取り込み、Widget UX 拡張（本ファイル）
 
 ## 状態サマリー
 
 **Phase 1 — Corpus & Ingestion: 完了（2026-05-25）**
 
-- ✅ Schema, Admin auth, CSV/PDF ingestion, Reindex/delete
-
 **Phase 2 — Chat & Citations: 完了（2026-05-25）**
-
-- ✅ Sessions + messages schema（#17）
-- ✅ Chunk search（#19）
-- ✅ Sync JSON chat（#25）
-- ✅ Rate limiting（#29）
 
 **Phase 3 — Admin UI & Widget: 進行中（2026-05-25）**
 
-- ✅ Frontend scaffold（#33）
-- ✅ embed widget → sync JSON chat 接続（#37）
-- ✅ Admin sources 一覧 UI（#39）
-- ✅ Admin CSV/PDF アップロード UI（#45）
-- 🔜 conversation logs
+| 項目 | 状態 |
+| --- | --- |
+| Frontend monorepo + widget + sync JSON chat | ✅ |
+| Admin sources / ingestion / conversation logs | ✅ |
+| Widget i18n + Appearance settings | ✅ |
+| Admin i18n + locale fonts + light/dark theme | ✅ |
+| **Tier A web installer + release ZIP** | 🔜 |
+| **Shared-hosting operator docs（installer 連動）** | 🔜 |
 
-`composer check` ローカル / GitHub Actions Backend CI ともに green。
+`composer check` / `npm run check --prefix frontend` / GitHub Actions CI green。
 
 ---
 
-## Phase 1 進捗
+## Phase 3 残り（Tier A）
 
-| 項目 | 状態 |
-| --- | --- |
-| Schema: sources, documents, chunks | ✅ (#7) |
-| Admin auth (JWT) | ✅ (#9) |
-| CSV upload API | ✅ (#11) |
-| PDF text extraction | ✅ (#13) |
-| Reindex / delete source | ✅ (#15) |
-
-Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05-corpus-ingestion.md)
-
----
-
-## Phase 2 進捗
-
-| 項目 | 状態 |
-| --- | --- |
-| Schema: chat_sessions, chat_messages | ✅ (#17) |
-| Chunk search (full-text) | ✅ (#19) |
-| Claude tool_use + citations | ✅ (#25) |
-| Sync JSON chat API | ✅ (#25) |
-| Rate limiting | ✅ (#29) |
-
-Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-05-chat-and-citations.md)
-
----
-
-## Phase 3 進捗
-
-| 項目 | 状態 |
-| --- | --- |
-| Frontend monorepo scaffold | ✅ (#33) |
-| embed widget + sync JSON chat | ✅ (#37) |
-| Admin sources list UI | ✅ (#39) |
-| Admin ingestion upload UI | ✅ (#45) |
-| Admin UI (conversation logs) | 🔜 |
-| Appearance settings | 🔜 |
-| Tier A installer + release ZIP | 🔜 |
+| 優先 | 項目 | 説明 |
+| --- | --- | --- |
+| P0 | **Web installer** | DB・管理者・API キー初回設定（ブラウザ完結） |
+| P0 | **Release ZIP** | vendor 同梱、FTP アップロード想定 |
+| P1 | Shared-hosting docs 更新 | installer 手順と整合 |
 
 Milestone: [`docs/milestones/2026-05-admin-ui-and-widget.md`](../milestones/2026-05-admin-ui-and-widget.md)
 
 ---
 
-## Phase 0 完了
+## Phase 3+ バックログ（合意済み・未着手）
 
-| 項目 | 状態 |
-| --- | --- |
-| ガバナンス docs（AGENTS, ADR, inheritance, Cursor rules） | ✅ |
-| NENE2 consumer scaffold + `GET /health` | ✅ |
-| OpenAPI + MCP 最小契約 + `composer check` | ✅ |
-| Backend CI (GitHub Actions) | ✅ |
+Issue 化してから実装。優先は Tier A 完了後に再整理。
+
+### オペレーター向けドキュメント
+
+| 優先 | 項目 | メモ |
+| --- | --- | --- |
+| P1 | Admin 内 Help / Docs | 使い方・チュートリアル・FAQ。管理画面から辿れる |
+| P2 | 公開説明書 | セットアップ後の運用ガイド（ ingest / embed / トラブルシュート） |
+
+### コンテンツ取り込み・管理
+
+| 優先 | 項目 | メモ |
+| --- | --- | --- |
+| P1 | **テキスト直接入力** | CSV/PDF 以外 — メモ・FAQ 短文のペースト取り込み |
+| P2 | **ドキュメント一覧・編集・削除** | 取り込み後の CRUD。テキスト入力とセットで検討 |
+| P2 | チャンクプレビュー | 編集 UI の前段として有用 |
+
+### Widget / チャット UX
+
+| 優先 | 項目 | メモ |
+| --- | --- | --- |
+| P1 | **HERO / ウェルカム** | チャット開始前のタイトル・説明文・CTA |
+| P1 | **吹き出し UI** | アバター、user/assistant バブル、モダンなレイアウト |
+| P2 | **ストリーミング表示** | 文字の逐次表示・スクロール挙動（SSE は Phase 2 P2 と連動） |
+| P2 | **アバター登録** | Appearance または operator アップロード |
+| P2 | **カスタム CSS** | WordPress 系向け。widget スコープ限定・サニタイズ必須 |
 
 ---
 
-## Up Next — Phase 1（Corpus & Ingestion）
-
-**運用:** Issue → `type/issue-number-summary` ブランチ → PR → merge（`main` 直 push 禁止）。Phase 0 bootstrap のみ historical exception — `docs/workflow.md` 参照。
+## Phase 2 残（任意）
 
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
-| ~~P0~~ | ~~Schema: sources, documents, chunks~~ | ✅ #7 |
-| ~~P0~~ | ~~Admin auth (JWT)~~ | ✅ #9 |
-| ~~P0~~ | ~~CSV upload API~~ | ✅ #11 |
-| ~~P0~~ | ~~PDF text extraction~~ | ✅ #13 |
-| ~~P2~~ | ~~Reindex / delete source~~ | ✅ #15 |
-
-詳細は [`docs/roadmap.md`](../roadmap.md)。
-
----
-
-## Up Next — Phase 2（Chat）
-
-| 優先 | 項目 | 説明 |
-| --- | --- | --- |
-| ~~P0~~ | ~~Sessions + messages~~ | ✅ #17 |
-| ~~P0~~ | ~~Chunk search~~ | ✅ #19 |
-| ~~P0~~ | ~~Claude tool_use + citations~~ | ✅ #25 |
-| ~~P0~~ | ~~Sync JSON chat API~~ | ✅ #25 |
-| ~~P1~~ | ~~Rate limiting~~ | ✅ #29 |
-| P2 | SSE streaming | Tier B 任意 — 用語: **SSE streaming** |
-
----
-
-## Up Next — Phase 3（Admin & Widget）
-
-| 優先 | 項目 | 説明 |
-| --- | --- | --- |
-| ~~P0~~ | ~~Frontend scaffold~~ | ✅ #33 |
-| ~~P0~~ | ~~embed widget~~ | ✅ #37 |
-| P0 | Admin UI | sources, ingestion, logs |
-| P1 | Appearance settings | operator theme overrides |
-| P1 | Tier A installer + ZIP | shared hosting |
+| P2 | SSE streaming | Tier B 任意 — Widget ストリーミング UX とセットで検討 |
 
 ---
 
