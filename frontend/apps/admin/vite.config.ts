@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { workspacePackageFullReload } from '../../vite.workspace-package-full-reload';
 
 const appRoot = fileURLToPath(new URL('.', import.meta.url));
 const adminOutDir = process.env.NENE_CORPUS_ADMIN_OUT
@@ -11,7 +12,7 @@ const adminOutDir = process.env.NENE_CORPUS_ADMIN_OUT
 
 export default defineConfig({
   base: './',
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), workspacePackageFullReload(appRoot)],
   resolve: {
     alias: {
       '@nene-corpus/api-client': resolve(appRoot, '../../packages/api-client/src/index.ts'),

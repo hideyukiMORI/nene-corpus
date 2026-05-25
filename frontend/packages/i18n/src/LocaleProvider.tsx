@@ -51,12 +51,13 @@ export function LocaleProvider({
 
   const value = useMemo<LocaleContextValue>(() => {
     const catalog = getMessageCatalog(locale);
+    const fallbackCatalog = locale === 'en' ? undefined : getMessageCatalog('en');
 
     return {
       locale,
       supportedLocales: SUPPORTED_LOCALES,
       setLocale,
-      t: (key, params) => translate(catalog, key, params),
+      t: (key, params) => translate(catalog, key, params, fallbackCatalog),
     };
   }, [locale, setLocale]);
 

@@ -55,10 +55,21 @@ Goal: operable product without curl; Tier A install path.
 
 - React admin: sources, ingestion status, conversation logs
 - **Embeddable embed widget** (`widget.js` + snippet for **same origin** pages)
-- Prompt / scope / fallback settings UI
+- Prompt / scope / fallback settings UI — **Phase 3+**（未着手）
 - **Tier A deliverables:** **web installer**, **release ZIP** (vendor bundled), shared-hosting operator docs
 
 **Status: complete (2026-05-25).** Milestone: [`milestones/2026-05-admin-ui-and-widget.md`](./milestones/2026-05-admin-ui-and-widget.md).
+
+## Phase 3+: Operator UX & settings (backlog)
+
+Goal: day-2 operations without SSH or hosting-panel `.env` edits where possible.
+
+- **Conversation log metadata** — client IP, User-Agent (optional referer) on session create; admin detail view; privacy/retention notes
+- **LLM API key management** — rotate or switch Anthropic account from Admin (installer is first-time only today); masked key, test-before-save, never expose full secret in API responses
+- **Prompt / scope / fallback settings UI** — deferred from Phase 3 roadmap line
+- Widget UX polish (HERO, bubbles, CSS motion) — see [`todo/current.md`](./todo/current.md)
+
+Issue 化してから実装。詳細バックログ: [`docs/todo/current.md`](./todo/current.md) § Phase 3+.
 
 ## Phase 4: Upstream Integrations
 

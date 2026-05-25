@@ -7,9 +7,21 @@ import {
   type WidgetHero,
   type WidgetTheme,
 } from '@nene-corpus/api-client';
-import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
+import { APPEARANCE_HERO_TOGGLE_FALLBACK } from './appearanceHeroToggleFallback';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
+import { HelpLabel } from './HelpLabel';
+
+/** Literal keys — do not read `Msg.admin.appearance` hero toggles at module init (Vite HMR may serve stale `keys.ts`). */
+const HERO_TOGGLE_MSG = {
+  showTitle: 'admin.appearance.heroShowTitle',
+  showTitleHelp: 'admin.appearance.heroShowTitleHelp',
+  showDescription: 'admin.appearance.heroShowDescription',
+  showDescriptionHelp: 'admin.appearance.heroShowDescriptionHelp',
+  showCta: 'admin.appearance.heroShowCta',
+  showCtaHelp: 'admin.appearance.heroShowCtaHelp',
+} as const satisfies Record<string, MsgKey>;
 
 interface HeroFormState {
   title: string;
@@ -53,6 +65,27 @@ interface AppearancePanelProps {
 
 export function AppearancePanel({ token }: AppearancePanelProps) {
   const t = useMsg();
+  const { locale } = useLocale();
+  const heroToggleFallback = APPEARANCE_HERO_TOGGLE_FALLBACK[locale];
+
+  const heroToggleCopy = useMemo(() => {
+    const resolve = (key: MsgKey, emergency: string): string => {
+      const text = t(key);
+      return isUnresolvedTranslation(text, key) ? emergency : text;
+    };
+
+    return {
+      showTitle: resolve(HERO_TOGGLE_MSG.showTitle, heroToggleFallback.showTitle),
+      showTitleHelp: resolve(HERO_TOGGLE_MSG.showTitleHelp, heroToggleFallback.showTitleHelp),
+      showDescription: resolve(HERO_TOGGLE_MSG.showDescription, heroToggleFallback.showDescription),
+      showDescriptionHelp: resolve(
+        HERO_TOGGLE_MSG.showDescriptionHelp,
+        heroToggleFallback.showDescriptionHelp,
+      ),
+      showCta: resolve(HERO_TOGGLE_MSG.showCta, heroToggleFallback.showCta),
+      showCtaHelp: resolve(HERO_TOGGLE_MSG.showCtaHelp, heroToggleFallback.showCtaHelp),
+    };
+  }, [t, heroToggleFallback]);
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
@@ -202,14 +235,18 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.heroSubtitle)}</p>
             </div>
             <div className="block text-sm">
-              <label className="flex items-center gap-2 font-medium text-fg">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={heroForm.show_title}
                   onChange={(event) => updateHeroField('show_title', event.target.checked)}
                 />
-                {t(Msg.admin.appearance.heroShowTitle)}
-              </label>
+                <HelpLabel
+                  className="font-medium text-fg"
+                  label={heroToggleCopy.showTitle}
+                  help={heroToggleCopy.showTitleHelp}
+                />
+              </div>
               <input
                 className="nc-input"
                 type="text"
@@ -220,14 +257,18 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </div>
             <div className="block text-sm">
-              <label className="flex items-center gap-2 font-medium text-fg">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={heroForm.show_description}
                   onChange={(event) => updateHeroField('show_description', event.target.checked)}
                 />
-                {t(Msg.admin.appearance.heroShowDescription)}
-              </label>
+                <HelpLabel
+                  className="font-medium text-fg"
+                  label={heroToggleCopy.showDescription}
+                  help={heroToggleCopy.showDescriptionHelp}
+                />
+              </div>
               <textarea
                 className="nc-input min-h-20 resize-y"
                 value={heroForm.description}
@@ -237,14 +278,18 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </div>
             <div className="block text-sm">
-              <label className="flex items-center gap-2 font-medium text-fg">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={heroForm.show_cta}
                   onChange={(event) => updateHeroField('show_cta', event.target.checked)}
                 />
-                {t(Msg.admin.appearance.heroShowCta)}
-              </label>
+                <HelpLabel
+                  className="font-medium text-fg"
+                  label={heroToggleCopy.showCta}
+                  help={heroToggleCopy.showCtaHelp}
+                />
+              </div>
               <input
                 className="nc-input"
                 type="text"
@@ -255,7 +300,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <ColorField
               label={t(Msg.admin.appearance.colorPrimary)}
               value={theme.color_primary}
@@ -325,13 +370,13 @@ function ColorField({ label, value, onChange }: ColorFieldProps) {
       <span className="font-medium text-fg">{label}</span>
       <div className="mt-1 flex items-center gap-2">
         <input
-          className="h-10 w-12 cursor-pointer rounded-admin border border-border-strong"
+          className="h-10 w-12 shrink-0 cursor-pointer rounded-admin border border-border-strong"
           type="color"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         />
         <input
-          className="nc-input font-mono text-xs"
+          className="nc-input min-w-0 max-w-[7rem] flex-1 font-mono text-xs"
           type="text"
           value={value}
           onChange={(event) => onChange(event.target.value)}

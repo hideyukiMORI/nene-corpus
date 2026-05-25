@@ -68,6 +68,19 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **アバター登録** | Appearance または operator アップロード |
 | P2 | **カスタム CSS** | WordPress 系向け。widget スコープ限定・サニタイズ必須 |
 
+### 会話ログ・監査
+
+| 優先 | 項目 | メモ |
+| --- | --- | --- |
+| P2 | **セッション metadata** | #129 — `client_ip`・`user_agent`（任意で referer / 埋め込みページ）。`POST /chat/sessions` 作成時に記録。管理画面は一覧＋詳細パネル。IP/UA は個人データ — 保持期間・記録オフを docs に明記 |
+
+### オペレーター設定
+
+| 優先 | 項目 | メモ |
+| --- | --- | --- |
+| P1 | **LLM API キー管理 UI** | #130 — 現状は web installer 初回設定と `.env` 手編集のみ。有効期限切れ・別 Anthropic アカウントへの切替・キー更新を Admin から。マスク表示、保存前テスト、秘密情報は GET で返さない。Tier A は `.env` 更新 vs DB 暗号化の ADR 要 |
+| P2 | **プロンプト / スコープ / フォールバック設定** | roadmap Phase 3 記載の operator 設定 UI。LLM 挙動の調整 |
+
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
 ---

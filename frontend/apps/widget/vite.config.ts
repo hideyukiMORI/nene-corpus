@@ -2,11 +2,12 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { workspacePackageFullReload } from '../../vite.workspace-package-full-reload';
 
 const appRoot = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), workspacePackageFullReload(appRoot)],
   resolve: {
     alias: {
       '@nene-corpus/api-client': resolve(appRoot, '../../packages/api-client/src/index.ts'),
