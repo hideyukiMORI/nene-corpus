@@ -48,10 +48,12 @@ Install NENE2 as a Composer dependency and treat `vendor/hideyukimori/nene2/docs
 | Public Problem Details base URL | `https://nene-corpus.dev/problems/` |
 | Namespace | `NeneCorpus\` |
 | Coding standards | `docs/development/coding-standards.md` — NENE2 baseline + chat domains |
+| Naming conventions | `docs/development/naming-conventions.md` |
+| Glossary | `docs/explanation/glossary.md` |
 | Backend standards | `docs/development/backend-standards.md` |
 | Language policy | English for public docs, OpenAPI, API errors; Japanese allowed in Issues, PRs, commits, `.cursor/rules/` |
 | Review checklists | `docs/review/` — task-specific lists for this product |
-| Transport | Sync JSON chat (Phase 2+ default); SSE optional (Tier B) — ADR 0003 |
+| Transport | **sync JSON chat** (Phase 2+ default); **SSE streaming** optional (Tier B) — ADR 0003, [`glossary.md`](./explanation/glossary.md) |
 | Deployment | Tier A shared hosting + Tier B Docker/VPS — `docs/deployment/` |
 | External services | Claude API (server-side), optional NeNe Records HTTP client |
 

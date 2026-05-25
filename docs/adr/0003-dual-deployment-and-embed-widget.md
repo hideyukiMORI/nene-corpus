@@ -22,8 +22,8 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 | Tier | Audience | Install path | Chat transport |
 | --- | --- | --- | --- |
-| **A — Shared hosting** | Japan SMB primary | ZIP + web installer + FTP/SSH; MySQL | Sync JSON (default) |
-| **B — Docker / VPS** | Developers, VPS, private cloud | `docker compose up` | Sync JSON (default); SSE optional later |
+| **A — Shared hosting** | Japan SMB primary | ZIP + web installer + FTP/SSH; MySQL | **sync JSON chat** (default) |
+| **B — Docker / VPS** | Developers, VPS, private cloud | `docker compose up` | **sync JSON chat** (default); **SSE streaming** optional later |
 
 **Product delivery:**
 
@@ -33,13 +33,13 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 **Chat API (Phase 2):**
 
-- Default: `POST` message → wait → JSON response with full text and `citations[]`.
-- Optional later (Tier B): SSE streaming endpoint for progressive display.
+- Default (**sync JSON chat**): `POST` message → wait → JSON response with full text and `citations[]`.
+- Optional later (Tier B — **SSE streaming**): progressive display endpoint.
 
 **Markets:**
 
-- **Primary:** Japan SMB on PHP shared hosting.
-- **Secondary:** VPS/Docker self-hosters globally; Southeast Asia and EU where data sovereignty matters (internationalization and extra channels are follow-up, not Phase 1 blockers).
+- **Primary:** Japan SMB on **Tier A** **shared hosting**.
+- **Secondary:** **Tier B** VPS/Docker self-hosters globally; Southeast Asia and EU where data sovereignty matters (internationalization and extra channels are follow-up, not Phase 1 blockers).
 
 ## Consequences
 
@@ -47,21 +47,22 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 - Largest Japan SMB segment remains in scope without forking the product.
 - Developers keep Docker as the authoritative dev and Tier B path.
-- Sync JSON improves shared-hosting compatibility (timeouts, proxies, no long-lived connections).
-- Clear embed story for existing homepages.
+- **sync JSON chat** improves shared-hosting compatibility (timeouts, proxies, no long-lived connections).
+- Clear **embed widget** story for existing homepages.
 
 **Costs**
 
 - Two deployment doc tracks and a broader smoke-test matrix.
-- Tier A requires release ZIP packaging and web installer (Phase 3 deliverables).
+- Tier A requires **release ZIP** packaging and **web installer** (Phase 3 deliverables).
 - PHP version support for Tier A may need a wider floor (e.g. 8.2+) than dev-only 8.4 — track in Phase 1 Issues.
 
 **Follow-up**
 
 - `docs/deployment/shared-hosting.md` — Tier A operator guide (stub until installer lands).
 - `docs/development/docker.md` — Tier B (existing).
-- Phase 2 OpenAPI: document sync chat first; SSE as optional extension.
-- Phase 3: web installer, release ZIP, widget bundle.
+- Phase 2 OpenAPI: document **sync JSON chat** first; **SSE streaming** as optional extension.
+- Phase 3: **web installer**, **release ZIP**, **embed widget** bundle.
+- Terminology: `docs/explanation/glossary.md`, `docs/development/naming-conventions.md`.
 
 ## Related
 

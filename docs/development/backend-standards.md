@@ -4,6 +4,8 @@ NeNe Corpus backend policy for PHP API code. This document adapts [NeNe Records 
 
 **Framework baseline:** NENE2 `docs/development/` — deviate only via local ADR.
 
+**Naming and terms:** [`naming-conventions.md`](./naming-conventions.md), [`glossary.md`](../explanation/glossary.md).
+
 ---
 
 ## 1. Project shape
@@ -36,7 +38,7 @@ src/
   Source/             # source file metadata
   Document/           # logical documents
   Chunk/              # searchable text segments
-  Chat/               # send message (sync JSON; SSE optional Tier B)
+  Chat/               # send message (sync JSON chat; optional SSE streaming on Tier B)
   Session/            # consumer sessions
   Message/            # chat messages
   Search/             # full-text over chunks
@@ -58,7 +60,7 @@ Handler → UseCase → RepositoryInterface → PdoRepository
 
 | Layer | May | Must not |
 | --- | --- | --- |
-| **Handler** | Parse HTTP, build DTO, call UseCase, map JSON response (or SSE when enabled) | SQL, business rules, direct LLM calls |
+| **Handler** | Parse HTTP, build DTO, call UseCase, map JSON response (or **SSE streaming** when enabled) | SQL, business rules, direct LLM calls |
 | **UseCase** | Business rules, orchestration | `$_SERVER`, PDO, raw HTTP to Claude |
 | **Repository** | SQL / persistence | HTTP, session logic |
 | **Llm adapter** | Call Claude API from infrastructure | Domain invariants |
@@ -71,8 +73,8 @@ Use `final readonly` classes and `declare(strict_types=1);` in every PHP file.
 
 - Every public route appears in `docs/openapi/openapi.yaml` with `operationId`.
 - Success and Problem Details error shapes documented.
-- Chat: document **sync JSON** contract first (ADR 0003 — default for Tier A and Tier B).
-- Optional SSE: document in OpenAPI when implemented (Tier B polish).
+- Chat: document **sync JSON chat** contract first (ADR 0003 — default for Tier A and Tier B). See [`glossary.md`](../explanation/glossary.md).
+- Optional **SSE streaming**: document in OpenAPI when implemented (Tier B only).
 - RFC 9457 Problem Details for errors; base URL `https://nene-corpus.dev/problems/`.
 
 ---
@@ -127,7 +129,7 @@ NeNe Records and other CMS APIs are accessed only via `Upstream/` adapters imple
 - HTTP tests: exercise handlers through runtime or narrow integration tests.
 - OpenAPI contract tests in `tests/OpenApi/`.
 
-Naming: `test_{behavior}_when_{condition}`
+Test method naming: see [`naming-conventions.md`](./naming-conventions.md) §7.
 
 ---
 

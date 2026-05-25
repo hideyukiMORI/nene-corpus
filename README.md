@@ -9,13 +9,13 @@
 
 NeNe Corpus is a self-hosted, open-source knowledge chat platform built on [NENE2](https://github.com/hideyukiMORI/NENE2). Upload PDF and CSV, build a searchable corpus, and answer end-user questions with source citations — without sending your data to a SaaS vendor.
 
-**Primary audience:** Japan SMB on PHP shared hosting — add chat to an existing homepage with one script tag. **Also:** developers and VPS operators via Docker Compose (same product, two install paths — ADR 0003).
+**Primary audience:** Japan SMB on **Tier A** **shared hosting** — add **embed widget** to an existing homepage with one script tag. **Also:** **Tier B** developers and VPS operators via Docker Compose (**dual deployment** — ADR 0003).
 
 ## Goals
 
 - **Self-hosted OSS** — MIT licensed; shared hosting or VPS/private cloud
 - **Cited answers** — every response links back to document chunks
-- **Easy embed** — one `<script>` on same-origin pages (Phase 3 widget)
+- **Easy embed** — one `<script>` for the **embed widget** on same-origin pages (Phase 3)
 - **Secure by design** — audit logs, tenant boundaries, no DB bypass for AI tools
 - **AI-readable** — OpenAPI contract, MCP for ops, explicit Clean Architecture
 - **Sibling to NeNe Records** — optional CMS upstream; never merged into the CMS repo
@@ -55,7 +55,7 @@ Ops / AI (MCP)         ───────────────────
 - **Backend**: PHP 8.4, NENE2, Handler → UseCase → Repository
 - **API contract**: OpenAPI 3.1 ([`docs/openapi/openapi.yaml`](./docs/openapi/openapi.yaml))
 - **Ingestion**: PDF text extraction, CSV row mapping (planned)
-- **Chat**: sync JSON + citations, rate limits (SSE optional on Tier B — planned)
+- **Chat**: **sync JSON chat** + citations, rate limits (**SSE streaming** optional on Tier B — planned)
 - **Deploy**: dual path — [`docs/deployment/README.md`](./docs/deployment/README.md)
 
 ## Current Status
@@ -68,7 +68,7 @@ Ops / AI (MCP)         ───────────────────
 | Runtime scaffold | NENE2 consumer, `GET /health`, CI |
 | Ingestion API | Planned (Phase 1) |
 | Chat + citations | Planned (Phase 2) |
-| Admin UI + widget + Tier A installer | Planned (Phase 3) |
+| Admin UI + embed widget + Tier A installer | Planned (Phase 3) |
 
 See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
@@ -85,6 +85,8 @@ See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/t
 | Topic | Document |
 | --- | --- |
 | **Product vision** | [`docs/explanation/product-vision.md`](./docs/explanation/product-vision.md) |
+| **Glossary** | [`docs/explanation/glossary.md`](./docs/explanation/glossary.md) |
+| **Naming conventions** | [`docs/development/naming-conventions.md`](./docs/development/naming-conventions.md) |
 | **Deployment** | [`docs/deployment/README.md`](./docs/deployment/README.md) |
 | **Start here (agents)** | [`AGENTS.md`](./AGENTS.md) |
 | NENE2 inheritance map | [`docs/inheritance-from-nene2.md`](./docs/inheritance-from-nene2.md) |

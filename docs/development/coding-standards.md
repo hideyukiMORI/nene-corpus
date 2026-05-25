@@ -5,6 +5,8 @@ NeNe Corpus coding standards split by surface. **Full policies live in the dedic
 | Surface | Source of truth |
 | --- | --- |
 | **PHP / API / database** | [`backend-standards.md`](./backend-standards.md) |
+| **Naming (code, API, DB, tests)** | [`naming-conventions.md`](./naming-conventions.md) |
+| **Product terms (glossary)** | [`../explanation/glossary.md`](../explanation/glossary.md) |
 | **React / TypeScript admin & widget** | Phase 3 — policy will be added with `frontend/` |
 | **NENE2 inheritance map** | [`../inheritance-from-nene2.md`](../inheritance-from-nene2.md) |
 
@@ -27,7 +29,7 @@ NeNe Corpus coding standards split by surface. **Full policies live in the dedic
 
 ## Backend (summary)
 
-Full policy: **`docs/development/backend-standards.md`**.
+Full policy: **`docs/development/backend-standards.md`**. Naming: **`docs/development/naming-conventions.md`**. Terms: **`docs/explanation/glossary.md`**.
 
 - NENE2 consumer — framework in `vendor/`, product in `src/`
 - Domain-grouped modules — not layer folders

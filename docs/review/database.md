@@ -1,6 +1,6 @@
 # Database Self-Review
 
-Use for migrations, schema docs, repositories, and soft-delete behavior. Policy source: **`docs/development/backend-standards.md`**.
+Use for migrations, schema docs, repositories, and soft-delete behavior. Policy sources: **`docs/development/backend-standards.md`**, **`docs/development/naming-conventions.md`** §5.
 
 Also read:
 

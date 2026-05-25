@@ -12,6 +12,7 @@ Claude Code / AI agent guide for this repository. Cursor summaries live in `.cur
 | Workflow | `docs/workflow.md` |
 | Commits | `docs/development/commit-conventions.md` |
 | Coding | `docs/development/coding-standards.md` |
+| Naming / glossary | `docs/development/naming-conventions.md`, `docs/explanation/glossary.md` |
 | Deployment / dual Tier A·B | `docs/deployment/README.md`, ADR 0003 |
 | Current tasks | `docs/todo/current.md` |
 | Roadmap | `docs/roadmap.md` |
@@ -30,7 +31,7 @@ Claude Code / AI agent guide for this repository. Cursor summaries live in `.cur
 
 ## Product Direction
 
-Self-hosted knowledge corpus — ingest documents, chat with citations, keep data on your stack. **Dual deployment:** PHP shared hosting (Tier A, Japan SMB primary) or Docker/VPS (Tier B). Same-origin widget embed; sync JSON chat default. Admin UI + consumer chat widget. Optional NeNe Records as one upstream data source. ADR 0003.
+Self-hosted knowledge corpus — ingest documents, chat with citations, keep data on your stack. **Dual deployment:** **Tier A** shared hosting or **Tier B** Docker/VPS. Same-origin **embed widget**; **sync JSON chat** default. Admin UI + consumer chat. Optional NeNe Records upstream. ADR 0003; terms in `docs/explanation/glossary.md`.
 
 ## Verification
 

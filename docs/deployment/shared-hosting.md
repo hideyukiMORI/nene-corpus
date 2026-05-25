@@ -1,8 +1,8 @@
 # Shared Hosting Deployment (Tier A)
 
-Operator guide for **PHP-capable shared hosting** — the primary deployment target for Japan SMB. See ADR 0003.
+Operator guide for **Tier A** **shared hosting** — the primary deployment target for Japan SMB. See ADR 0003 and [`glossary.md`](../explanation/glossary.md).
 
-> **Status:** This path is the **product target** for operators. The web installer and release ZIP ship in **Phase 3**. Until then, advanced operators can deploy manually using the requirements below; Docker remains the supported development path.
+> **Status:** This path is the **product target** for operators. The **web installer** and **release ZIP** ship in **Phase 3**. Until then, advanced operators can deploy manually using the requirements below; Docker remains the supported development path (Tier B).
 
 ## Who this is for
 
@@ -10,7 +10,7 @@ Operator guide for **PHP-capable shared hosting** — the primary deployment tar
 - Operators who want **WordPress-like adoption** — upload, run installer, use admin UI — without replacing their current site
 - Teams that need corpus and chat data on **their MySQL**, not a SaaS vendor
 
-NeNe Corpus is **not a WordPress plugin**. It installs as a separate PHP app on the same domain and embeds into existing pages via one script tag.
+NeNe Corpus is **not a WordPress plugin**. It installs as a separate PHP app on the **same origin** and embeds **embed widget** into existing pages via one script tag.
 
 ## Requirements
 
@@ -30,11 +30,11 @@ NeNe Corpus is **not a WordPress plugin**. It installs as a separate PHP app on 
 2. Upload via FTP or hosting file manager to e.g. `/nene-corpus/` under the domain.
 3. Open **web installer** in browser — database credentials, admin account, optional API keys.
 4. Run migrations from installer (no SSH required).
-5. Copy the **embed snippet** from admin UI into existing homepage template.
+5. Copy the **embed widget** snippet from admin UI into existing homepage template.
 
 ## Embed on existing homepage
 
-Same origin — add one line to any page:
+**Same origin** — add one line to any page:
 
 ```html
 <script
@@ -44,7 +44,7 @@ Same origin — add one line to any page:
 ></script>
 ```
 
-Works alongside WordPress, static HTML, or other CMS pages on the same domain. The widget calls the sync JSON chat API (loading indicator while waiting; no SSE required).
+Works alongside WordPress, static HTML, or other CMS pages on the **same origin**. The **embed widget** calls **sync JSON chat** (loading indicator while waiting; **SSE streaming** not required on Tier A).
 
 ## Manual deploy (until web installer exists)
 
@@ -60,8 +60,8 @@ See [Docker development](../development/docker.md) for the canonical runtime lay
 
 ## Limitations on shared hosting
 
-- **PDF ingestion** may hit execution time and upload size limits — split large files or use VPS for heavy ingestion.
-- **SSE streaming** is not planned as Tier A default; use sync JSON.
+- **PDF ingestion** may hit execution time and upload size limits — split large files or use Tier B for heavy **ingestion**.
+- **SSE streaming** is not planned as Tier A default; use **sync JSON chat**.
 - **Claude API** usage is pay-as-you-go — configure keys in admin UI (Phase 2+).
 
 ## Troubleshooting
@@ -77,3 +77,4 @@ Document host-specific fixes in Issues/PRs as they appear. Common checks:
 - ADR 0003: `docs/adr/0003-dual-deployment-and-embed-widget.md`
 - Docker / VPS (Tier B): `docs/development/docker.md`
 - Product vision: `docs/explanation/product-vision.md`
+- Glossary: `docs/explanation/glossary.md`

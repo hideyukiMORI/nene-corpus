@@ -10,6 +10,8 @@ NeNe Corpus is built through small, Issue-driven changes. This document is the s
 | NeNe Records boundary | `docs/integrations/nene-records-client.md` |
 | Workflow | `docs/workflow.md` |
 | Coding standards | `docs/development/coding-standards.md` |
+| Naming conventions | `docs/development/naming-conventions.md` |
+| Glossary | `docs/explanation/glossary.md` |
 | Backend standards (PHP/API) | `docs/development/backend-standards.md` |
 | Docker development | `docs/development/docker.md` |
 | Deployment (Tier A/B) | `docs/deployment/README.md` |
