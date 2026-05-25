@@ -34,6 +34,8 @@ export const Msg = {
     app: {
       title: 'admin.app.title',
       language: 'admin.app.language',
+      themeLight: 'admin.app.themeLight',
+      themeDark: 'admin.app.themeDark',
       healthUnavailable: 'admin.app.healthUnavailable',
       healthStatus: 'admin.app.healthStatus',
     },

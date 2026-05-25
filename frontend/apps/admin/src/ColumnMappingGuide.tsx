@@ -4,19 +4,19 @@ export function ColumnMappingGuide() {
   const t = useMsg();
 
   return (
-    <details className="group rounded-md border border-sky-200 bg-sky-50/60 text-sm text-slate-700">
-      <summary className="cursor-pointer list-none px-3 py-2.5 font-medium text-sky-950 marker:content-none [&::-webkit-details-marker]:hidden">
+    <details className="group rounded-admin border border-accent-border bg-accent text-sm text-fg-muted">
+      <summary className="cursor-pointer list-none px-3 py-2.5 font-medium text-fg marker:content-none [&::-webkit-details-marker]:hidden">
         <span className="inline-flex items-center gap-2">
           <span
             aria-hidden
-            className="inline-block text-sky-600 transition-transform group-open:rotate-90"
+            className="inline-block text-focus transition-transform group-open:rotate-90"
           >
             ▶
           </span>
           {t(Msg.admin.ingestion.columnMappingGuideTitle)}
         </span>
       </summary>
-      <div className="space-y-3 border-t border-sky-200 px-3 py-3 leading-relaxed">
+      <div className="space-y-3 border-t border-accent-border px-3 py-3 leading-relaxed">
         <p className="whitespace-pre-line">{t(Msg.admin.ingestion.columnMappingGuideIntro)}</p>
         <GuideSection title={t(Msg.admin.ingestion.columnMappingGuideTitleHeading)} body={t(Msg.admin.ingestion.columnMappingGuideTitleBody)} />
         <GuideSection title={t(Msg.admin.ingestion.columnMappingGuideContentHeading)} body={t(Msg.admin.ingestion.columnMappingGuideContentBody)} />
@@ -35,8 +35,8 @@ interface GuideSectionProps {
 function GuideSection({ title, body }: GuideSectionProps) {
   return (
     <section>
-      <h4 className="font-medium text-slate-900">{title}</h4>
-      <p className="mt-1 whitespace-pre-line text-slate-600">{body}</p>
+      <h4 className="font-medium text-fg">{title}</h4>
+      <p className="mt-1 whitespace-pre-line text-fg-muted">{body}</p>
     </section>
   );
 }

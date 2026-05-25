@@ -94,26 +94,26 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
   }, [token, selectedSessionId, t]);
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 px-4 py-3">
+    <section className="nc-panel">
+      <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.conversationLogs.title)}</h2>
-        <p className="text-sm text-slate-600">{t(Msg.admin.conversationLogs.subtitle)}</p>
+        <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.subtitle)}</p>
       </div>
 
       {isLoadingSessions && (
-        <p className="px-4 py-6 text-sm text-slate-600">{t(Msg.admin.conversationLogs.loadingSessions)}</p>
+        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.conversationLogs.loadingSessions)}</p>
       )}
       {error !== null && <p className="px-4 py-6 text-sm text-red-600">{error}</p>}
 
       {!isLoadingSessions && error === null && sessions.length === 0 && (
-        <p className="px-4 py-6 text-sm text-slate-600">{t(Msg.admin.conversationLogs.empty)}</p>
+        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.conversationLogs.empty)}</p>
       )}
 
       {!isLoadingSessions && sessions.length > 0 && (
         <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-          <div className="overflow-x-auto border-b border-slate-200 lg:border-b-0 lg:border-r">
+          <div className="overflow-x-auto border-b border-border lg:border-b-0 lg:border-r">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+              <thead className="nc-table-head">
                 <tr>
                   <th className="px-4 py-2 font-medium">
                     <HelpLabel
@@ -142,14 +142,14 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                   return (
                     <tr
                       key={session.session_id}
-                      className={`border-t border-slate-100 cursor-pointer ${
-                        isSelected ? 'bg-sky-50' : 'hover:bg-slate-50'
+                      className={`nc-table-row cursor-pointer ${
+                        isSelected ? 'bg-accent' : 'hover:bg-surface-muted'
                       }`}
                       onClick={() => setSelectedSessionId(session.session_id)}
                     >
                       <td className="px-4 py-2 font-medium tabular-nums">#{session.session_id}</td>
                       <td className="px-4 py-2 tabular-nums">{session.message_count}</td>
-                      <td className="px-4 py-2 text-slate-600">
+                      <td className="px-4 py-2 text-fg-muted">
                         {formatTimestamp(session.last_message_at ?? session.updated_at, locale)}
                       </td>
                     </tr>
@@ -161,26 +161,26 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
 
           <div className="px-4 py-4">
             {selectedSessionId === null && (
-              <p className="text-sm text-slate-600">{t(Msg.admin.conversationLogs.selectSession)}</p>
+              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.selectSession)}</p>
             )}
             {selectedSessionId !== null && isLoadingMessages && (
-              <p className="text-sm text-slate-600">{t(Msg.admin.conversationLogs.loadingMessages)}</p>
+              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.loadingMessages)}</p>
             )}
             {selectedSessionId !== null && !isLoadingMessages && messages.length === 0 && (
-              <p className="text-sm text-slate-600">{t(Msg.admin.conversationLogs.emptyMessages)}</p>
+              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.emptyMessages)}</p>
             )}
             {selectedSessionId !== null && !isLoadingMessages && messages.length > 0 && (
               <ul className="space-y-4">
                 {messages.map((message) => (
                   <li
                     key={message.message_id}
-                    className={`rounded-md border px-3 py-2 ${
+                    className={`rounded-admin border px-3 py-2 ${
                       message.role === 'assistant'
-                        ? 'border-sky-200 bg-sky-50'
-                        : 'border-slate-200 bg-slate-50'
+                        ? 'border-accent-border bg-accent'
+                        : 'border-border bg-surface-muted'
                     }`}
                   >
-                    <div className="mb-1 flex items-center justify-between gap-2 text-xs text-slate-500">
+                    <div className="mb-1 flex items-center justify-between gap-2 text-xs text-fg-subtle">
                       <span className="uppercase tracking-wide">{t(ROLE_MSG[message.role])}</span>
                       <time dateTime={message.created_at}>
                         {formatTimestamp(message.created_at, locale)}
@@ -188,7 +188,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                     </div>
                     <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                     {message.citations.length > 0 && (
-                      <ul className="mt-2 space-y-1 border-t border-slate-200 pt-2 text-xs text-slate-600">
+                      <ul className="mt-2 space-y-1 border-t border-border pt-2 text-xs text-fg-muted">
                         {message.citations.map((citation) => (
                           <li key={citation.chunk_id}>
                             <span className="font-medium">
@@ -203,7 +203,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                             {citation.section_label !== undefined && (
                               <span> · {citation.section_label}</span>
                             )}
-                            <p className="mt-0.5 text-slate-500">{citation.excerpt}</p>
+                            <p className="mt-0.5 text-fg-subtle">{citation.excerpt}</p>
                           </li>
                         ))}
                       </ul>

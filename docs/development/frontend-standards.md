@@ -60,6 +60,7 @@ frontend/
 - Wrap admin and widget roots with `LocaleProvider`. Admin: `nene-corpus.admin.locale`; widget: `nene-corpus.widget.locale`. Initial locale: `localStorage` → browser language → `en`.
 - Admin header exposes a locale `<select>` (`LocaleSelector`) — preference is **localStorage only** (no server persistence).
 - **Typography (Admin):** locale-aware stacks via `@fontsource` — Inter (Latin locales), Noto Sans JP (`ja`), Noto Sans SC (`zh-Hans`). Bundled in admin only; `--nc-admin-font-family` on `:root` drives Tailwind `font-sans`. Widget unchanged.
+- **Theme (Admin):** light/dark via CSS variables on `:root` / `.dark`. Toggle in header; persist `nene-corpus.admin.theme` (`light` | `dark`, default from `prefers-color-scheme`). Small radius tokens (`rounded-admin*` ≈ 4–8px), subtle page gradient, glassy header (`backdrop-blur`). Reuse `nc-panel`, `nc-input`, `nc-btn*` component classes.
 - Use `formatTimestamp(value, locale)` for locale-aware dates.
 - Pair labels with optional help via `HelpLabel` (`label` + `help` strings from `Msg.*Help` keys). Tooltip opens on hover and keyboard focus; use `\n` in help strings for line breaks. CSV column mapping also has a collapsible `ColumnMappingGuide` accordion after preview.
 

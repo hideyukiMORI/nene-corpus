@@ -6,6 +6,7 @@ import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
 import { LocaleSelector } from './LocaleSelector';
+import { ThemeToggle } from './ThemeToggle';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
@@ -28,19 +29,19 @@ export function App() {
 
   if (!isReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">
+      <div className="flex min-h-screen items-center justify-center text-fg-muted">
         {t(Msg.common.loading)}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white px-6 py-4">
+    <div className="min-h-screen text-fg">
+      <header className="sticky top-0 z-40 border-b border-border bg-header/80 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold">{t(Msg.admin.app.title)}</h1>
-            <p className="text-sm text-slate-600">
+            <h1 className="text-xl font-semibold tracking-tight">{t(Msg.admin.app.title)}</h1>
+            <p className="text-sm text-fg-muted">
               {health
                 ? t(Msg.admin.app.healthStatus, {
                     service: health.service,
@@ -49,16 +50,13 @@ export function App() {
                 : t(Msg.admin.app.healthUnavailable)}
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-3 text-sm">
+          <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
+            <ThemeToggle />
             <LocaleSelector />
             {profile && (
               <>
-                <span className="text-slate-600">{profile.email}</span>
-                <button
-                  className="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-50"
-                  type="button"
-                  onClick={logout}
-                >
+                <span className="text-fg-muted">{profile.email}</span>
+                <button className="nc-btn" type="button" onClick={logout}>
                   {t(Msg.common.signOut)}
                 </button>
               </>

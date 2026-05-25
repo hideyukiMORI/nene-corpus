@@ -125,19 +125,19 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   }
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 px-4 py-3">
+    <section className="nc-panel">
+      <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.appearance.title)}</h2>
-        <p className="text-sm text-slate-600">{t(Msg.admin.appearance.subtitle)}</p>
+        <p className="text-sm text-fg-muted">{t(Msg.admin.appearance.subtitle)}</p>
       </div>
       {isLoading ? (
-        <p className="px-4 py-6 text-sm text-slate-600">{t(Msg.common.loading)}</p>
+        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.common.loading)}</p>
       ) : (
         <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handleSubmit(event)}>
           <label className="block text-sm">
-            <span className="font-medium text-slate-700">{t(Msg.admin.appearance.widgetLocale)}</span>
+            <span className="font-medium text-fg">{t(Msg.admin.appearance.widgetLocale)}</span>
             <select
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+              className="nc-input"
               value={widgetLocale}
               onChange={(event) => setWidgetLocale(event.target.value)}
             >
@@ -165,9 +165,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               onChange={(value) => updateThemeField('color_text', value)}
             />
             <label className="block text-sm">
-              <span className="font-medium text-slate-700">{t(Msg.admin.appearance.radiusMd)}</span>
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.radiusMd)}</span>
               <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+                className="nc-input"
                 type="text"
                 value={theme.radius_md}
                 onChange={(event) => updateThemeField('radius_md', event.target.value)}
@@ -175,18 +175,14 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
             </label>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-slate-700">{t(Msg.admin.appearance.previewTitle)}</h3>
+            <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.previewTitle)}</h3>
             <iframe
-              className="mt-2 h-80 w-full rounded-md border border-slate-200 bg-white"
+              className="mt-2 h-80 w-full rounded-admin border border-border bg-white"
               title={t(Msg.admin.appearance.previewTitle)}
               src={previewSrc}
             />
           </div>
-          <button
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-            type="submit"
-            disabled={isSaving}
-          >
+          <button className="nc-btn-primary" type="submit" disabled={isSaving}>
             {isSaving ? t(Msg.admin.appearance.saving) : t(Msg.admin.appearance.save)}
           </button>
           {error !== null && <p className="text-sm text-red-600">{error}</p>}
@@ -206,16 +202,16 @@ interface ColorFieldProps {
 function ColorField({ label, value, onChange }: ColorFieldProps) {
   return (
     <label className="block text-sm">
-      <span className="font-medium text-slate-700">{label}</span>
+      <span className="font-medium text-fg">{label}</span>
       <div className="mt-1 flex items-center gap-2">
         <input
-          className="h-10 w-12 cursor-pointer rounded border border-slate-300"
+          className="h-10 w-12 cursor-pointer rounded-admin border border-border-strong"
           type="color"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         />
         <input
-          className="w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-xs"
+          className="nc-input font-mono text-xs"
           type="text"
           value={value}
           onChange={(event) => onChange(event.target.value)}

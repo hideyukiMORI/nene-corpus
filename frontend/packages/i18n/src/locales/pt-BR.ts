@@ -21,6 +21,8 @@ export const ptBr = defineMessages({
   'sourceStatus.failed': 'Falhou',
   'admin.app.title': 'Admin NeNe Corpus',
   'admin.app.language': 'Idioma do admin',
+  'admin.app.themeLight': 'Ativar modo claro',
+  'admin.app.themeDark': 'Ativar modo escuro',
   'admin.app.healthUnavailable': 'Status da API indisponível',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': 'Login admin',
