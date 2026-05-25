@@ -1,5 +1,6 @@
 import { cssVars } from '@nene-corpus/tokens';
 import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
+import { DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
 
 export const DEFAULT_WIDGET_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -39,13 +40,30 @@ export function readPreviewThemeFromSearchParams(): WidgetTheme | null {
   };
 }
 
+function readPreviewShowFlag(params: URLSearchParams, key: string, fallback: boolean): boolean {
+  const value = params.get(key);
+
+  if (value === null) {
+    return fallback;
+  }
+
+  return value === '1' || value === 'true';
+}
+
 export function readPreviewHeroFromSearchParams(): WidgetHero | null {
   if (typeof window === 'undefined') {
     return null;
   }
 
   const params = new URLSearchParams(window.location.search);
-  const keys = ['hero_title', 'hero_description', 'hero_cta_label'] as const;
+  const keys = [
+    'hero_title',
+    'hero_description',
+    'hero_cta_label',
+    'hero_show_title',
+    'hero_show_description',
+    'hero_show_cta',
+  ] as const;
   const hasOverride = keys.some((key) => params.get(key) !== null);
 
   if (!hasOverride) {
@@ -56,5 +74,8 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     title: params.get('hero_title'),
     description: params.get('hero_description'),
     cta_label: params.get('hero_cta_label'),
+    show_title: readPreviewShowFlag(params, 'hero_show_title', DEFAULT_WIDGET_HERO.show_title),
+    show_description: readPreviewShowFlag(params, 'hero_show_description', DEFAULT_WIDGET_HERO.show_description),
+    show_cta: readPreviewShowFlag(params, 'hero_show_cta', DEFAULT_WIDGET_HERO.show_cta),
   };
 }

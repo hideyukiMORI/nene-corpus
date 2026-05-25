@@ -29,6 +29,24 @@ export async function fetchWidgetAppearance(apiBase = ''): Promise<AppearanceSet
   return fetchJson<AppearanceSettingsResponse>(`${apiBase}/widget/appearance`);
 }
 
+function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): void {
+  params.set('hero_show_title', hero.show_title ? '1' : '0');
+  params.set('hero_show_description', hero.show_description ? '1' : '0');
+  params.set('hero_show_cta', hero.show_cta ? '1' : '0');
+
+  if (hero.title) {
+    params.set('hero_title', hero.title);
+  }
+
+  if (hero.description) {
+    params.set('hero_description', hero.description);
+  }
+
+  if (hero.cta_label) {
+    params.set('hero_cta_label', hero.cta_label);
+  }
+}
+
 export function buildWidgetPreviewSearchParams(
   theme: WidgetTheme,
   widgetLocale: string | null,
@@ -47,16 +65,8 @@ export function buildWidgetPreviewSearchParams(
     params.set('widget_locale', widgetLocale);
   }
 
-  if (hero?.title) {
-    params.set('hero_title', hero.title);
-  }
-
-  if (hero?.description) {
-    params.set('hero_description', hero.description);
-  }
-
-  if (hero?.cta_label) {
-    params.set('hero_cta_label', hero.cta_label);
+  if (hero !== null && hero !== undefined) {
+    appendHeroPreviewParams(params, hero);
   }
 
   return params.toString();

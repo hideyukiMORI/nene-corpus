@@ -71,6 +71,9 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame('#2563eb', $payload['theme']['color_primary']);
         self::assertSame('100%', $payload['theme']['max_width']);
         self::assertNull($payload['hero']['title']);
+        self::assertTrue($payload['hero']['show_title']);
+        self::assertTrue($payload['hero']['show_description']);
+        self::assertTrue($payload['hero']['show_cta']);
     }
 
     public function test_admin_can_update_appearance(): void
@@ -90,6 +93,9 @@ final class AppearanceHttpTest extends TestCase
                 'title' => '商品について質問',
                 'description' => 'マニュアルから回答します。',
                 'cta_label' => '質問する',
+                'show_title' => true,
+                'show_description' => true,
+                'show_cta' => false,
             ],
         ]);
 
@@ -104,6 +110,33 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame('#dc2626', $public['theme']['color_primary']);
         self::assertSame('480px', $public['theme']['max_width']);
         self::assertSame('商品について質問', $public['hero']['title']);
+        self::assertFalse($public['hero']['show_cta']);
+    }
+
+    public function test_update_rejects_invalid_hero_show_flag(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => [
+                'color_primary' => '#2563eb',
+                'color_surface' => '#ffffff',
+                'color_text' => '#1f2937',
+                'radius_md' => '0.5rem',
+                'max_width' => '100%',
+            ],
+            'hero' => [
+                'title' => null,
+                'description' => null,
+                'cta_label' => null,
+                'show_title' => 'yes',
+                'show_description' => true,
+                'show_cta' => true,
+            ],
+        ]);
+
+        self::assertSame(422, $response->getStatusCode());
     }
 
     public function test_update_rejects_invalid_color(): void
@@ -123,6 +156,9 @@ final class AppearanceHttpTest extends TestCase
                 'title' => null,
                 'description' => null,
                 'cta_label' => null,
+                'show_title' => true,
+                'show_description' => true,
+                'show_cta' => true,
             ],
         ]);
 

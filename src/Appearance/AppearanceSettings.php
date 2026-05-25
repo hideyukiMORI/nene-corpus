@@ -26,7 +26,14 @@ final readonly class AppearanceSettings
      * @return array{
      *     widget_locale: string|null,
      *     theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string, max_width: string},
-     *     hero: array{title: string|null, description: string|null, cta_label: string|null}
+     *     hero: array{
+     *         title: string|null,
+     *         description: string|null,
+     *         cta_label: string|null,
+     *         show_title: bool,
+     *         show_description: bool,
+     *         show_cta: bool
+     *     }
      * }
      */
     public function toArray(): array

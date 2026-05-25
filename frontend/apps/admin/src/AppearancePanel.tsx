@@ -15,12 +15,18 @@ interface HeroFormState {
   title: string;
   description: string;
   cta_label: string;
+  show_title: boolean;
+  show_description: boolean;
+  show_cta: boolean;
 }
 
 const EMPTY_HERO_FORM: HeroFormState = {
   title: '',
   description: '',
   cta_label: '',
+  show_title: true,
+  show_description: true,
+  show_cta: true,
 };
 
 const DEFAULT_THEME: WidgetTheme = {
@@ -93,10 +99,13 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       title: settings.hero.title ?? '',
       description: settings.hero.description ?? '',
       cta_label: settings.hero.cta_label ?? '',
+      show_title: settings.hero.show_title,
+      show_description: settings.hero.show_description,
+      show_cta: settings.hero.show_cta,
     });
   }
 
-  function updateHeroField(field: keyof HeroFormState, value: string): void {
+  function updateHeroField<K extends keyof HeroFormState>(field: K, value: HeroFormState[K]): void {
     setHeroForm((current) => ({ ...current, [field]: value }));
   }
 
@@ -105,6 +114,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       title: heroForm.title.trim() === '' ? null : heroForm.title.trim(),
       description: heroForm.description.trim() === '' ? null : heroForm.description.trim(),
       cta_label: heroForm.cta_label.trim() === '' ? null : heroForm.cta_label.trim(),
+      show_title: heroForm.show_title,
+      show_description: heroForm.show_description,
+      show_cta: heroForm.show_cta,
     };
   }
 
@@ -189,35 +201,59 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.heroTitle)}</h3>
               <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.heroSubtitle)}</p>
             </div>
-            <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroWelcomeTitle)}</span>
+            <div className="block text-sm">
+              <label className="flex items-center gap-2 font-medium text-fg">
+                <input
+                  type="checkbox"
+                  checked={heroForm.show_title}
+                  onChange={(event) => updateHeroField('show_title', event.target.checked)}
+                />
+                {t(Msg.admin.appearance.heroShowTitle)}
+              </label>
               <input
                 className="nc-input"
                 type="text"
                 value={heroForm.title}
                 onChange={(event) => updateHeroField('title', event.target.value)}
                 placeholder={t(Msg.admin.appearance.heroWelcomeTitlePlaceholder)}
+                disabled={!heroForm.show_title}
               />
-            </label>
-            <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroWelcomeDescription)}</span>
+            </div>
+            <div className="block text-sm">
+              <label className="flex items-center gap-2 font-medium text-fg">
+                <input
+                  type="checkbox"
+                  checked={heroForm.show_description}
+                  onChange={(event) => updateHeroField('show_description', event.target.checked)}
+                />
+                {t(Msg.admin.appearance.heroShowDescription)}
+              </label>
               <textarea
                 className="nc-input min-h-20 resize-y"
                 value={heroForm.description}
                 onChange={(event) => updateHeroField('description', event.target.value)}
                 placeholder={t(Msg.admin.appearance.heroWelcomeDescriptionPlaceholder)}
+                disabled={!heroForm.show_description}
               />
-            </label>
-            <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.heroCtaLabel)}</span>
+            </div>
+            <div className="block text-sm">
+              <label className="flex items-center gap-2 font-medium text-fg">
+                <input
+                  type="checkbox"
+                  checked={heroForm.show_cta}
+                  onChange={(event) => updateHeroField('show_cta', event.target.checked)}
+                />
+                {t(Msg.admin.appearance.heroShowCta)}
+              </label>
               <input
                 className="nc-input"
                 type="text"
                 value={heroForm.cta_label}
                 onChange={(event) => updateHeroField('cta_label', event.target.value)}
                 placeholder={t(Msg.admin.appearance.heroCtaLabelPlaceholder)}
+                disabled={!heroForm.show_cta}
               />
-            </label>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <ColorField

@@ -1,6 +1,6 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { fetchWidgetAppearance, type WidgetHero, type WidgetTheme } from '@nene-corpus/api-client';
+import { fetchWidgetAppearance, DEFAULT_WIDGET_HERO, type WidgetHero, type WidgetTheme } from '@nene-corpus/api-client';
 import {
   LocaleProvider,
   WIDGET_LOCALE_STORAGE_KEY,
@@ -61,7 +61,7 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
     typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('widget_locale') : null;
 
   let theme: WidgetTheme = DEFAULT_WIDGET_THEME;
-  let hero: WidgetHero = { title: null, description: null, cta_label: null };
+  let hero: WidgetHero = DEFAULT_WIDGET_HERO;
   let configuredLocale: string | null = null;
 
   try {
