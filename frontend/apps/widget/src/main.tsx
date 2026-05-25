@@ -1,6 +1,8 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { fetchWidgetAppearance, DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO, type WidgetChat, type WidgetHero, type WidgetTheme } from '@nene-corpus/api-client';
+import { fetchWidgetAppearance } from '@nene-corpus/api-client/appearance';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client/types';
+import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client/types';
 import {
   LocaleProvider,
   WIDGET_LOCALE_STORAGE_KEY,
