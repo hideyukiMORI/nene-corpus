@@ -51,6 +51,18 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                TextContentValidator::class,
+                static function (ContainerInterface $container): TextContentValidator {
+                    $sanitizer = $container->get(UploadFilenameSanitizer::class);
+
+                    if (!$sanitizer instanceof UploadFilenameSanitizer) {
+                        throw new LogicException('Upload filename sanitizer service is invalid.');
+                    }
+
+                    return new TextContentValidator($sanitizer);
+                },
+            )
+            ->set(
                 CsvParser::class,
                 static fn (): CsvParser => new CsvParser(),
             )
@@ -152,6 +164,18 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                CreateTextSourceUseCaseInterface::class,
+                static function (ContainerInterface $container): CreateTextSourceUseCaseInterface {
+                    return new CreateTextSourceUseCase(
+                        self::sourceRepository($container),
+                        self::documentRepository($container),
+                        self::chunkRepository($container),
+                        self::textContentValidator($container),
+                        self::uploadStorage($container),
+                    );
+                },
+            )
+            ->set(
                 ReindexSourceUseCaseInterface::class,
                 static function (ContainerInterface $container): ReindexSourceUseCaseInterface {
                     return new ReindexSourceUseCase(
@@ -184,6 +208,7 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 static fn (ContainerInterface $container): CreateSourceHandler => new CreateSourceHandler(
                     self::createCsvUseCase($container),
                     self::createPdfUseCase($container),
+                    self::createTextUseCase($container),
                     self::jsonResponse($container),
                 ),
             )
@@ -365,6 +390,28 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
         }
 
         return $useCase;
+    }
+
+    private static function createTextUseCase(ContainerInterface $container): CreateTextSourceUseCaseInterface
+    {
+        $useCase = $container->get(CreateTextSourceUseCaseInterface::class);
+
+        if (!$useCase instanceof CreateTextSourceUseCaseInterface) {
+            throw new LogicException('Create text source use case service is invalid.');
+        }
+
+        return $useCase;
+    }
+
+    private static function textContentValidator(ContainerInterface $container): TextContentValidator
+    {
+        $validator = $container->get(TextContentValidator::class);
+
+        if (!$validator instanceof TextContentValidator) {
+            throw new LogicException('Text content validator service is invalid.');
+        }
+
+        return $validator;
     }
 
     private static function reindexSourceUseCase(ContainerInterface $container): ReindexSourceUseCaseInterface

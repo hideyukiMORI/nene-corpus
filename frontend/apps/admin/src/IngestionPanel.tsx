@@ -14,6 +14,8 @@ import { ColumnMappingGuide } from './ColumnMappingGuide';
 import { FileUploadField } from './FileUploadField';
 import { detectSourceType, readFileAsBase64 } from './fileBase64';
 
+type IngestionMode = 'file' | 'text';
+
 interface IngestionPanelProps {
   token: string;
   onUploaded: () => void;
@@ -21,7 +23,9 @@ interface IngestionPanelProps {
 
 export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
   const t = useMsg();
+  const [mode, setMode] = useState<IngestionMode>('file');
   const [name, setName] = useState('');
+  const [textBody, setTextBody] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [csvPreview, setCsvPreview] = useState<PreviewCsvIngestionResponse | null>(null);
   const [pdfPreview, setPdfPreview] = useState<PreviewPdfIngestionResponse | null>(null);
@@ -34,6 +38,13 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
   const [success, setSuccess] = useState<string | null>(null);
 
   const sourceType = file ? detectSourceType(file.name) : null;
+
+  function switchMode(next: IngestionMode): void {
+    setMode(next);
+    setFile(null);
+    setTextBody('');
+    resetPreview();
+  }
 
   function resetPreview(): void {
     setCsvPreview(null);
@@ -84,6 +95,51 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       setError(cause instanceof Error ? cause.message : t(Msg.admin.ingestion.previewFailed));
     } finally {
       setIsPreviewing(false);
+    }
+  }
+
+  async function handleTextIngest(): Promise<void> {
+    const trimmedName = name.trim();
+    const trimmedText = textBody.trim();
+
+    if (trimmedName === '') {
+      setError(t(Msg.admin.ingestion.sourceNameRequired));
+      return;
+    }
+
+    if (trimmedText === '') {
+      setError(t(Msg.admin.ingestion.textRequired));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const result = await createSource(
+        token,
+        {
+          source_type: 'text',
+          name: trimmedName,
+          text: trimmedText,
+        },
+        adminApiBase,
+      );
+      setSuccess(
+        t(Msg.admin.ingestion.ingestResult, {
+          name: result.name,
+          documentCount: result.document_count,
+          chunkCount: result.chunk_count,
+        }),
+      );
+      setName('');
+      setTextBody('');
+      onUploaded();
+    } catch (cause: unknown) {
+      setError(cause instanceof Error ? cause.message : t(Msg.admin.ingestion.ingestionFailed));
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -154,6 +210,23 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
         <h2 className="font-medium">{t(Msg.admin.ingestion.title)}</h2>
         <p>{t(Msg.admin.ingestion.subtitle)}</p>
       </div>
+      <div className="flex flex-wrap gap-2 border-b border-border px-4 py-3">
+        <button
+          className={mode === 'file' ? 'nc-btn-primary' : 'nc-btn'}
+          type="button"
+          onClick={() => switchMode('file')}
+        >
+          {t(Msg.admin.ingestion.modeFile)}
+        </button>
+        <button
+          className={mode === 'text' ? 'nc-btn-primary' : 'nc-btn'}
+          type="button"
+          onClick={() => switchMode('text')}
+        >
+          {t(Msg.admin.ingestion.modeText)}
+        </button>
+      </div>
+      {mode === 'file' ? (
       <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handlePreview(event)}>
         <label className="block text-sm">
           <HelpLabel
@@ -186,8 +259,47 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
           </button>
         )}
       </form>
+      ) : (
+        <div className="space-y-4 px-4 py-4">
+          <label className="block text-sm">
+            <HelpLabel
+              className="font-medium text-fg"
+              label={t(Msg.admin.ingestion.sourceName)}
+              help={t(Msg.admin.ingestion.sourceNameHelp)}
+            />
+            <input
+              className="nc-input"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder={t(Msg.admin.ingestion.sourceNamePlaceholder)}
+            />
+          </label>
+          <label className="block text-sm">
+            <HelpLabel
+              className="font-medium text-fg"
+              label={t(Msg.admin.ingestion.textBody)}
+              help={t(Msg.admin.ingestion.textBodyHelp)}
+            />
+            <textarea
+              className="nc-input min-h-40 resize-y"
+              value={textBody}
+              onChange={(event) => setTextBody(event.target.value)}
+              placeholder={t(Msg.admin.ingestion.textBodyPlaceholder)}
+            />
+          </label>
+          <button
+            className="nc-btn-success"
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => void handleTextIngest()}
+          >
+            {isSubmitting ? t(Msg.admin.ingestion.ingesting) : t(Msg.admin.ingestion.ingest)}
+          </button>
+        </div>
+      )}
 
-      {csvPreview !== null && (
+      {mode === 'file' && csvPreview !== null && (
         <div className="space-y-4 border-t border-border px-4 py-4">
           <p className="nc-text-muted">
             {t(Msg.admin.ingestion.csvSummary, {
@@ -209,7 +321,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
         </div>
       )}
 
-      {pdfPreview !== null && (
+      {mode === 'file' && pdfPreview !== null && (
         <div className="space-y-3 border-t border-border px-4 py-4">
           <p className="nc-text-muted">
             {t(Msg.admin.ingestion.pdfPageCount, { count: pdfPreview.page_count })}
@@ -221,7 +333,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
         </div>
       )}
 
-      {(csvPreview !== null || pdfPreview !== null) && (
+      {mode === 'file' && (csvPreview !== null || pdfPreview !== null) && (
         <div className="border-t border-border px-4 py-4">
           <button
             className="nc-btn-success"

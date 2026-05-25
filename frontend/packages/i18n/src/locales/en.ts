@@ -15,6 +15,7 @@ export const en = defineMessages({
   'role.assistant': 'Assistant',
   'sourceType.csv': 'CSV',
   'sourceType.pdf': 'PDF',
+  'sourceType.text': 'Text',
   'sourceStatus.pending': 'Pending',
   'sourceStatus.processing': 'Processing',
   'sourceStatus.ready': 'Ready',
@@ -50,7 +51,7 @@ export const en = defineMessages({
   'admin.sources.columnChunksHelp':
     'Searchable text segments the chat widget uses.\nMore chunks allow finer citation snippets.',
   'admin.ingestion.title': 'Upload source',
-  'admin.ingestion.subtitle': 'Add CSV or PDF files to the corpus.',
+  'admin.ingestion.subtitle': 'Add CSV, PDF, or pasted text to the corpus.',
   'admin.ingestion.sourceName': 'Source name',
   'admin.ingestion.sourceNamePlaceholder': 'Product catalog',
   'admin.ingestion.sourceNameHelp':
@@ -101,6 +102,13 @@ export const en = defineMessages({
   'admin.ingestion.ingestionFailed': 'Ingestion failed.',
   'admin.ingestion.ingestResult':
     'Ingested "{name}" — {documentCount} documents, {chunkCount} chunks.',
+  'admin.ingestion.modeFile': 'File upload',
+  'admin.ingestion.modeText': 'Paste text',
+  'admin.ingestion.textBody': 'Text content',
+  'admin.ingestion.textBodyHelp':
+    'Paste FAQ answers, policy notes, or short memos.\nStored as one searchable document.',
+  'admin.ingestion.textBodyPlaceholder': 'Paste or type the text you want the chat to use…',
+  'admin.ingestion.textRequired': 'Enter text content.',
   'admin.conversationLogs.title': 'Conversation logs',
   'admin.conversationLogs.subtitle': 'Consumer chat sessions and cited replies.',
   'admin.conversationLogs.loadingSessions': 'Loading sessions…',

@@ -39,13 +39,25 @@ export async function previewPdfIngestion(
   });
 }
 
-export interface CreateSourcePayload {
-  source_type: 'csv' | 'pdf';
-  name: string;
-  filename: string;
-  content: string;
-  column_mapping?: CsvColumnMapping;
-}
+export type CreateSourcePayload =
+  | {
+      source_type: 'csv';
+      name: string;
+      filename: string;
+      content: string;
+      column_mapping: CsvColumnMapping;
+    }
+  | {
+      source_type: 'pdf';
+      name: string;
+      filename: string;
+      content: string;
+    }
+  | {
+      source_type: 'text';
+      name: string;
+      text: string;
+    };
 
 export async function createSource(
   token: string,

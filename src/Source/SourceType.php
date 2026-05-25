@@ -8,4 +8,5 @@ enum SourceType: string
 {
     case Pdf = 'pdf';
     case Csv = 'csv';
+    case Text = 'text';
 }

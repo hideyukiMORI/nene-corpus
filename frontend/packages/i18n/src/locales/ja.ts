@@ -15,6 +15,7 @@ export const ja = defineMessages({
   'role.assistant': 'アシスタント',
   'sourceType.csv': 'CSV',
   'sourceType.pdf': 'PDF',
+  'sourceType.text': 'テキスト',
   'sourceStatus.pending': '待機中',
   'sourceStatus.processing': '処理中',
   'sourceStatus.ready': '準備完了',
@@ -50,7 +51,7 @@ export const ja = defineMessages({
   'admin.sources.columnChunksHelp':
     'チャットが検索に使うテキストの断片数です。\n多いほど、引用が細かくなります。',
   'admin.ingestion.title': 'ソースをアップロード',
-  'admin.ingestion.subtitle': 'CSV または PDF をコーパスに追加します。',
+  'admin.ingestion.subtitle': 'CSV・PDF・テキストをコーパスに追加します。',
   'admin.ingestion.sourceName': 'ソース名',
   'admin.ingestion.sourceNamePlaceholder': '商品カタログ',
   'admin.ingestion.sourceNameHelp':
@@ -101,6 +102,13 @@ export const ja = defineMessages({
   'admin.ingestion.ingestionFailed': '取り込みに失敗しました。',
   'admin.ingestion.ingestResult':
     '「{name}」を取り込みました — ドキュメント {documentCount} 件、検索用テキスト {chunkCount} 件。',
+  'admin.ingestion.modeFile': 'ファイル',
+  'admin.ingestion.modeText': 'テキスト入力',
+  'admin.ingestion.textBody': '本文',
+  'admin.ingestion.textBodyHelp':
+    'FAQ の回答、社内メモ、短い案内文などを貼り付けます。\n1 件の検索用ドキュメントとして保存されます。',
+  'admin.ingestion.textBodyPlaceholder': 'チャットに使わせたいテキストを入力または貼り付け…',
+  'admin.ingestion.textRequired': '本文を入力してください。',
   'admin.conversationLogs.title': '会話ログ',
   'admin.conversationLogs.subtitle': 'チャットウィジェットの会話と引用付き回答。',
   'admin.conversationLogs.loadingSessions': 'セッションを読み込み中…',

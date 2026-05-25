@@ -42,7 +42,7 @@ export interface AdminMeResponse {
 export interface SourceListItem {
   source_id: number;
   name: string;
-  source_type: 'csv' | 'pdf';
+  source_type: 'csv' | 'pdf' | 'text';
   status: 'pending' | 'processing' | 'ready' | 'failed';
   document_count: number;
   chunk_count: number;

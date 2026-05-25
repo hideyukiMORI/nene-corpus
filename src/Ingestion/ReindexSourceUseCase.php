@@ -44,6 +44,7 @@ final readonly class ReindexSourceUseCase implements ReindexSourceUseCaseInterfa
             $result = match ($source->sourceType) {
                 SourceType::Csv => $this->reindexCsv($source, $bytes, $input->columnMappingOverride),
                 SourceType::Pdf => $this->reindexPdf($source, $bytes),
+                SourceType::Text => $this->reindexText($source, $bytes),
             };
 
             $this->sources->update(new Source(
@@ -159,6 +160,42 @@ final readonly class ReindexSourceUseCase implements ReindexSourceUseCaseInterfa
         return [
             'document_count' => 1,
             'chunk_count' => count($pages),
+        ];
+    }
+
+    /**
+     * @return array{document_count: int, chunk_count: int}
+     */
+    private function reindexText(Source $source, string $bytes): array
+    {
+        if ($source->id === null) {
+            throw new CsvIngestionException('Source id is missing.', 'source_id');
+        }
+
+        $content = trim($bytes);
+
+        if ($content === '') {
+            throw new CsvIngestionException('Stored text content is empty.', 'text');
+        }
+
+        $documentId = $this->documents->save(new Document(
+            sourceId: $source->id,
+            title: $source->name,
+            position: 0,
+            metadataJson: json_encode(['char_count' => mb_strlen($content)], JSON_THROW_ON_ERROR),
+        ));
+
+        $this->chunks->save(new Chunk(
+            documentId: $documentId,
+            sourceId: $source->id,
+            content: $content,
+            chunkIndex: 0,
+            tokenCount: $this->estimateTokenCount($content),
+        ));
+
+        return [
+            'document_count' => 1,
+            'chunk_count' => 1,
         ];
     }
 
