@@ -16,7 +16,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 - [x] Claude tool_use orchestration (server-side) (#25)
 - [x] **sync JSON chat** endpoint + OpenAPI (#25)
 - [x] **Citation** payload in responses (#25)
-- [ ] Rate limiting (session / IP)
+- [ ] Rate limiting (session / IP) (#29)
 
 ## Verification
 
@@ -30,5 +30,6 @@ composer check
 - Issue #17 — chat session/message schema
 - Issue #19 — chunk full-text search
 - Issue #25 — sync JSON chat + Claude tool_use
+- Issue #29 — consumer chat rate limiting
 - [`docs/explanation/glossary.md`](../explanation/glossary.md) — sync JSON chat, citation, consumer session token
 - ADR 0003 — sync JSON chat as Tier A/B default

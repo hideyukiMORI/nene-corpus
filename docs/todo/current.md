@@ -8,6 +8,7 @@ Last updated: 2026-05-25
 - Phase 2 開始 — chat sessions/messages schema (#17), chunk search (#19)
 - Primary persona と公開 corpus 訴求を product vision に追記 (#23)
 - sync JSON chat API + Claude tool_use (#25)
+- consumer chat rate limiting (#29)
 
 ## 状態サマリー
 
@@ -19,7 +20,8 @@ Last updated: 2026-05-25
 
 - ✅ Sessions + messages schema（#17）
 - ✅ Chunk search（#19）
-- 🔜 Sync JSON chat（#25）
+- ✅ Sync JSON chat（#25）
+- 🔜 Rate limiting（#29 — PR 待ち）
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -47,7 +49,7 @@ Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05
 | Chunk search (full-text) | ✅ (#19) |
 | Claude tool_use + citations | ✅ (#25) |
 | Sync JSON chat API | ✅ (#25) |
-| Rate limiting | 🔜 |
+| Rate limiting | 🔜 (#29) |
 
 Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-05-chat-and-citations.md)
 
@@ -88,7 +90,7 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 | ~~P0~~ | ~~Chunk search~~ | ✅ #19 |
 | ~~P0~~ | ~~Claude tool_use + citations~~ | ✅ #25 |
 | ~~P0~~ | ~~Sync JSON chat API~~ | ✅ #25 |
-| P1 | Rate limiting | session / IP — 用語: **rate limit** |
+| P1 | Rate limiting | session / IP（#29 進行中） |
 | P2 | SSE streaming | Tier B 任意 — 用語: **SSE streaming** |
 
 ---

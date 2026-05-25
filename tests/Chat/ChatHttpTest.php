@@ -17,6 +17,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -43,6 +44,7 @@ final class ChatHttpTest extends TestCase
 
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
+        RateLimitSchemaSetup::create($executor);
         $this->seedCorpus($executor);
     }
 
@@ -55,6 +57,10 @@ final class ChatHttpTest extends TestCase
             $_SERVER['DB_NAME'],
             $_ENV['ANTHROPIC_API_KEY'],
             $_SERVER['ANTHROPIC_API_KEY'],
+            $_ENV['NENE_CORPUS_CHAT_RATE_LIMIT_SESSION'],
+            $_SERVER['NENE_CORPUS_CHAT_RATE_LIMIT_SESSION'],
+            $_ENV['NENE_CORPUS_CHAT_RATE_LIMIT_IP'],
+            $_SERVER['NENE_CORPUS_CHAT_RATE_LIMIT_IP'],
         );
 
         if (is_file($this->databasePath)) {
@@ -107,6 +113,40 @@ final class ChatHttpTest extends TestCase
         );
 
         self::assertSame(404, $response->getStatusCode());
+    }
+
+    public function test_send_message_returns_429_when_session_rate_limit_exceeded(): void
+    {
+        $_ENV['NENE_CORPUS_CHAT_RATE_LIMIT_SESSION'] = '1';
+        $_SERVER['NENE_CORPUS_CHAT_RATE_LIMIT_SESSION'] = '1';
+        $_ENV['NENE_CORPUS_CHAT_RATE_LIMIT_IP'] = '100';
+        $_SERVER['NENE_CORPUS_CHAT_RATE_LIMIT_IP'] = '100';
+
+        $factory = new Psr17Factory();
+        $application = $this->application();
+
+        $sessionResponse = $application->handle(
+            $factory->createServerRequest('POST', 'https://example.test/chat/sessions'),
+        );
+        $sessionPayload = $this->decodeJson($sessionResponse);
+
+        $first = $application->handle(
+            $factory->createServerRequest('POST', 'https://example.test/chat/messages')
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('X-Session-Token', $sessionPayload['session_token'])
+                ->withBody($factory->createStream(json_encode(['content' => 'First question'], JSON_THROW_ON_ERROR))),
+        );
+        self::assertSame(200, $first->getStatusCode());
+
+        $second = $application->handle(
+            $factory->createServerRequest('POST', 'https://example.test/chat/messages')
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('X-Session-Token', $sessionPayload['session_token'])
+                ->withBody($factory->createStream(json_encode(['content' => 'Second question'], JSON_THROW_ON_ERROR))),
+        );
+
+        self::assertSame(429, $second->getStatusCode());
+        self::assertSame('0', $second->getHeaderLine('X-RateLimit-Remaining'));
     }
 
     private function seedCorpus(PdoDatabaseQueryExecutor $executor): void
