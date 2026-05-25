@@ -242,10 +242,16 @@ export const zhHans = defineMessages({
   'admin.help.open': '帮助',
   'admin.help.quickStart.title': '快速入门',
   'admin.help.quickStart.body':
-    '1. 使用运营账号登录。\n2. 导入 — 上传 CSV/PDF 或粘贴文本。\n3. 数据源 — 确认状态为 Ready。\n4. 外观 — 调整颜色并复制嵌入代码片段。\n5. 将片段粘贴到同域首页并测试聊天。',
+    '1. 使用运营账号登录。\n2. 导入 — 上传 CSV/PDF 或粘贴文本。\n3. 数据源 — 确认状态为 Ready。\n4. LLM 设置 — 确认 Anthropic API 密钥与模型（保存前先测试连接）。\n5. 外观 — 调整颜色并复制嵌入代码片段。\n6. 将片段粘贴到同域首页并测试聊天。',
   'admin.help.ingestion.title': '导入（CSV、PDF、文本）',
   'admin.help.ingestion.body':
     '文件 — CSV 需预览并映射列；PDF 按页提取文本。最大 5 MB。\n\n文本 — 使用「粘贴文本」标签页导入 FAQ 或短文，每次粘贴为一个可搜索文档。\n\n数据源列表显示 Ready 后即可用于聊天检索。',
+  'admin.help.llmSettings.title': 'LLM 设置',
+  'admin.help.llmSettings.body':
+    '在 LLM 设置面板更新 Anthropic API 密钥、模型与最大 token 数。当前密钥仅显示掩码，不会返回完整密钥。\n\n保存时密钥留空则保留现有密钥。保存前请使用「测试连接」。\n\n更改写入服务器 .env。共用主机上建议通过此界面更新，而非手动 FTP 编辑。',
+  'admin.help.conversationLogs.title': '会话日志',
+  'admin.help.conversationLogs.body':
+    '列出嵌入组件的消费者聊天会话。选择会话可查看消息与引用来源。\n\n每条会话记录客户端 IP、User-Agent 及可选 Referer。请按隐私政策将其视为个人数据。\n\nIP 取自 REMOTE_ADDR — 若经反向代理，请配置 Web 服务器以记录真实访客 IP。',
   'admin.help.embed.title': '嵌入到首页',
   'admin.help.embed.body':
     '不是 WordPress 插件。请安装在同一源站，然后从外观设置复制 HTML 片段。\n\n片段加载 widget.css 与 widget.js 并自动启动聊天。data-endpoint 需与安装路径一致。\n\n建议先在预发环境测试。推荐使用 HTTPS。',
@@ -254,7 +260,7 @@ export const zhHans = defineMessages({
     '设置组件颜色、圆角、最大宽度及可选 HERO 欢迎语。\n\n组件语言可跟随访客浏览器或固定。\n\n预览 iframe 显示实时效果，保存后生效；嵌入片段路径自动匹配安装位置。',
   'admin.help.troubleshooting.title': '故障排除',
   'admin.help.troubleshooting.body':
-    '无法登录 — 检查账号与基础 URL 的 /health。\n\n数据源 Failed — 检查 CSV 列映射或 PDF 文本。\n\n组件空白 — 确认 widget.js / widget.css 从同域加载。\n\n更新后 Admin 500 — 执行数据库迁移。\n\n本地预览空白 — git pull 后重启 admin (:5173) 与 widget (:5174) 开发服务器。',
+    '无法登录 — 检查账号与基础 URL 的 /health。\n\n数据源 Failed — 检查 CSV 列映射或 PDF 文本。\n\nLLM 设置出现 HTML / Non-JSON — 重新构建 admin，确保 admin/.htaccess 包含 settings 路由，然后硬刷新浏览器。\n\n聊天错误 — 在 LLM 设置中测试连接；确认允许出站 HTTPS 访问 Anthropic。\n\n组件空白 — 确认 widget.js / widget.css 从同域加载。\n\n更新后 Admin 500 — 执行数据库迁移。\n\n本地预览空白 — git pull 后重启 admin (:5173) 与 widget (:5174) 开发服务器。',
   'admin.help.faq.title': '常见问题',
   'admin.help.faq.body':
     '数据会离开服务器吗？ — 语料库保存在您的数据库；仅将检索到的文本片段发送至 Claude API。\n\n可用子域名吗？ — 可以，将 document root 指向 public_html。\n\n流式响应？ — 仅同步 JSON 聊天，不支持 SSE 逐字流。\n\n更多说明 — 见发布 ZIP 中的共享主机运营文档。',
