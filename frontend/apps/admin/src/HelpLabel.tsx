@@ -65,7 +65,7 @@ export function HelpLabel({ label, help, className = '' }: HelpLabelProps) {
           <span
             id={tooltipId}
             role="tooltip"
-            className="pointer-events-none fixed z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-md border border-slate-200 bg-white px-3 py-2.5 text-left text-xs font-normal normal-case leading-relaxed tracking-normal whitespace-pre-line text-slate-600 shadow-lg"
+            className="pointer-events-none fixed z-50 w-72 max-w-[calc(100vw-1.5rem)] rounded-admin border border-border bg-surface px-3 py-2.5 text-left text-xs font-normal normal-case leading-relaxed tracking-normal whitespace-pre-line text-fg-muted shadow-lg shadow-black/10"
             style={{ top: coords.top, left: coords.left }}
           >
             {help}
@@ -81,7 +81,7 @@ export function HelpLabel({ label, help, className = '' }: HelpLabelProps) {
         <button
           ref={buttonRef}
           type="button"
-          className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-slate-50 text-[10px] font-semibold leading-none text-slate-600 hover:border-slate-400 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1"
+          className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-border-strong bg-surface-muted text-[10px] font-semibold leading-none text-fg-muted hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-focus/40 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent"
           aria-describedby={isOpen ? tooltipId : undefined}
           aria-expanded={isOpen}
           aria-label={`${t(Msg.common.showHelp)}: ${label}`}

@@ -21,6 +21,8 @@ export const fr = defineMessages({
   'sourceStatus.failed': 'Échec',
   'admin.app.title': 'Administration NeNe Corpus',
   'admin.app.language': 'Langue de l’administration',
+  'admin.app.themeLight': 'Passer en mode clair',
+  'admin.app.themeDark': 'Passer en mode sombre',
   'admin.app.healthUnavailable': 'État de l’API indisponible',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': 'Connexion admin',

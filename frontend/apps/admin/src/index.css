@@ -2,14 +2,120 @@
 
 @theme inline {
   --font-sans: var(--nc-admin-font-family);
+  --radius-admin-sm: 0.25rem;
+  --radius-admin: 0.375rem;
+  --radius-admin-lg: 0.5rem;
+  --color-surface: var(--nc-admin-surface);
+  --color-surface-muted: var(--nc-admin-surface-muted);
+  --color-header: var(--nc-admin-header);
+  --color-border: var(--nc-admin-border);
+  --color-border-subtle: var(--nc-admin-border-subtle);
+  --color-border-strong: var(--nc-admin-border-strong);
+  --color-fg: var(--nc-admin-fg);
+  --color-fg-muted: var(--nc-admin-fg-muted);
+  --color-fg-subtle: var(--nc-admin-fg-subtle);
+  --color-primary: var(--nc-admin-primary);
+  --color-primary-fg: var(--nc-admin-primary-fg);
+  --color-accent: var(--nc-admin-accent);
+  --color-accent-border: var(--nc-admin-accent-border);
+  --color-focus: var(--nc-admin-focus);
 }
 
 :root {
+  color-scheme: light;
   --nc-admin-font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --nc-admin-bg-gradient: linear-gradient(
+    165deg,
+    #fafafa 0%,
+    #f4f4f5 45%,
+    #eceef2 100%
+  );
+  --nc-admin-surface: rgb(255 255 255 / 0.94);
+  --nc-admin-surface-muted: rgb(0 0 0 / 0.035);
+  --nc-admin-header: rgb(255 255 255 / 0.72);
+  --nc-admin-border: rgb(0 0 0 / 0.08);
+  --nc-admin-border-subtle: rgb(0 0 0 / 0.05);
+  --nc-admin-border-strong: rgb(0 0 0 / 0.13);
+  --nc-admin-fg: #171717;
+  --nc-admin-fg-muted: #525252;
+  --nc-admin-fg-subtle: #737373;
+  --nc-admin-primary: #171717;
+  --nc-admin-primary-fg: #ffffff;
+  --nc-admin-accent: rgb(59 130 246 / 0.1);
+  --nc-admin-accent-border: rgb(59 130 246 / 0.28);
+  --nc-admin-focus: #3b82f6;
+}
+
+.dark {
+  color-scheme: dark;
+  --nc-admin-bg-gradient: linear-gradient(
+    165deg,
+    #1c1c1c 0%,
+    #141414 45%,
+    #0a0a0a 100%
+  );
+  --nc-admin-surface: rgb(33 33 33 / 0.96);
+  --nc-admin-surface-muted: rgb(255 255 255 / 0.045);
+  --nc-admin-header: rgb(23 23 23 / 0.78);
+  --nc-admin-border: rgb(255 255 255 / 0.1);
+  --nc-admin-border-subtle: rgb(255 255 255 / 0.06);
+  --nc-admin-border-strong: rgb(255 255 255 / 0.16);
+  --nc-admin-fg: #ececec;
+  --nc-admin-fg-muted: #a3a3a3;
+  --nc-admin-fg-subtle: #737373;
+  --nc-admin-primary: #f5f5f5;
+  --nc-admin-primary-fg: #171717;
+  --nc-admin-accent: rgb(96 165 250 / 0.14);
+  --nc-admin-accent-border: rgb(96 165 250 / 0.35);
+  --nc-admin-focus: #60a5fa;
 }
 
 @layer base {
   body {
-    @apply font-sans antialiased;
+    @apply min-h-screen font-sans antialiased text-fg;
+    background: var(--nc-admin-bg-gradient);
+    background-attachment: fixed;
   }
+}
+
+@layer components {
+  .nc-panel {
+    @apply rounded-admin-lg border border-border bg-surface shadow-sm shadow-black/5;
+  }
+
+  .nc-panel-head {
+    @apply border-b border-border px-4 py-3;
+  }
+
+  .nc-input {
+    @apply mt-1 w-full rounded-admin border border-border-strong bg-surface px-3 py-2 text-fg outline-none transition-colors focus:border-focus focus:ring-2 focus:ring-focus/25;
+  }
+
+  .nc-select {
+    @apply rounded-admin border border-border-strong bg-surface px-2 py-1.5 text-fg outline-none transition-colors focus:border-focus focus:ring-2 focus:ring-focus/25;
+  }
+
+  .nc-btn {
+    @apply rounded-admin border border-border-strong px-3 py-1.5 text-fg transition-colors hover:bg-surface-muted;
+  }
+
+  .nc-btn-primary {
+    @apply rounded-admin bg-primary px-4 py-2 text-sm font-medium text-primary-fg transition-opacity hover:opacity-90 disabled:opacity-60;
+  }
+
+  .nc-btn-success {
+    @apply rounded-admin bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60;
+  }
+
+  .nc-table-head {
+    @apply bg-surface-muted text-left text-fg-muted;
+  }
+
+  .nc-table-row {
+    @apply border-t border-border-subtle;
+  }
+}
+
+.dark .nc-panel {
+  @apply shadow-black/20;
 }

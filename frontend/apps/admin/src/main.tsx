@@ -7,15 +7,20 @@ import {
   resolveInitialLocale,
 } from '@nene-corpus/i18n';
 import { App } from './App';
+import { ThemeProvider } from './ThemeProvider';
+import { applyAdminTheme, resolveInitialAdminTheme } from './theme';
 import './fonts';
 import './index.css';
 
 applyLocaleFontFamily(resolveInitialLocale(LOCALE_STORAGE_KEY));
+applyAdminTheme(resolveInitialAdminTheme());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <LocaleProvider>
-      <App />
-    </LocaleProvider>
+    <ThemeProvider>
+      <LocaleProvider>
+        <App />
+      </LocaleProvider>
+    </ThemeProvider>
   </StrictMode>,
 );

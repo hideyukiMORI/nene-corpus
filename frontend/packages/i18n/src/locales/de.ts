@@ -21,6 +21,8 @@ export const de = defineMessages({
   'sourceStatus.failed': 'Fehlgeschlagen',
   'admin.app.title': 'NeNe Corpus Admin',
   'admin.app.language': 'Admin-Sprache',
+  'admin.app.themeLight': 'Zum hellen Modus wechseln',
+  'admin.app.themeDark': 'Zum dunklen Modus wechseln',
   'admin.app.healthUnavailable': 'API-Status nicht verfügbar',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': 'Admin-Anmeldung',

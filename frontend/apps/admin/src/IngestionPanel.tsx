@@ -147,20 +147,20 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
   }
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 px-4 py-3">
+    <section className="nc-panel">
+      <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.ingestion.title)}</h2>
-        <p className="text-sm text-slate-600">{t(Msg.admin.ingestion.subtitle)}</p>
+        <p className="text-sm text-fg-muted">{t(Msg.admin.ingestion.subtitle)}</p>
       </div>
       <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handlePreview(event)}>
         <label className="block text-sm">
           <HelpLabel
-            className="font-medium text-slate-700"
+            className="font-medium text-fg"
             label={t(Msg.admin.ingestion.sourceName)}
             help={t(Msg.admin.ingestion.sourceNameHelp)}
           />
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+            className="nc-input"
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
@@ -169,12 +169,12 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
         </label>
         <label className="block text-sm">
           <HelpLabel
-            className="font-medium text-slate-700"
+            className="font-medium text-fg"
             label={t(Msg.admin.ingestion.file)}
             help={t(Msg.admin.ingestion.fileHelp)}
           />
           <input
-            className="mt-1 block w-full text-sm text-slate-600"
+            className="mt-1 block w-full text-sm text-fg-muted"
             type="file"
             accept=".csv,.pdf,text/csv,application/pdf"
             onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
@@ -184,19 +184,15 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
           <p className="text-sm text-red-600">{t(Msg.admin.ingestion.unsupportedFile)}</p>
         )}
         {file !== null && sourceType !== null && csvPreview === null && pdfPreview === null && (
-          <button
-            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-            type="submit"
-            disabled={isPreviewing}
-          >
+          <button className="nc-btn-primary" type="submit" disabled={isPreviewing}>
             {isPreviewing ? t(Msg.admin.ingestion.previewing) : t(Msg.admin.ingestion.previewFile)}
           </button>
         )}
       </form>
 
       {csvPreview !== null && (
-        <div className="space-y-4 border-t border-slate-200 px-4 py-4">
-          <p className="text-sm text-slate-600">
+        <div className="space-y-4 border-t border-border px-4 py-4">
+          <p className="text-sm text-fg-muted">
             {t(Msg.admin.ingestion.csvSummary, {
               count: csvPreview.row_count,
               delimiter: csvPreview.detected_delimiter,
@@ -217,11 +213,11 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       )}
 
       {pdfPreview !== null && (
-        <div className="space-y-3 border-t border-slate-200 px-4 py-4">
-          <p className="text-sm text-slate-600">
+        <div className="space-y-3 border-t border-border px-4 py-4">
+          <p className="text-sm text-fg-muted">
             {t(Msg.admin.ingestion.pdfPageCount, { count: pdfPreview.page_count })}
           </p>
-          <pre className="max-h-40 overflow-auto rounded-md bg-slate-50 p-3 text-xs text-slate-700 whitespace-pre-wrap">
+          <pre className="max-h-40 overflow-auto rounded-admin bg-surface-muted p-3 text-xs text-fg whitespace-pre-wrap">
             {pdfPreview.sample_text.slice(0, 800)}
             {pdfPreview.sample_text.length > 800 ? '…' : ''}
           </pre>
@@ -229,9 +225,9 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       )}
 
       {(csvPreview !== null || pdfPreview !== null) && (
-        <div className="border-t border-slate-200 px-4 py-4">
+        <div className="border-t border-border px-4 py-4">
           <button
-            className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="nc-btn-success"
             type="button"
             disabled={isSubmitting || (sourceType === 'csv' && contentColumns.length === 0)}
             onClick={() => void handleIngest()}
@@ -289,12 +285,12 @@ function ColumnMappingEditor({
     <div className="grid gap-4 md:grid-cols-3">
       <label className="block text-sm">
         <HelpLabel
-          className="font-medium text-slate-700"
+          className="font-medium text-fg"
           label={t(Msg.admin.ingestion.titleColumn)}
           help={t(Msg.admin.ingestion.titleColumnHelp)}
         />
         <select
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+          className="nc-input"
           value={titleColumn}
           onChange={(event) => onTitleColumnChange(event.target.value)}
         >
@@ -306,7 +302,7 @@ function ColumnMappingEditor({
         </select>
       </label>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">
+        <legend className="font-medium text-fg">
           <HelpLabel
             label={t(Msg.admin.ingestion.contentColumns)}
             help={t(Msg.admin.ingestion.contentColumnsHelp)}
@@ -326,7 +322,7 @@ function ColumnMappingEditor({
         </div>
       </fieldset>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">
+        <legend className="font-medium text-fg">
           <HelpLabel
             label={t(Msg.admin.ingestion.metadataColumns)}
             help={t(Msg.admin.ingestion.metadataColumnsHelp)}
@@ -356,9 +352,9 @@ interface PreviewTableProps {
 
 function PreviewTable({ headers, rows }: PreviewTableProps) {
   return (
-    <div className="overflow-x-auto rounded-md border border-slate-200">
+    <div className="overflow-x-auto rounded-admin border border-border">
       <table className="min-w-full text-xs">
-        <thead className="bg-slate-50 text-left text-slate-600">
+        <thead className="nc-table-head">
           <tr>
             {headers.map((header) => (
               <th key={header} className="px-3 py-2 font-medium">
@@ -369,7 +365,7 @@ function PreviewTable({ headers, rows }: PreviewTableProps) {
         </thead>
         <tbody>
           {rows.map((row, index) => (
-            <tr key={index} className="border-t border-slate-100">
+            <tr key={index} className="nc-table-row">
               {row.map((cell, cellIndex) => (
                 <td key={cellIndex} className="px-3 py-2">
                   {cell}
