@@ -57,6 +57,11 @@ export const zhHans = defineMessages({
   'admin.ingestion.file': '文件',
   'admin.ingestion.fileHelp':
     '上传 CSV 或 PDF。\n\n支持格式：.csv / .pdf\n文件保存在服务器上并转换为可搜索文本。',
+  'admin.ingestion.fileChoose': '点击选择文件',
+  'admin.ingestion.fileDrop': '或拖放到此处',
+  'admin.ingestion.fileFormats': 'CSV 或 PDF',
+  'admin.ingestion.fileChange': '更换',
+  'admin.ingestion.fileRemove': '移除',
   'admin.ingestion.unsupportedFile': '仅支持 .csv 和 .pdf 文件。',
   'admin.ingestion.previewFile': '预览',
   'admin.ingestion.previewing': '预览中…',

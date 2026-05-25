@@ -58,6 +58,11 @@ export const en = defineMessages({
   'admin.ingestion.file': 'File',
   'admin.ingestion.fileHelp':
     'Upload a CSV spreadsheet or PDF.\n\nSupported: .csv / .pdf\nThe file stays on your server and is converted into searchable text.',
+  'admin.ingestion.fileChoose': 'Click to choose a file',
+  'admin.ingestion.fileDrop': 'or drag and drop here',
+  'admin.ingestion.fileFormats': 'CSV or PDF',
+  'admin.ingestion.fileChange': 'Change',
+  'admin.ingestion.fileRemove': 'Remove',
   'admin.ingestion.unsupportedFile': 'Only .csv and .pdf files are supported.',
   'admin.ingestion.previewFile': 'Preview file',
   'admin.ingestion.previewing': 'Previewing…',

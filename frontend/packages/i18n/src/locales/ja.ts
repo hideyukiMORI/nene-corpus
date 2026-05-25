@@ -58,6 +58,11 @@ export const ja = defineMessages({
   'admin.ingestion.file': 'ファイル',
   'admin.ingestion.fileHelp':
     'CSV または PDF をアップロードします。\n\n対応形式: .csv / .pdf\nファイルはサーバーに保存され、検索用テキストに変換されます。',
+  'admin.ingestion.fileChoose': 'クリックしてファイルを選択',
+  'admin.ingestion.fileDrop': 'またはここにドラッグ＆ドロップ',
+  'admin.ingestion.fileFormats': 'CSV または PDF',
+  'admin.ingestion.fileChange': '変更',
+  'admin.ingestion.fileRemove': '削除',
   'admin.ingestion.unsupportedFile': '.csv と .pdf のみ対応しています。',
   'admin.ingestion.previewFile': 'プレビュー',
   'admin.ingestion.previewing': 'プレビュー中…',

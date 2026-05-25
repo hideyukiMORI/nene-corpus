@@ -58,6 +58,11 @@ export const ptBr = defineMessages({
   'admin.ingestion.file': 'Arquivo',
   'admin.ingestion.fileHelp':
     'Envie CSV ou PDF.\n\nSuportados: .csv / .pdf\nO arquivo fica no servidor e vira texto pesquisável.',
+  'admin.ingestion.fileChoose': 'Clique para escolher um arquivo',
+  'admin.ingestion.fileDrop': 'ou arraste e solte aqui',
+  'admin.ingestion.fileFormats': 'CSV ou PDF',
+  'admin.ingestion.fileChange': 'Alterar',
+  'admin.ingestion.fileRemove': 'Remover',
   'admin.ingestion.unsupportedFile': 'Somente arquivos .csv e .pdf são suportados.',
   'admin.ingestion.previewFile': 'Visualizar',
   'admin.ingestion.previewing': 'Visualizando…',
