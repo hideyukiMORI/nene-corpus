@@ -20,6 +20,7 @@ import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type Ms
 import { adminApiBase } from './config';
 import { APPEARANCE_CHAT_TOGGLE_FALLBACK } from './appearanceChatToggleFallback';
 import { APPEARANCE_HERO_TOGGLE_FALLBACK } from './appearanceHeroToggleFallback';
+import { APPEARANCE_HERO_SPACING_FALLBACK } from './appearanceHeroSpacingFallback';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
 import { HelpLabel } from './HelpLabel';
 import { readFileAsBase64 } from './fileBase64';
@@ -34,6 +35,17 @@ const HERO_TOGGLE_MSG = {
   showCtaHelp: 'admin.appearance.heroShowCtaHelp',
   showImage: 'admin.appearance.heroShowImage',
   showImageHelp: 'admin.appearance.heroShowImageHelp',
+} as const satisfies Record<string, MsgKey>;
+
+/** Literal keys — do not read `Msg.admin.appearance` hero spacing at module init (Vite HMR may serve stale `keys.ts`). */
+const HERO_SPACING_MSG = {
+  spacingTitle: 'admin.appearance.heroSpacingTitle',
+  gapAfter: 'admin.appearance.heroGapAfter',
+  gapAfterHelp: 'admin.appearance.heroGapAfterHelp',
+  paddingBottom: 'admin.appearance.heroPaddingBottom',
+  paddingBottomHelp: 'admin.appearance.heroPaddingBottomHelp',
+  showDivider: 'admin.appearance.heroShowDivider',
+  showDividerHelp: 'admin.appearance.heroShowDividerHelp',
 } as const satisfies Record<string, MsgKey>;
 
 /** Literal keys — do not read `Msg.admin.appearance` chat toggles at module init (Vite HMR may serve stale `keys.ts`). */
@@ -132,6 +144,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const t = useMsg();
   const { locale } = useLocale();
   const heroToggleFallback = APPEARANCE_HERO_TOGGLE_FALLBACK[locale];
+  const heroSpacingFallback = APPEARANCE_HERO_SPACING_FALLBACK[locale];
   const chatAppearanceFallback = APPEARANCE_CHAT_TOGGLE_FALLBACK[locale];
 
   const resolveAppearanceCopy = useMemo(
@@ -167,6 +180,36 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       ),
     };
   }, [resolveAppearanceCopy, heroToggleFallback]);
+
+  const heroSpacingCopy = useMemo(() => {
+    return {
+      spacingTitle: resolveAppearanceCopy(
+        HERO_SPACING_MSG.spacingTitle,
+        heroSpacingFallback.spacingTitle,
+      ),
+      gapAfter: resolveAppearanceCopy(HERO_SPACING_MSG.gapAfter, heroSpacingFallback.gapAfter),
+      gapAfterHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.gapAfterHelp,
+        heroSpacingFallback.gapAfterHelp,
+      ),
+      paddingBottom: resolveAppearanceCopy(
+        HERO_SPACING_MSG.paddingBottom,
+        heroSpacingFallback.paddingBottom,
+      ),
+      paddingBottomHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.paddingBottomHelp,
+        heroSpacingFallback.paddingBottomHelp,
+      ),
+      showDivider: resolveAppearanceCopy(
+        HERO_SPACING_MSG.showDivider,
+        heroSpacingFallback.showDivider,
+      ),
+      showDividerHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.showDividerHelp,
+        heroSpacingFallback.showDividerHelp,
+      ),
+    };
+  }, [resolveAppearanceCopy, heroSpacingFallback]);
 
   const chatAppearanceCopy = useMemo(() => {
     return {
@@ -626,10 +669,10 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </div>
             <div className="mt-4 space-y-3 border-t border-border pt-4">
-              <h4 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.heroSpacingTitle)}</h4>
+              <h4 className="text-sm font-medium text-fg">{heroSpacingCopy.spacingTitle}</h4>
               <label className="block text-sm">
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.heroGapAfter)}</span>
-                <span className="mt-0.5 block text-xs nc-text-muted">{t(Msg.admin.appearance.heroGapAfterHelp)}</span>
+                <span className="font-medium text-fg">{heroSpacingCopy.gapAfter}</span>
+                <span className="mt-0.5 block text-xs nc-text-muted">{heroSpacingCopy.gapAfterHelp}</span>
                 <input
                   className="nc-input mt-1"
                   type="text"
@@ -639,9 +682,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 />
               </label>
               <label className="block text-sm">
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.heroPaddingBottom)}</span>
+                <span className="font-medium text-fg">{heroSpacingCopy.paddingBottom}</span>
                 <span className="mt-0.5 block text-xs nc-text-muted">
-                  {t(Msg.admin.appearance.heroPaddingBottomHelp)}
+                  {heroSpacingCopy.paddingBottomHelp}
                 </span>
                 <input
                   className="nc-input mt-1"
@@ -659,8 +702,8 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                   onChange={(event) => updateHeroField('show_divider', event.target.checked)}
                 />
                 <span>
-                  <span className="font-medium text-fg">{t(Msg.admin.appearance.heroShowDivider)}</span>
-                  <span className="mt-0.5 block nc-text-muted">{t(Msg.admin.appearance.heroShowDividerHelp)}</span>
+                  <span className="font-medium text-fg">{heroSpacingCopy.showDivider}</span>
+                  <span className="mt-0.5 block nc-text-muted">{heroSpacingCopy.showDividerHelp}</span>
                 </span>
               </label>
             </div>
@@ -858,7 +901,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               onChange={(value) => updateThemeField('color_text', value)}
             />
             <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.radiusPanel)}</span>
+              <span className="font-medium text-fg">
+                {t(resolveMsgKey(Msg.admin.appearance.radiusPanel, 'admin.appearance.radiusPanel'))}
+              </span>
               <input
                 className="nc-input"
                 type="text"
@@ -867,7 +912,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </label>
             <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.radiusControl)}</span>
+              <span className="font-medium text-fg">
+                {t(resolveMsgKey(Msg.admin.appearance.radiusControl, 'admin.appearance.radiusControl'))}
+              </span>
               <input
                 className="nc-input"
                 type="text"
