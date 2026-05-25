@@ -4,6 +4,7 @@ export const fr = defineMessages({
   'common.loading': 'Chargement…',
   'common.signOut': 'Se déconnecter',
   'common.genericError': 'Une erreur est survenue.',
+  'common.showHelp': 'Aide',
   'locale.en': 'Anglais',
   'locale.ja': 'Japonais',
   'locale.fr': 'Français',
@@ -39,19 +40,35 @@ export const fr = defineMessages({
   'admin.sources.columnDocuments': 'Documents',
   'admin.sources.columnChunks': 'Segments',
   'admin.sources.columnUpdated': 'Mis à jour',
+  'admin.sources.columnStatusHelp':
+    'En attente = file d’attente, En cours = traitement, Prêt = utilisable dans le chat, Échec = vérifiez le fichier ou le mapping.',
+  'admin.sources.columnDocumentsHelp':
+    'Documents logiques créés à partir de cette source — en général une ligne CSV ou un PDF.',
+  'admin.sources.columnChunksHelp':
+    'Segments de texte indexés pour le chat. Plus il y en a, plus les citations sont fines.',
   'admin.ingestion.title': 'Téléverser une source',
   'admin.ingestion.subtitle': 'Ajoutez des fichiers CSV ou PDF au corpus.',
   'admin.ingestion.sourceName': 'Nom de la source',
   'admin.ingestion.sourceNamePlaceholder': 'Catalogue produits',
+  'admin.ingestion.sourceNameHelp':
+    'Nom affiché dans la liste des sources. Choisissez un libellé reconnaissable par votre équipe.',
   'admin.ingestion.file': 'Fichier',
+  'admin.ingestion.fileHelp':
+    'Téléversez un CSV ou PDF. Le fichier reste sur votre serveur et devient du texte searchable.',
   'admin.ingestion.unsupportedFile': 'Seuls les fichiers .csv et .pdf sont pris en charge.',
   'admin.ingestion.previewFile': 'Aperçu',
   'admin.ingestion.previewing': 'Aperçu…',
   'admin.ingestion.csvSummary': '{count} lignes · séparateur « {delimiter} »',
   'admin.ingestion.pdfPageCount': '{count} pages détectées',
   'admin.ingestion.titleColumn': 'Colonne titre',
+  'admin.ingestion.titleColumnHelp':
+    'Colonne CSV utilisée comme titre de chaque ligne (ex. nom du produit).',
   'admin.ingestion.contentColumns': 'Colonnes contenu',
+  'admin.ingestion.contentColumnsHelp':
+    'Colonnes combinées dans le corps de réponse. Sélectionnez celles utiles aux questions des visiteurs.',
   'admin.ingestion.metadataColumns': 'Colonnes métadonnées (optionnel)',
+  'admin.ingestion.metadataColumnsHelp':
+    'Colonnes optionnelles stockées avec la ligne (URL, catégorie…) mais pas utilisées comme corps principal.',
   'admin.ingestion.ingest': 'Ingérer dans le corpus',
   'admin.ingestion.ingesting': 'Ingestion…',
   'admin.ingestion.ingestSuccess': 'Source ingérée avec succès.',
@@ -70,6 +87,11 @@ export const fr = defineMessages({
   'admin.conversationLogs.columnSession': 'Session',
   'admin.conversationLogs.columnMessages': 'Messages',
   'admin.conversationLogs.columnLastActivity': 'Dernière activité',
+  'admin.conversationLogs.columnSessionHelp':
+    'Session de chat anonyme créée par un visiteur via le widget intégré.',
+  'admin.conversationLogs.columnMessagesHelp':
+    'Nombre total de messages, questions des visiteurs et réponses de l’assistant inclus.',
+  'admin.conversationLogs.columnLastActivityHelp': 'Date et heure du dernier message de cette session.',
   'admin.conversationLogs.selectSession': 'Sélectionnez une session pour voir les messages.',
   'admin.conversationLogs.loadingMessages': 'Chargement des messages…',
   'admin.conversationLogs.emptyMessages': 'Aucun message dans cette session.',

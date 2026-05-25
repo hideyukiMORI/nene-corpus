@@ -4,6 +4,7 @@ export const ptBr = defineMessages({
   'common.loading': 'Carregando…',
   'common.signOut': 'Sair',
   'common.genericError': 'Algo deu errado.',
+  'common.showHelp': 'Ajuda',
   'locale.en': 'Inglês',
   'locale.ja': 'Japonês',
   'locale.fr': 'Francês',
@@ -39,19 +40,35 @@ export const ptBr = defineMessages({
   'admin.sources.columnDocuments': 'Documentos',
   'admin.sources.columnChunks': 'Trechos',
   'admin.sources.columnUpdated': 'Atualizado',
+  'admin.sources.columnStatusHelp':
+    'Pendente = na fila, Processando = em execução, Pronto = disponível no chat, Falhou = verifique upload ou mapeamento.',
+  'admin.sources.columnDocumentsHelp':
+    'Documentos lógicos criados desta fonte — geralmente uma linha CSV ou um PDF.',
+  'admin.sources.columnChunksHelp':
+    'Trechos de texto indexados para o chat. Mais trechos permitem citações mais finas.',
   'admin.ingestion.title': 'Enviar fonte',
   'admin.ingestion.subtitle': 'Adicione arquivos CSV ou PDF ao corpus.',
   'admin.ingestion.sourceName': 'Nome da fonte',
   'admin.ingestion.sourceNamePlaceholder': 'Catálogo de produtos',
+  'admin.ingestion.sourceNameHelp':
+    'Nome exibido na lista de fontes. Escolha um rótulo reconhecível pela equipe.',
   'admin.ingestion.file': 'Arquivo',
+  'admin.ingestion.fileHelp':
+    'Envie CSV ou PDF. O arquivo fica no servidor e vira texto pesquisável.',
   'admin.ingestion.unsupportedFile': 'Somente arquivos .csv e .pdf são suportados.',
   'admin.ingestion.previewFile': 'Visualizar',
   'admin.ingestion.previewing': 'Visualizando…',
   'admin.ingestion.csvSummary': '{count} linhas · delimitador "{delimiter}"',
   'admin.ingestion.pdfPageCount': '{count} páginas detectadas',
   'admin.ingestion.titleColumn': 'Coluna de título',
+  'admin.ingestion.titleColumnHelp':
+    'Coluna CSV usada como título de cada linha (ex.: nome do produto). Aparece no admin e nas citações.',
   'admin.ingestion.contentColumns': 'Colunas de conteúdo',
+  'admin.ingestion.contentColumnsHelp':
+    'Colunas combinadas no texto de resposta. Selecione todas que ajudem a responder perguntas.',
   'admin.ingestion.metadataColumns': 'Colunas de metadados (opcional)',
+  'admin.ingestion.metadataColumnsHelp':
+    'Colunas extras opcionais (URL, categoria etc.) não usadas como corpo principal da resposta.',
   'admin.ingestion.ingest': 'Ingerir no corpus',
   'admin.ingestion.ingesting': 'Ingerindo…',
   'admin.ingestion.ingestSuccess': 'Fonte ingerida com sucesso.',
@@ -70,6 +87,11 @@ export const ptBr = defineMessages({
   'admin.conversationLogs.columnSession': 'Sessão',
   'admin.conversationLogs.columnMessages': 'Mensagens',
   'admin.conversationLogs.columnLastActivity': 'Última atividade',
+  'admin.conversationLogs.columnSessionHelp':
+    'Sessão de chat anônima criada por um visitante no widget embutido.',
+  'admin.conversationLogs.columnMessagesHelp':
+    'Total de mensagens na sessão, incluindo perguntas e respostas do assistente.',
+  'admin.conversationLogs.columnLastActivityHelp': 'Data e hora da mensagem mais recente nesta sessão.',
   'admin.conversationLogs.selectSession': 'Selecione uma sessão para ver mensagens.',
   'admin.conversationLogs.loadingMessages': 'Carregando mensagens…',
   'admin.conversationLogs.emptyMessages': 'Nenhuma mensagem nesta sessão.',

@@ -4,6 +4,7 @@ export const ja = defineMessages({
   'common.loading': '読み込み中…',
   'common.signOut': 'サインアウト',
   'common.genericError': '問題が発生しました。',
+  'common.showHelp': 'ヘルプ',
   'locale.en': '英語',
   'locale.ja': '日本語',
   'locale.fr': 'フランス語',
@@ -39,19 +40,35 @@ export const ja = defineMessages({
   'admin.sources.columnDocuments': 'ドキュメント',
   'admin.sources.columnChunks': '検索用テキスト',
   'admin.sources.columnUpdated': '更新日時',
+  'admin.sources.columnStatusHelp':
+    '待機中＝キュー待ち、処理中＝取り込み実行中、準備完了＝チャットで使える、失敗＝アップロードや列設定を確認してください。',
+  'admin.sources.columnDocumentsHelp':
+    'このソースから作られたドキュメント数です。CSV なら行ごと、PDF なら通常 1 件です。',
+  'admin.sources.columnChunksHelp':
+    'チャットが検索に使うテキストの断片数です。多いほど引用が細かくなります。',
   'admin.ingestion.title': 'ソースをアップロード',
   'admin.ingestion.subtitle': 'CSV または PDF をコーパスに追加します。',
   'admin.ingestion.sourceName': 'ソース名',
   'admin.ingestion.sourceNamePlaceholder': '商品カタログ',
+  'admin.ingestion.sourceNameHelp':
+    'ソース一覧に表示される名前です。社内でわかりやすい名称を付けてください。',
   'admin.ingestion.file': 'ファイル',
+  'admin.ingestion.fileHelp':
+    'CSV または PDF をアップロードします。ファイルはサーバーに保存され、検索用テキストに変換されます。',
   'admin.ingestion.unsupportedFile': '.csv と .pdf のみ対応しています。',
   'admin.ingestion.previewFile': 'プレビュー',
   'admin.ingestion.previewing': 'プレビュー中…',
   'admin.ingestion.csvSummary': '{count} 行 · 区切り文字 "{delimiter}"',
   'admin.ingestion.pdfPageCount': '{count} ページを検出',
   'admin.ingestion.titleColumn': 'タイトル列',
+  'admin.ingestion.titleColumnHelp':
+    '各行の見出しに使う CSV の列です（例: 商品名）。管理画面や引用の文脈で表示されます。',
   'admin.ingestion.contentColumns': '本文列',
+  'admin.ingestion.contentColumnsHelp':
+    '回答の元になる本文として結合する列です。ユーザーの質問に役立つ列をすべて選んでください。',
   'admin.ingestion.metadataColumns': 'メタデータ列（任意）',
+  'admin.ingestion.metadataColumnsHelp':
+    'URL やカテゴリなど、行と一緒に保存する任意の列です。本文の主な回答には使いません。',
   'admin.ingestion.ingest': 'コーパスに取り込む',
   'admin.ingestion.ingesting': '取り込み中…',
   'admin.ingestion.ingestSuccess': 'ソースを取り込みました。',
@@ -70,6 +87,11 @@ export const ja = defineMessages({
   'admin.conversationLogs.columnSession': 'セッション',
   'admin.conversationLogs.columnMessages': 'メッセージ数',
   'admin.conversationLogs.columnLastActivity': '最終更新',
+  'admin.conversationLogs.columnSessionHelp':
+    'サイトに埋め込んだチャットウィジェットで、訪問者が開始した匿名セッションです。',
+  'admin.conversationLogs.columnMessagesHelp':
+    'セッション内のメッセージ総数（訪問者の質問とアシスタントの回答を含む）です。',
+  'admin.conversationLogs.columnLastActivityHelp': 'このセッションで最後に送られたメッセージの日時です。',
   'admin.conversationLogs.selectSession': 'セッションを選ぶとメッセージが表示されます。',
   'admin.conversationLogs.loadingMessages': 'メッセージを読み込み中…',
   'admin.conversationLogs.emptyMessages': 'このセッションにメッセージはありません。',

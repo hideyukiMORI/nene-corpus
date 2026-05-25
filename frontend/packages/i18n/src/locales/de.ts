@@ -4,6 +4,7 @@ export const de = defineMessages({
   'common.loading': 'Wird geladen…',
   'common.signOut': 'Abmelden',
   'common.genericError': 'Etwas ist schiefgelaufen.',
+  'common.showHelp': 'Hilfe',
   'locale.en': 'Englisch',
   'locale.ja': 'Japanisch',
   'locale.fr': 'Französisch',
@@ -39,19 +40,35 @@ export const de = defineMessages({
   'admin.sources.columnDocuments': 'Dokumente',
   'admin.sources.columnChunks': 'Textabschnitte',
   'admin.sources.columnUpdated': 'Aktualisiert',
+  'admin.sources.columnStatusHelp':
+    'Ausstehend = Warteschlange, In Bearbeitung = läuft, Bereit = für Chat nutzbar, Fehlgeschlagen = Upload oder Mapping prüfen.',
+  'admin.sources.columnDocumentsHelp':
+    'Logische Dokumente aus dieser Quelle — meist eine CSV-Zeile oder ein PDF.',
+  'admin.sources.columnChunksHelp':
+    'Durchsuchbare Textabschnitte für den Chat. Mehr Abschnitte ermöglichen feinere Zitate.',
   'admin.ingestion.title': 'Quelle hochladen',
   'admin.ingestion.subtitle': 'CSV- oder PDF-Dateien zum Korpus hinzufügen.',
   'admin.ingestion.sourceName': 'Quellenname',
   'admin.ingestion.sourceNamePlaceholder': 'Produktkatalog',
+  'admin.ingestion.sourceNameHelp':
+    'Anzeigename in der Quellenliste. Wählen Sie eine für Ihr Team erkennbare Bezeichnung.',
   'admin.ingestion.file': 'Datei',
+  'admin.ingestion.fileHelp':
+    'CSV oder PDF hochladen. Die Datei bleibt auf Ihrem Server und wird in durchsuchbaren Text umgewandelt.',
   'admin.ingestion.unsupportedFile': 'Nur .csv- und .pdf-Dateien werden unterstützt.',
   'admin.ingestion.previewFile': 'Vorschau',
   'admin.ingestion.previewing': 'Vorschau…',
   'admin.ingestion.csvSummary': '{count} Zeilen · Trennzeichen „{delimiter}“',
   'admin.ingestion.pdfPageCount': '{count} Seiten erkannt',
   'admin.ingestion.titleColumn': 'Titelspalte',
+  'admin.ingestion.titleColumnHelp':
+    'CSV-Spalte als Titel jeder Zeile (z. B. Produktname). Wird in Admin und Zitaten angezeigt.',
   'admin.ingestion.contentColumns': 'Inhaltsspalten',
+  'admin.ingestion.contentColumnsHelp':
+    'Spalten, die zum Antworttext zusammengefügt werden. Alle für Nutzerfragen relevanten Spalten wählen.',
   'admin.ingestion.metadataColumns': 'Metadaten-Spalten (optional)',
+  'admin.ingestion.metadataColumnsHelp':
+    'Optionale Zusatzspalten (URL, Kategorie usw.), nicht als Hauptantworttext genutzt.',
   'admin.ingestion.ingest': 'In Korpus aufnehmen',
   'admin.ingestion.ingesting': 'Wird aufgenommen…',
   'admin.ingestion.ingestSuccess': 'Quelle erfolgreich aufgenommen.',
@@ -70,6 +87,11 @@ export const de = defineMessages({
   'admin.conversationLogs.columnSession': 'Sitzung',
   'admin.conversationLogs.columnMessages': 'Nachrichten',
   'admin.conversationLogs.columnLastActivity': 'Letzte Aktivität',
+  'admin.conversationLogs.columnSessionHelp':
+    'Anonyme Chat-Sitzung eines Besuchers über das eingebettete Widget.',
+  'admin.conversationLogs.columnMessagesHelp':
+    'Gesamtzahl der Nachrichten inkl. Besucherfragen und Assistentenantworten.',
+  'admin.conversationLogs.columnLastActivityHelp': 'Zeitstempel der letzten Nachricht in dieser Sitzung.',
   'admin.conversationLogs.selectSession': 'Wählen Sie eine Sitzung, um Nachrichten anzuzeigen.',
   'admin.conversationLogs.loadingMessages': 'Nachrichten werden geladen…',
   'admin.conversationLogs.emptyMessages': 'Keine Nachrichten in dieser Sitzung.',
