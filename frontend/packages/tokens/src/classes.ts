@@ -3,6 +3,7 @@ export const nc = {
   widgetRoot: 'nene-corpus-widget',
   chatPanel: 'nene-corpus-chat',
   chatHero: 'nene-corpus-chat__hero',
+  chatHeroImage: 'nene-corpus-chat__hero-image',
   chatHeroTitle: 'nene-corpus-chat__hero-title',
   chatHeroDescription: 'nene-corpus-chat__hero-description',
   chatHeroCta: 'nene-corpus-chat__hero-cta',
