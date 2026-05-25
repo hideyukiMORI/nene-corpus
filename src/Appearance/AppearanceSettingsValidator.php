@@ -62,6 +62,51 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_cta')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_image')];
 
+        $chat = $body['chat'] ?? null;
+
+        if (!is_array($chat)) {
+            $errors[] = new ValidationError('chat', 'Chat object is required.', 'required');
+
+            return $errors;
+        }
+
+        $errors = [...$errors, ...$this->validateChat($chat)];
+
+        return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $chat
+     * @return list<ValidationError>
+     */
+    private function validateChat(array $chat): array
+    {
+        $errors = [];
+
+        if (array_key_exists('user_avatar_mode', $chat)) {
+            $value = $chat['user_avatar_mode'];
+
+            if (!is_string($value) || !in_array($value, WidgetChat::USER_AVATAR_MODES, true)) {
+                $errors[] = new ValidationError(
+                    'chat.user_avatar_mode',
+                    'User avatar mode must be one of: ' . implode(', ', WidgetChat::USER_AVATAR_MODES) . '.',
+                    'invalid',
+                );
+            }
+        }
+
+        if (array_key_exists('show_assistant_avatar', $chat)) {
+            $value = $chat['show_assistant_avatar'];
+
+            if (!is_bool($value)) {
+                $errors[] = new ValidationError(
+                    'chat.show_assistant_avatar',
+                    'Show assistant avatar must be a boolean.',
+                    'invalid',
+                );
+            }
+        }
+
         return $errors;
     }
 

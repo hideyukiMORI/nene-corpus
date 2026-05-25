@@ -137,6 +137,18 @@ export const DEFAULT_WIDGET_HERO: WidgetHero = {
   image_alt: null,
 };
 
+export type UserAvatarMode = 'silhouette' | 'none';
+
+export interface WidgetChat {
+  user_avatar_mode: UserAvatarMode;
+  show_assistant_avatar: boolean;
+}
+
+export const DEFAULT_WIDGET_CHAT: WidgetChat = {
+  user_avatar_mode: 'silhouette',
+  show_assistant_avatar: true,
+};
+
 export interface UploadHeroImageRequest {
   filename: string;
   content: string;
@@ -150,6 +162,7 @@ export interface AppearanceSettingsResponse {
   widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;
   theme: WidgetTheme;
   hero: WidgetHero;
+  chat: WidgetChat;
 }
 
 export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;

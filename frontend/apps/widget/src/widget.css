@@ -102,6 +102,16 @@
   justify-content: flex-end;
 }
 
+.nene-corpus-chat__row--no-user-avatar,
+.nene-corpus-chat__row--no-assistant-avatar {
+  gap: 0;
+}
+
+.nene-corpus-chat__row--no-user-avatar .nene-corpus-chat__bubble,
+.nene-corpus-chat__row--no-assistant-avatar .nene-corpus-chat__bubble {
+  max-width: min(92%, 28rem);
+}
+
 .nene-corpus-chat__avatar {
   display: inline-flex;
   flex-shrink: 0;
@@ -128,20 +138,51 @@
 }
 
 .nene-corpus-chat__bubble {
+  position: relative;
   max-width: min(85%, 28rem);
+  min-width: 0;
   padding: calc(var(--nc-spacing-md) * 0.75) var(--nc-spacing-md);
   border-radius: var(--nc-radius-md);
+  overflow-wrap: anywhere;
 }
 
 .nene-corpus-chat__bubble--assistant {
-  background: color-mix(in srgb, var(--nc-color-primary) 12%, white);
-  border-bottom-left-radius: calc(var(--nc-radius-md) / 2);
+  --nc-bubble-bg: color-mix(in srgb, var(--nc-color-primary) 12%, white);
+  background: var(--nc-bubble-bg);
 }
 
 .nene-corpus-chat__bubble--user {
-  background: var(--nc-color-primary);
+  --nc-bubble-bg: var(--nc-color-primary);
+  background: var(--nc-bubble-bg);
   color: #fff;
-  border-bottom-right-radius: calc(var(--nc-radius-md) / 2);
+}
+
+.nene-corpus-chat__bubble--assistant.nene-corpus-chat__bubble--tailed {
+  border-bottom-left-radius: 0;
+}
+
+.nene-corpus-chat__bubble--user.nene-corpus-chat__bubble--tailed {
+  border-bottom-right-radius: 0;
+}
+
+.nene-corpus-chat__bubble--assistant.nene-corpus-chat__bubble--tailed::after,
+.nene-corpus-chat__bubble--user.nene-corpus-chat__bubble--tailed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 0.5rem;
+  height: 0.625rem;
+  background: var(--nc-bubble-bg);
+}
+
+.nene-corpus-chat__bubble--assistant.nene-corpus-chat__bubble--tailed::after {
+  left: -0.5rem;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.nene-corpus-chat__bubble--user.nene-corpus-chat__bubble--tailed::after {
+  right: -0.5rem;
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
 }
 
 .nene-corpus-chat__bubble--pending {
@@ -203,6 +244,7 @@
 .nene-corpus-chat__bubble-text {
   margin: 0;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .nene-corpus-chat__citations {
@@ -224,6 +266,8 @@
 .nene-corpus-chat__citation-excerpt {
   display: block;
   opacity: 0.85;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .nene-corpus-chat__citation-meta {

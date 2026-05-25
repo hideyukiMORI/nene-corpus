@@ -10,7 +10,7 @@ export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingest
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
 export { fetchJson } from './fetch-json';
-export { DEFAULT_WIDGET_HERO } from './types';
+export { DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT } from './types';
 export type {
   AdminMeResponse,
   Citation,
@@ -30,6 +30,8 @@ export type {
   SourceListItem,
   WidgetTheme,
   WidgetHero,
+  WidgetChat,
+  UserAvatarMode,
   UploadHeroImageRequest,
   UploadHeroImageResponse,
   AppearanceSettingsResponse,

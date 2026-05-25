@@ -10,6 +10,7 @@ final readonly class AppearanceSettings
         public ?string $widgetLocale,
         public WidgetTheme $theme,
         public WidgetHero $hero,
+        public WidgetChat $chat,
     ) {
     }
 
@@ -19,6 +20,7 @@ final readonly class AppearanceSettings
             widgetLocale: null,
             theme: WidgetTheme::defaults(),
             hero: WidgetHero::defaults(),
+            chat: WidgetChat::defaults(),
         );
     }
 
@@ -32,8 +34,12 @@ final readonly class AppearanceSettings
      *         cta_label: string|null,
      *         show_title: bool,
      *         show_description: bool,
-     *         show_cta: bool
-     *     }
+     *         show_cta: bool,
+     *         show_image: bool,
+     *         image_url: string|null,
+     *         image_alt: string|null
+     *     },
+     *     chat: array{user_avatar_mode: string, show_assistant_avatar: bool}
      * }
      */
     public function toArray(): array
@@ -42,6 +48,7 @@ final readonly class AppearanceSettings
             'widget_locale' => $this->widgetLocale,
             'theme' => $this->theme->toArray(),
             'hero' => $this->hero->toArray(),
+            'chat' => $this->chat->toArray(),
         ];
     }
 }

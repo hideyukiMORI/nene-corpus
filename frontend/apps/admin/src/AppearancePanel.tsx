@@ -5,6 +5,8 @@ import {
   updateAppearanceSettings,
   uploadHeroImage,
   type AppearanceSettingsResponse,
+  type UserAvatarMode,
+  type WidgetChat,
   type WidgetHero,
   type WidgetTheme,
 } from '@nene-corpus/api-client';
@@ -53,6 +55,18 @@ const EMPTY_HERO_FORM: HeroFormState = {
   show_cta: true,
   show_image: true,
 };
+
+interface ChatFormState {
+  user_avatar_mode: UserAvatarMode;
+  show_assistant_avatar: boolean;
+}
+
+const EMPTY_CHAT_FORM: ChatFormState = {
+  user_avatar_mode: 'silhouette',
+  show_assistant_avatar: true,
+};
+
+const USER_AVATAR_MODES: UserAvatarMode[] = ['silhouette', 'none'];
 
 const DEFAULT_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -105,6 +119,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
+  const [chatForm, setChatForm] = useState<ChatFormState>(EMPTY_CHAT_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -156,6 +171,10 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       show_cta: settings.hero.show_cta,
       show_image: settings.hero.show_image,
     });
+    setChatForm({
+      user_avatar_mode: settings.chat.user_avatar_mode,
+      show_assistant_avatar: settings.chat.show_assistant_avatar,
+    });
   }
 
   function updateHeroField<K extends keyof HeroFormState>(field: K, value: HeroFormState[K]): void {
@@ -206,6 +225,17 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     };
   }
 
+  function chatPayload(): WidgetChat {
+    return {
+      user_avatar_mode: chatForm.user_avatar_mode,
+      show_assistant_avatar: chatForm.show_assistant_avatar,
+    };
+  }
+
+  function updateChatField<K extends keyof ChatFormState>(field: K, value: ChatFormState[K]): void {
+    setChatForm((current) => ({ ...current, [field]: value }));
+  }
+
   function updateThemeField(field: keyof WidgetTheme, value: string): void {
     setTheme((current) => ({ ...current, [field]: value }));
   }
@@ -221,6 +251,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
         widget_locale: widgetLocale === '' ? null : (widgetLocale as AppearanceSettingsResponse['widget_locale']),
         theme,
         hero: heroPayload(),
+        chat: chatPayload(),
       }, adminApiBase);
       applySettings(saved);
       setSuccess(t(Msg.admin.appearance.saveSuccess));
@@ -236,10 +267,11 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       theme,
       widgetLocale === '' ? null : widgetLocale,
       heroPayload(),
+      chatPayload(),
     );
 
     return `${widgetPreviewOrigin()}?${query}`;
-  }, [theme, widgetLocale, heroForm]);
+  }, [theme, widgetLocale, heroForm, chatForm]);
 
   function localeLabel(value: string): string {
     if (value === '') {
@@ -420,6 +452,50 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 placeholder={t(Msg.admin.appearance.heroCtaLabelPlaceholder)}
                 disabled={!heroForm.show_cta}
               />
+            </div>
+          </div>
+          <div className="space-y-3 rounded-admin border border-border p-4">
+            <div>
+              <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.chatTitle)}</h3>
+              <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.chatSubtitle)}</p>
+            </div>
+            <fieldset className="block text-sm">
+              <legend className="font-medium text-fg">{t(Msg.admin.appearance.userAvatarMode)}</legend>
+              <p className="mt-1 text-xs nc-text-muted">{t(Msg.admin.appearance.userAvatarModeHelp)}</p>
+              <div className="mt-2 space-y-2">
+                {USER_AVATAR_MODES.map((mode) => (
+                  <label key={mode} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="user_avatar_mode"
+                      value={mode}
+                      checked={chatForm.user_avatar_mode === mode}
+                      onChange={() => updateChatField('user_avatar_mode', mode)}
+                    />
+                    <span>
+                      {mode === 'silhouette'
+                        ? t(Msg.admin.appearance.userAvatarModeSilhouette)
+                        : t(Msg.admin.appearance.userAvatarModeNone)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <div className="block text-sm">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={chatForm.show_assistant_avatar}
+                  onChange={(event) =>
+                    updateChatField('show_assistant_avatar', event.target.checked)
+                  }
+                />
+                <HelpLabel
+                  className="font-medium text-fg"
+                  label={t(Msg.admin.appearance.showAssistantAvatar)}
+                  help={t(Msg.admin.appearance.showAssistantAvatarHelp)}
+                />
+              </div>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
