@@ -1,4 +1,5 @@
 export { loginAdmin, getAdminMe, listSources, listChatSessions, listChatSessionMessages } from './admin';
+export { getAppearanceSettings, updateAppearanceSettings, fetchWidgetAppearance, buildWidgetPreviewSearchParams } from './appearance';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
@@ -20,4 +21,7 @@ export type {
   PreviewPdfIngestionResponse,
   SendChatMessageResponse,
   SourceListItem,
+  WidgetTheme,
+  AppearanceSettingsResponse,
+  UpdateAppearanceSettingsRequest,
 } from './types';

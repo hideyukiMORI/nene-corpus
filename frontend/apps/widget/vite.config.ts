@@ -22,6 +22,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/chat': 'http://localhost:8080',
+      '/widget/appearance': 'http://localhost:8080',
     },
   },
   build: {

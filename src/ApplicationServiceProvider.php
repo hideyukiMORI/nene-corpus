@@ -11,6 +11,8 @@ use Nene2\Error\DomainExceptionHandlerInterface;
 use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
+use NeneCorpus\Appearance\AppearanceRouteRegistrar;
+use NeneCorpus\Appearance\AppearanceServiceProvider;
 use NeneCorpus\Chat\ChatRouteRegistrar;
 use NeneCorpus\Chat\ChatServiceProvider;
 use NeneCorpus\Chat\ChatSessionNotFoundExceptionHandler;
@@ -50,6 +52,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new RateLimitServiceProvider())
             ->addProvider(new AdminAuthServiceProvider())
             ->addProvider(new IngestionServiceProvider())
+            ->addProvider(new AppearanceServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
@@ -58,6 +61,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
                     $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
                     $adminChat = $container->get(SessionServiceProvider::ROUTE_REGISTRAR);
+                    $appearance = $container->get(AppearanceServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -79,7 +83,11 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Admin chat route registrar service is invalid.');
                     }
 
-                    return [$adminAuth, $chat, $ingestion, $source, $adminChat];
+                    if (!$appearance instanceof AppearanceRouteRegistrar) {
+                        throw new LogicException('Appearance route registrar service is invalid.');
+                    }
+
+                    return [$adminAuth, $chat, $ingestion, $source, $adminChat, $appearance];
                 },
             )
             ->set(

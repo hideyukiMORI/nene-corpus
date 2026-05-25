@@ -1,16 +1,26 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import type { WidgetTheme } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { useChatSession } from './useChatSession';
+import { applyWidgetTheme } from './theme';
 
 export interface EmbedWidgetProps {
   apiBase?: string;
+  theme?: WidgetTheme;
 }
 
-export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
+export function EmbedWidget({ apiBase, theme }: EmbedWidgetProps = {}) {
   const t = useMsg();
+  const rootRef = useRef<HTMLDivElement>(null);
   const { turns, isLoading, isReady, error, sendMessage } = useChatSession({ apiBase });
   const [draft, setDraft] = useState('');
+
+  useEffect(() => {
+    if (rootRef.current !== null && theme !== undefined) {
+      applyWidgetTheme(rootRef.current, theme);
+    }
+  }, [theme]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -21,7 +31,7 @@ export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
   }
 
   return (
-    <div className={nc.widgetRoot}>
+    <div ref={rootRef} className={nc.widgetRoot}>
       <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
         <div className={nc.chatMessages} aria-live="polite">
           {turns.length === 0 && (

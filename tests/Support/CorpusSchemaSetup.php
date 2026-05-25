@@ -84,4 +84,19 @@ final class CorpusSchemaSetup
 
         $executor->execute('CREATE UNIQUE INDEX uniq_admin_users_email ON admin_users (email)');
     }
+
+    public static function createAppearanceSettings(PdoDatabaseQueryExecutor $executor): void
+    {
+        $executor->execute(
+            <<<'SQL'
+                CREATE TABLE appearance_settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    widget_locale TEXT NULL,
+                    theme_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                SQL,
+        );
+    }
 }

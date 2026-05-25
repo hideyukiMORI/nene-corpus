@@ -122,6 +122,22 @@ export const Msg = {
       title: 'admin.widgetPreview.title',
       body: 'admin.widgetPreview.body',
     },
+    appearance: {
+      title: 'admin.appearance.title',
+      subtitle: 'admin.appearance.subtitle',
+      widgetLocale: 'admin.appearance.widgetLocale',
+      widgetLocaleBrowser: 'admin.appearance.widgetLocaleBrowser',
+      colorPrimary: 'admin.appearance.colorPrimary',
+      colorSurface: 'admin.appearance.colorSurface',
+      colorText: 'admin.appearance.colorText',
+      radiusMd: 'admin.appearance.radiusMd',
+      previewTitle: 'admin.appearance.previewTitle',
+      save: 'admin.appearance.save',
+      saving: 'admin.appearance.saving',
+      saveSuccess: 'admin.appearance.saveSuccess',
+      loadFailed: 'admin.appearance.loadFailed',
+      saveFailed: 'admin.appearance.saveFailed',
+    },
   },
   widget: {
     chat: {
