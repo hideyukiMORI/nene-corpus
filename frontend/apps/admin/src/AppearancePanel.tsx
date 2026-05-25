@@ -128,10 +128,10 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     <section className="nc-panel">
       <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.appearance.title)}</h2>
-        <p className="text-sm text-fg-muted">{t(Msg.admin.appearance.subtitle)}</p>
+        <p>{t(Msg.admin.appearance.subtitle)}</p>
       </div>
       {isLoading ? (
-        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.common.loading)}</p>
+        <p className="px-4 py-6 nc-text-muted">{t(Msg.common.loading)}</p>
       ) : (
         <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handleSubmit(event)}>
           <label className="block text-sm">

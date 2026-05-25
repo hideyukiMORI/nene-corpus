@@ -97,16 +97,16 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
     <section className="nc-panel">
       <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.conversationLogs.title)}</h2>
-        <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.subtitle)}</p>
+        <p>{t(Msg.admin.conversationLogs.subtitle)}</p>
       </div>
 
       {isLoadingSessions && (
-        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.conversationLogs.loadingSessions)}</p>
+        <p className="px-4 py-6 nc-text-muted">{t(Msg.admin.conversationLogs.loadingSessions)}</p>
       )}
       {error !== null && <p className="px-4 py-6 text-sm text-red-600">{error}</p>}
 
       {!isLoadingSessions && error === null && sessions.length === 0 && (
-        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.conversationLogs.empty)}</p>
+        <p className="px-4 py-6 nc-text-muted">{t(Msg.admin.conversationLogs.empty)}</p>
       )}
 
       {!isLoadingSessions && sessions.length > 0 && (
@@ -149,7 +149,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                     >
                       <td className="px-4 py-2 font-medium tabular-nums">#{session.session_id}</td>
                       <td className="px-4 py-2 tabular-nums">{session.message_count}</td>
-                      <td className="px-4 py-2 text-fg-muted">
+                      <td className="px-4 py-2 nc-text-muted">
                         {formatTimestamp(session.last_message_at ?? session.updated_at, locale)}
                       </td>
                     </tr>
@@ -161,13 +161,13 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
 
           <div className="px-4 py-4">
             {selectedSessionId === null && (
-              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.selectSession)}</p>
+              <p className="nc-text-muted">{t(Msg.admin.conversationLogs.selectSession)}</p>
             )}
             {selectedSessionId !== null && isLoadingMessages && (
-              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.loadingMessages)}</p>
+              <p className="nc-text-muted">{t(Msg.admin.conversationLogs.loadingMessages)}</p>
             )}
             {selectedSessionId !== null && !isLoadingMessages && messages.length === 0 && (
-              <p className="text-sm text-fg-muted">{t(Msg.admin.conversationLogs.emptyMessages)}</p>
+              <p className="nc-text-muted">{t(Msg.admin.conversationLogs.emptyMessages)}</p>
             )}
             {selectedSessionId !== null && !isLoadingMessages && messages.length > 0 && (
               <ul className="space-y-4">
@@ -180,15 +180,15 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                         : 'border-border bg-surface-muted'
                     }`}
                   >
-                    <div className="mb-1 flex items-center justify-between gap-2 text-xs text-fg-subtle">
-                      <span className="uppercase tracking-wide">{t(ROLE_MSG[message.role])}</span>
+                    <div className="mb-1 flex items-center justify-between gap-2 nc-text-subtle uppercase tracking-wide">
+                      <span>{t(ROLE_MSG[message.role])}</span>
                       <time dateTime={message.created_at}>
                         {formatTimestamp(message.created_at, locale)}
                       </time>
                     </div>
                     <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                     {message.citations.length > 0 && (
-                      <ul className="mt-2 space-y-1 border-t border-border pt-2 text-xs text-fg-muted">
+                      <ul className="mt-2 space-y-1 border-t border-border pt-2 nc-text-muted">
                         {message.citations.map((citation) => (
                           <li key={citation.chunk_id}>
                             <span className="font-medium">
@@ -203,7 +203,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                             {citation.section_label !== undefined && (
                               <span> · {citation.section_label}</span>
                             )}
-                            <p className="mt-0.5 text-fg-subtle">{citation.excerpt}</p>
+                            <p className="mt-0.5 nc-text-subtle">{citation.excerpt}</p>
                           </li>
                         ))}
                       </ul>

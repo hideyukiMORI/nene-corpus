@@ -4,7 +4,7 @@ export function ColumnMappingGuide() {
   const t = useMsg();
 
   return (
-    <details className="group rounded-admin border border-accent-border bg-accent text-sm text-fg-muted">
+    <details className="group rounded-admin border border-accent-border bg-accent text-xs text-fg-muted">
       <summary className="cursor-pointer list-none px-3 py-2.5 font-medium text-fg marker:content-none [&::-webkit-details-marker]:hidden">
         <span className="inline-flex items-center gap-2">
           <span
@@ -36,7 +36,7 @@ function GuideSection({ title, body }: GuideSectionProps) {
   return (
     <section>
       <h4 className="font-medium text-fg">{title}</h4>
-      <p className="mt-1 whitespace-pre-line text-fg-muted">{body}</p>
+      <p className="mt-1 whitespace-pre-line nc-text-subtle">{body}</p>
     </section>
   );
 }
