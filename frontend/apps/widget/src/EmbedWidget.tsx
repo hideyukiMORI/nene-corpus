@@ -61,9 +61,9 @@ export function EmbedWidget({ apiBase, theme, hero, chat }: EmbedWidgetProps = {
         {showHero && <ChatHero hero={resolvedHero} apiBase={apiBase} onCtaClick={focusInput} />}
         <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
           {turns.map((turn) => (
-            <ChatMessageRow key={turn.id} turn={turn} chat={resolvedChat} />
+            <ChatMessageRow key={turn.id} turn={turn} chat={resolvedChat} apiBase={apiBase} />
           ))}
-          {isLoading && <ChatPendingRow chat={resolvedChat} />}
+          {isLoading && <ChatPendingRow chat={resolvedChat} apiBase={apiBase} />}
         </div>
         {error !== null && <p className={nc.chatError}>{error}</p>}
         <form className={nc.chatForm} onSubmit={(event) => void handleSubmit(event)}>

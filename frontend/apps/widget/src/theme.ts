@@ -94,8 +94,15 @@ export function readPreviewChatFromSearchParams(): WidgetChat | null {
   const params = new URLSearchParams(window.location.search);
   const mode = params.get('chat_user_avatar_mode');
   const showAssistant = params.get('chat_show_assistant_avatar');
+  const assistantAvatarUrl = params.get('chat_assistant_avatar_url');
+  const assistantAvatarAlt = params.get('chat_assistant_avatar_alt');
 
-  if (mode === null && showAssistant === null) {
+  if (
+    mode === null &&
+    showAssistant === null &&
+    assistantAvatarUrl === null &&
+    assistantAvatarAlt === null
+  ) {
     return null;
   }
 
@@ -108,5 +115,7 @@ export function readPreviewChatFromSearchParams(): WidgetChat | null {
       showAssistant === null
         ? DEFAULT_WIDGET_CHAT.show_assistant_avatar
         : showAssistant === '1' || showAssistant === 'true',
+    assistant_avatar_url: assistantAvatarUrl,
+    assistant_avatar_alt: assistantAvatarAlt,
   };
 }

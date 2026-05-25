@@ -4,6 +4,8 @@ import type {
   UpdateAppearanceSettingsRequest,
   UploadHeroImageRequest,
   UploadHeroImageResponse,
+  UploadAvatarImageRequest,
+  UploadAvatarImageResponse,
   WidgetChat,
   WidgetHero,
   WidgetTheme,
@@ -52,6 +54,21 @@ export async function uploadHeroImage(
   });
 }
 
+export async function uploadAvatarImage(
+  token: string,
+  body: UploadAvatarImageRequest,
+  apiBase = '',
+): Promise<UploadAvatarImageResponse> {
+  return fetchJson<UploadAvatarImageResponse>(`${apiBase}/admin/appearance/avatar-image`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): void {
   params.set('hero_show_title', hero.show_title ? '1' : '0');
   params.set('hero_show_description', hero.show_description ? '1' : '0');
@@ -82,6 +99,14 @@ function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): voi
 function appendChatPreviewParams(params: URLSearchParams, chat: WidgetChat): void {
   params.set('chat_user_avatar_mode', chat.user_avatar_mode);
   params.set('chat_show_assistant_avatar', chat.show_assistant_avatar ? '1' : '0');
+
+  if (chat.assistant_avatar_url) {
+    params.set('chat_assistant_avatar_url', chat.assistant_avatar_url);
+  }
+
+  if (chat.assistant_avatar_alt) {
+    params.set('chat_assistant_avatar_alt', chat.assistant_avatar_alt);
+  }
 }
 
 export function buildWidgetPreviewSearchParams(

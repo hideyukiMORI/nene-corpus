@@ -14,6 +14,7 @@ export const nc = {
   chatAvatar: 'nene-corpus-chat__avatar',
   chatAvatarUser: 'nene-corpus-chat__avatar--user',
   chatAvatarAssistant: 'nene-corpus-chat__avatar--assistant',
+  chatAvatarImage: 'nene-corpus-chat__avatar-image',
   chatRowNoUserAvatar: 'nene-corpus-chat__row--no-user-avatar',
   chatRowNoAssistantAvatar: 'nene-corpus-chat__row--no-assistant-avatar',
   chatBubble: 'nene-corpus-chat__bubble',

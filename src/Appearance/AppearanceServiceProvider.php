@@ -210,6 +210,84 @@ final readonly class AppearanceServiceProvider implements ServiceProviderInterfa
                 },
             )
             ->set(
+                AvatarImageStorage::class,
+                static function (ContainerInterface $container): AvatarImageStorage {
+                    $projectRoot = $container->get(RuntimeServiceProvider::PROJECT_ROOT);
+
+                    if (!is_string($projectRoot) || $projectRoot === '') {
+                        throw new LogicException('Project root service is invalid.');
+                    }
+
+                    return new AvatarImageStorage($projectRoot . '/storage/uploads/avatar');
+                },
+            )
+            ->set(
+                UploadAvatarImageUseCaseInterface::class,
+                static function (ContainerInterface $container): UploadAvatarImageUseCaseInterface {
+                    $validator = $container->get(HeroImageUploadValidator::class);
+                    $storage = $container->get(AvatarImageStorage::class);
+
+                    if (!$validator instanceof HeroImageUploadValidator) {
+                        throw new LogicException('Hero image upload validator service is invalid.');
+                    }
+
+                    if (!$storage instanceof AvatarImageStorage) {
+                        throw new LogicException('Avatar image storage service is invalid.');
+                    }
+
+                    return new UploadAvatarImageUseCase($validator, $storage);
+                },
+            )
+            ->set(
+                UploadAvatarImageHandler::class,
+                static function (ContainerInterface $container): UploadAvatarImageHandler {
+                    $useCase = $container->get(UploadAvatarImageUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof UploadAvatarImageUseCaseInterface) {
+                        throw new LogicException('Upload avatar image use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new UploadAvatarImageHandler($useCase, $response);
+                },
+            )
+            ->set(
+                ServeAvatarImageHandler::class,
+                static function (ContainerInterface $container): ServeAvatarImageHandler {
+                    $storage = $container->get(AvatarImageStorage::class);
+                    $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
+                    $responseFactory = $container->get(ResponseFactoryInterface::class);
+                    $streamFactory = $container->get(StreamFactoryInterface::class);
+
+                    if (!$storage instanceof AvatarImageStorage) {
+                        throw new LogicException('Avatar image storage service is invalid.');
+                    }
+
+                    if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
+                        throw new LogicException('Problem details response factory service is invalid.');
+                    }
+
+                    if (!$responseFactory instanceof ResponseFactoryInterface) {
+                        throw new LogicException('Response factory service is invalid.');
+                    }
+
+                    if (!$streamFactory instanceof StreamFactoryInterface) {
+                        throw new LogicException('Stream factory service is invalid.');
+                    }
+
+                    return new ServeAvatarImageHandler(
+                        $storage,
+                        $problemDetails,
+                        $responseFactory,
+                        $streamFactory,
+                    );
+                },
+            )
+            ->set(
                 self::ROUTE_REGISTRAR,
                 static function (ContainerInterface $container): AppearanceRouteRegistrar {
                     $getAdmin = $container->get(GetAppearanceSettingsHandler::class);
@@ -217,6 +295,8 @@ final readonly class AppearanceServiceProvider implements ServiceProviderInterfa
                     $getWidget = $container->get(GetWidgetAppearanceHandler::class);
                     $uploadHeroImage = $container->get(UploadHeroImageHandler::class);
                     $serveHeroImage = $container->get(ServeHeroImageHandler::class);
+                    $uploadAvatarImage = $container->get(UploadAvatarImageHandler::class);
+                    $serveAvatarImage = $container->get(ServeAvatarImageHandler::class);
 
                     if (!$getAdmin instanceof GetAppearanceSettingsHandler) {
                         throw new LogicException('Get appearance settings handler service is invalid.');
@@ -238,12 +318,22 @@ final readonly class AppearanceServiceProvider implements ServiceProviderInterfa
                         throw new LogicException('Serve hero image handler service is invalid.');
                     }
 
+                    if (!$uploadAvatarImage instanceof UploadAvatarImageHandler) {
+                        throw new LogicException('Upload avatar image handler service is invalid.');
+                    }
+
+                    if (!$serveAvatarImage instanceof ServeAvatarImageHandler) {
+                        throw new LogicException('Serve avatar image handler service is invalid.');
+                    }
+
                     return new AppearanceRouteRegistrar(
                         $getAdmin,
                         $updateAdmin,
                         $getWidget,
                         $uploadHeroImage,
                         $serveHeroImage,
+                        $uploadAvatarImage,
+                        $serveAvatarImage,
                     );
                 },
             );

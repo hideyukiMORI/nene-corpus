@@ -4,6 +4,7 @@ import {
   getAppearanceSettings,
   updateAppearanceSettings,
   uploadHeroImage,
+  uploadAvatarImage,
   type AppearanceSettingsResponse,
   type UserAvatarMode,
   type WidgetChat,
@@ -72,11 +73,15 @@ const EMPTY_HERO_FORM: HeroFormState = {
 interface ChatFormState {
   user_avatar_mode: UserAvatarMode;
   show_assistant_avatar: boolean;
+  assistant_avatar_url: string;
+  assistant_avatar_alt: string;
 }
 
 const EMPTY_CHAT_FORM: ChatFormState = {
   user_avatar_mode: 'silhouette',
   show_assistant_avatar: true,
+  assistant_avatar_url: '',
+  assistant_avatar_alt: '',
 };
 
 const USER_AVATAR_MODES: UserAvatarMode[] = ['silhouette', 'none'];
@@ -180,6 +185,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     };
   }, [resolveAppearanceCopy, chatAppearanceFallback]);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
@@ -187,6 +193,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingAvatarImage, setIsUploadingAvatarImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -238,6 +245,8 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     setChatForm({
       user_avatar_mode: settings.chat.user_avatar_mode,
       show_assistant_avatar: settings.chat.show_assistant_avatar,
+      assistant_avatar_url: settings.chat.assistant_avatar_url ?? '',
+      assistant_avatar_alt: settings.chat.assistant_avatar_alt ?? '',
     });
   }
 
@@ -275,6 +284,36 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     setHeroForm((current) => ({ ...current, image_url: '', image_alt: '' }));
   }
 
+  async function handleAssistantAvatarSelected(file: File): Promise<void> {
+    if (file.size > HERO_IMAGE_MAX_BYTES) {
+      setError(t(Msg.admin.appearance.assistantAvatarImageTooLarge));
+      return;
+    }
+
+    setIsUploadingAvatarImage(true);
+    setError(null);
+
+    try {
+      const content = await readFileAsBase64(file);
+      const { image_url } = await uploadAvatarImage(
+        token,
+        { filename: file.name, content },
+        adminApiBase,
+      );
+      setChatForm((current) => ({ ...current, assistant_avatar_url: image_url }));
+    } catch (cause: unknown) {
+      setError(
+        cause instanceof Error ? cause.message : t(Msg.admin.appearance.assistantAvatarImageUploadFailed),
+      );
+    } finally {
+      setIsUploadingAvatarImage(false);
+    }
+  }
+
+  function removeAssistantAvatar(): void {
+    setChatForm((current) => ({ ...current, assistant_avatar_url: '', assistant_avatar_alt: '' }));
+  }
+
   function heroPayload(): WidgetHero {
     return {
       title: heroForm.title.trim() === '' ? null : heroForm.title.trim(),
@@ -293,6 +332,10 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
     return {
       user_avatar_mode: chatForm.user_avatar_mode,
       show_assistant_avatar: chatForm.show_assistant_avatar,
+      assistant_avatar_url:
+        chatForm.assistant_avatar_url.trim() === '' ? null : chatForm.assistant_avatar_url.trim(),
+      assistant_avatar_alt:
+        chatForm.assistant_avatar_alt.trim() === '' ? null : chatForm.assistant_avatar_alt.trim(),
     };
   }
 
@@ -561,6 +604,69 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 />
               </div>
             </div>
+            {chatForm.show_assistant_avatar && (
+              <div className="block text-sm">
+                <p className="font-medium text-fg">{t(Msg.admin.appearance.assistantAvatarImage)}</p>
+                <p className="mt-1 text-xs nc-text-muted">
+                  {t(Msg.admin.appearance.assistantAvatarImageHint)}
+                </p>
+                <input
+                  ref={avatarInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept={HERO_IMAGE_ACCEPT}
+                  disabled={isUploadingAvatarImage}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = '';
+
+                    if (file !== undefined) {
+                      void handleAssistantAvatarSelected(file);
+                    }
+                  }}
+                />
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <button
+                    className="nc-btn"
+                    type="button"
+                    disabled={isUploadingAvatarImage}
+                    onClick={() => avatarInputRef.current?.click()}
+                  >
+                    {isUploadingAvatarImage
+                      ? t(Msg.admin.appearance.assistantAvatarImageUploading)
+                      : t(Msg.admin.appearance.assistantAvatarImageUpload)}
+                  </button>
+                  {chatForm.assistant_avatar_url !== '' && (
+                    <button
+                      className="nc-btn"
+                      type="button"
+                      disabled={isUploadingAvatarImage}
+                      onClick={removeAssistantAvatar}
+                    >
+                      {t(Msg.admin.appearance.assistantAvatarImageRemove)}
+                    </button>
+                  )}
+                </div>
+                {chatForm.assistant_avatar_url !== '' && (
+                  <img
+                    className="mt-3 h-16 w-16 rounded-full border border-border object-cover"
+                    src={`${adminApiBase}${chatForm.assistant_avatar_url}`}
+                    alt={chatForm.assistant_avatar_alt || t(Msg.admin.appearance.assistantAvatarImage)}
+                  />
+                )}
+                <label className="mt-3 block">
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.assistantAvatarAlt)}</span>
+                  <input
+                    className="nc-input mt-1"
+                    type="text"
+                    value={chatForm.assistant_avatar_alt}
+                    onChange={(event) => updateChatField('assistant_avatar_alt', event.target.value)}
+                    placeholder={t(Msg.admin.appearance.assistantAvatarAltPlaceholder)}
+                    disabled={chatForm.assistant_avatar_url === ''}
+                  />
+                </label>
+              </div>
+            )}
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <ColorField

@@ -103,7 +103,60 @@ final readonly class AppearanceSettingsValidator
             );
         }
 
+        $errors = [...$errors, ...$this->validateOptionalChatField($chat, 'assistant_avatar_alt', 120)];
+        $errors = [...$errors, ...$this->validateOptionalAvatarImageUrl($chat, 'assistant_avatar_url')];
+
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $chat
+     * @return list<ValidationError>
+     */
+    private function validateOptionalAvatarImageUrl(array $chat, string $key): array
+    {
+        if (!array_key_exists($key, $chat)) {
+            return [];
+        }
+
+        $value = $chat[$key];
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (!is_string($value) || !AvatarImagePath::isValidPublicPath($value)) {
+            return [new ValidationError("chat.{$key}", 'Image URL must be a valid avatar image path.', 'invalid')];
+        }
+
+        return [];
+    }
+
+    /**
+     * @param array<string, mixed> $chat
+     * @return list<ValidationError>
+     */
+    private function validateOptionalChatField(array $chat, string $key, int $maxLength): array
+    {
+        if (!array_key_exists($key, $chat)) {
+            return [];
+        }
+
+        $value = $chat[$key];
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (!is_string($value)) {
+            return [new ValidationError("chat.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' must be a string.', 'invalid')];
+        }
+
+        if (mb_strlen($value) > $maxLength) {
+            return [new ValidationError("chat.{$key}", 'Must be at most ' . $maxLength . ' characters.', 'max_length')];
+        }
+
+        return [];
     }
 
     /**
