@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.4.0
+  version: 0.5.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
-    Phase 1 adds admin auth, CSV/PDF ingestion, and corpus storage foundations.
+    Phase 1 adds admin auth, CSV/PDF ingestion, source operations, and corpus storage foundations.
 servers:
   - url: http://localhost:8080
     description: Local development server
@@ -185,6 +185,68 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/sources/{id}:
+    delete:
+      tags:
+        - Ingestion
+      summary: Delete source
+      description: Soft delete a source and its documents; remove associated chunks.
+      operationId: deleteSourceById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Source deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SourceNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/sources/{id}/reindex:
+    post:
+      tags:
+        - Ingestion
+      summary: Reindex source
+      description: Rebuild documents and chunks from the stored upload file. CSV sources may optionally override column mapping.
+      operationId: reindexSourceById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReindexSourceRequest'
+      responses:
+        '200':
+          description: Source reindexed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSourceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SourceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:
@@ -238,6 +300,20 @@ components:
                   - field: email
                     message: Email is required.
                     code: required
+    SourceNotFound:
+      description: Source not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+          examples:
+            sourceNotFound:
+              value:
+                type: https://nene-corpus.dev/problems/source-not-found
+                title: Not Found
+                status: 404
+                detail: The requested source was not found.
+                instance: /admin/sources/999
   schemas:
     HealthResponse:
       type: object
@@ -374,6 +450,12 @@ components:
           format: int64
         sample_text:
           type: string
+    ReindexSourceRequest:
+      type: object
+      properties:
+        column_mapping:
+          $ref: '#/components/schemas/CsvColumnMapping'
+          description: Optional override for CSV sources.
     CsvColumnMapping:
       type: object
       required:

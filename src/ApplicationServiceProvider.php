@@ -16,6 +16,8 @@ use NeneCorpus\Document\DocumentServiceProvider;
 use NeneCorpus\Ingestion\CsvIngestionExceptionHandler;
 use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
+use NeneCorpus\Source\SourceNotFoundExceptionHandler;
+use NeneCorpus\Source\SourceRouteRegistrar;
 use NeneCorpus\Source\SourceServiceProvider;
 use Psr\Container\ContainerInterface;
 
@@ -38,6 +40,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                 static function (ContainerInterface $container): array {
                     $adminAuth = $container->get(AdminAuthServiceProvider::ROUTE_REGISTRAR);
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
+                    $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -47,7 +50,11 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Ingestion route registrar service is invalid.');
                     }
 
-                    return [$adminAuth, $ingestion];
+                    if (!$source instanceof SourceRouteRegistrar) {
+                        throw new LogicException('Source route registrar service is invalid.');
+                    }
+
+                    return [$adminAuth, $ingestion, $source];
                 },
             )
             ->set(
@@ -55,6 +62,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                 static function (ContainerInterface $container): array {
                     $invalidCredentials = $container->get(InvalidAdminCredentialsExceptionHandler::class);
                     $csvIngestion = $container->get(CsvIngestionExceptionHandler::class);
+                    $sourceNotFound = $container->get(SourceNotFoundExceptionHandler::class);
 
                     if (!$invalidCredentials instanceof DomainExceptionHandlerInterface) {
                         throw new LogicException('Invalid admin credentials exception handler service is invalid.');
@@ -64,7 +72,11 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('CSV ingestion exception handler service is invalid.');
                     }
 
-                    return [$invalidCredentials, $csvIngestion];
+                    if (!$sourceNotFound instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Source not found exception handler service is invalid.');
+                    }
+
+                    return [$invalidCredentials, $csvIngestion, $sourceNotFound];
                 },
             );
     }

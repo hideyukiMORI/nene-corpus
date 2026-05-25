@@ -30,6 +30,7 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
         $file = $this->validator->decode($input->content, $input->filename);
         $rows = $this->parser->parseRows($file->bytes, $input->columnMapping);
         $storagePath = $this->uploadStorage->store($file);
+        $ingestionConfigJson = IngestionConfigJson::encodeCsvMapping($input->columnMapping);
 
         $sourceId = $this->sources->save(new Source(
             name: $input->name,
@@ -39,6 +40,7 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
             originalFilename: $file->originalFilename,
             mimeType: $file->mimeType,
             byteSize: $file->byteSize(),
+            ingestionConfigJson: $ingestionConfigJson,
         ));
 
         $documentCount = 0;
@@ -75,6 +77,7 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
                 originalFilename: $file->originalFilename,
                 mimeType: $file->mimeType,
                 byteSize: $file->byteSize(),
+                ingestionConfigJson: $ingestionConfigJson,
                 id: $sourceId,
             ));
         } catch (\Throwable $exception) {
@@ -87,6 +90,7 @@ final readonly class CreateCsvSourceUseCase implements CreateCsvSourceUseCaseInt
                 mimeType: $file->mimeType,
                 byteSize: $file->byteSize(),
                 errorMessage: $exception->getMessage(),
+                ingestionConfigJson: $ingestionConfigJson,
                 id: $sourceId,
             ));
 

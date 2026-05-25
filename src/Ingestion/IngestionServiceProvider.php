@@ -71,6 +71,27 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                StoredFileReader::class,
+                static function (ContainerInterface $container): StoredFileReader {
+                    $projectRoot = $container->get(RuntimeServiceProvider::PROJECT_ROOT);
+
+                    if (!is_string($projectRoot) || $projectRoot === '') {
+                        throw new LogicException('Project root service is invalid.');
+                    }
+
+                    return new StoredFileReader($projectRoot);
+                },
+            )
+            ->set(
+                SourceCorpusCleaner::class,
+                static function (ContainerInterface $container): SourceCorpusCleaner {
+                    return new SourceCorpusCleaner(
+                        self::documentRepository($container),
+                        self::chunkRepository($container),
+                    );
+                },
+            )
+            ->set(
                 PreviewCsvIngestionUseCaseInterface::class,
                 static function (ContainerInterface $container): PreviewCsvIngestionUseCaseInterface {
                     $validator = $container->get(CsvUploadValidator::class);
@@ -131,6 +152,20 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                ReindexSourceUseCaseInterface::class,
+                static function (ContainerInterface $container): ReindexSourceUseCaseInterface {
+                    return new ReindexSourceUseCase(
+                        self::sourceRepository($container),
+                        self::documentRepository($container),
+                        self::chunkRepository($container),
+                        self::csvParser($container),
+                        self::pdfExtractor($container),
+                        self::storedFileReader($container),
+                        self::sourceCorpusCleaner($container),
+                    );
+                },
+            )
+            ->set(
                 PreviewCsvIngestionHandler::class,
                 static fn (ContainerInterface $container): PreviewCsvIngestionHandler => new PreviewCsvIngestionHandler(
                     self::previewCsvUseCase($container),
@@ -153,6 +188,13 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                 ),
             )
             ->set(
+                ReindexSourceHandler::class,
+                static fn (ContainerInterface $container): ReindexSourceHandler => new ReindexSourceHandler(
+                    self::reindexSourceUseCase($container),
+                    self::jsonResponse($container),
+                ),
+            )
+            ->set(
                 CsvIngestionExceptionHandler::class,
                 static function (ContainerInterface $container): CsvIngestionExceptionHandler {
                     $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
@@ -170,6 +212,7 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                     $previewCsv = $container->get(PreviewCsvIngestionHandler::class);
                     $previewPdf = $container->get(PreviewPdfIngestionHandler::class);
                     $createSource = $container->get(CreateSourceHandler::class);
+                    $reindexSource = $container->get(ReindexSourceHandler::class);
 
                     if (!$previewCsv instanceof PreviewCsvIngestionHandler) {
                         throw new LogicException('Preview CSV ingestion handler service is invalid.');
@@ -183,7 +226,11 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Create source handler service is invalid.');
                     }
 
-                    return new IngestionRouteRegistrar($previewCsv, $previewPdf, $createSource);
+                    if (!$reindexSource instanceof ReindexSourceHandler) {
+                        throw new LogicException('Reindex source handler service is invalid.');
+                    }
+
+                    return new IngestionRouteRegistrar($previewCsv, $previewPdf, $createSource, $reindexSource);
                 },
             );
     }
@@ -318,6 +365,39 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
         }
 
         return $useCase;
+    }
+
+    private static function reindexSourceUseCase(ContainerInterface $container): ReindexSourceUseCaseInterface
+    {
+        $useCase = $container->get(ReindexSourceUseCaseInterface::class);
+
+        if (!$useCase instanceof ReindexSourceUseCaseInterface) {
+            throw new LogicException('Reindex source use case service is invalid.');
+        }
+
+        return $useCase;
+    }
+
+    private static function storedFileReader(ContainerInterface $container): StoredFileReader
+    {
+        $reader = $container->get(StoredFileReader::class);
+
+        if (!$reader instanceof StoredFileReader) {
+            throw new LogicException('Stored file reader service is invalid.');
+        }
+
+        return $reader;
+    }
+
+    private static function sourceCorpusCleaner(ContainerInterface $container): SourceCorpusCleaner
+    {
+        $cleaner = $container->get(SourceCorpusCleaner::class);
+
+        if (!$cleaner instanceof SourceCorpusCleaner) {
+            throw new LogicException('Source corpus cleaner service is invalid.');
+        }
+
+        return $cleaner;
     }
 
     private static function jsonResponse(ContainerInterface $container): JsonResponseFactory

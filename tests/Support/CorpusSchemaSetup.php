@@ -22,6 +22,7 @@ final class CorpusSchemaSetup
                     mime_type TEXT NULL,
                     byte_size INTEGER NULL,
                     error_message TEXT NULL,
+                    ingestion_config_json TEXT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     is_deleted INTEGER NOT NULL DEFAULT 0,

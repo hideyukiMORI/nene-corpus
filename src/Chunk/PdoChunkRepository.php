@@ -66,6 +66,11 @@ final readonly class PdoChunkRepository implements ChunkRepositoryInterface
         return $this->query->lastInsertId();
     }
 
+    public function deleteBySourceId(int $sourceId): void
+    {
+        $this->query->execute('DELETE FROM chunks WHERE source_id = ?', [$sourceId]);
+    }
+
     /**
      * @param array<string, mixed> $row
      */

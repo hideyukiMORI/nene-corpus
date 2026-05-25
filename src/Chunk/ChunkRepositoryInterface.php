@@ -12,4 +12,6 @@ interface ChunkRepositoryInterface
     public function findByDocumentId(int $documentId): array;
 
     public function save(Chunk $chunk): int;
+
+    public function deleteBySourceId(int $sourceId): void;
 }

@@ -15,6 +15,7 @@ final readonly class Source
         public ?string $mimeType = null,
         public ?int $byteSize = null,
         public ?string $errorMessage = null,
+        public ?string $ingestionConfigJson = null,
         public ?int $id = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
