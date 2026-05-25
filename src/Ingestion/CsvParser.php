@@ -166,7 +166,10 @@ final readonly class CsvParser
             }
 
             $row = str_getcsv($line, $delimiter, '"', '\\');
-            $normalized = array_map(static fn (mixed $value): string => trim((string) $value), $row);
+            $normalized = array_map(
+                fn (mixed $value): string => $this->textNormalizer->scrubCell(trim((string) $value)),
+                $row,
+            );
 
             if (implode('', $normalized) === '') {
                 continue;

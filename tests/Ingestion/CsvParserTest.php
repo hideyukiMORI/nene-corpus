@@ -68,4 +68,29 @@ CSV;
         self::assertSame(['product_name', 'description'], $preview['headers']);
         self::assertSame('日本語テスト', $preview['sample_rows'][0][1]);
     }
+
+    public function test_preview_handles_ascii_header_with_shift_jis_product_rows(): void
+    {
+        $header = 'ID,Type,SKU,Name,Published,Description';
+        $row = mb_convert_encoding('1,simple,SKU-1,Widget,1,日本語の商品説明', 'SJIS-win', 'UTF-8');
+        $csv = $header . "\n" . $row . "\n";
+
+        $preview = $this->parser->preview($csv);
+
+        self::assertSame(
+            ['ID', 'Type', 'SKU', 'Name', 'Published', 'Description'],
+            $preview['headers'],
+        );
+        self::assertSame('日本語の商品説明', $preview['sample_rows'][0][5]);
+    }
+
+    public function test_preview_scrubs_invalid_utf8_sequences(): void
+    {
+        $csv = "product_name,description\nWidget,\xED\xA0\x80broken\n";
+
+        $preview = $this->parser->preview($csv);
+
+        self::assertSame(['product_name', 'description'], $preview['headers']);
+        self::assertSame(1, $preview['row_count']);
+    }
 }
