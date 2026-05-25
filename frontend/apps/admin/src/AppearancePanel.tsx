@@ -7,7 +7,7 @@ import {
   type WidgetHero,
   type WidgetTheme,
 } from '@nene-corpus/api-client';
-import { Msg, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
 
@@ -245,7 +245,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               />
             </label>
             <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.maxWidth)}</span>
+              <span className="font-medium text-fg">
+                {t(resolveMsgKey(Msg.admin.appearance.maxWidth, 'admin.appearance.maxWidth'))}
+              </span>
               <input
                 className="nc-input"
                 type="text"

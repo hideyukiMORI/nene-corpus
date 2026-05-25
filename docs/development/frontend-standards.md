@@ -63,6 +63,7 @@ frontend/
 - **Theme (Admin):** light/dark via CSS variables on `:root` / `.dark`. Toggle in header; persist `nene-corpus.admin.theme` (`light` | `dark`, default from `prefers-color-scheme`). Small radius tokens (`rounded-admin*` ≈ 4–8px), subtle page gradient, glassy header (`backdrop-blur`). Reuse `nc-panel`, `nc-input`, `nc-btn*` component classes.
 - Use `formatTimestamp(value, locale)` for locale-aware dates.
 - Pair labels with optional help via `HelpLabel` (`label` + `help` strings from `Msg.*Help` keys). Tooltip opens on hover and keyboard focus; use `\n` in help strings for line breaks. CSV column mapping also has a collapsible `ColumnMappingGuide` accordion after preview.
+- **`keys.ts` を更新したあと** dev サーバーが古い `Msg` ツリーを返すことがある（プレビュー真っ白・ボタン空文字）。`npm run dev --prefix frontend` を **admin (:5173) と widget (:5174) 両方再起動**する。`resolveMsgKey(Msg.*, 'literal.key')` で HMR 遅延時もフォールバック可能（`packages/i18n/src/resolve-msg-key.ts`）。
 
 ---
 

@@ -1,5 +1,5 @@
 import type { WidgetHero } from '@nene-corpus/api-client';
-import { Msg, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 
 export interface ChatHeroProps {
@@ -9,9 +9,14 @@ export interface ChatHeroProps {
 
 export function ChatHero({ hero, onCtaClick }: ChatHeroProps) {
   const t = useMsg();
-  const title = hero.title?.trim() || t(Msg.widget.hero.defaultTitle);
-  const description = hero.description?.trim() || t(Msg.widget.hero.defaultDescription);
-  const ctaLabel = hero.cta_label?.trim() || t(Msg.widget.hero.cta);
+  const title =
+    hero.title?.trim() ||
+    t(resolveMsgKey(Msg.widget.hero?.defaultTitle, 'widget.hero.defaultTitle'));
+  const description =
+    hero.description?.trim() ||
+    t(resolveMsgKey(Msg.widget.hero?.defaultDescription, 'widget.hero.defaultDescription'));
+  const ctaLabel =
+    hero.cta_label?.trim() || t(resolveMsgKey(Msg.widget.hero?.cta, 'widget.hero.cta'));
 
   return (
     <header className={nc.chatHero}>
