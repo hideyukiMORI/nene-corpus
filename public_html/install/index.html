@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeNe Corpus Setup</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      body {
+        margin: 0;
+        background: #f5f6f7;
+        color: #111;
+      }
+      .wrap {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1rem 3rem;
+      }
+      .panel {
+        background: #fff;
+        border: 1px solid #d8dbe0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.5rem;
+      }
+      .muted {
+        color: #5f6670;
+        font-size: 0.95rem;
+      }
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      input,
+      select {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 0.35rem;
+        padding: 0.55rem 0.65rem;
+        border: 1px solid #c8ccd2;
+        border-radius: 0.5rem;
+        font: inherit;
+      }
+      button {
+        margin-top: 1.25rem;
+        padding: 0.65rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: #4d8f7f;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .error {
+        margin-top: 1rem;
+        color: #b91c1c;
+        white-space: pre-wrap;
+      }
+      .success {
+        margin-top: 1rem;
+        color: #047857;
+      }
+      code {
+        font-size: 0.85em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="panel">
+        <h1>NeNe Corpus Setup</h1>
+        <p class="muted">データベースと管理者アカウントを設定します。</p>
+        <p class="muted" id="path-info"></p>
+
+        <form id="install-form">
+          <label>
+            Base path
+            <input id="base-path" name="base_path" type="text" placeholder="/nene-corpus" />
+          </label>
+
+          <label>
+            Database adapter
+            <select id="db-adapter" name="adapter">
+              <option value="mysql">MySQL / MariaDB</option>
+              <option value="sqlite">SQLite (testing / small installs)</option>
+            </select>
+          </label>
+
+          <div id="mysql-fields">
+            <label>
+              DB host
+              <input id="db-host" name="host" type="text" value="127.0.0.1" />
+            </label>
+            <label>
+              DB port
+              <input id="db-port" name="port" type="number" value="3306" />
+            </label>
+            <label>
+              DB name
+              <input id="db-name" name="name" type="text" />
+            </label>
+            <label>
+              DB user
+              <input id="db-user" name="user" type="text" />
+            </label>
+            <label>
+              DB password
+              <input id="db-password" name="password" type="password" />
+            </label>
+          </div>
+
+          <div id="sqlite-fields" hidden>
+            <label>
+              SQLite file path
+              <input id="sqlite-name" name="sqlite_name" type="text" value="var/nene_corpus.sqlite" />
+            </label>
+          </div>
+
+          <label>
+            Admin email
+            <input id="admin-email" name="email" type="email" required />
+          </label>
+          <label>
+            Admin password
+            <input id="admin-password" name="password" type="password" minlength="8" required />
+          </label>
+          <label>
+            Anthropic API key (optional)
+            <input id="anthropic-key" name="anthropic_api_key" type="password" />
+          </label>
+
+          <button id="submit" type="submit">Install</button>
+        </form>
+
+        <p class="error" id="error" hidden></p>
+        <p class="success" id="success" hidden></p>
+      </div>
+    </div>
+
+    <script>
+      const apiPrefix = (() => {
+        const marker = '/install/';
+        const path = window.location.pathname;
+        const index = path.indexOf(marker);
+        if (index === -1) {
+          return '';
+        }
+        return path.slice(0, index);
+      })();
+
+      const form = document.getElementById('install-form');
+      const errorEl = document.getElementById('error');
+      const successEl = document.getElementById('success');
+      const submitBtn = document.getElementById('submit');
+      const adapterEl = document.getElementById('db-adapter');
+      const mysqlFields = document.getElementById('mysql-fields');
+      const sqliteFields = document.getElementById('sqlite-fields');
+      const basePathEl = document.getElementById('base-path');
+      const pathInfoEl = document.getElementById('path-info');
+
+      function apiUrl(path) {
+        return apiPrefix + path;
+      }
+
+      function showError(message) {
+        errorEl.hidden = false;
+        errorEl.textContent = message;
+        successEl.hidden = true;
+      }
+
+      function showSuccess(message) {
+        successEl.hidden = false;
+        successEl.textContent = message;
+        errorEl.hidden = true;
+      }
+
+      function toggleDbFields() {
+        const sqlite = adapterEl.value === 'sqlite';
+        mysqlFields.hidden = sqlite;
+        sqliteFields.hidden = !sqlite;
+      }
+
+      adapterEl.addEventListener('change', toggleDbFields);
+      toggleDbFields();
+
+      async function loadStatus() {
+        const response = await fetch(apiUrl('/install/status'));
+        const payload = await response.json();
+
+        if (!response.ok) {
+          showError('Unable to load install status.');
+          return;
+        }
+
+        basePathEl.value = payload.base_path || '';
+        pathInfoEl.innerHTML =
+          'Detected public path: <code>' + (payload.base_path || '/') + '</code>';
+
+        if (payload.installed) {
+          form.hidden = true;
+          showSuccess('Already installed. You can sign in to the admin UI.');
+        }
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitBtn.disabled = true;
+        errorEl.hidden = true;
+        successEl.hidden = true;
+
+        const adapter = adapterEl.value;
+        const database =
+          adapter === 'sqlite'
+            ? {
+                adapter: 'sqlite',
+                name: document.getElementById('sqlite-name').value,
+                host: '',
+                port: 0,
+                user: '',
+                password: '',
+              }
+            : {
+                adapter: 'mysql',
+                host: document.getElementById('db-host').value,
+                port: Number(document.getElementById('db-port').value || 3306),
+                name: document.getElementById('db-name').value,
+                user: document.getElementById('db-user').value,
+                password: document.getElementById('db-password').value,
+              };
+
+        const body = {
+          base_path: basePathEl.value,
+          database,
+          admin: {
+            email: document.getElementById('admin-email').value,
+            password: document.getElementById('admin-password').value,
+          },
+          anthropic_api_key: document.getElementById('anthropic-key').value,
+        };
+
+        try {
+          const response = await fetch(apiUrl('/install'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          const payload = await response.json();
+
+          if (!response.ok) {
+            const detail = payload.detail || payload.title || 'Install failed.';
+            showError(typeof detail === 'string' ? detail : JSON.stringify(payload, null, 2));
+            submitBtn.disabled = false;
+            return;
+          }
+
+          form.hidden = true;
+          showSuccess('Install complete for ' + payload.admin_email + '.');
+        } catch (cause) {
+          showError(cause instanceof Error ? cause.message : 'Install failed.');
+          submitBtn.disabled = false;
+        }
+      });
+
+      loadStatus().catch(() => showError('Unable to load install status.'));
+    </script>
+  </body>
+</html>

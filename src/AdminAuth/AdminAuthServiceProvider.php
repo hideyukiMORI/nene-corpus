@@ -65,9 +65,7 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Admin user repository service is invalid.');
                     }
 
-                    if (!$issuer instanceof TokenIssuerInterface) {
-                        throw new LogicException('Admin JWT secret is not configured (set NENE2_LOCAL_JWT_SECRET).');
-                    }
+                    $issuer = $issuer instanceof TokenIssuerInterface ? $issuer : null;
 
                     return new LoginAdminUseCase($users, $issuer);
                 },
@@ -116,6 +114,18 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     }
 
                     return new InvalidAdminCredentialsExceptionHandler($problemDetails);
+                },
+            )
+            ->set(
+                AdminJwtNotConfiguredExceptionHandler::class,
+                static function (ContainerInterface $container): AdminJwtNotConfiguredExceptionHandler {
+                    $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
+
+                    if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
+                        throw new LogicException('Problem details response factory service is invalid.');
+                    }
+
+                    return new AdminJwtNotConfiguredExceptionHandler($problemDetails);
                 },
             )
             ->set(

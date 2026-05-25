@@ -6,6 +6,7 @@ NeNe Corpus supports **dual deployment** — same product, two installation path
 | --- | --- | --- |
 | **Tier A — shared hosting** | [`shared-hosting.md`](./shared-hosting.md) | Japan SMB, PHP hosting + MySQL |
 | **Tier B — Docker / VPS** | [`../development/docker.md`](../development/docker.md) | Developers, VPS, private cloud |
+| **Tier B — git clone guide** | [`developer.md`](./developer.md) | Engineers adding Corpus beside an existing stack |
 
 ## Quick reference
 
@@ -28,7 +29,7 @@ After install, add the **embed widget** with one script tag on any page on the *
 ```html
 <script
   src="/nene-corpus/widget.js"
-  data-endpoint="/nene-corpus/api"
+  data-endpoint="/nene-corpus"
   defer
 ></script>
 ```
