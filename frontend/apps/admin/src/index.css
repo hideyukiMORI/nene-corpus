@@ -114,6 +114,14 @@
     @apply text-[11px] leading-normal text-fg-subtle;
   }
 
+  .nc-help-body {
+    @apply text-xs leading-relaxed text-fg-subtle;
+  }
+
+  .dark .nc-help-body {
+    @apply text-fg-muted;
+  }
+
   .nc-text-timestamp {
     @apply text-[10px] leading-normal text-fg-subtle tabular-nums;
   }

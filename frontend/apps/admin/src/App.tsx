@@ -38,11 +38,11 @@ export function App() {
             {profile && <p className="nc-text-muted">{profile.email}</p>}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <ThemeToggle />
+            <LocaleSelector />
             <button className="nc-btn nc-header-btn" type="button" onClick={scrollToHelp}>
               {t(resolveMsgKey(Msg.admin.help?.open, 'admin.help.open'))}
             </button>
-            <LocaleSelector />
-            <ThemeToggle />
             {profile && (
               <button className="nc-btn nc-header-btn" type="button" onClick={logout}>
                 {t(Msg.common.signOut)}

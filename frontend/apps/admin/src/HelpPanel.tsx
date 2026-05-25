@@ -28,7 +28,7 @@ export function HelpPanel() {
               </span>
             </summary>
             <div className="border-t border-accent-border px-3 py-3 leading-relaxed">
-              <p className="whitespace-pre-line nc-text-subtle">{t(section.bodyKey)}</p>
+              <p className="nc-help-body whitespace-pre-line">{t(section.bodyKey)}</p>
             </div>
           </details>
         ))}
