@@ -32,17 +32,17 @@ export function App() {
       <header className="sticky top-0 z-40 border-b border-border bg-header/80 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">{t(Msg.admin.app.title)}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-brand">{t(Msg.admin.app.title)}</h1>
             {profile && <p className="nc-text-muted">{profile.email}</p>}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <LocaleSelector />
+            <ThemeToggle />
             {profile && (
-              <button className="nc-btn text-sm" type="button" onClick={logout}>
+              <button className="nc-btn nc-header-btn" type="button" onClick={logout}>
                 {t(Msg.common.signOut)}
               </button>
             )}
-            <ThemeToggle />
           </div>
         </div>
       </header>

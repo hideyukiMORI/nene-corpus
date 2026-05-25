@@ -9,7 +9,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="nc-btn inline-flex items-center justify-center p-2"
+      className="nc-btn nc-header-icon-btn text-brand hover:border-brand/40 hover:bg-brand-muted"
       aria-label={isDark ? t(Msg.admin.app.themeLight) : t(Msg.admin.app.themeDark)}
       title={isDark ? t(Msg.admin.app.themeLight) : t(Msg.admin.app.themeDark)}
       onClick={toggleTheme}
