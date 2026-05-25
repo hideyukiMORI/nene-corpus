@@ -15,7 +15,8 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 3.
 - [x] **embed widget** wired to **sync JSON chat** (#37)
 - [x] conversation logs
 - [x] Appearance settings (operator theme overrides)
-- [ ] **web installer** + **release ZIP** (Tier A)
+- [x] **web installer** (#101)
+- [x] **release ZIP** (#103)
 - [ ] Shared-hosting operator docs update
 
 ## Phase 3+ backlog (agreed, not started)

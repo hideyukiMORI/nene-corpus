@@ -24,7 +24,7 @@ Last updated: 2026-05-25
 | Admin sources / ingestion / conversation logs | ✅ |
 | Widget i18n + Appearance settings | ✅ |
 | Admin i18n + locale fonts + light/dark theme | ✅ |
-| **Tier A web installer + release ZIP** | 🔜 |
+| **Tier A web installer + release ZIP** | ✅ installer / ✅ ZIP build |
 | **Shared-hosting operator docs（installer 連動）** | 🔜 |
 
 `composer check` / `npm run check --prefix frontend` / GitHub Actions CI green。
@@ -36,7 +36,7 @@ Last updated: 2026-05-25
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
 | P0 | **Web installer** | DB・管理者・API キー初回設定（ブラウザ完結） |
-| P0 | **Release ZIP** | vendor 同梱、FTP アップロード想定 |
+| P0 | **Release ZIP** | `composer release:zip` — vendor 同梱、FTP アップロード想定 ✅ |
 | P1 | Shared-hosting docs 更新 | installer 手順と整合 |
 
 Milestone: [`docs/milestones/2026-05-admin-ui-and-widget.md`](../milestones/2026-05-admin-ui-and-widget.md)

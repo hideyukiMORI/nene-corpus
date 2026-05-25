@@ -8,6 +8,8 @@
   "scripts": {
     "check": "npm run typecheck --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
+    "build:release": "npm run build:release:admin && npm run build -w @nene-corpus/widget",
+    "build:release:admin": "NENE_CORPUS_ADMIN_OUT=../../../public_html/admin npm run build -w @nene-corpus/admin",
     "dev:admin": "npm run dev -w @nene-corpus/admin",
     "dev:widget": "npm run dev -w @nene-corpus/widget"
   },

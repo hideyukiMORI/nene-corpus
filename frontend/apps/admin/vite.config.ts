@@ -5,8 +5,12 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 const appRoot = fileURLToPath(new URL('.', import.meta.url));
+const adminOutDir = process.env.NENE_CORPUS_ADMIN_OUT
+  ? resolve(appRoot, process.env.NENE_CORPUS_ADMIN_OUT)
+  : resolve(appRoot, 'dist');
 
 export default defineConfig({
+  base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -28,7 +32,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: adminOutDir,
     emptyOutDir: true,
   },
 });
