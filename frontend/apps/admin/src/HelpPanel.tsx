@@ -1,4 +1,4 @@
-import { Msg, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
 import { ADMIN_HELP_SECTIONS } from './helpSections';
 
 export function HelpPanel() {
@@ -7,8 +7,8 @@ export function HelpPanel() {
   return (
     <section id="admin-help" className="nc-panel scroll-mt-24">
       <div className="nc-panel-head">
-        <h2 className="font-medium">{t(Msg.admin.help.title)}</h2>
-        <p>{t(Msg.admin.help.subtitle)}</p>
+        <h2 className="font-medium">{t(resolveMsgKey(Msg.admin.help?.title, 'admin.help.title'))}</h2>
+        <p>{t(resolveMsgKey(Msg.admin.help?.subtitle, 'admin.help.subtitle'))}</p>
       </div>
       <div className="space-y-3 px-4 py-4">
         {ADMIN_HELP_SECTIONS.map((section) => (
