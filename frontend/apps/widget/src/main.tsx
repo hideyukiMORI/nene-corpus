@@ -6,10 +6,14 @@ import './widget.css';
 
 const mountId = 'nene-corpus-widget-root';
 
-export function init(target: HTMLElement): void {
+export interface WidgetInitOptions {
+  apiBase?: string;
+}
+
+export function init(target: HTMLElement, options?: WidgetInitOptions): void {
   createRoot(target).render(
     <StrictMode>
-      <EmbedWidget />
+      <EmbedWidget {...options} />
     </StrictMode>,
   );
 }

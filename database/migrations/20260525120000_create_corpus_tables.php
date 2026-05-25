@@ -26,7 +26,7 @@ final class CreateCorpusTables extends AbstractMigration
             ->create();
 
         $this->table('documents')
-            ->addColumn('source_id', 'biginteger', ['null' => false, 'signed' => false])
+            ->addColumn('source_id', 'integer', ['null' => false, 'signed' => false])
             ->addColumn('title', 'string', ['limit' => 512, 'null' => false])
             ->addColumn('position', 'integer', ['null' => false, 'default' => 0])
             ->addColumn('metadata_json', 'text', ['null' => true])
@@ -40,8 +40,8 @@ final class CreateCorpusTables extends AbstractMigration
             ->create();
 
         $this->table('chunks')
-            ->addColumn('document_id', 'biginteger', ['null' => false, 'signed' => false])
-            ->addColumn('source_id', 'biginteger', ['null' => false, 'signed' => false])
+            ->addColumn('document_id', 'integer', ['null' => false, 'signed' => false])
+            ->addColumn('source_id', 'integer', ['null' => false, 'signed' => false])
             ->addColumn('chunk_index', 'integer', ['null' => false, 'default' => 0])
             ->addColumn('content', 'text', ['null' => false])
             ->addColumn('page_number', 'integer', ['null' => true])

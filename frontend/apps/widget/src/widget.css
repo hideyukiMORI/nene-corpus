@@ -14,10 +14,68 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
+.nene-corpus-chat__messages {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--nc-spacing-md) / 2);
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
 .nene-corpus-chat__bubble {
   padding: var(--nc-spacing-md);
-  background: color-mix(in srgb, var(--nc-color-primary) 12%, white);
   border-radius: var(--nc-radius-md);
+}
+
+.nene-corpus-chat__bubble--assistant {
+  background: color-mix(in srgb, var(--nc-color-primary) 12%, white);
+}
+
+.nene-corpus-chat__bubble--user {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--nc-color-primary);
+  color: #fff;
+}
+
+.nene-corpus-chat__bubble--pending {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.nene-corpus-chat__bubble-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.nene-corpus-chat__citations {
+  margin: calc(var(--nc-spacing-md) / 2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875em;
+}
+
+.nene-corpus-chat__citation {
+  padding-top: calc(var(--nc-spacing-md) / 4);
+  border-top: 1px solid color-mix(in srgb, var(--nc-color-text) 12%, transparent);
+}
+
+.nene-corpus-chat__citation-excerpt {
+  display: block;
+  opacity: 0.85;
+}
+
+.nene-corpus-chat__citation-meta {
+  display: block;
+  margin-top: calc(var(--nc-spacing-md) / 4);
+  font-size: 0.85em;
+  opacity: 0.65;
+}
+
+.nene-corpus-chat__error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.875em;
 }
 
 .nene-corpus-chat__form {
@@ -41,4 +99,10 @@
   color: #fff;
   font: inherit;
   cursor: pointer;
+}
+
+.nene-corpus-chat__submit:disabled,
+.nene-corpus-chat__input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

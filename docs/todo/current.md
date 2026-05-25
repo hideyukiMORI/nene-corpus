@@ -28,7 +28,8 @@ Last updated: 2026-05-25
 **Phase 3 — Admin UI & Widget: 進行中（2026-05-25）**
 
 - ✅ Frontend scaffold（#33）
-- 🔜 Admin screens + widget chat wiring
+- ✅ embed widget → sync JSON chat 接続（#37）
+- 🔜 Admin screens
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -67,8 +68,8 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 | 項目 | 状態 |
 | --- | --- |
 | Frontend monorepo scaffold | ✅ (#33) |
+| embed widget + sync JSON chat | ✅ (#37) |
 | Admin UI (sources, logs) | 🔜 |
-| embed widget + sync JSON chat | 🔜 |
 | Appearance settings | 🔜 |
 | Tier A installer + release ZIP | 🔜 |
 
@@ -121,8 +122,8 @@ Milestone: [`docs/milestones/2026-05-admin-ui-and-widget.md`](../milestones/2026
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
 | ~~P0~~ | ~~Frontend scaffold~~ | ✅ #33 |
+| ~~P0~~ | ~~embed widget~~ | ✅ #37 |
 | P0 | Admin UI | sources, ingestion, logs |
-| P0 | embed widget | sync JSON chat 接続 |
 | P1 | Appearance settings | operator theme overrides |
 | P1 | Tier A installer + ZIP | shared hosting |
 

@@ -16,7 +16,7 @@ final class CreateChatTables extends AbstractMigration
             ->create();
 
         $this->table('chat_messages')
-            ->addColumn('session_id', 'biginteger', ['null' => false, 'signed' => false])
+            ->addColumn('session_id', 'integer', ['null' => false, 'signed' => false])
             ->addColumn('role', 'string', ['limit' => 32, 'null' => false])
             ->addColumn('content', 'text', ['null' => false])
             ->addColumn('citations_json', 'text', ['null' => true])

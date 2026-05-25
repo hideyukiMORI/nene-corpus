@@ -9,6 +9,8 @@ use NeneCorpus\Chunk\Chunk;
 
 final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryInterface
 {
+    private const LIKE_ESCAPE_CHAR = '!';
+
     private const SELECT_COLUMNS = <<<'SQL'
         c.id, c.document_id, c.source_id, c.chunk_index, c.content, c.page_number, c.section_label,
         c.token_count, c.created_at, c.updated_at
@@ -31,10 +33,12 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
         $whereParts = [];
         $params = [];
 
+        $escape = self::LIKE_ESCAPE_CHAR;
+
         foreach ($terms as $term) {
             $pattern = '%' . $this->escapeLike($term) . '%';
-            $scoreParts[] = 'CASE WHEN c.content LIKE ? ESCAPE \'\\\' THEN 1 ELSE 0 END';
-            $whereParts[] = 'c.content LIKE ? ESCAPE \'\\\'';
+            $scoreParts[] = "CASE WHEN c.content LIKE ? ESCAPE '{$escape}' THEN 1 ELSE 0 END";
+            $whereParts[] = "c.content LIKE ? ESCAPE '{$escape}'";
             $params[] = $pattern;
         }
 
@@ -83,7 +87,13 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
 
     private function escapeLike(string $value): string
     {
-        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+        $escape = self::LIKE_ESCAPE_CHAR;
+
+        return str_replace(
+            [$escape, '%', '_'],
+            [$escape . $escape, $escape . '%', $escape . '_'],
+            $value,
+        );
     }
 
     /**
