@@ -121,6 +121,8 @@ https://example.com/nene-corpus/admin/
 
 Use the email and password from the installer.
 
+Post-install day-2 operations (ingest, embed, LLM rotation, logs): [`../operations/operator-guide.md`](../operations/operator-guide.md).
+
 ### 5. Ingest documents
 
 In Admin → upload CSV or PDF sources, map columns (CSV), and wait for indexing to complete.

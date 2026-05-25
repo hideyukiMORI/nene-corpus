@@ -48,7 +48,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | 優先 | 項目 | メモ |
 | --- | --- | --- |
 | P1 | Admin 内 Help / Docs | ✅ #117 + #149（LLM 設定・会話ログの節を追記） |
-| P2 | 公開説明書 | #150 — セットアップ後の運用ガイド（ingest / embed / トラブルシュート） |
+| P2 | 公開説明書 | ✅ #150 — [`docs/operations/operator-guide.md`](../operations/operator-guide.md) |
 
 ### コンテンツ取り込み・管理
 
@@ -72,7 +72,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 
 | 優先 | 項目 | メモ |
 | --- | --- | --- |
-| P2 | **セッション metadata** | #129 — ✅ `client_ip`・`user_agent`・`referer`。`POST /chat/sessions` 作成時に記録。管理画面は一覧 IP + 詳細 UA/Referer。docs: [`shared-hosting.md`](../deployment/shared-hosting.md) § Conversation log metadata |
+| P2 | **セッション metadata** | ✅ #129 |
 
 ### オペレーター設定
 
