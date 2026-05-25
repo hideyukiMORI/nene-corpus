@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./appearance": "./src/appearance.ts",
+    "./llm-settings": "./src/llm-settings.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {

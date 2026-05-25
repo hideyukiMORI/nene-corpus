@@ -1,7 +1,7 @@
 RewriteEngine On
 
 # Admin API routes share the /admin/ URL prefix with the SPA — forward to PHP front controller.
-RewriteRule ^(auth|sources|ingestion|appearance|chat)(/|$) ../index.php [QSA,L]
+RewriteRule ^(auth|sources|ingestion|appearance|chat|settings)(/|$) ../index.php [QSA,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

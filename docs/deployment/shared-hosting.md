@@ -125,7 +125,7 @@ Use the email and password from the installer.
 
 In Admin → upload CSV or PDF sources, map columns (CSV), and wait for indexing to complete.
 
-Set **Anthropic API key** in environment or hosting panel if not done during install (`ANTHROPIC_API_KEY` in `.env`).
+Set **Anthropic API key** in environment or hosting panel if not done during install (`ANTHROPIC_API_KEY` in `.env`). After install, operators can rotate the key from **Admin → LLM settings** (masked display, connection test, writes `.env`).
 
 ### 6. Embed the widget on your homepage
 
@@ -155,7 +155,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Admin SPA routing uses `public_html/admin/.htaccess`. API routes under the same `/admin/` prefix (`/admin/auth/login`, `/admin/sources`, …) are rewritten to the PHP front controller before the SPA fallback.
+Admin SPA routing uses `public_html/admin/.htaccess`. API routes under the same `/admin/` prefix (`/admin/auth/login`, `/admin/sources`, `/admin/settings/llm`, …) are rewritten to the PHP front controller before the SPA fallback. The release build copies this file from `frontend/apps/admin/public/.htaccess` — keep both in sync.
 
 ---
 

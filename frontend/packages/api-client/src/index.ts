@@ -7,6 +7,7 @@ export {
   uploadAvatarImage,
   buildWidgetPreviewSearchParams,
 } from './appearance';
+export { getLlmSettings, updateLlmSettings, testLlmConnection } from './llm-settings';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
@@ -41,4 +42,7 @@ export type {
   UploadAvatarImageResponse,
   AppearanceSettingsResponse,
   UpdateAppearanceSettingsRequest,
+  LlmSettingsResponse,
+  UpdateLlmSettingsRequest,
+  TestLlmConnectionRequest,
 } from './types';

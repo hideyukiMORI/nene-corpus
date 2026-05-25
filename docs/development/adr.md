@@ -22,6 +22,7 @@ docs/adr/
 ├── 0001-inherit-nene2-governance.md
 ├── 0002-separate-from-nene-records.md
 ├── 0003-dual-deployment-and-embed-widget.md
+├── 0004-llm-settings-env-storage.md
 └── NNNN-short-title.md
 ```
 
