@@ -1,5 +1,5 @@
 import { fetchJson } from './fetch-json';
-import type { AppearanceSettingsResponse, UpdateAppearanceSettingsRequest, WidgetTheme } from './types';
+import type { AppearanceSettingsResponse, UpdateAppearanceSettingsRequest, WidgetHero, WidgetTheme } from './types';
 
 export async function getAppearanceSettings(
   token: string,
@@ -32,6 +32,7 @@ export async function fetchWidgetAppearance(apiBase = ''): Promise<AppearanceSet
 export function buildWidgetPreviewSearchParams(
   theme: WidgetTheme,
   widgetLocale: string | null,
+  hero?: WidgetHero | null,
 ): string {
   const params = new URLSearchParams({
     color_primary: theme.color_primary,
@@ -44,6 +45,18 @@ export function buildWidgetPreviewSearchParams(
 
   if (widgetLocale !== null && widgetLocale !== '') {
     params.set('widget_locale', widgetLocale);
+  }
+
+  if (hero?.title) {
+    params.set('hero_title', hero.title);
+  }
+
+  if (hero?.description) {
+    params.set('hero_description', hero.description);
+  }
+
+  if (hero?.cta_label) {
+    params.set('hero_cta_label', hero.cta_label);
   }
 
   return params.toString();

@@ -1,6 +1,6 @@
 import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { fetchWidgetAppearance, type WidgetTheme } from '@nene-corpus/api-client';
+import { fetchWidgetAppearance, type WidgetHero, type WidgetTheme } from '@nene-corpus/api-client';
 import {
   LocaleProvider,
   WIDGET_LOCALE_STORAGE_KEY,
@@ -12,7 +12,7 @@ import {
 import '../../../themes/default.css';
 import { EmbedWidget } from './EmbedWidget';
 import { resolveWidgetConfig } from './config';
-import { DEFAULT_WIDGET_THEME, readPreviewThemeFromSearchParams } from './theme';
+import { DEFAULT_WIDGET_THEME, readPreviewHeroFromSearchParams, readPreviewThemeFromSearchParams } from './theme';
 import './widget.css';
 
 const mountId = 'nene-corpus-widget-root';
@@ -22,14 +22,14 @@ export interface WidgetInitOptions {
   apiBase?: string;
 }
 
-function WidgetRoot({ apiBase, theme }: { apiBase?: string; theme: WidgetTheme }) {
+function WidgetRoot({ apiBase, theme, hero }: { apiBase?: string; theme: WidgetTheme; hero: WidgetHero }) {
   const { locale } = useLocale();
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
   }, [locale]);
 
-  return <EmbedWidget apiBase={apiBase} theme={theme} />;
+  return <EmbedWidget apiBase={apiBase} theme={theme} hero={hero} />;
 }
 
 function resolveInitialLocale(
@@ -56,15 +56,18 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
 
   const config = resolveWidgetConfig(options);
   const previewTheme = readPreviewThemeFromSearchParams();
+  const previewHero = readPreviewHeroFromSearchParams();
   const previewLocale =
     typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('widget_locale') : null;
 
   let theme: WidgetTheme = DEFAULT_WIDGET_THEME;
+  let hero: WidgetHero = { title: null, description: null, cta_label: null };
   let configuredLocale: string | null = null;
 
   try {
     const appearance = await fetchWidgetAppearance(config.apiBase);
     theme = appearance.theme;
+    hero = appearance.hero;
     configuredLocale = appearance.widget_locale;
   } catch {
     // Keep defaults when appearance API is unavailable.
@@ -74,12 +77,16 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
     theme = previewTheme;
   }
 
+  if (previewHero !== null) {
+    hero = previewHero;
+  }
+
   const initialLocale = resolveInitialLocale(previewLocale, configuredLocale);
 
   createRoot(target).render(
     <StrictMode>
       <LocaleProvider storageKey={WIDGET_LOCALE_STORAGE_KEY} initialLocale={initialLocale}>
-        <WidgetRoot apiBase={config.apiBase} theme={theme} />
+        <WidgetRoot apiBase={config.apiBase} theme={theme} hero={hero} />
       </LocaleProvider>
     </StrictMode>,
   );

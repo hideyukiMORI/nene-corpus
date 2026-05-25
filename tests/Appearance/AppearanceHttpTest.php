@@ -70,6 +70,7 @@ final class AppearanceHttpTest extends TestCase
         self::assertNull($payload['widget_locale']);
         self::assertSame('#2563eb', $payload['theme']['color_primary']);
         self::assertSame('100%', $payload['theme']['max_width']);
+        self::assertNull($payload['hero']['title']);
     }
 
     public function test_admin_can_update_appearance(): void
@@ -85,6 +86,11 @@ final class AppearanceHttpTest extends TestCase
                 'radius_md' => '0.75rem',
                 'max_width' => '480px',
             ],
+            'hero' => [
+                'title' => '商品について質問',
+                'description' => 'マニュアルから回答します。',
+                'cta_label' => '質問する',
+            ],
         ]);
 
         $payload = $this->decodeJson($response);
@@ -97,6 +103,7 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame('ja', $public['widget_locale']);
         self::assertSame('#dc2626', $public['theme']['color_primary']);
         self::assertSame('480px', $public['theme']['max_width']);
+        self::assertSame('商品について質問', $public['hero']['title']);
     }
 
     public function test_update_rejects_invalid_color(): void
@@ -111,6 +118,11 @@ final class AppearanceHttpTest extends TestCase
                 'color_text' => '#111827',
                 'radius_md' => '0.5rem',
                 'max_width' => '100%',
+            ],
+            'hero' => [
+                'title' => null,
+                'description' => null,
+                'cta_label' => null,
             ],
         ]);
 

@@ -859,11 +859,37 @@ components:
           type: string
           example: 100%
           description: Maximum width of the embed widget (CSS length, e.g. 480px or 100%).
+    WidgetHero:
+      type: object
+      required:
+        - title
+        - description
+        - cta_label
+      properties:
+        title:
+          type:
+            - string
+            - 'null'
+          maxLength: 120
+          description: Welcome title shown before the first message. Null uses widget i18n default.
+        description:
+          type:
+            - string
+            - 'null'
+          maxLength: 500
+          description: Welcome description. Null uses widget i18n default.
+        cta_label:
+          type:
+            - string
+            - 'null'
+          maxLength: 40
+          description: CTA button label that focuses the input. Null uses widget i18n default.
     AppearanceSettingsResponse:
       type: object
       required:
         - widget_locale
         - theme
+        - hero
       properties:
         widget_locale:
           type:
@@ -879,10 +905,13 @@ components:
             - null
         theme:
           $ref: '#/components/schemas/WidgetTheme'
+        hero:
+          $ref: '#/components/schemas/WidgetHero'
     UpdateAppearanceSettingsRequest:
       type: object
       required:
         - theme
+        - hero
       properties:
         widget_locale:
           type:
@@ -898,6 +927,8 @@ components:
             - null
         theme:
           $ref: '#/components/schemas/WidgetTheme'
+        hero:
+          $ref: '#/components/schemas/WidgetHero'
     PreviewCsvIngestionRequest:
       type: object
       required:

@@ -1,18 +1,23 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import type { WidgetTheme } from '@nene-corpus/api-client';
+import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
+import { ChatHero } from './ChatHero';
+import { ChatMessageRow, ChatPendingRow } from './ChatMessageRow';
 import { useChatSession } from './useChatSession';
 import { applyWidgetTheme } from './theme';
 
 export interface EmbedWidgetProps {
   apiBase?: string;
   theme?: WidgetTheme;
+  hero?: WidgetHero;
 }
 
-export function EmbedWidget({ apiBase, theme }: EmbedWidgetProps = {}) {
+export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
   const t = useMsg();
   const rootRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { turns, isLoading, isReady, error, sendMessage } = useChatSession({ apiBase });
   const [draft, setDraft] = useState('');
 
@@ -22,6 +27,14 @@ export function EmbedWidget({ apiBase, theme }: EmbedWidgetProps = {}) {
     }
   }, [theme]);
 
+  useEffect(() => {
+    const container = messagesRef.current;
+
+    if (container !== null) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [turns, isLoading]);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
@@ -30,48 +43,27 @@ export function EmbedWidget({ apiBase, theme }: EmbedWidgetProps = {}) {
     await sendMessage(content);
   }
 
+  function focusInput(): void {
+    inputRef.current?.focus();
+  }
+
+  const resolvedHero: WidgetHero = hero ?? { title: null, description: null, cta_label: null };
+  const showHero = turns.length === 0 && !isLoading;
+
   return (
     <div ref={rootRef} className={nc.widgetRoot}>
       <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
-        <div className={nc.chatMessages} aria-live="polite">
-          {turns.length === 0 && (
-            <div className={`${nc.chatBubble} ${nc.chatBubbleAssistant}`}>
-              {t(Msg.widget.chat.emptyPrompt)}
-            </div>
-          )}
+        {showHero && <ChatHero hero={resolvedHero} onCtaClick={focusInput} />}
+        <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
           {turns.map((turn) => (
-            <article
-              key={turn.id}
-              className={`${nc.chatBubble} ${
-                turn.role === 'user' ? nc.chatBubbleUser : nc.chatBubbleAssistant
-              }`}
-            >
-              <p className={nc.chatBubbleText}>{turn.content}</p>
-              {turn.citations !== undefined && turn.citations.length > 0 && (
-                <ul className={nc.chatCitations}>
-                  {turn.citations.map((citation) => (
-                    <li key={citation.chunk_id} className={nc.chatCitation}>
-                      <span className={nc.chatCitationExcerpt}>{citation.excerpt}</span>
-                      {citation.page_number !== undefined && (
-                        <span className={nc.chatCitationMeta}>
-                          {t(Msg.widget.chat.citationPage, { page: citation.page_number })}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </article>
+            <ChatMessageRow key={turn.id} turn={turn} />
           ))}
-          {isLoading && (
-            <div className={`${nc.chatBubble} ${nc.chatBubbleAssistant} ${nc.chatBubblePending}`}>
-              {t(Msg.widget.chat.loading)}
-            </div>
-          )}
+          {isLoading && <ChatPendingRow />}
         </div>
         {error !== null && <p className={nc.chatError}>{error}</p>}
         <form className={nc.chatForm} onSubmit={(event) => void handleSubmit(event)}>
           <input
+            ref={inputRef}
             className={nc.chatInput}
             type="text"
             placeholder={t(Msg.widget.chat.inputPlaceholder)}

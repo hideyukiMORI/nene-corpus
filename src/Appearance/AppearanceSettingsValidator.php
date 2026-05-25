@@ -44,7 +44,46 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateThemeField($theme, 'radius_md', 'css_length')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'max_width', 'css_length')];
 
+        $hero = $body['hero'] ?? null;
+
+        if (!is_array($hero)) {
+            $errors[] = new ValidationError('hero', 'Hero object is required.', 'required');
+
+            return $errors;
+        }
+
+        $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'title', 120)];
+        $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'description', 500)];
+        $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'cta_label', 40)];
+
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $hero
+     * @return list<ValidationError>
+     */
+    private function validateOptionalHeroField(array $hero, string $key, int $maxLength): array
+    {
+        if (!array_key_exists($key, $hero)) {
+            return [];
+        }
+
+        $value = $hero[$key];
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (!is_string($value)) {
+            return [new ValidationError("hero.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' must be a string.', 'invalid')];
+        }
+
+        if (mb_strlen($value) > $maxLength) {
+            return [new ValidationError("hero.{$key}", 'Must be at most ' . $maxLength . ' characters.', 'max_length')];
+        }
+
+        return [];
     }
 
     /**

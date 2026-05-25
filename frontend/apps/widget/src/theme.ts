@@ -1,5 +1,5 @@
 import { cssVars } from '@nene-corpus/tokens';
-import type { WidgetTheme } from '@nene-corpus/api-client';
+import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
 
 export const DEFAULT_WIDGET_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -36,5 +36,25 @@ export function readPreviewThemeFromSearchParams(): WidgetTheme | null {
     color_text: params.get('color_text') ?? DEFAULT_WIDGET_THEME.color_text,
     radius_md: params.get('radius_md') ?? DEFAULT_WIDGET_THEME.radius_md,
     max_width: params.get('max_width') ?? DEFAULT_WIDGET_THEME.max_width,
+  };
+}
+
+export function readPreviewHeroFromSearchParams(): WidgetHero | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const keys = ['hero_title', 'hero_description', 'hero_cta_label'] as const;
+  const hasOverride = keys.some((key) => params.get(key) !== null);
+
+  if (!hasOverride) {
+    return null;
+  }
+
+  return {
+    title: params.get('hero_title'),
+    description: params.get('hero_description'),
+    cta_label: params.get('hero_cta_label'),
   };
 }
