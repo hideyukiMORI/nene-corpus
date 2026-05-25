@@ -20,6 +20,7 @@ export const ptBr = defineMessages({
   'sourceStatus.ready': 'Pronto',
   'sourceStatus.failed': 'Falhou',
   'admin.app.title': 'Admin NeNe Corpus',
+  'admin.app.language': 'Idioma do admin',
   'admin.app.healthUnavailable': 'Status da API indisponível',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': 'Login admin',

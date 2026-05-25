@@ -33,6 +33,7 @@ export const Msg = {
   admin: {
     app: {
       title: 'admin.app.title',
+      language: 'admin.app.language',
       healthUnavailable: 'admin.app.healthUnavailable',
       healthStatus: 'admin.app.healthStatus',
     },
