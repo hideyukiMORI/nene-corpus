@@ -167,6 +167,35 @@ export const Msg = {
       loadFailed: 'admin.appearance.loadFailed',
       saveFailed: 'admin.appearance.saveFailed',
     },
+    help: {
+      title: 'admin.help.title',
+      subtitle: 'admin.help.subtitle',
+      open: 'admin.help.open',
+      quickStart: {
+        title: 'admin.help.quickStart.title',
+        body: 'admin.help.quickStart.body',
+      },
+      ingestion: {
+        title: 'admin.help.ingestion.title',
+        body: 'admin.help.ingestion.body',
+      },
+      embed: {
+        title: 'admin.help.embed.title',
+        body: 'admin.help.embed.body',
+      },
+      appearance: {
+        title: 'admin.help.appearance.title',
+        body: 'admin.help.appearance.body',
+      },
+      troubleshooting: {
+        title: 'admin.help.troubleshooting.title',
+        body: 'admin.help.troubleshooting.body',
+      },
+      faq: {
+        title: 'admin.help.faq.title',
+        body: 'admin.help.faq.body',
+      },
+    },
   },
   widget: {
     chat: {

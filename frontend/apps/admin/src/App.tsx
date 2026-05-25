@@ -4,8 +4,10 @@ import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
+import { HelpPanel } from './HelpPanel';
 import { LocaleSelector } from './LocaleSelector';
 import { ThemeToggle } from './ThemeToggle';
+import { scrollToHelp } from './scrollToHelp';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
@@ -36,6 +38,9 @@ export function App() {
             {profile && <p className="nc-text-muted">{profile.email}</p>}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
+            <button className="nc-btn nc-header-btn" type="button" onClick={scrollToHelp}>
+              {t(Msg.admin.help.open)}
+            </button>
             <LocaleSelector />
             <ThemeToggle />
             {profile && (
@@ -48,13 +53,17 @@ export function App() {
       </header>
       <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">
         {token === null ? (
-          <LoginForm error={error} onLogin={login} />
+          <>
+            <LoginForm error={error} onLogin={login} />
+            <HelpPanel />
+          </>
         ) : (
           <>
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
             <SourcesPanel token={token} reloadKey={sourcesReloadKey} />
             <ConversationLogsPanel token={token} />
             <AppearancePanel token={token} />
+            <HelpPanel />
           </>
         )}
       </main>

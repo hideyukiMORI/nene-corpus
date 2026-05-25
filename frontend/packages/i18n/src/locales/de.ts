@@ -160,6 +160,27 @@ export const de = defineMessages({
   'admin.appearance.saveSuccess': 'Einstellungen gespeichert.',
   'admin.appearance.loadFailed': 'Einstellungen konnten nicht geladen werden.',
   'admin.appearance.saveFailed': 'Einstellungen konnten nicht gespeichert werden.',
+  'admin.help.title': 'Hilfe & Betreiberhandbuch',
+  'admin.help.subtitle': 'Schnellstart, Embed-Setup und Fehlerbehebung in diesem Bildschirm.',
+  'admin.help.open': 'Hilfe',
+  'admin.help.quickStart.title': 'Schnellstart',
+  'admin.help.quickStart.body':
+    '1. Mit Betreiber-E-Mail und Passwort anmelden.\n2. Ingestion — CSV/PDF hochladen oder Text einfügen.\n3. Quellen — Status Ready prüfen.\n4. Erscheinungsbild — Farben anpassen und Embed-Snippet kopieren.\n5. Snippet auf der Homepage (gleiche Origin) einfügen und Chat testen.',
+  'admin.help.ingestion.title': 'Ingestion (CSV, PDF, Text)',
+  'admin.help.ingestion.body':
+    'Datei — CSV braucht Vorschau und Spalten-Mapping. PDF extrahiert Text pro Seite. Max. 5 MB.\n\nText — Tab Text einfügen für FAQ oder Kurznotizen. Jeder Eintrag wird ein durchsuchbares Dokument.\n\nWenn Quellen Ready zeigt, ist das Korpus für den Chat bereit.',
+  'admin.help.embed.title': 'Auf der Homepage einbetten',
+  'admin.help.embed.body':
+    'Kein WordPress-Plugin. Auf gleicher Origin installieren, dann HTML-Snippet aus Erscheinungsbild einfügen.\n\nSnippet lädt widget.css + widget.js und startet den Chat. data-endpoint muss zum Installationspfad passen.\n\nVor Produktion auf Staging testen. HTTPS empfohlen.',
+  'admin.help.appearance.title': 'Erscheinungsbild & Vorschau',
+  'admin.help.appearance.body':
+    'Widget-Farben, Radius, max. Breite und optionaler HERO-Willkommenstext.\n\nWidget-Sprache: Browser des Besuchers oder fest.\n\nVorschau-iframe zeigt das live Widget. Speichern zum Übernehmen — Snippet-Pfad wird automatisch gesetzt.',
+  'admin.help.troubleshooting.title': 'Fehlerbehebung',
+  'admin.help.troubleshooting.body':
+    'Login schlägt fehl — Zugangsdaten und /health an der Basis-URL prüfen.\n\nQuellen Failed — CSV-Mapping oder PDF prüfen.\n\nWidget leer — widget.js und widget.css müssen von gleicher Origin laden.\n\nNach Update — Datenbank-Migrationen ausführen.\n\nDev-Vorschau weiß — Admin- (:5173) und Widget-Dev-Server (:5174) nach Pull neu starten.',
+  'admin.help.faq.title': 'FAQ',
+  'admin.help.faq.body':
+    'Verlassen Daten meinen Server? — Korpus bleibt in Ihrer DB. Nur relevante Textausschnitte gehen an die Claude-API.\n\nSubdomain? — Ja, Document Root auf public_html zeigen.\n\nStreaming? — Nur synchroner JSON-Chat, kein SSE-Streaming.\n\nMehr — Shared-Hosting-Docs im Release-ZIP.',
   'widget.chat.panelLabel': 'NeNe Corpus Chat',
   'widget.chat.emptyPrompt': 'Stellen Sie eine Frage zu unseren Produkten.',
   'widget.chat.loading': 'Korpus wird durchsucht…',

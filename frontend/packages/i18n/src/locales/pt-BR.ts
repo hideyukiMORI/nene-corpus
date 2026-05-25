@@ -160,6 +160,27 @@ export const ptBr = defineMessages({
   'admin.appearance.saveSuccess': 'Configurações salvas.',
   'admin.appearance.loadFailed': 'Falha ao carregar configurações.',
   'admin.appearance.saveFailed': 'Falha ao salvar configurações.',
+  'admin.help.title': 'Ajuda e guia do operador',
+  'admin.help.subtitle': 'Início rápido, embed e solução de problemas nesta tela.',
+  'admin.help.open': 'Ajuda',
+  'admin.help.quickStart.title': 'Início rápido',
+  'admin.help.quickStart.body':
+    '1. Entre com e-mail e senha do operador.\n2. Ingestão — envie CSV/PDF ou cole texto.\n3. Fontes — confirme status Ready.\n4. Aparência — ajuste cores e copie o snippet de embed.\n5. Cole o snippet na homepage (mesma origem) e teste o chat.',
+  'admin.help.ingestion.title': 'Ingestão (CSV, PDF, texto)',
+  'admin.help.ingestion.body':
+    'Arquivo — CSV exige prévia e mapeamento de colunas. PDF extrai texto por página. Máx. 5 MB.\n\nTexto — aba Colar texto para FAQ ou notas curtas. Cada colagem vira um documento pesquisável.\n\nQuando Fontes mostrar Ready, o corpus está pronto para o chat.',
+  'admin.help.embed.title': 'Embutir na homepage',
+  'admin.help.embed.body':
+    'Não é plugin WordPress. Instale na mesma origem e adicione o snippet HTML em Aparência.\n\nO snippet carrega widget.css + widget.js e inicia o chat. data-endpoint deve apontar ao caminho da instalação.\n\nTeste em staging antes da produção. HTTPS recomendado.',
+  'admin.help.appearance.title': 'Aparência e prévia',
+  'admin.help.appearance.body':
+    'Cores, raio, largura máx. e texto HERO do widget.\n\nIdioma do widget: navegador do visitante ou fixo.\n\nA prévia em iframe mostra o widget ao vivo. Salve para persistir — o snippet segue o caminho da instalação.',
+  'admin.help.troubleshooting.title': 'Solução de problemas',
+  'admin.help.troubleshooting.body':
+    'Falha no login — verifique credenciais e /health na URL base.\n\nFontes Failed — revise mapeamento CSV ou PDF.\n\nWidget em branco — confirme widget.js e widget.css na mesma origem.\n\nApós atualização — execute migrações do banco.\n\nPrévia dev em branco — reinicie servidores dev admin (:5173) e widget (:5174) após pull.',
+  'admin.help.faq.title': 'FAQ',
+  'admin.help.faq.body':
+    'Os dados saem do meu servidor? — O corpus fica no seu banco. Apenas trechos relevantes vão à API Claude.\n\nSubdomínio? — Sim, aponte o document root para public_html.\n\nStreaming? — Apenas chat JSON síncrono, sem SSE.\n\nMais detalhes — docs de shared hosting no ZIP de release.',
   'widget.chat.panelLabel': 'Chat NeNe Corpus',
   'widget.chat.emptyPrompt': 'Faça uma pergunta sobre nossos produtos.',
   'widget.chat.loading': 'Pesquisando no corpus…',
