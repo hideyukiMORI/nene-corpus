@@ -11,6 +11,7 @@ export const SOURCE_STATUS_MSG: Record<SourceListItem['status'], MsgKey> = {
 export const SOURCE_TYPE_MSG: Record<SourceListItem['source_type'], MsgKey> = {
   csv: Msg.sourceType.csv,
   pdf: Msg.sourceType.pdf,
+  text: Msg.sourceType.text,
 };
 
 export const ROLE_MSG: Record<ChatMessageListItem['role'], MsgKey> = {

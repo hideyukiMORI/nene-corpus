@@ -15,6 +15,7 @@ export const fr = defineMessages({
   'role.assistant': 'Assistant',
   'sourceType.csv': 'CSV',
   'sourceType.pdf': 'PDF',
+  'sourceType.text': 'Texte',
   'sourceStatus.pending': 'En attente',
   'sourceStatus.processing': 'En cours',
   'sourceStatus.ready': 'Prêt',
@@ -50,7 +51,7 @@ export const fr = defineMessages({
   'admin.sources.columnChunksHelp':
     'Segments de texte indexés pour le chat.\nPlus il y en a, plus les citations sont fines.',
   'admin.ingestion.title': 'Téléverser une source',
-  'admin.ingestion.subtitle': 'Ajoutez des fichiers CSV ou PDF au corpus.',
+  'admin.ingestion.subtitle': 'Ajoutez des fichiers CSV, PDF ou du texte collé au corpus.',
   'admin.ingestion.sourceName': 'Nom de la source',
   'admin.ingestion.sourceNamePlaceholder': 'Catalogue produits',
   'admin.ingestion.sourceNameHelp':
@@ -101,6 +102,13 @@ export const fr = defineMessages({
   'admin.ingestion.ingestionFailed': 'Échec de l’ingestion.',
   'admin.ingestion.ingestResult':
     '« {name} » ingéré — {documentCount} documents, {chunkCount} segments.',
+  'admin.ingestion.modeFile': 'Fichier',
+  'admin.ingestion.modeText': 'Coller du texte',
+  'admin.ingestion.textBody': 'Contenu texte',
+  'admin.ingestion.textBodyHelp':
+    'Collez des FAQ, notes ou mémos courts.\nEnregistré comme un document consultable.',
+  'admin.ingestion.textBodyPlaceholder': 'Collez ou saisissez le texte pour le chat…',
+  'admin.ingestion.textRequired': 'Saisissez le contenu texte.',
   'admin.conversationLogs.title': 'Journaux de conversation',
   'admin.conversationLogs.subtitle': 'Sessions chat et réponses citées.',
   'admin.conversationLogs.loadingSessions': 'Chargement des sessions…',

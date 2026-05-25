@@ -15,6 +15,7 @@ export const de = defineMessages({
   'role.assistant': 'Assistent',
   'sourceType.csv': 'CSV',
   'sourceType.pdf': 'PDF',
+  'sourceType.text': 'Text',
   'sourceStatus.pending': 'Ausstehend',
   'sourceStatus.processing': 'In Bearbeitung',
   'sourceStatus.ready': 'Bereit',
@@ -50,7 +51,7 @@ export const de = defineMessages({
   'admin.sources.columnChunksHelp':
     'Durchsuchbare Textabschnitte für den Chat.\nMehr Abschnitte ermöglichen feinere Zitate.',
   'admin.ingestion.title': 'Quelle hochladen',
-  'admin.ingestion.subtitle': 'CSV- oder PDF-Dateien zum Korpus hinzufügen.',
+  'admin.ingestion.subtitle': 'CSV-, PDF-Dateien oder eingefügten Text zum Korpus hinzufügen.',
   'admin.ingestion.sourceName': 'Quellenname',
   'admin.ingestion.sourceNamePlaceholder': 'Produktkatalog',
   'admin.ingestion.sourceNameHelp':
@@ -101,6 +102,13 @@ export const de = defineMessages({
   'admin.ingestion.ingestionFailed': 'Aufnahme fehlgeschlagen.',
   'admin.ingestion.ingestResult':
     '„{name}“ aufgenommen — {documentCount} Dokumente, {chunkCount} Textabschnitte.',
+  'admin.ingestion.modeFile': 'Datei',
+  'admin.ingestion.modeText': 'Text einfügen',
+  'admin.ingestion.textBody': 'Textinhalt',
+  'admin.ingestion.textBodyHelp':
+    'FAQ-Antworten, Richtlinien oder kurze Notizen einfügen.\nWird als ein durchsuchbares Dokument gespeichert.',
+  'admin.ingestion.textBodyPlaceholder': 'Text für den Chat einfügen oder eingeben…',
+  'admin.ingestion.textRequired': 'Textinhalt eingeben.',
   'admin.conversationLogs.title': 'Gesprächsprotokolle',
   'admin.conversationLogs.subtitle': 'Chat-Sitzungen und Antworten mit Zitaten.',
   'admin.conversationLogs.loadingSessions': 'Sitzungen werden geladen…',

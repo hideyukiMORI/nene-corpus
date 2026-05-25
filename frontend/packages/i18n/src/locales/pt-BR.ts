@@ -15,6 +15,7 @@ export const ptBr = defineMessages({
   'role.assistant': 'Assistente',
   'sourceType.csv': 'CSV',
   'sourceType.pdf': 'PDF',
+  'sourceType.text': 'Texto',
   'sourceStatus.pending': 'Pendente',
   'sourceStatus.processing': 'Processando',
   'sourceStatus.ready': 'Pronto',
@@ -50,7 +51,7 @@ export const ptBr = defineMessages({
   'admin.sources.columnChunksHelp':
     'Trechos de texto indexados para o chat.\nMais trechos permitem citações mais finas.',
   'admin.ingestion.title': 'Enviar fonte',
-  'admin.ingestion.subtitle': 'Adicione arquivos CSV ou PDF ao corpus.',
+  'admin.ingestion.subtitle': 'Adicione arquivos CSV, PDF ou texto colado ao corpus.',
   'admin.ingestion.sourceName': 'Nome da fonte',
   'admin.ingestion.sourceNamePlaceholder': 'Catálogo de produtos',
   'admin.ingestion.sourceNameHelp':
@@ -101,6 +102,13 @@ export const ptBr = defineMessages({
   'admin.ingestion.ingestionFailed': 'Falha na ingestão.',
   'admin.ingestion.ingestResult':
     '« {name} » ingerida — {documentCount} documentos, {chunkCount} trechos.',
+  'admin.ingestion.modeFile': 'Arquivo',
+  'admin.ingestion.modeText': 'Colar texto',
+  'admin.ingestion.textBody': 'Conteúdo de texto',
+  'admin.ingestion.textBodyHelp':
+    'Cole FAQ, notas ou textos curtos.\nSalvo como um documento pesquisável.',
+  'admin.ingestion.textBodyPlaceholder': 'Cole ou digite o texto para o chat…',
+  'admin.ingestion.textRequired': 'Informe o conteúdo de texto.',
   'admin.conversationLogs.title': 'Logs de conversa',
   'admin.conversationLogs.subtitle': 'Sessões de chat e respostas com citações.',
   'admin.conversationLogs.loadingSessions': 'Carregando sessões…',

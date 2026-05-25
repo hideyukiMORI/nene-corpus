@@ -967,22 +967,25 @@ components:
       type: object
       required:
         - name
-        - filename
-        - content
       properties:
         source_type:
           type: string
           enum:
             - csv
             - pdf
+            - text
           default: csv
         name:
           type: string
         filename:
           type: string
+          description: Required when `source_type` is `csv` or `pdf`.
         content:
           type: string
-          description: Base64-encoded file bytes.
+          description: Base64-encoded file bytes. Required when `source_type` is `csv` or `pdf`.
+        text:
+          type: string
+          description: Plain UTF-8 text. Required when `source_type` is `text`.
         column_mapping:
           $ref: '#/components/schemas/CsvColumnMapping'
           description: Required when `source_type` is `csv`.
@@ -1160,6 +1163,7 @@ components:
           enum:
             - csv
             - pdf
+            - text
         status:
           type: string
           enum:

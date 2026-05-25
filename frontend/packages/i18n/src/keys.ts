@@ -23,6 +23,7 @@ export const Msg = {
   sourceType: {
     csv: 'sourceType.csv',
     pdf: 'sourceType.pdf',
+    text: 'sourceType.text',
   },
   sourceStatus: {
     pending: 'sourceStatus.pending',
@@ -106,6 +107,12 @@ export const Msg = {
       sourceNameRequired: 'admin.ingestion.sourceNameRequired',
       ingestionFailed: 'admin.ingestion.ingestionFailed',
       ingestResult: 'admin.ingestion.ingestResult',
+      modeFile: 'admin.ingestion.modeFile',
+      modeText: 'admin.ingestion.modeText',
+      textBody: 'admin.ingestion.textBody',
+      textBodyHelp: 'admin.ingestion.textBodyHelp',
+      textBodyPlaceholder: 'admin.ingestion.textBodyPlaceholder',
+      textRequired: 'admin.ingestion.textRequired',
     },
     conversationLogs: {
       title: 'admin.conversationLogs.title',
