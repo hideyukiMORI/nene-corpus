@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Msg, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
@@ -39,7 +39,7 @@ export function App() {
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             <button className="nc-btn nc-header-btn" type="button" onClick={scrollToHelp}>
-              {t(Msg.admin.help.open)}
+              {t(resolveMsgKey(Msg.admin.help?.open, 'admin.help.open'))}
             </button>
             <LocaleSelector />
             <ThemeToggle />
