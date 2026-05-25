@@ -11,7 +11,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
 {
     private const SELECT_COLUMNS = <<<'SQL'
         id, name, source_type, status, storage_path, original_filename, mime_type,
-        byte_size, error_message, created_at, updated_at, is_deleted, deleted_at
+        byte_size, error_message, ingestion_config_json, created_at, updated_at, is_deleted, deleted_at
         SQL;
 
     public function __construct(
@@ -48,8 +48,9 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             <<<'SQL'
                 INSERT INTO sources (
                     name, source_type, status, storage_path, original_filename, mime_type,
-                    byte_size, error_message, created_at, updated_at, is_deleted, deleted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)
+                    byte_size, error_message, ingestion_config_json, created_at, updated_at,
+                    is_deleted, deleted_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)
                 SQL,
             [
                 $source->name,
@@ -60,6 +61,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                 $source->mimeType,
                 $source->byteSize,
                 $source->errorMessage,
+                $source->ingestionConfigJson,
                 $now,
                 $now,
             ],
@@ -79,7 +81,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                 UPDATE sources SET
                     name = ?, source_type = ?, status = ?, storage_path = ?,
                     original_filename = ?, mime_type = ?, byte_size = ?, error_message = ?,
-                    updated_at = ?
+                    ingestion_config_json = ?, updated_at = ?
                 WHERE id = ? AND is_deleted = 0
                 SQL,
             [
@@ -91,6 +93,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                 $source->mimeType,
                 $source->byteSize,
                 $source->errorMessage,
+                $source->ingestionConfigJson,
                 $this->now(),
                 $source->id,
             ],
@@ -119,6 +122,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             mimeType: isset($row['mime_type']) ? (string) $row['mime_type'] : null,
             byteSize: isset($row['byte_size']) ? (int) $row['byte_size'] : null,
             errorMessage: isset($row['error_message']) ? (string) $row['error_message'] : null,
+            ingestionConfigJson: isset($row['ingestion_config_json']) ? (string) $row['ingestion_config_json'] : null,
             id: (int) $row['id'],
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],

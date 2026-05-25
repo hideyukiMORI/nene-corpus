@@ -9,6 +9,7 @@ CREATE TABLE sources (
     mime_type VARCHAR(127) NULL,
     byte_size BIGINT UNSIGNED NULL,
     error_message TEXT NULL,
+    ingestion_config_json TEXT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     is_deleted BOOLEAN NOT NULL DEFAULT 0,

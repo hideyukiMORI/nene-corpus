@@ -13,6 +13,7 @@ final readonly class IngestionRouteRegistrar
         private PreviewCsvIngestionHandler $previewCsvHandler,
         private PreviewPdfIngestionHandler $previewPdfHandler,
         private CreateSourceHandler $createSourceHandler,
+        private ReindexSourceHandler $reindexSourceHandler,
     ) {
     }
 
@@ -21,6 +22,7 @@ final readonly class IngestionRouteRegistrar
         $previewCsv = $this->previewCsvHandler;
         $previewPdf = $this->previewPdfHandler;
         $createSource = $this->createSourceHandler;
+        $reindexSource = $this->reindexSourceHandler;
 
         $router->post(
             '/admin/ingestion/csv/preview',
@@ -33,6 +35,10 @@ final readonly class IngestionRouteRegistrar
         $router->post(
             '/admin/sources',
             static fn (ServerRequestInterface $request) => $createSource->handle($request),
+        );
+        $router->post(
+            '/admin/sources/{id}/reindex',
+            static fn (ServerRequestInterface $request) => $reindexSource->handle($request),
         );
     }
 }
