@@ -15,12 +15,16 @@ final readonly class LoginAdminUseCase implements LoginAdminUseCaseInterface
 
     public function __construct(
         private AdminUserRepositoryInterface $adminUsers,
-        private TokenIssuerInterface $tokenIssuer,
+        private ?TokenIssuerInterface $tokenIssuer,
     ) {
     }
 
     public function execute(LoginAdminInput $input): LoginAdminOutput
     {
+        if ($this->tokenIssuer === null) {
+            throw new AdminJwtNotConfiguredException('Admin JWT secret is not configured.');
+        }
+
         $user = $this->adminUsers->findByEmail($input->email);
         $hash = $user !== null ? $user->passwordHash : self::DUMMY_PASSWORD_HASH;
 

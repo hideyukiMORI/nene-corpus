@@ -19,7 +19,53 @@ tags:
     description: Consumer sync JSON chat with citations.
   - name: AdminChat
     description: Admin read-only access to consumer chat logs.
+  - name: Install
+    description: First-time web installer for Tier A deployments.
 paths:
+  /install/status:
+    get:
+      tags:
+        - Install
+      summary: Install status and detected public paths
+      description: Returns whether NeNe Corpus is installed and the detected base path for embed assets.
+      operationId: getInstallStatus
+      responses:
+        '200':
+          description: Install status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallStatusResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /install:
+    post:
+      tags:
+        - Install
+      summary: Run first-time install
+      description: Writes `.env`, runs migrations, creates the first admin user, and locks the installer.
+      operationId: runInstall
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunInstallRequest'
+      responses:
+        '201':
+          description: Install completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunInstallResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /health:
     get:
       tags:
@@ -569,6 +615,18 @@ components:
                   - field: email
                     message: Email is required.
                     code: required
+    BadRequest:
+      description: Install or request failed.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    Forbidden:
+      description: Install already completed.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
     SourceNotFound:
       description: Source not found.
       content:
@@ -639,6 +697,96 @@ components:
             - ok
             - degraded
         service:
+          type: string
+    InstallStatusResponse:
+      type: object
+      required:
+        - installed
+        - base_path
+        - paths
+      properties:
+        installed:
+          type: boolean
+        base_path:
+          type: string
+        paths:
+          $ref: '#/components/schemas/PublicPathsResponse'
+    PublicPathsResponse:
+      type: object
+      required:
+        - base_path
+        - widget_script_src
+        - widget_css_href
+        - api_base
+      properties:
+        base_path:
+          type: string
+        widget_script_src:
+          type: string
+        widget_css_href:
+          type: string
+        api_base:
+          type: string
+    RunInstallRequest:
+      type: object
+      required:
+        - database
+        - admin
+      properties:
+        base_path:
+          type: string
+        database:
+          type: object
+          required:
+            - adapter
+            - name
+          properties:
+            adapter:
+              type: string
+              enum:
+                - mysql
+                - sqlite
+            host:
+              type: string
+            port:
+              type: integer
+            name:
+              type: string
+            user:
+              type: string
+            password:
+              type: string
+            charset:
+              type: string
+            environment:
+              type: string
+        admin:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+              format: password
+        anthropic_api_key:
+          type: string
+    RunInstallResponse:
+      type: object
+      required:
+        - installed
+        - admin_email
+        - base_path
+      properties:
+        installed:
+          type: boolean
+        admin_email:
+          type: string
+          format: email
+        base_path:
           type: string
     LoginAdminRequest:
       type: object

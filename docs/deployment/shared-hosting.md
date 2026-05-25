@@ -39,7 +39,7 @@ NeNe Corpus is **not a WordPress plugin**. It installs as a separate PHP app on 
 ```html
 <script
   src="https://example.com/nene-corpus/widget.js"
-  data-endpoint="/nene-corpus/api"
+  data-endpoint="/nene-corpus"
   defer
 ></script>
 ```

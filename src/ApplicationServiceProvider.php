@@ -10,6 +10,7 @@ use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\DomainExceptionHandlerInterface;
 use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
+use NeneCorpus\AdminAuth\AdminJwtNotConfiguredExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
 use NeneCorpus\Appearance\AppearanceRouteRegistrar;
 use NeneCorpus\Appearance\AppearanceServiceProvider;
@@ -21,6 +22,10 @@ use NeneCorpus\Document\DocumentServiceProvider;
 use NeneCorpus\Ingestion\CsvIngestionExceptionHandler;
 use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
+use NeneCorpus\Install\InstallAlreadyCompletedExceptionHandler;
+use NeneCorpus\Install\InstallRouteRegistrar;
+use NeneCorpus\Install\InstallRuntimeExceptionHandler;
+use NeneCorpus\Install\InstallServiceProvider;
 use NeneCorpus\Llm\LlmServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
 use NeneCorpus\RateLimit\RateLimitServiceProvider;
@@ -53,6 +58,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new AdminAuthServiceProvider())
             ->addProvider(new IngestionServiceProvider())
             ->addProvider(new AppearanceServiceProvider())
+            ->addProvider(new InstallServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
@@ -62,6 +68,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $source = $container->get(SourceServiceProvider::ROUTE_REGISTRAR);
                     $adminChat = $container->get(SessionServiceProvider::ROUTE_REGISTRAR);
                     $appearance = $container->get(AppearanceServiceProvider::ROUTE_REGISTRAR);
+                    $install = $container->get(InstallServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -87,19 +94,30 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Appearance route registrar service is invalid.');
                     }
 
-                    return [$adminAuth, $chat, $ingestion, $source, $adminChat, $appearance];
+                    if (!$install instanceof InstallRouteRegistrar) {
+                        throw new LogicException('Install route registrar service is invalid.');
+                    }
+
+                    return [$install, $adminAuth, $chat, $ingestion, $source, $adminChat, $appearance];
                 },
             )
             ->set(
                 self::EXCEPTION_HANDLERS,
                 static function (ContainerInterface $container): array {
                     $invalidCredentials = $container->get(InvalidAdminCredentialsExceptionHandler::class);
+                    $adminJwtNotConfigured = $container->get(AdminJwtNotConfiguredExceptionHandler::class);
                     $chatSessionNotFound = $container->get(ChatSessionNotFoundExceptionHandler::class);
                     $csvIngestion = $container->get(CsvIngestionExceptionHandler::class);
                     $sourceNotFound = $container->get(SourceNotFoundExceptionHandler::class);
+                    $installAlreadyCompleted = $container->get(InstallAlreadyCompletedExceptionHandler::class);
+                    $installRuntime = $container->get(InstallRuntimeExceptionHandler::class);
 
                     if (!$invalidCredentials instanceof DomainExceptionHandlerInterface) {
                         throw new LogicException('Invalid admin credentials exception handler service is invalid.');
+                    }
+
+                    if (!$adminJwtNotConfigured instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Admin JWT not configured exception handler service is invalid.');
                     }
 
                     if (!$chatSessionNotFound instanceof DomainExceptionHandlerInterface) {
@@ -114,7 +132,23 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Source not found exception handler service is invalid.');
                     }
 
-                    return [$invalidCredentials, $chatSessionNotFound, $csvIngestion, $sourceNotFound];
+                    if (!$installAlreadyCompleted instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Install already completed exception handler service is invalid.');
+                    }
+
+                    if (!$installRuntime instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Install runtime exception handler service is invalid.');
+                    }
+
+                    return [
+                        $invalidCredentials,
+                        $adminJwtNotConfigured,
+                        $chatSessionNotFound,
+                        $csvIngestion,
+                        $sourceNotFound,
+                        $installAlreadyCompleted,
+                        $installRuntime,
+                    ];
                 },
             );
     }
