@@ -5,6 +5,7 @@ Last updated: 2026-05-25
 ## 最近の docs 更新
 
 - ADR 0003: デュアルデプロイ（Tier A 共用ホスティング / Tier B Docker）、同期 JSON チャット、1行 embed — Issue #3
+- 命名規則 + 用語集（`naming-conventions.md`, `glossary.md`）— Issue #5
 
 ## 状態サマリー
 
@@ -49,9 +50,9 @@ Last updated: 2026-05-25
 | P0 | Sessions + messages | 会話永続化 |
 | P0 | Chunk search | full-text |
 | P0 | Claude tool_use + citations | サーバー側のみ |
-| P0 | Sync JSON chat API | Tier A/B 共通デフォルト（ADR 0003） |
-| P1 | Rate limiting | session / IP |
-| P2 | SSE streaming | Tier B 任意（低頻度 FAQ では不要） |
+| P0 | Sync JSON chat API | Tier A/B 共通デフォルト（ADR 0003） — 用語: **sync JSON chat** |
+| P1 | Rate limiting | session / IP — 用語: **rate limit** |
+| P2 | SSE streaming | Tier B 任意 — 用語: **SSE streaming** |
 
 ---
 

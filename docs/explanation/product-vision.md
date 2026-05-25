@@ -24,13 +24,13 @@ NeNe Corpus is **not** a PHP framework. It is a **product** that consumes NENE2.
 
 ## Target operators and markets
 
-**Primary — Japan SMB on PHP shared hosting**
+**Primary — Japan SMB on Tier A shared hosting**
 
-Operators who already have a company website on rental hosting and want a FAQ / manual chatbot **without SaaS lock-in**. Adoption should feel as approachable as WordPress: upload, run installer, manage from admin UI — **not** as a WordPress plugin, but as a sibling app on the same domain.
+Operators who already have a company website on **shared hosting** and want a FAQ / manual **consumer chat** **without SaaS lock-in**. Adoption should feel as approachable as WordPress: upload, **web installer**, manage from admin UI — **not** as a WordPress plugin, but as a sibling app on the **same origin**.
 
-**Secondary — developers and VPS / private cloud**
+**Secondary — Tier B developers and VPS / private cloud**
 
-Docker Compose for local dev and production on VPS. Same API and widget as Tier A; optional SSE streaming later.
+Docker Compose for local dev and production on VPS. Same API and **embed widget** as Tier A; optional **SSE streaming** later.
 
 **Later — international**
 
@@ -42,14 +42,14 @@ Same codebase, two installation paths (ADR 0003):
 
 | Tier | Path | Chat transport |
 | --- | --- | --- |
-| **A — Shared hosting** | ZIP + web installer + MySQL | Sync JSON (default) |
-| **B — Docker / VPS** | `docker compose up` | Sync JSON (default); SSE optional |
+| **Tier A — shared hosting** | **release ZIP** + **web installer** + MySQL | **sync JSON chat** (default) |
+| **Tier B — Docker / VPS** | `docker compose up` | **sync JSON chat** (default); **SSE streaming** optional |
 
-See [`docs/deployment/README.md`](../deployment/README.md).
+See [`docs/deployment/README.md`](../deployment/README.md) and [`glossary.md`](./glossary.md).
 
 ## Embed on existing sites
 
-Consumer chat is added to an **existing homepage** with one script tag on the **same origin**:
+**Consumer chat** is added to an **existing homepage** with one script tag on the **same origin** (**embed widget**):
 
 ```html
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus/api" defer></script>
@@ -57,13 +57,13 @@ Consumer chat is added to an **existing homepage** with one script tag on the **
 
 No site rebuild required. Works with WordPress themes, static HTML, or any CMS that allows a custom script include.
 
-FAQ-style traffic is **low frequency** (rate limits per session/IP). Synchronous JSON responses with a loading state are sufficient; streaming is optional polish for Tier B.
+FAQ-style traffic is **low frequency** (**rate limit** per session/IP). **sync JSON chat** with a loading state is sufficient; **SSE streaming** is optional polish for Tier B.
 
 ## Philosophy
 
 ### 1. Self-hosted OSS first
 
-MIT license. **Dual deployment:** Docker Compose for developers and VPS; web installer + ZIP for PHP shared hosting. No mandatory cloud vendor.
+MIT license. **Dual deployment:** Docker Compose for Tier B; **web installer** + **release ZIP** for Tier A **shared hosting**. No mandatory cloud vendor.
 
 ### 2. Citations are the contract
 
@@ -85,8 +85,8 @@ NENE2 (framework)
 | --- | --- |
 | **NENE2 runtime** | HTTP, DI, middleware, Problem Details |
 | **NeNe Corpus API** | Ingestion, corpus storage, chat, rate limits, audit |
-| **Admin UI** | Upload, reindex, logs, prompt settings, widget embed snippet |
-| **Consumer widget** | Chat UX over sync JSON (SSE optional on Tier B) |
+| **Admin UI** | Upload, reindex, logs, prompt settings, **embed widget** snippet |
+| **Embed widget** | **Consumer chat** UX over **sync JSON chat** (**SSE streaming** optional on Tier B) |
 | **Claude API** | Reasoning + tool_use (server-side only) |
 | **Upstream APIs** | NeNe Records public/search APIs (read-only client) |
 | **MCP tools** | Ops read-only — never consumer-facing |
@@ -108,7 +108,7 @@ Explicit domain modules, small use cases, typed DTOs, ADRs, Issue-driven workflo
 | Customization | Limited | Fork, extend, self-host |
 | Citations | Varies | Core product promise |
 | CMS | Bundled or separate | Optional NeNe Records upstream |
-| Deploy | Vendor-hosted | Shared hosting or Docker/VPS |
+| Deploy | Vendor-hosted | **Tier A** shared hosting or **Tier B** Docker/VPS |
 
 ## Relationship to NENE2
 
@@ -135,4 +135,9 @@ NeNe Records   → sibling CMS (optional upstream)
 
 ## Naming
 
-**NeNe Corpus** — a body of knowledge you own. Pairs with **NeNe Records** (typed records you edit).
+Product display names (reserved policy — full rules in a follow-up Issue):
+
+- **NeNe Corpus** — a body of knowledge you own.
+- **NeNe Records** — typed records you edit (optional upstream).
+
+All other terms: [`glossary.md`](./glossary.md). Code and API naming: [`naming-conventions.md`](../development/naming-conventions.md).

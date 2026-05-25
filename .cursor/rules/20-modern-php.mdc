@@ -10,6 +10,6 @@ alwaysApply: false
 - Namespace: `NeneCorpus\` — domain-grouped modules（`Chat/`, `Chunk/`, `Ingestion/` 等）。
 - Handler → UseCase → RepositoryInterface → PdoRepository。Handler にビジネスロジックを置かない。
 - PDO/SQL は `Pdo*Repository` 内のみ。LLM HTTP 呼び出しは `Llm/` アダプター内のみ。
-- Problem Details: `https://nene-corpus.dev/problems/{name}`
+- Problem Details type slug: kebab-case per [`naming-conventions.md`](../development/naming-conventions.md) §4.
 - OpenAPI と MCP は同一 HTTP 契約。コンシューマーチャットに MCP を露出しない。
-- 正本は `docs/development/backend-standards.md`。
+- 正本: [`backend-standards.md`](../../docs/development/backend-standards.md), [`naming-conventions.md`](../../docs/development/naming-conventions.md), [`glossary.md`](../../docs/explanation/glossary.md).

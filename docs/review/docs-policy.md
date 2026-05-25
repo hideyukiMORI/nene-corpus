@@ -7,6 +7,8 @@ Source policies:
 - `docs/workflow.md`
 - `docs/development/adr.md`
 - `docs/inheritance-from-nene2.md`
+- `docs/explanation/glossary.md`
+- `docs/development/naming-conventions.md`
 - `docs/todo/current.md`
 - `docs/roadmap.md`
 
@@ -20,4 +22,6 @@ Source policies:
 - [ ] Cursor rules stay concise; full policy not duplicated in `.cursor/rules/`.
 - [ ] Issue and PR references included where useful.
 - [ ] Wording is concrete enough for humans and AI agents to follow.
+- [ ] English docs use canonical terms from `docs/explanation/glossary.md` (no forbidden synonyms).
+- [ ] New public terms or API field names added to glossary and/or `naming-conventions.md` when introduced.
 - [ ] `git diff --check` reviewed for whitespace errors.

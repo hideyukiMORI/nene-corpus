@@ -1,6 +1,6 @@
 # OpenAPI Contract Self-Review
 
-Use when changing `docs/openapi/openapi.yaml` or API response shapes. Policy source: **`docs/development/backend-standards.md`**.
+Use when changing `docs/openapi/openapi.yaml` or API response shapes. Policy sources: **`docs/development/backend-standards.md`**, **`docs/development/naming-conventions.md`**, **`docs/explanation/glossary.md`**.
 
 Also read:
 
@@ -8,10 +8,11 @@ Also read:
 
 ## Contract completeness
 
-- [ ] Every shipped JSON endpoint has an OpenAPI path with stable `operationId`.
+- [ ] Every shipped JSON endpoint has an OpenAPI path with stable `operationId` (camelCase per naming conventions).
 - [ ] Summary, description, request body, query params match handler format validation.
 - [ ] Success response has schema and realistic `ok` example.
 - [ ] Problem Details responses documented (`401`, `404`, `422`, `500`, … as applicable).
+- [ ] JSON property names use snake_case; list responses use `items`, `limit`, `offset`.
 - [ ] Public OpenAPI text is English.
 
 ## Runtime alignment

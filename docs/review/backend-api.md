@@ -1,6 +1,6 @@
 # Self-Review: Backend API
 
-Use when changing handlers, use cases, routes, or OpenAPI paths under `src/`.
+Use when changing handlers, use cases, routes, or OpenAPI paths under `src/`. Policy: **`docs/development/backend-standards.md`**, **`docs/development/naming-conventions.md`**, **`docs/explanation/glossary.md`**.
 
 ## Contract
 
