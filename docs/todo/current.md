@@ -2,6 +2,10 @@
 
 Last updated: 2026-05-25
 
+## 最近の docs 更新
+
+- ADR 0003: デュアルデプロイ（Tier A 共用ホスティング / Tier B Docker）、同期 JSON チャット、1行 embed — Issue #3
+
 ## 状態サマリー
 
 **Phase 0 — Governance & Foundation: 完了（2026-05-25）**
@@ -45,8 +49,9 @@ Last updated: 2026-05-25
 | P0 | Sessions + messages | 会話永続化 |
 | P0 | Chunk search | full-text |
 | P0 | Claude tool_use + citations | サーバー側のみ |
-| P1 | SSE streaming | コンシューマー向け |
+| P0 | Sync JSON chat API | Tier A/B 共通デフォルト（ADR 0003） |
 | P1 | Rate limiting | session / IP |
+| P2 | SSE streaming | Tier B 任意（低頻度 FAQ では不要） |
 
 ---
 
@@ -54,6 +59,9 @@ Last updated: 2026-05-25
 
 > **NeNe Records とは完全に分離。** 依存方向は `NeNe Corpus → NeNe Records API` のみ。
 > 詳細: [`docs/adr/0002-separate-from-nene-records.md`](../adr/0002-separate-from-nene-records.md)
+
+> **デュアルデプロイ:** Tier A = PHP 共用ホスティング + 1行 embed / Tier B = Docker・VPS。同一 API。
+> 詳細: [`docs/adr/0003-dual-deployment-and-embed-widget.md`](../adr/0003-dual-deployment-and-embed-widget.md)
 
 ---
 

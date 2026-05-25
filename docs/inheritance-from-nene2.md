@@ -51,7 +51,8 @@ Install NENE2 as a Composer dependency and treat `vendor/hideyukimori/nene2/docs
 | Backend standards | `docs/development/backend-standards.md` |
 | Language policy | English for public docs, OpenAPI, API errors; Japanese allowed in Issues, PRs, commits, `.cursor/rules/` |
 | Review checklists | `docs/review/` — task-specific lists for this product |
-| Transport | REST JSON + SSE for chat streaming (Phase 2+) |
+| Transport | Sync JSON chat (Phase 2+ default); SSE optional (Tier B) — ADR 0003 |
+| Deployment | Tier A shared hosting + Tier B Docker/VPS — `docs/deployment/` |
 | External services | Claude API (server-side), optional NeNe Records HTTP client |
 
 ## NeNe Corpus–specific (not inherited)
@@ -64,6 +65,7 @@ Record these in ADRs or product docs when they stabilize:
 - Admin auth vs anonymous consumer sessions
 - LLM tool_use orchestration boundaries
 - Upstream API client policy (ADR 0002)
+- Dual deployment and embed widget policy (ADR 0003)
 
 ## When upstream and local docs conflict
 

@@ -9,7 +9,10 @@ Operators can self-host a corpus + chat platform that:
 - ingests PDF and CSV into searchable, citable chunks
 - answers consumer questions with source references
 - provides admin UI for uploads, logs, and configuration
+- embeds chat on an **existing homepage** with one script tag (same origin)
 - optionally queries [NeNe Records](https://github.com/hideyukiMORI/nene-records) via read-only HTTP
+
+**Primary market:** Japan SMB on PHP shared hosting. **Dual deployment:** Tier A (shared hosting) and Tier B (Docker/VPS) — ADR 0003.
 
 ## Phase 0: Governance and Foundation
 
@@ -21,6 +24,8 @@ Goal: engineering discipline and minimal runtime scaffold.
 
 Tracked by `docs/milestones/2026-05-governance-and-foundation.md`.
 
+**Status: complete (2026-05-25).**
+
 ## Phase 1: Corpus Storage & Ingestion
 
 Goal: store documents and chunks; admin upload API.
@@ -30,25 +35,28 @@ Goal: store documents and chunks; admin upload API.
 - PDF text extraction (text PDF first)
 - Admin auth (JWT) for mutating routes
 - OpenAPI + tests
+- Tier A: MySQL on shared hosting; consider PHP 8.2+ floor for host compatibility
 
 ## Phase 2: Chat & Citations
 
-Goal: grounded Q&A with streaming.
+Goal: grounded Q&A with cited responses.
 
 - Chat sessions and messages
 - Full-text search over chunks
 - Claude tool_use orchestration (server-side)
-- SSE streaming consumer endpoint
+- **Sync JSON chat endpoint** (default for Tier A and Tier B)
 - Citation payload in responses
 - Rate limiting per session/IP
+- Optional: SSE streaming endpoint (Tier B polish — not required for low-frequency FAQ traffic)
 
 ## Phase 3: Admin UI & Widget
 
-Goal: operable product without curl.
+Goal: operable product without curl; Tier A install path.
 
 - React admin: sources, ingestion status, conversation logs
-- Embeddable consumer chat widget
+- **Embeddable consumer chat widget** (`widget.js` + embed snippet for same-origin pages)
 - Prompt / scope / fallback settings UI
+- **Tier A deliverables:** web installer, release ZIP (vendor bundled), shared-hosting operator docs
 
 ## Phase 4: Upstream Integrations
 
@@ -58,13 +66,23 @@ Goal: optional NeNe Records and export APIs.
 - Unified search across local corpus + upstream
 - Webhook or poll reindex hooks
 
+## Deployment tiers
+
+| Tier | Phase | Deliverable |
+| --- | --- | --- |
+| **B — Docker / VPS** | 0 (now) | `docker compose up`, `docs/development/docker.md` |
+| **A — Shared hosting** | 3 | Web installer, ZIP, `docs/deployment/shared-hosting.md` |
+
+Same API and widget for both tiers. Chat uses sync JSON by default.
+
 ## Non-goals
 
 - Notion / Slack replacement
-- WordPress compatibility
+- WordPress **plugin** (coexist on same domain is supported)
 - Embedding inside NeNe Records
 - Consumer-facing MCP
 - Mandatory SaaS hosting
+- Docker-only deployment
 
 ## Ecosystem
 
@@ -75,3 +93,9 @@ NENE2 (framework)
 ```
 
 Framework changes → NENE2. CMS → nene-records. Chat/corpus → here.
+
+## Related
+
+- ADR 0003: dual deployment and embed widget
+- Deployment: `docs/deployment/README.md`
+- Product vision: `docs/explanation/product-vision.md`

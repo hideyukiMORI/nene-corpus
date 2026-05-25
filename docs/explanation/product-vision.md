@@ -22,11 +22,48 @@ End users get fast, grounded answers. Operators keep data sovereignty.
 
 NeNe Corpus is **not** a PHP framework. It is a **product** that consumes NENE2.
 
+## Target operators and markets
+
+**Primary — Japan SMB on PHP shared hosting**
+
+Operators who already have a company website on rental hosting and want a FAQ / manual chatbot **without SaaS lock-in**. Adoption should feel as approachable as WordPress: upload, run installer, manage from admin UI — **not** as a WordPress plugin, but as a sibling app on the same domain.
+
+**Secondary — developers and VPS / private cloud**
+
+Docker Compose for local dev and production on VPS. Same API and widget as Tier A; optional SSE streaming later.
+
+**Later — international**
+
+Southeast Asia and EU operators who value data sovereignty. May need multilingual UI and messaging-app channels; not Phase 1 blockers.
+
+## Dual deployment
+
+Same codebase, two installation paths (ADR 0003):
+
+| Tier | Path | Chat transport |
+| --- | --- | --- |
+| **A — Shared hosting** | ZIP + web installer + MySQL | Sync JSON (default) |
+| **B — Docker / VPS** | `docker compose up` | Sync JSON (default); SSE optional |
+
+See [`docs/deployment/README.md`](../deployment/README.md).
+
+## Embed on existing sites
+
+Consumer chat is added to an **existing homepage** with one script tag on the **same origin**:
+
+```html
+<script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus/api" defer></script>
+```
+
+No site rebuild required. Works with WordPress themes, static HTML, or any CMS that allows a custom script include.
+
+FAQ-style traffic is **low frequency** (rate limits per session/IP). Synchronous JSON responses with a loading state are sufficient; streaming is optional polish for Tier B.
+
 ## Philosophy
 
 ### 1. Self-hosted OSS first
 
-MIT license. Docker Compose quick start. No mandatory cloud vendor. Optional managed hosting may exist later; the core stays open.
+MIT license. **Dual deployment:** Docker Compose for developers and VPS; web installer + ZIP for PHP shared hosting. No mandatory cloud vendor.
 
 ### 2. Citations are the contract
 
@@ -48,8 +85,8 @@ NENE2 (framework)
 | --- | --- |
 | **NENE2 runtime** | HTTP, DI, middleware, Problem Details |
 | **NeNe Corpus API** | Ingestion, corpus storage, chat, rate limits, audit |
-| **Admin UI** | Upload, reindex, logs, prompt settings, widget config |
-| **Consumer widget** | Chat UX over SSE |
+| **Admin UI** | Upload, reindex, logs, prompt settings, widget embed snippet |
+| **Consumer widget** | Chat UX over sync JSON (SSE optional on Tier B) |
 | **Claude API** | Reasoning + tool_use (server-side only) |
 | **Upstream APIs** | NeNe Records public/search APIs (read-only client) |
 | **MCP tools** | Ops read-only — never consumer-facing |
@@ -71,6 +108,7 @@ Explicit domain modules, small use cases, typed DTOs, ADRs, Issue-driven workflo
 | Customization | Limited | Fork, extend, self-host |
 | Citations | Varies | Core product promise |
 | CMS | Bundled or separate | Optional NeNe Records upstream |
+| Deploy | Vendor-hosted | Shared hosting or Docker/VPS |
 
 ## Relationship to NENE2
 
@@ -87,11 +125,13 @@ NeNe Records   → sibling CMS (optional upstream)
 ## Non-goals
 
 - Rebuilding Laravel/Symfony or a generic RAG framework
-- WordPress / Notion compatibility
+- **WordPress plugin** or theme integration (coexist on same domain is fine)
+- Notion / WordPress content import as a primary goal
 - Embedding chat into NeNe Records
 - Exposing MCP to end-user chat clients
 - Direct database access for LLM or MCP tools
 - Subscription-only SaaS as the primary delivery model
+- Docker-only deployment (shared hosting must remain a first-class path)
 
 ## Naming
 
