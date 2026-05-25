@@ -37,7 +37,6 @@ Exact paths and attributes will be documented when the **embed widget** ships (P
 
 ## Chat transport
 
-- **Default (both tiers):** **sync JSON chat** — POST a message, receive full reply + **citations**.
-- **Optional (Tier B, later):** **SSE streaming** for progressive display.
-
-Low-frequency FAQ-style traffic (**rate limit** per session/IP) does not require **SSE streaming**.
+- **Both tiers:** **sync JSON chat** only — POST a message, receive full reply + **citations**.
+- **Embed widget** adds loading indicators and CSS motion (bubble fade-in, scroll); no token streaming.
+- **Non-goal:** **SSE streaming** — not planned.

@@ -57,7 +57,7 @@ Ops / AI (MCP)         ───────────────────
 - **Backend**: PHP 8.4, NENE2, Handler → UseCase → Repository
 - **API contract**: OpenAPI 3.1 ([`docs/openapi/openapi.yaml`](./docs/openapi/openapi.yaml))
 - **Ingestion**: PDF text extraction, CSV row mapping (planned)
-- **Chat**: **sync JSON chat** + citations, rate limits (**SSE streaming** optional on Tier B — planned)
+- **Chat**: **sync JSON chat** + citations, rate limits; widget CSS for loading/motion UX
 - **Deploy**: dual path — [`docs/deployment/README.md`](./docs/deployment/README.md)
 
 ## Current Status

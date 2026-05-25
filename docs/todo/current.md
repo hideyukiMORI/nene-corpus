@@ -7,7 +7,8 @@ Last updated: 2026-05-25
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
-- Phase 3+ バックログ追記 — オペレーター docs、テキスト取り込み、Widget UX 拡張（本ファイル）
+- Phase 3+ バックログ追記 — オペレーター docs、テキスト取り込み、Widget UX 拡張
+- SSE 非ゴールを ADR・product docs に統一 (#97)
 
 ## 状態サマリー
 
