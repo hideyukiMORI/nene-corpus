@@ -11,12 +11,19 @@ final readonly class SourceRouteRegistrar
 {
     public function __construct(
         private DeleteSourceHandler $deleteHandler,
+        private ListSourcesHandler $listHandler,
     ) {
     }
 
     public function __invoke(Router $router): void
     {
         $delete = $this->deleteHandler;
+        $list = $this->listHandler;
+
+        $router->get(
+            '/admin/sources',
+            static fn (ServerRequestInterface $request) => $list->handle($request),
+        );
 
         $router->delete(
             '/admin/sources/{id}',

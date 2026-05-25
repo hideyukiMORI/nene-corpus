@@ -29,7 +29,7 @@ Last updated: 2026-05-25
 
 - ✅ Frontend scaffold（#33）
 - ✅ embed widget → sync JSON chat 接続（#37）
-- 🔜 Admin screens
+- 🔜 Admin sources UI（#39 進行中）
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 

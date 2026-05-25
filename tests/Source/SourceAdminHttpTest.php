@@ -108,6 +108,35 @@ final class SourceAdminHttpTest extends TestCase
         self::assertSame(404, $response->getStatusCode());
     }
 
+    public function test_list_sources_returns_summaries(): void
+    {
+        $sourceId = $this->createPdfSource();
+
+        $response = $this->authorizedRequest('GET', '/admin/sources');
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertArrayHasKey('sources', $payload);
+        self::assertIsArray($payload['sources']);
+        self::assertNotSame([], $payload['sources']);
+
+        $first = $payload['sources'][0];
+        self::assertSame($sourceId, $first['source_id']);
+        self::assertSame('ready', $first['status']);
+        self::assertSame('pdf', $first['source_type']);
+        self::assertSame(1, $first['document_count']);
+        self::assertSame(1, $first['chunk_count']);
+    }
+
+    public function test_list_sources_requires_auth(): void
+    {
+        $response = $this->application()->handle(
+            $this->factory()->createServerRequest('GET', 'https://example.test/admin/sources'),
+        );
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
     private function createPdfSource(): int
     {
         $response = $this->authorizedRequest('POST', '/admin/sources', json_encode([

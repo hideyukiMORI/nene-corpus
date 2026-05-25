@@ -26,3 +26,30 @@ export interface SendChatMessageResponse {
   content: string;
   citations: Citation[];
 }
+
+export interface LoginAdminResponse {
+  access_token: string;
+  token_type: string;
+  expires_at: string;
+}
+
+export interface AdminMeResponse {
+  id: number;
+  email: string;
+  role: string;
+}
+
+export interface SourceListItem {
+  source_id: number;
+  name: string;
+  source_type: 'csv' | 'pdf';
+  status: 'pending' | 'processing' | 'ready' | 'failed';
+  document_count: number;
+  chunk_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ListSourcesResponse {
+  sources: SourceListItem[];
+}
