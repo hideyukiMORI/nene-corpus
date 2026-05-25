@@ -1,5 +1,12 @@
 import { fetchJson } from './fetch-json';
-import type { AppearanceSettingsResponse, UpdateAppearanceSettingsRequest, WidgetHero, WidgetTheme } from './types';
+import type {
+  AppearanceSettingsResponse,
+  UpdateAppearanceSettingsRequest,
+  UploadHeroImageRequest,
+  UploadHeroImageResponse,
+  WidgetHero,
+  WidgetTheme,
+} from './types';
 
 export async function getAppearanceSettings(
   token: string,
@@ -29,10 +36,26 @@ export async function fetchWidgetAppearance(apiBase = ''): Promise<AppearanceSet
   return fetchJson<AppearanceSettingsResponse>(`${apiBase}/widget/appearance`);
 }
 
+export async function uploadHeroImage(
+  token: string,
+  body: UploadHeroImageRequest,
+  apiBase = '',
+): Promise<UploadHeroImageResponse> {
+  return fetchJson<UploadHeroImageResponse>(`${apiBase}/admin/appearance/hero-image`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): void {
   params.set('hero_show_title', hero.show_title ? '1' : '0');
   params.set('hero_show_description', hero.show_description ? '1' : '0');
   params.set('hero_show_cta', hero.show_cta ? '1' : '0');
+  params.set('hero_show_image', hero.show_image ? '1' : '0');
 
   if (hero.title) {
     params.set('hero_title', hero.title);
@@ -44,6 +67,14 @@ function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): voi
 
   if (hero.cta_label) {
     params.set('hero_cta_label', hero.cta_label);
+  }
+
+  if (hero.image_url) {
+    params.set('hero_image_url', hero.image_url);
+  }
+
+  if (hero.image_alt) {
+    params.set('hero_image_alt', hero.image_alt);
   }
 }
 

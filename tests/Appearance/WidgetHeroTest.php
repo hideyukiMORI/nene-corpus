@@ -19,6 +19,30 @@ final class WidgetHeroTest extends TestCase
         self::assertTrue($hero->showTitle);
         self::assertTrue($hero->showDescription);
         self::assertTrue($hero->showCta);
+        self::assertTrue($hero->showImage);
+        self::assertNull($hero->imageUrl);
+    }
+
+    public function test_from_array_parses_image_fields(): void
+    {
+        $hero = WidgetHero::fromArray([
+            'image_url' => '/media/hero/a1b2c3d4e5f67890_logo.png',
+            'image_alt' => 'Logo',
+            'show_image' => false,
+        ]);
+
+        self::assertSame('/media/hero/a1b2c3d4e5f67890_logo.png', $hero->imageUrl);
+        self::assertSame('Logo', $hero->imageAlt);
+        self::assertFalse($hero->showImage);
+    }
+
+    public function test_from_array_rejects_invalid_image_url(): void
+    {
+        $hero = WidgetHero::fromArray([
+            'image_url' => 'https://evil.example/logo.png',
+        ]);
+
+        self::assertNull($hero->imageUrl);
     }
 
     public function test_to_array_includes_show_flags(): void
@@ -30,6 +54,9 @@ final class WidgetHeroTest extends TestCase
             showTitle: false,
             showDescription: true,
             showCta: false,
+            imageUrl: '/media/hero/a1b2c3d4e5f67890_logo.png',
+            imageAlt: 'Logo',
+            showImage: true,
         );
 
         self::assertSame([
@@ -39,6 +66,9 @@ final class WidgetHeroTest extends TestCase
             'show_title' => false,
             'show_description' => true,
             'show_cta' => false,
+            'image_url' => '/media/hero/a1b2c3d4e5f67890_logo.png',
+            'image_alt' => 'Logo',
+            'show_image' => true,
         ], $hero->toArray());
     }
 }

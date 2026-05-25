@@ -8,6 +8,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\SampleHeroImage;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -74,6 +75,102 @@ final class AppearanceHttpTest extends TestCase
         self::assertTrue($payload['hero']['show_title']);
         self::assertTrue($payload['hero']['show_description']);
         self::assertTrue($payload['hero']['show_cta']);
+        self::assertTrue($payload['hero']['show_image']);
+        self::assertNull($payload['hero']['image_url']);
+    }
+
+    public function test_admin_can_upload_and_serve_hero_image(): void
+    {
+        $token = $this->loginToken();
+        $factory = new Psr17Factory();
+
+        $upload = $this->handler()->handle(
+            $factory->createServerRequest('POST', '/admin/appearance/hero-image')
+                ->withHeader('Authorization', 'Bearer ' . $token)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($factory->createStream(json_encode([
+                    'filename' => 'hero.png',
+                    'content' => SampleHeroImage::base64(),
+                ], JSON_THROW_ON_ERROR))),
+        );
+
+        $uploadPayload = $this->decodeJson($upload);
+
+        self::assertSame(201, $upload->getStatusCode());
+        self::assertIsString($uploadPayload['image_url']);
+        self::assertStringStartsWith('/media/hero/', $uploadPayload['image_url']);
+
+        $filename = basename($uploadPayload['image_url']);
+        $serve = $this->dispatch('GET', '/media/hero/' . $filename);
+
+        self::assertSame(200, $serve->getStatusCode());
+        self::assertStringStartsWith('image/', $serve->getHeaderLine('Content-Type'));
+        self::assertSame(SampleHeroImage::bytes(), (string) $serve->getBody());
+    }
+
+    public function test_admin_can_save_hero_image_in_appearance_settings(): void
+    {
+        $token = $this->loginToken();
+        $factory = new Psr17Factory();
+
+        $uploadPayload = $this->decodeJson(
+            $this->handler()->handle(
+                $factory->createServerRequest('POST', '/admin/appearance/hero-image')
+                    ->withHeader('Authorization', 'Bearer ' . $token)
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withBody($factory->createStream(json_encode([
+                        'filename' => 'logo.png',
+                        'content' => SampleHeroImage::base64(),
+                    ], JSON_THROW_ON_ERROR))),
+            ),
+        );
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => [
+                'color_primary' => '#2563eb',
+                'color_surface' => '#ffffff',
+                'color_text' => '#1f2937',
+                'radius_md' => '0.5rem',
+                'max_width' => '100%',
+            ],
+            'hero' => [
+                'title' => null,
+                'description' => null,
+                'cta_label' => null,
+                'show_title' => true,
+                'show_description' => true,
+                'show_cta' => true,
+                'show_image' => true,
+                'image_url' => $uploadPayload['image_url'],
+                'image_alt' => 'Product logo',
+            ],
+        ]);
+
+        self::assertSame(200, $response->getStatusCode());
+
+        $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
+        self::assertSame($uploadPayload['image_url'], $public['hero']['image_url']);
+        self::assertSame('Product logo', $public['hero']['image_alt']);
+        self::assertTrue($public['hero']['show_image']);
+    }
+
+    public function test_upload_rejects_invalid_image(): void
+    {
+        $token = $this->loginToken();
+        $factory = new Psr17Factory();
+
+        $response = $this->handler()->handle(
+            $factory->createServerRequest('POST', '/admin/appearance/hero-image')
+                ->withHeader('Authorization', 'Bearer ' . $token)
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($factory->createStream(json_encode([
+                    'filename' => 'notes.txt',
+                    'content' => base64_encode('not-an-image'),
+                ], JSON_THROW_ON_ERROR))),
+        );
+
+        self::assertSame(422, $response->getStatusCode());
     }
 
     public function test_admin_can_update_appearance(): void
@@ -133,6 +230,7 @@ final class AppearanceHttpTest extends TestCase
                 'show_title' => 'yes',
                 'show_description' => true,
                 'show_cta' => true,
+                'show_image' => true,
             ],
         ]);
 
@@ -159,6 +257,7 @@ final class AppearanceHttpTest extends TestCase
                 'show_title' => true,
                 'show_description' => true,
                 'show_cta' => true,
+                'show_image' => true,
             ],
         ]);
 

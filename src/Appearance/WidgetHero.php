@@ -13,6 +13,9 @@ final readonly class WidgetHero
         public bool $showTitle = true,
         public bool $showDescription = true,
         public bool $showCta = true,
+        public ?string $imageUrl = null,
+        public ?string $imageAlt = null,
+        public bool $showImage = true,
     ) {
     }
 
@@ -25,6 +28,9 @@ final readonly class WidgetHero
             showTitle: true,
             showDescription: true,
             showCta: true,
+            imageUrl: null,
+            imageAlt: null,
+            showImage: true,
         );
     }
 
@@ -35,7 +41,10 @@ final readonly class WidgetHero
      *     cta_label: string|null,
      *     show_title: bool,
      *     show_description: bool,
-     *     show_cta: bool
+     *     show_cta: bool,
+     *     image_url: string|null,
+     *     image_alt: string|null,
+     *     show_image: bool
      * }
      */
     public function toArray(): array
@@ -47,6 +56,9 @@ final readonly class WidgetHero
             'show_title' => $this->showTitle,
             'show_description' => $this->showDescription,
             'show_cta' => $this->showCta,
+            'image_url' => $this->imageUrl,
+            'image_alt' => $this->imageAlt,
+            'show_image' => $this->showImage,
         ];
     }
 
@@ -64,6 +76,9 @@ final readonly class WidgetHero
             showTitle: self::nullableBool($data, 'show_title', $fallback->showTitle),
             showDescription: self::nullableBool($data, 'show_description', $fallback->showDescription),
             showCta: self::nullableBool($data, 'show_cta', $fallback->showCta),
+            imageUrl: self::nullableImageUrl($data, 'image_url', $fallback->imageUrl),
+            imageAlt: self::nullableString($data, 'image_alt', $fallback->imageAlt),
+            showImage: self::nullableBool($data, 'show_image', $fallback->showImage),
         );
     }
 
@@ -83,6 +98,28 @@ final readonly class WidgetHero
         }
 
         return is_string($value) ? $value : $fallback;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function nullableImageUrl(array $data, string $key, ?string $fallback): ?string
+    {
+        if (!array_key_exists($key, $data)) {
+            return $fallback;
+        }
+
+        $value = $data[$key];
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (!is_string($value) || !HeroImagePath::isValidPublicPath($value)) {
+            return $fallback;
+        }
+
+        return $value;
     }
 
     /**

@@ -55,11 +55,37 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'title', 120)];
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'description', 500)];
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'cta_label', 40)];
+        $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'image_alt', 120)];
+        $errors = [...$errors, ...$this->validateOptionalHeroImageUrl($hero, 'image_url')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_title')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_description')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_cta')];
+        $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_image')];
 
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $hero
+     * @return list<ValidationError>
+     */
+    private function validateOptionalHeroImageUrl(array $hero, string $key): array
+    {
+        if (!array_key_exists($key, $hero)) {
+            return [];
+        }
+
+        $value = $hero[$key];
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (!is_string($value) || !HeroImagePath::isValidPublicPath($value)) {
+            return [new ValidationError("hero.{$key}", 'Image URL must be a valid hero image path.', 'invalid')];
+        }
+
+        return [];
     }
 
     /**

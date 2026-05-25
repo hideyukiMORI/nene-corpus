@@ -2,12 +2,17 @@ import type { WidgetHero } from '@nene-corpus/api-client';
 import { Msg, resolveMsgKey, type MsgKey } from '@nene-corpus/i18n';
 
 export interface HeroDisplay {
+  imageUrl: string | null;
+  imageAlt: string | null;
   title: string | null;
   description: string | null;
   ctaLabel: string | null;
 }
 
 export function resolveHeroDisplay(hero: WidgetHero, translate: (key: MsgKey) => string): HeroDisplay {
+  const imageUrl =
+    hero.show_image === false || !hero.image_url?.trim() ? null : hero.image_url.trim();
+  const imageAlt = hero.image_alt?.trim() || null;
   const title =
     hero.show_title === false
       ? null
@@ -24,9 +29,14 @@ export function resolveHeroDisplay(hero: WidgetHero, translate: (key: MsgKey) =>
       : hero.cta_label?.trim() ||
         translate(resolveMsgKey(Msg.widget.hero?.cta, 'widget.hero.cta'));
 
-  return { title, description, ctaLabel };
+  return { imageUrl, imageAlt, title, description, ctaLabel };
 }
 
 export function hasHeroContent(display: HeroDisplay): boolean {
-  return display.title !== null || display.description !== null || display.ctaLabel !== null;
+  return (
+    display.imageUrl !== null ||
+    display.title !== null ||
+    display.description !== null ||
+    display.ctaLabel !== null
+  );
 }

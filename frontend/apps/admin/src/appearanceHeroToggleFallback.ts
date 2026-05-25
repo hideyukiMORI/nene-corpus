@@ -7,6 +7,8 @@ export interface HeroToggleCopy {
   showDescriptionHelp: string;
   showCta: string;
   showCtaHelp: string;
+  showImage: string;
+  showImageHelp: string;
 }
 
 /**
@@ -21,6 +23,8 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: '説明文の表示／非表示を切り替えます。',
     showCta: '質問ボタン',
     showCtaHelp: '「質問する」ボタンの表示／非表示を切り替えます。',
+    showImage: '画像',
+    showImageHelp: 'ヒーロー画像の表示／非表示を切り替えます。',
   },
   en: {
     showTitle: 'Title',
@@ -29,6 +33,8 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: 'Turn the welcome description on or off.',
     showCta: 'Start button',
     showCtaHelp: 'Turn the start button on or off.',
+    showImage: 'Image',
+    showImageHelp: 'Turn the hero image on or off.',
   },
   'zh-Hans': {
     showTitle: '标题',
@@ -37,6 +43,8 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: '切换说明文字的显示或隐藏。',
     showCta: '提问按钮',
     showCtaHelp: '切换「开始提问」按钮的显示或隐藏。',
+    showImage: '图片',
+    showImageHelp: '切换欢迎区图片的显示或隐藏。',
   },
   fr: {
     showTitle: 'Titre',
@@ -45,6 +53,8 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: 'Afficher ou masquer le texte d\'accueil.',
     showCta: 'Bouton de démarrage',
     showCtaHelp: 'Afficher ou masquer le bouton de démarrage.',
+    showImage: 'Image',
+    showImageHelp: 'Afficher ou masquer l\'image d\'accueil.',
   },
   'pt-BR': {
     showTitle: 'Título',
@@ -53,6 +63,8 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: 'Ativar ou desativar o texto de boas-vindas.',
     showCta: 'Botão de início',
     showCtaHelp: 'Ativar ou desativar o botão de início.',
+    showImage: 'Imagem',
+    showImageHelp: 'Ativar ou desativar a imagem de boas-vindas.',
   },
   de: {
     showTitle: 'Titel',
@@ -61,5 +73,7 @@ export const APPEARANCE_HERO_TOGGLE_FALLBACK: Record<SupportedLocale, HeroToggle
     showDescriptionHelp: 'Willkommenstext ein- oder ausblenden.',
     showCta: 'Start-Schaltfläche',
     showCtaHelp: 'Start-Schaltfläche ein- oder ausblenden.',
+    showImage: 'Bild',
+    showImageHelp: 'Willkommensbild ein- oder ausblenden.',
   },
 };

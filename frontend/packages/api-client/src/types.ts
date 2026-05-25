@@ -120,6 +120,9 @@ export interface WidgetHero {
   show_title: boolean;
   show_description: boolean;
   show_cta: boolean;
+  show_image: boolean;
+  image_url: string | null;
+  image_alt: string | null;
 }
 
 export const DEFAULT_WIDGET_HERO: WidgetHero = {
@@ -129,7 +132,19 @@ export const DEFAULT_WIDGET_HERO: WidgetHero = {
   show_title: true,
   show_description: true,
   show_cta: true,
+  show_image: true,
+  image_url: null,
+  image_alt: null,
 };
+
+export interface UploadHeroImageRequest {
+  filename: string;
+  content: string;
+}
+
+export interface UploadHeroImageResponse {
+  image_url: string;
+}
 
 export interface AppearanceSettingsResponse {
   widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;

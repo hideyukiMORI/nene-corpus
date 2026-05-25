@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import {
   buildWidgetPreviewSearchParams,
   getAppearanceSettings,
   updateAppearanceSettings,
+  uploadHeroImage,
   type AppearanceSettingsResponse,
   type WidgetHero,
   type WidgetTheme,
@@ -12,6 +13,7 @@ import { adminApiBase } from './config';
 import { APPEARANCE_HERO_TOGGLE_FALLBACK } from './appearanceHeroToggleFallback';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
 import { HelpLabel } from './HelpLabel';
+import { readFileAsBase64 } from './fileBase64';
 
 /** Literal keys — do not read `Msg.admin.appearance` hero toggles at module init (Vite HMR may serve stale `keys.ts`). */
 const HERO_TOGGLE_MSG = {
@@ -21,24 +23,35 @@ const HERO_TOGGLE_MSG = {
   showDescriptionHelp: 'admin.appearance.heroShowDescriptionHelp',
   showCta: 'admin.appearance.heroShowCta',
   showCtaHelp: 'admin.appearance.heroShowCtaHelp',
+  showImage: 'admin.appearance.heroShowImage',
+  showImageHelp: 'admin.appearance.heroShowImageHelp',
 } as const satisfies Record<string, MsgKey>;
+
+const HERO_IMAGE_MAX_BYTES = 2_097_152;
+const HERO_IMAGE_ACCEPT = 'image/jpeg,image/png,image/webp';
 
 interface HeroFormState {
   title: string;
   description: string;
   cta_label: string;
+  image_url: string;
+  image_alt: string;
   show_title: boolean;
   show_description: boolean;
   show_cta: boolean;
+  show_image: boolean;
 }
 
 const EMPTY_HERO_FORM: HeroFormState = {
   title: '',
   description: '',
   cta_label: '',
+  image_url: '',
+  image_alt: '',
   show_title: true,
   show_description: true,
   show_cta: true,
+  show_image: true,
 };
 
 const DEFAULT_THEME: WidgetTheme = {
@@ -84,13 +97,17 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       ),
       showCta: resolve(HERO_TOGGLE_MSG.showCta, heroToggleFallback.showCta),
       showCtaHelp: resolve(HERO_TOGGLE_MSG.showCtaHelp, heroToggleFallback.showCtaHelp),
+      showImage: resolve(HERO_TOGGLE_MSG.showImage, heroToggleFallback.showImage),
+      showImageHelp: resolve(HERO_TOGGLE_MSG.showImageHelp, heroToggleFallback.showImageHelp),
     };
   }, [t, heroToggleFallback]);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -132,14 +149,47 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       title: settings.hero.title ?? '',
       description: settings.hero.description ?? '',
       cta_label: settings.hero.cta_label ?? '',
+      image_url: settings.hero.image_url ?? '',
+      image_alt: settings.hero.image_alt ?? '',
       show_title: settings.hero.show_title,
       show_description: settings.hero.show_description,
       show_cta: settings.hero.show_cta,
+      show_image: settings.hero.show_image,
     });
   }
 
   function updateHeroField<K extends keyof HeroFormState>(field: K, value: HeroFormState[K]): void {
     setHeroForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleHeroImageSelected(file: File): Promise<void> {
+    if (file.size > HERO_IMAGE_MAX_BYTES) {
+      setError(t(Msg.admin.appearance.heroImageTooLarge));
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setError(null);
+
+    try {
+      const content = await readFileAsBase64(file);
+      const { image_url } = await uploadHeroImage(
+        token,
+        { filename: file.name, content },
+        adminApiBase,
+      );
+      setHeroForm((current) => ({ ...current, image_url, show_image: true }));
+    } catch (cause: unknown) {
+      setError(
+        cause instanceof Error ? cause.message : t(Msg.admin.appearance.heroImageUploadFailed),
+      );
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
+  function removeHeroImage(): void {
+    setHeroForm((current) => ({ ...current, image_url: '', image_alt: '' }));
   }
 
   function heroPayload(): WidgetHero {
@@ -150,6 +200,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       show_title: heroForm.show_title,
       show_description: heroForm.show_description,
       show_cta: heroForm.show_cta,
+      show_image: heroForm.show_image,
+      image_url: heroForm.image_url.trim() === '' ? null : heroForm.image_url.trim(),
+      image_alt: heroForm.image_alt.trim() === '' ? null : heroForm.image_alt.trim(),
     };
   }
 
@@ -233,6 +286,75 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
             <div>
               <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.heroTitle)}</h3>
               <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.heroSubtitle)}</p>
+            </div>
+            <div className="block text-sm">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={heroForm.show_image}
+                  onChange={(event) => updateHeroField('show_image', event.target.checked)}
+                />
+                <HelpLabel
+                  className="font-medium text-fg"
+                  label={heroToggleCopy.showImage}
+                  help={heroToggleCopy.showImageHelp}
+                />
+              </div>
+              <p className="mt-1 text-xs nc-text-muted">{t(Msg.admin.appearance.heroImageHint)}</p>
+              <input
+                ref={imageInputRef}
+                className="sr-only"
+                type="file"
+                accept={HERO_IMAGE_ACCEPT}
+                disabled={!heroForm.show_image || isUploadingImage}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = '';
+
+                  if (file !== undefined) {
+                    void handleHeroImageSelected(file);
+                  }
+                }}
+              />
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <button
+                  className="nc-btn"
+                  type="button"
+                  disabled={!heroForm.show_image || isUploadingImage}
+                  onClick={() => imageInputRef.current?.click()}
+                >
+                  {isUploadingImage
+                    ? t(Msg.admin.appearance.heroImageUploading)
+                    : t(Msg.admin.appearance.heroImageUpload)}
+                </button>
+                {heroForm.image_url !== '' && (
+                  <button
+                    className="text-sm text-red-600 underline"
+                    type="button"
+                    onClick={removeHeroImage}
+                  >
+                    {t(Msg.admin.appearance.heroImageRemove)}
+                  </button>
+                )}
+              </div>
+              {heroForm.image_url !== '' && (
+                <img
+                  className="mt-3 max-h-32 rounded-admin border border-border object-contain"
+                  src={`${adminApiBase}${heroForm.image_url}`}
+                  alt=""
+                />
+              )}
+              <label className="mt-3 block">
+                <span className="font-medium text-fg">{t(Msg.admin.appearance.heroImageAlt)}</span>
+                <input
+                  className="nc-input"
+                  type="text"
+                  value={heroForm.image_alt}
+                  onChange={(event) => updateHeroField('image_alt', event.target.value)}
+                  placeholder={t(Msg.admin.appearance.heroImageAltPlaceholder)}
+                  disabled={!heroForm.show_image || heroForm.image_url === ''}
+                />
+              </label>
             </div>
             <div className="block text-sm">
               <div className="flex items-center gap-2">

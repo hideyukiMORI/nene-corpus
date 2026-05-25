@@ -47,7 +47,7 @@ done
 
 echo "==> Stage release tree"
 rm -rf "$BUILD_DIR/staging"
-mkdir -p "$STAGING_DIR" "$STAGING_DIR/var" "$STAGING_DIR/storage/uploads"
+mkdir -p "$STAGING_DIR" "$STAGING_DIR/var" "$STAGING_DIR/storage/uploads/hero"
 
 rsync -a \
   --exclude='.git/' \

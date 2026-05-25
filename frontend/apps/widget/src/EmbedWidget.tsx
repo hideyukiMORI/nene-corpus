@@ -56,7 +56,7 @@ export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
   return (
     <div ref={rootRef} className={nc.widgetRoot}>
       <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
-        {showHero && <ChatHero hero={resolvedHero} onCtaClick={focusInput} />}
+        {showHero && <ChatHero hero={resolvedHero} apiBase={apiBase} onCtaClick={focusInput} />}
         <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
           {turns.map((turn) => (
             <ChatMessageRow key={turn.id} turn={turn} />

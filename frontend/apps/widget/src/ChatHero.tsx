@@ -5,10 +5,11 @@ import { hasHeroContent, resolveHeroDisplay } from './resolveHeroDisplay';
 
 export interface ChatHeroProps {
   hero: WidgetHero;
+  apiBase?: string;
   onCtaClick: () => void;
 }
 
-export function ChatHero({ hero, onCtaClick }: ChatHeroProps) {
+export function ChatHero({ hero, apiBase, onCtaClick }: ChatHeroProps) {
   const t = useMsg();
   const display = resolveHeroDisplay(hero, t);
 
@@ -16,8 +17,17 @@ export function ChatHero({ hero, onCtaClick }: ChatHeroProps) {
     return null;
   }
 
+  const imageSrc = display.imageUrl !== null ? `${apiBase ?? ''}${display.imageUrl}` : null;
+
   return (
     <header className={nc.chatHero}>
+      {imageSrc !== null && (
+        <img
+          className={nc.chatHeroImage}
+          src={imageSrc}
+          alt={display.imageAlt ?? ''}
+        />
+      )}
       {display.title !== null && <h2 className={nc.chatHeroTitle}>{display.title}</h2>}
       {display.description !== null && <p className={nc.chatHeroDescription}>{display.description}</p>}
       {display.ctaLabel !== null && (

@@ -198,6 +198,67 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/appearance/hero-image:
+    post:
+      tags:
+        - Admin
+      summary: Upload HERO image
+      description: Stores a JPEG, PNG, or WebP image (max 2 MB) and returns its public path. Does not update appearance settings until PUT /admin/appearance.
+      operationId: uploadHeroImage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadHeroImageRequest'
+      responses:
+        '201':
+          description: Stored hero image path.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadHeroImageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /media/hero/{filename}:
+    get:
+      tags:
+        - System
+      summary: Serve HERO image
+      description: Returns a stored hero image file. No authentication.
+      operationId: serveHeroImage
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Hero image bytes.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /widget/appearance:
     get:
       tags:
@@ -627,6 +688,12 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemDetails'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
     SourceNotFound:
       description: Source not found.
       content:
@@ -868,6 +935,7 @@ components:
         - show_title
         - show_description
         - show_cta
+        - show_image
       properties:
         title:
           type:
@@ -899,6 +967,40 @@ components:
           type: boolean
           default: true
           description: When false, the CTA button is hidden.
+        show_image:
+          type: boolean
+          default: true
+          description: When false, the hero image is hidden.
+        image_url:
+          type:
+            - string
+            - 'null'
+          description: Public path to a stored hero image (e.g. /media/hero/abc123_logo.png). Null when no image is configured.
+        image_alt:
+          type:
+            - string
+            - 'null'
+          maxLength: 120
+          description: Optional alt text for the hero image.
+    UploadHeroImageRequest:
+      type: object
+      required:
+        - filename
+        - content
+      properties:
+        filename:
+          type: string
+        content:
+          type: string
+          description: Base64-encoded image bytes (JPEG, PNG, or WebP; max 2 MB decoded).
+    UploadHeroImageResponse:
+      type: object
+      required:
+        - image_url
+      properties:
+        image_url:
+          type: string
+          description: Public path to the stored hero image.
     AppearanceSettingsResponse:
       type: object
       required:

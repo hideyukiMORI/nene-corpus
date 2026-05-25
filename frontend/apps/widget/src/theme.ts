@@ -63,6 +63,9 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     'hero_show_title',
     'hero_show_description',
     'hero_show_cta',
+    'hero_show_image',
+    'hero_image_url',
+    'hero_image_alt',
   ] as const;
   const hasOverride = keys.some((key) => params.get(key) !== null);
 
@@ -77,5 +80,8 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     show_title: readPreviewShowFlag(params, 'hero_show_title', DEFAULT_WIDGET_HERO.show_title),
     show_description: readPreviewShowFlag(params, 'hero_show_description', DEFAULT_WIDGET_HERO.show_description),
     show_cta: readPreviewShowFlag(params, 'hero_show_cta', DEFAULT_WIDGET_HERO.show_cta),
+    show_image: readPreviewShowFlag(params, 'hero_show_image', DEFAULT_WIDGET_HERO.show_image),
+    image_url: params.get('hero_image_url'),
+    image_alt: params.get('hero_image_alt'),
   };
 }
