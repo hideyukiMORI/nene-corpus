@@ -41,20 +41,20 @@ export const de = defineMessages({
   'admin.sources.columnChunks': 'Textabschnitte',
   'admin.sources.columnUpdated': 'Aktualisiert',
   'admin.sources.columnStatusHelp':
-    'Ausstehend = Warteschlange, In Bearbeitung = läuft, Bereit = für Chat nutzbar, Fehlgeschlagen = Upload oder Mapping prüfen.',
+    'Ausstehend — Warteschlange\nIn Bearbeitung — läuft\nBereit — für Chat nutzbar\nFehlgeschlagen — Upload oder Mapping prüfen',
   'admin.sources.columnDocumentsHelp':
-    'Logische Dokumente aus dieser Quelle — meist eine CSV-Zeile oder ein PDF.',
+    'Logische Dokumente aus dieser Quelle.\nCSV: meist eine Zeile pro Dokument.\nPDF: meist eine Datei.',
   'admin.sources.columnChunksHelp':
-    'Durchsuchbare Textabschnitte für den Chat. Mehr Abschnitte ermöglichen feinere Zitate.',
+    'Durchsuchbare Textabschnitte für den Chat.\nMehr Abschnitte ermöglichen feinere Zitate.',
   'admin.ingestion.title': 'Quelle hochladen',
   'admin.ingestion.subtitle': 'CSV- oder PDF-Dateien zum Korpus hinzufügen.',
   'admin.ingestion.sourceName': 'Quellenname',
   'admin.ingestion.sourceNamePlaceholder': 'Produktkatalog',
   'admin.ingestion.sourceNameHelp':
-    'Anzeigename in der Quellenliste. Wählen Sie eine für Ihr Team erkennbare Bezeichnung.',
+    'Anzeigename in der Quellenliste.\nWählen Sie eine für Ihr Team erkennbare Bezeichnung.',
   'admin.ingestion.file': 'Datei',
   'admin.ingestion.fileHelp':
-    'CSV oder PDF hochladen. Die Datei bleibt auf Ihrem Server und wird in durchsuchbaren Text umgewandelt.',
+    'CSV oder PDF hochladen.\n\nUnterstützt: .csv / .pdf\nDie Datei bleibt auf Ihrem Server und wird in durchsuchbaren Text umgewandelt.',
   'admin.ingestion.unsupportedFile': 'Nur .csv- und .pdf-Dateien werden unterstützt.',
   'admin.ingestion.previewFile': 'Vorschau',
   'admin.ingestion.previewing': 'Vorschau…',
@@ -62,13 +62,28 @@ export const de = defineMessages({
   'admin.ingestion.pdfPageCount': '{count} Seiten erkannt',
   'admin.ingestion.titleColumn': 'Titelspalte',
   'admin.ingestion.titleColumnHelp':
-    'CSV-Spalte als Titel jeder Zeile (z. B. Produktname). Wird in Admin und Zitaten angezeigt.',
+    'CSV-Spalte als Titel jeder Zeile.\nBeispiel: Produktname\nWird in Admin und Zitaten angezeigt.',
   'admin.ingestion.contentColumns': 'Inhaltsspalten',
   'admin.ingestion.contentColumnsHelp':
-    'Spalten, die zum Antworttext zusammengefügt werden. Alle für Nutzerfragen relevanten Spalten wählen.',
+    'Spalten, die zum Antworttext zusammengefügt werden.\nAlle für Nutzerfragen relevanten Spalten wählen.',
   'admin.ingestion.metadataColumns': 'Metadaten-Spalten (optional)',
   'admin.ingestion.metadataColumnsHelp':
-    'Optionale Zusatzspalten (URL, Kategorie usw.), nicht als Hauptantworttext genutzt.',
+    'Optionale Zusatzspalten, die mit der Zeile gespeichert werden.\nBeispiele: URL, Kategorie, SKU\nNicht als Hauptantworttext genutzt.',
+  'admin.ingestion.columnMappingGuideTitle': 'Spalten-Mapping-Anleitung (Einsteiger)',
+  'admin.ingestion.columnMappingGuideIntro':
+    'Legen Sie fest, wie jede CSV-Spalte im Chat genutzt wird.\nWählen Sie eine Titelspalte, eine oder mehrere Inhaltsspalten und optionale Metadaten.',
+  'admin.ingestion.columnMappingGuideTitleHeading': 'Titelspalte',
+  'admin.ingestion.columnMappingGuideTitleBody':
+    'Anzeigename für jede Zeile.\nSichtbar im Admin und bei Zitaten im Chat.\n\nBeispiele: Produktname, Artikeltitel, FAQ-Frage',
+  'admin.ingestion.columnMappingGuideContentHeading': 'Inhaltsspalten',
+  'admin.ingestion.columnMappingGuideContentBody':
+    'Text, den die KI zum Antworten liest. Mehrere Spalten möglich.\n\nIm Zweifel alle Spalten wählen, die Besucherfragen beantworten können.\n\nBeispiele: Beschreibung, Text, Antwort, Notizen',
+  'admin.ingestion.columnMappingGuideMetadataHeading': 'Metadaten-Spalten (optional)',
+  'admin.ingestion.columnMappingGuideMetadataBody':
+    'Zusatzinfos zur Zeile, nicht als Hauptantwort durchsucht.\n\nBeispiele: SKU, Preis, Kategorie, URL, Bestand\n\nGut für Codes und Zahlen außerhalb des Antworttexts.',
+  'admin.ingestion.columnMappingGuideExampleHeading': 'Beispiel: WooCommerce-Produkt-CSV',
+  'admin.ingestion.columnMappingGuideExampleBody':
+    'Titelspalte: Name\nInhaltsspalten: Beschreibung, Kurzbeschreibung\nMetadaten: SKU, Kategorien, Regulärer Preis\n\nNur der Produktname reicht oft nicht — beschreibende Texte in Inhaltsspalten.',
   'admin.ingestion.ingest': 'In Korpus aufnehmen',
   'admin.ingestion.ingesting': 'Wird aufgenommen…',
   'admin.ingestion.ingestSuccess': 'Quelle erfolgreich aufgenommen.',

@@ -41,20 +41,20 @@ export const en = defineMessages({
   'admin.sources.columnChunks': 'Chunks',
   'admin.sources.columnUpdated': 'Updated',
   'admin.sources.columnStatusHelp':
-    'Pending = queued, Processing = running, Ready = available to chat, Failed = check the upload or column mapping.',
+    'Pending — queued\nProcessing — running\nReady — available to chat\nFailed — check upload or column mapping',
   'admin.sources.columnDocumentsHelp':
-    'Logical documents created from this source — usually one per CSV row or one PDF.',
+    'Logical documents created from this source.\nCSV: usually one per row.\nPDF: usually one file.',
   'admin.sources.columnChunksHelp':
-    'Searchable text segments the chat widget uses. More chunks allow finer citation snippets.',
+    'Searchable text segments the chat widget uses.\nMore chunks allow finer citation snippets.',
   'admin.ingestion.title': 'Upload source',
   'admin.ingestion.subtitle': 'Add CSV or PDF files to the corpus.',
   'admin.ingestion.sourceName': 'Source name',
   'admin.ingestion.sourceNamePlaceholder': 'Product catalog',
   'admin.ingestion.sourceNameHelp':
-    'Friendly name shown in the sources list. Choose a label your team will recognize.',
+    'Friendly name shown in the sources list.\nChoose a label your team will recognize.',
   'admin.ingestion.file': 'File',
   'admin.ingestion.fileHelp':
-    'Upload a CSV spreadsheet or PDF. The file stays on your server and is converted into searchable text.',
+    'Upload a CSV spreadsheet or PDF.\n\nSupported: .csv / .pdf\nThe file stays on your server and is converted into searchable text.',
   'admin.ingestion.unsupportedFile': 'Only .csv and .pdf files are supported.',
   'admin.ingestion.previewFile': 'Preview file',
   'admin.ingestion.previewing': 'Previewing…',
@@ -62,13 +62,28 @@ export const en = defineMessages({
   'admin.ingestion.pdfPageCount': '{count} pages detected',
   'admin.ingestion.titleColumn': 'Title column',
   'admin.ingestion.titleColumnHelp':
-    'CSV column used as each row’s title (e.g. product name). Shown in admin and citation context.',
+    'CSV column used as each row’s title.\nExample: product name\nShown in admin and citation context.',
   'admin.ingestion.contentColumns': 'Content columns',
   'admin.ingestion.contentColumnsHelp':
-    'Columns combined into the answer text. Select every column that should help answer user questions.',
+    'Columns combined into the answer text.\nSelect every column that should help answer user questions.',
   'admin.ingestion.metadataColumns': 'Metadata columns (optional)',
   'admin.ingestion.metadataColumnsHelp':
-    'Optional extra columns stored with the row (URL, category, etc.) but not used as the main answer body.',
+    'Optional extra columns stored with the row.\nExamples: URL, category, SKU\nNot used as the main answer body.',
+  'admin.ingestion.columnMappingGuideTitle': 'Column mapping guide (new here?)',
+  'admin.ingestion.columnMappingGuideIntro':
+    'Choose how each CSV column is used in chat.\nPick one title column, one or more content columns, and optional metadata.',
+  'admin.ingestion.columnMappingGuideTitleHeading': 'Title column',
+  'admin.ingestion.columnMappingGuideTitleBody':
+    'The display name for each row.\nShown in admin and when the chat cites a source row.\n\nExamples: product name, article title, FAQ question',
+  'admin.ingestion.columnMappingGuideContentHeading': 'Content columns',
+  'admin.ingestion.columnMappingGuideContentBody':
+    'Text the AI reads to build answers. You can select several.\n\nWhen unsure, include every column that might help answer visitor questions.\n\nExamples: description, body, answer, notes',
+  'admin.ingestion.columnMappingGuideMetadataHeading': 'Metadata columns (optional)',
+  'admin.ingestion.columnMappingGuideMetadataBody':
+    'Extra facts stored with the row but not searched as the main answer.\n\nExamples: SKU, price, category, URL, stock count\n\nGood for codes and numbers you do not need in the answer body.',
+  'admin.ingestion.columnMappingGuideExampleHeading': 'Example: WooCommerce product CSV',
+  'admin.ingestion.columnMappingGuideExampleBody':
+    'Title column: Name\nContent columns: Description, Short description\nMetadata: SKU, Categories, Regular price\n\nProduct name alone is often too short — put descriptive text in content columns.',
   'admin.ingestion.ingest': 'Ingest into corpus',
   'admin.ingestion.ingesting': 'Ingesting…',
   'admin.ingestion.ingestSuccess': 'Source ingested successfully.',

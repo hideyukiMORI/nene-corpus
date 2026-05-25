@@ -41,20 +41,20 @@ export const ja = defineMessages({
   'admin.sources.columnChunks': '検索用テキスト',
   'admin.sources.columnUpdated': '更新日時',
   'admin.sources.columnStatusHelp':
-    '待機中＝キュー待ち、処理中＝取り込み実行中、準備完了＝チャットで使える、失敗＝アップロードや列設定を確認してください。',
+    '待機中 — キュー待ち\n処理中 — 取り込み実行中\n準備完了 — チャットで利用可能\n失敗 — アップロードや列設定を確認',
   'admin.sources.columnDocumentsHelp':
-    'このソースから作られたドキュメント数です。CSV なら行ごと、PDF なら通常 1 件です。',
+    'このソースから作られたドキュメント数です。\nCSV は通常、行ごとに 1 件。\nPDF は通常 1 件です。',
   'admin.sources.columnChunksHelp':
-    'チャットが検索に使うテキストの断片数です。多いほど引用が細かくなります。',
+    'チャットが検索に使うテキストの断片数です。\n多いほど、引用が細かくなります。',
   'admin.ingestion.title': 'ソースをアップロード',
   'admin.ingestion.subtitle': 'CSV または PDF をコーパスに追加します。',
   'admin.ingestion.sourceName': 'ソース名',
   'admin.ingestion.sourceNamePlaceholder': '商品カタログ',
   'admin.ingestion.sourceNameHelp':
-    'ソース一覧に表示される名前です。社内でわかりやすい名称を付けてください。',
+    'ソース一覧に表示される名前です。\n社内でわかりやすい名称を付けてください。',
   'admin.ingestion.file': 'ファイル',
   'admin.ingestion.fileHelp':
-    'CSV または PDF をアップロードします。ファイルはサーバーに保存され、検索用テキストに変換されます。',
+    'CSV または PDF をアップロードします。\n\n対応形式: .csv / .pdf\nファイルはサーバーに保存され、検索用テキストに変換されます。',
   'admin.ingestion.unsupportedFile': '.csv と .pdf のみ対応しています。',
   'admin.ingestion.previewFile': 'プレビュー',
   'admin.ingestion.previewing': 'プレビュー中…',
@@ -62,13 +62,28 @@ export const ja = defineMessages({
   'admin.ingestion.pdfPageCount': '{count} ページを検出',
   'admin.ingestion.titleColumn': 'タイトル列',
   'admin.ingestion.titleColumnHelp':
-    '各行の見出しに使う CSV の列です（例: 商品名）。管理画面や引用の文脈で表示されます。',
+    '各行の見出しに使う CSV の列です。\n例: 商品名\n管理画面や引用の文脈で表示されます。',
   'admin.ingestion.contentColumns': '本文列',
   'admin.ingestion.contentColumnsHelp':
-    '回答の元になる本文として結合する列です。ユーザーの質問に役立つ列をすべて選んでください。',
+    '回答の元になる本文として結合する列です。\nユーザーの質問に役立つ列をすべて選んでください。',
   'admin.ingestion.metadataColumns': 'メタデータ列（任意）',
   'admin.ingestion.metadataColumnsHelp':
-    'URL やカテゴリなど、行と一緒に保存する任意の列です。本文の主な回答には使いません。',
+    '行と一緒に保存する任意の列です。\n例: URL、カテゴリ、SKU\n本文の主な回答には使いません。',
+  'admin.ingestion.columnMappingGuideTitle': '列の設定ガイド（初めての方）',
+  'admin.ingestion.columnMappingGuideIntro':
+    'CSV の列を、チャットでどう使うか決めます。\n下の 3 種類のうち、用途に合わせて選んでください。',
+  'admin.ingestion.columnMappingGuideTitleHeading': 'タイトル列',
+  'admin.ingestion.columnMappingGuideTitleBody':
+    '各行の「名前」になります。\nチャットの引用や管理画面で「どの行か」を示すときに使います。\n\n例: 商品名、記事タイトル、FAQ の質問文',
+  'admin.ingestion.columnMappingGuideContentHeading': '本文列',
+  'admin.ingestion.columnMappingGuideContentBody':
+    'AI が答えを作るときに読むテキストです。複数選べます。\n\nユーザーの質問に答えられそうな列を、疑わしければ多めに選んでください。\n\n例: 説明、本文、回答、備考',
+  'admin.ingestion.columnMappingGuideMetadataHeading': 'メタデータ列（任意）',
+  'admin.ingestion.columnMappingGuideMetadataBody':
+    '検索の主役にはしませんが、行と一緒に保存しておきたい情報です。\n\n例: SKU、価格、カテゴリー、URL、在庫数\n\n本文列に含めなくてよい数字やコードは、こちらがおすすめです。',
+  'admin.ingestion.columnMappingGuideExampleHeading': '例: WooCommerce 商品 CSV',
+  'admin.ingestion.columnMappingGuideExampleBody':
+    'タイトル列: 名前\n本文列: 説明, 簡単な説明\nメタデータ: SKU, カテゴリー, 標準価格\n\n「名前」だけだと詳細が足りないことが多いので、説明系は本文列に入れてください。',
   'admin.ingestion.ingest': 'コーパスに取り込む',
   'admin.ingestion.ingesting': '取り込み中…',
   'admin.ingestion.ingestSuccess': 'ソースを取り込みました。',
