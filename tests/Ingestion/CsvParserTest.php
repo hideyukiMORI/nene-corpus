@@ -54,4 +54,18 @@ CSV;
         self::assertSame('description: Great widget', $rows[0]['content']);
         self::assertSame(['price' => '100'], $rows[0]['metadata']);
     }
+
+    public function test_preview_normalizes_shift_jis_bytes_to_utf8(): void
+    {
+        $csv = mb_convert_encoding(
+            "product_name,description\nWidget A,日本語テスト\n",
+            'SJIS-win',
+            'UTF-8',
+        );
+
+        $preview = $this->parser->preview($csv);
+
+        self::assertSame(['product_name', 'description'], $preview['headers']);
+        self::assertSame('日本語テスト', $preview['sample_rows'][0][1]);
+    }
 }
