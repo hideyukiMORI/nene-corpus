@@ -20,7 +20,9 @@ export function ChatHero({ hero, apiBase, onCtaClick }: ChatHeroProps) {
   const imageSrc = display.imageUrl !== null ? `${apiBase ?? ''}${display.imageUrl}` : null;
 
   return (
-    <header className={nc.chatHero}>
+    <header
+      className={`${nc.chatHero}${hero.show_divider ? '' : ` ${nc.chatHeroNoDivider}`}`}
+    >
       {imageSrc !== null && (
         <img
           className={nc.chatHeroImage}

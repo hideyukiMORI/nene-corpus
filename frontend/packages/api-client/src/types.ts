@@ -109,7 +109,8 @@ export interface WidgetTheme {
   color_primary: string;
   color_surface: string;
   color_text: string;
-  radius_md: string;
+  radius_panel: string;
+  radius_control: string;
   max_width: string;
 }
 
@@ -123,6 +124,9 @@ export interface WidgetHero {
   show_image: boolean;
   image_url: string | null;
   image_alt: string | null;
+  gap_after: string;
+  padding_bottom: string;
+  show_divider: boolean;
 }
 
 export const DEFAULT_WIDGET_HERO: WidgetHero = {
@@ -135,6 +139,9 @@ export const DEFAULT_WIDGET_HERO: WidgetHero = {
   show_image: true,
   image_url: null,
   image_alt: null,
+  gap_after: '1rem',
+  padding_bottom: '1rem',
+  show_divider: true,
 };
 
 export type UserAvatarMode = 'silhouette' | 'none';

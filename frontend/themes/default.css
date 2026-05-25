@@ -10,6 +10,10 @@
   --nc-font-size-base: 16px;
   --nc-spacing-md: 1rem;
   --nc-radius-md: 0.5rem;
+  --nc-radius-panel: 0.5rem;
+  --nc-radius-control: 0.5rem;
+  --nc-hero-gap-after: 1rem;
+  --nc-hero-padding-bottom: 1rem;
   --nc-max-width: 100%;
   --nc-max-height: 32rem;
   --nc-offset-x: 16px;

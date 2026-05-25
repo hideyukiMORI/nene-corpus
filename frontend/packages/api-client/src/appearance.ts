@@ -95,6 +95,10 @@ function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): voi
   if (hero.image_alt) {
     params.set('hero_image_alt', hero.image_alt);
   }
+
+  params.set('hero_gap_after', hero.gap_after);
+  params.set('hero_padding_bottom', hero.padding_bottom);
+  params.set('hero_show_divider', hero.show_divider ? '1' : '0');
 }
 
 function appendChatPreviewParams(params: URLSearchParams, chat: WidgetChat): void {
@@ -129,7 +133,8 @@ export function buildWidgetPreviewSearchParams(
     color_primary: theme.color_primary,
     color_surface: theme.color_surface,
     color_text: theme.color_text,
-    radius_md: theme.radius_md,
+    radius_panel: theme.radius_panel,
+    radius_control: theme.radius_control,
     max_width: theme.max_width,
     preview: '1',
   });

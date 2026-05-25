@@ -29,7 +29,7 @@ final readonly class AppearanceSettings
     /**
      * @return array{
      *     widget_locale: string|null,
-     *     theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string, max_width: string},
+     *     theme: array{color_primary: string, color_surface: string, color_text: string, radius_panel: string, radius_control: string, max_width: string},
      *     hero: array{
      *         title: string|null,
      *         description: string|null,
@@ -39,7 +39,10 @@ final readonly class AppearanceSettings
      *         show_cta: bool,
      *         show_image: bool,
      *         image_url: string|null,
-     *         image_alt: string|null
+     *         image_alt: string|null,
+     *         gap_after: string,
+     *         padding_bottom: string,
+     *         show_divider: bool
      *     },
      *     chat: array{
      *         user_avatar_mode: string,

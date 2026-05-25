@@ -62,6 +62,36 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
             $body['layout'] = WidgetLayout::defaults()->toArray();
         }
 
+        if (is_array($body['theme'] ?? null)) {
+            $body['theme'] = $this->normalizeTheme($body['theme']);
+        }
+
+        if (is_array($body['hero'] ?? null)) {
+            $body['hero'] = [...WidgetHero::defaults()->toArray(), ...$body['hero']];
+        }
+
         return $body;
+    }
+
+    /**
+     * @param array<string, mixed> $theme
+     * @return array<string, mixed>
+     */
+    private function normalizeTheme(array $theme): array
+    {
+        $defaults = WidgetTheme::defaults()->toArray();
+        $legacyRadius = is_string($theme['radius_md'] ?? null) && $theme['radius_md'] !== ''
+            ? $theme['radius_md']
+            : $defaults['radius_panel'];
+
+        if (!is_string($theme['radius_panel'] ?? null) || $theme['radius_panel'] === '') {
+            $theme['radius_panel'] = $legacyRadius;
+        }
+
+        if (!is_string($theme['radius_control'] ?? null) || $theme['radius_control'] === '') {
+            $theme['radius_control'] = $legacyRadius;
+        }
+
+        return $theme;
     }
 }

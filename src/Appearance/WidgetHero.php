@@ -16,6 +16,9 @@ final readonly class WidgetHero
         public ?string $imageUrl = null,
         public ?string $imageAlt = null,
         public bool $showImage = true,
+        public string $gapAfter = '1rem',
+        public string $paddingBottom = '1rem',
+        public bool $showDivider = true,
     ) {
     }
 
@@ -31,6 +34,9 @@ final readonly class WidgetHero
             imageUrl: null,
             imageAlt: null,
             showImage: true,
+            gapAfter: '1rem',
+            paddingBottom: '1rem',
+            showDivider: true,
         );
     }
 
@@ -44,7 +50,10 @@ final readonly class WidgetHero
      *     show_cta: bool,
      *     image_url: string|null,
      *     image_alt: string|null,
-     *     show_image: bool
+     *     show_image: bool,
+     *     gap_after: string,
+     *     padding_bottom: string,
+     *     show_divider: bool
      * }
      */
     public function toArray(): array
@@ -59,6 +68,9 @@ final readonly class WidgetHero
             'image_url' => $this->imageUrl,
             'image_alt' => $this->imageAlt,
             'show_image' => $this->showImage,
+            'gap_after' => $this->gapAfter,
+            'padding_bottom' => $this->paddingBottom,
+            'show_divider' => $this->showDivider,
         ];
     }
 
@@ -79,7 +91,24 @@ final readonly class WidgetHero
             imageUrl: self::nullableImageUrl($data, 'image_url', $fallback->imageUrl),
             imageAlt: self::nullableString($data, 'image_alt', $fallback->imageAlt),
             showImage: self::nullableBool($data, 'show_image', $fallback->showImage),
+            gapAfter: self::stringValue($data, 'gap_after', $fallback->gapAfter),
+            paddingBottom: self::stringValue($data, 'padding_bottom', $fallback->paddingBottom),
+            showDivider: self::nullableBool($data, 'show_divider', $fallback->showDivider),
         );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private static function stringValue(array $data, string $key, string $fallback): string
+    {
+        if (!array_key_exists($key, $data)) {
+            return $fallback;
+        }
+
+        $value = $data[$key];
+
+        return is_string($value) && $value !== '' ? $value : $fallback;
     }
 
     /**

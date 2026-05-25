@@ -69,6 +69,9 @@ final class WidgetHeroTest extends TestCase
             'image_url' => '/media/hero/a1b2c3d4e5f67890_logo.png',
             'image_alt' => 'Logo',
             'show_image' => true,
+            'gap_after' => '1rem',
+            'padding_bottom' => '1rem',
+            'show_divider' => true,
         ], $hero->toArray());
     }
 }
