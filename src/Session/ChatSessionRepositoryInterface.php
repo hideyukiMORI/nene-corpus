@@ -13,4 +13,7 @@ interface ChatSessionRepositoryInterface
     public function save(ChatSession $session): int;
 
     public function update(ChatSession $session): void;
+
+    /** @return list<ChatSessionSummary> */
+    public function findAllSummaries(int $limit, int $offset): array;
 }

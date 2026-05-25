@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.7.0
+  version: 0.8.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
     Phase 2 adds consumer sync JSON chat with citations.
@@ -17,6 +17,8 @@ tags:
     description: CSV and PDF upload, preview, and ingestion.
   - name: Chat
     description: Consumer sync JSON chat with citations.
+  - name: AdminChat
+    description: Admin read-only access to consumer chat logs.
 paths:
   /health:
     get:
@@ -284,6 +286,90 @@ paths:
           $ref: '#/components/responses/SourceNotFound'
         '422':
           $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/chat/sessions:
+    get:
+      tags:
+        - AdminChat
+      summary: List chat sessions
+      description: Paginated consumer chat sessions with message counts for the admin conversation log.
+      operationId: listChatSessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Chat session list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListChatSessionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/chat/sessions/{id}/messages:
+    get:
+      tags:
+        - AdminChat
+      summary: List chat messages
+      description: Messages for a consumer chat session, including citations on assistant replies.
+      operationId: listChatSessionMessages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 200
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Chat messages for the session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListChatSessionMessagesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/ChatSessionNotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /chat/sessions:
@@ -671,6 +757,78 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SourceListItem'
+    ListChatSessionsResponse:
+      type: object
+      required:
+        - sessions
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatSessionSummary'
+    ChatSessionSummary:
+      type: object
+      required:
+        - session_id
+        - message_count
+        - created_at
+        - updated_at
+      properties:
+        session_id:
+          type: integer
+          format: int64
+        message_count:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_message_at:
+          type: string
+          format: date-time
+          nullable: true
+    ListChatSessionMessagesResponse:
+      type: object
+      required:
+        - session_id
+        - messages
+      properties:
+        session_id:
+          type: integer
+          format: int64
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessageListItem'
+    ChatMessageListItem:
+      type: object
+      required:
+        - message_id
+        - role
+        - content
+        - citations
+        - created_at
+      properties:
+        message_id:
+          type: integer
+          format: int64
+        role:
+          type: string
+          enum:
+            - user
+            - assistant
+        content:
+          type: string
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+        created_at:
+          type: string
+          format: date-time
     SourceListItem:
       type: object
       required:

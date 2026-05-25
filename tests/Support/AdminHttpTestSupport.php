@@ -11,6 +11,11 @@ final class AdminHttpTestSupport
     public static function seedCorpusSchema(PdoDatabaseQueryExecutor $executor): void
     {
         CorpusSchemaSetup::create($executor);
+        self::seedAdminUser($executor);
+    }
+
+    public static function seedAdminUser(PdoDatabaseQueryExecutor $executor): void
+    {
         CorpusSchemaSetup::createAdminUsers($executor);
 
         $hash = password_hash('secret-password', PASSWORD_ARGON2ID);
