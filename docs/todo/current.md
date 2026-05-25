@@ -4,18 +4,19 @@ Last updated: 2026-05-25
 
 ## 最近の docs 更新
 
-- ADR 0003: デュアルデプロイ（Tier A 共用ホスティング / Tier B Docker）、同期 JSON チャット、1行 embed — Issue #3
-- 命名規則 + 用語集（`naming-conventions.md`, `glossary.md`）— Issue #5
+- Phase 1 完了 — corpus ingestion milestone (#7–#15)
+- Phase 2 開始 — chat sessions/messages schema (#17)
 
 ## 状態サマリー
 
 **Phase 1 — Corpus & Ingestion: 完了（2026-05-25）**
 
-- ✅ Schema: `sources`, `documents`, `chunks`（#7）
-- ✅ Admin auth (JWT)（#9）
-- ✅ CSV upload API（#11）
-- ✅ PDF text extraction（#13）
-- ✅ Reindex / delete source（#15）
+- ✅ Schema, Admin auth, CSV/PDF ingestion, Reindex/delete
+
+**Phase 2 — Chat & Citations: 進行中（2026-05-25）**
+
+- 🔜 Sessions + messages schema（#17 — PR 待ち）
+- 🔜 Chunk search / sync JSON chat
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -32,6 +33,20 @@ Last updated: 2026-05-25
 | Reindex / delete source | ✅ (#15) |
 
 Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05-corpus-ingestion.md)
+
+---
+
+## Phase 2 進捗
+
+| 項目 | 状態 |
+| --- | --- |
+| Schema: chat_sessions, chat_messages | 🔜 (#17) |
+| Chunk search (full-text) | 🔜 |
+| Claude tool_use + citations | 🔜 |
+| Sync JSON chat API | 🔜 |
+| Rate limiting | 🔜 |
+
+Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-05-chat-and-citations.md)
 
 ---
 
@@ -66,7 +81,7 @@ Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05
 
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
-| P0 | Sessions + messages | 会話永続化 |
+| P0 | Sessions + messages | 会話永続化（#17 進行中） |
 | P0 | Chunk search | full-text |
 | P0 | Claude tool_use + citations | サーバー側のみ |
 | P0 | Sync JSON chat API | Tier A/B 共通デフォルト（ADR 0003） — 用語: **sync JSON chat** |
