@@ -12,7 +12,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 - [x] Schema snapshots in `database/schema/`
 - [x] Domain entities + `Pdo*Repository` adapters + service providers
 - [x] Repository tests (SQLite `:memory:`)
-- [ ] Full-text chunk search (#19)
+- [x] Full-text chunk search (#19)
 - [ ] Claude tool_use orchestration (server-side)
 - [ ] **sync JSON chat** endpoint + OpenAPI
 - [ ] **Citation** payload in responses
