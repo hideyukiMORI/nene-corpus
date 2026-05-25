@@ -41,27 +41,48 @@ export const zhHans = defineMessages({
   'admin.sources.columnChunks': '文本片段',
   'admin.sources.columnUpdated': '更新时间',
   'admin.sources.columnStatusHelp':
-    '等待中＝排队，处理中＝正在导入，就绪＝可用于聊天，失败＝请检查上传或列映射。',
-  'admin.sources.columnDocumentsHelp': '从此数据源创建的逻辑文档数，CSV 通常每行一个，PDF 通常为一个。',
-  'admin.sources.columnChunksHelp': '聊天搜索使用的文本片段数。片段越多，引用越精细。',
+    '等待中 — 排队\n处理中 — 正在导入\n就绪 — 可用于聊天\n失败 — 请检查上传或列映射',
+  'admin.sources.columnDocumentsHelp':
+    '从此数据源创建的逻辑文档数。\nCSV：通常每行一个。\nPDF：通常为一个。',
+  'admin.sources.columnChunksHelp':
+    '聊天搜索使用的文本片段数。\n片段越多，引用越精细。',
   'admin.ingestion.title': '上传数据源',
   'admin.ingestion.subtitle': '将 CSV 或 PDF 添加到语料库。',
   'admin.ingestion.sourceName': '数据源名称',
   'admin.ingestion.sourceNamePlaceholder': '产品目录',
-  'admin.ingestion.sourceNameHelp': '在数据源列表中显示的名称，请选择团队易于识别的名称。',
+  'admin.ingestion.sourceNameHelp': '在数据源列表中显示的名称。\n请选择团队易于识别的名称。',
   'admin.ingestion.file': '文件',
-  'admin.ingestion.fileHelp': '上传 CSV 或 PDF。文件保存在服务器上并转换为可搜索文本。',
+  'admin.ingestion.fileHelp':
+    '上传 CSV 或 PDF。\n\n支持格式：.csv / .pdf\n文件保存在服务器上并转换为可搜索文本。',
   'admin.ingestion.unsupportedFile': '仅支持 .csv 和 .pdf 文件。',
   'admin.ingestion.previewFile': '预览',
   'admin.ingestion.previewing': '预览中…',
   'admin.ingestion.csvSummary': '{count} 行 · 分隔符 "{delimiter}"',
   'admin.ingestion.pdfPageCount': '检测到 {count} 页',
   'admin.ingestion.titleColumn': '标题列',
-  'admin.ingestion.titleColumnHelp': '用作每行标题的 CSV 列（如产品名称），会在管理和引用中显示。',
+  'admin.ingestion.titleColumnHelp':
+    '用作每行标题的 CSV 列。\n示例：产品名称\n会在管理和引用中显示。',
   'admin.ingestion.contentColumns': '内容列',
-  'admin.ingestion.contentColumnsHelp': '合并为回答正文的列。请选择所有有助于回答用户问题的列。',
+  'admin.ingestion.contentColumnsHelp':
+    '合并为回答正文的列。\n请选择所有有助于回答用户问题的列。',
   'admin.ingestion.metadataColumns': '元数据列（可选）',
-  'admin.ingestion.metadataColumnsHelp': '与行一起保存的可选列（URL、类别等），不作为主要回答正文。',
+  'admin.ingestion.metadataColumnsHelp':
+    '与行一起保存的可选列。\n示例：URL、类别、SKU\n不作为主要回答正文。',
+  'admin.ingestion.columnMappingGuideTitle': '列映射指南（新手）',
+  'admin.ingestion.columnMappingGuideIntro':
+    '选择 CSV 各列在聊天中的用途。\n请指定一列标题、一列或多列内容，以及可选的元数据列。',
+  'admin.ingestion.columnMappingGuideTitleHeading': '标题列',
+  'admin.ingestion.columnMappingGuideTitleBody':
+    '每行的显示名称。\n在管理后台和聊天引用中标识来源行。\n\n示例：产品名称、文章标题、FAQ 问题',
+  'admin.ingestion.columnMappingGuideContentHeading': '内容列',
+  'admin.ingestion.columnMappingGuideContentBody':
+    'AI 阅读以生成回答的文本。可多选。\n\n不确定时，请包含所有可能帮助回答用户问题的列。\n\n示例：说明、正文、回答、备注',
+  'admin.ingestion.columnMappingGuideMetadataHeading': '元数据列（可选）',
+  'admin.ingestion.columnMappingGuideMetadataBody':
+    '与行一起保存、但不作为主要搜索正文的附加信息。\n\n示例：SKU、价格、类别、URL、库存\n\n适合不需要出现在回答中的代码和数字。',
+  'admin.ingestion.columnMappingGuideExampleHeading': '示例：WooCommerce 产品 CSV',
+  'admin.ingestion.columnMappingGuideExampleBody':
+    '标题列：名称\n内容列：说明、简短说明\n元数据：SKU、类别、标准价格\n\n仅产品名称往往不够 — 请将描述性文字放入内容列。',
   'admin.ingestion.ingest': '导入语料库',
   'admin.ingestion.ingesting': '导入中…',
   'admin.ingestion.ingestSuccess': '数据源导入成功。',

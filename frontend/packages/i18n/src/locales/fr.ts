@@ -41,20 +41,20 @@ export const fr = defineMessages({
   'admin.sources.columnChunks': 'Segments',
   'admin.sources.columnUpdated': 'Mis à jour',
   'admin.sources.columnStatusHelp':
-    'En attente = file d’attente, En cours = traitement, Prêt = utilisable dans le chat, Échec = vérifiez le fichier ou le mapping.',
+    'En attente — file d’attente\nEn cours — traitement\nPrêt — utilisable dans le chat\nÉchec — vérifiez le fichier ou le mapping',
   'admin.sources.columnDocumentsHelp':
-    'Documents logiques créés à partir de cette source — en général une ligne CSV ou un PDF.',
+    'Documents logiques créés à partir de cette source.\nCSV : en général une ligne par document.\nPDF : en général un fichier.',
   'admin.sources.columnChunksHelp':
-    'Segments de texte indexés pour le chat. Plus il y en a, plus les citations sont fines.',
+    'Segments de texte indexés pour le chat.\nPlus il y en a, plus les citations sont fines.',
   'admin.ingestion.title': 'Téléverser une source',
   'admin.ingestion.subtitle': 'Ajoutez des fichiers CSV ou PDF au corpus.',
   'admin.ingestion.sourceName': 'Nom de la source',
   'admin.ingestion.sourceNamePlaceholder': 'Catalogue produits',
   'admin.ingestion.sourceNameHelp':
-    'Nom affiché dans la liste des sources. Choisissez un libellé reconnaissable par votre équipe.',
+    'Nom affiché dans la liste des sources.\nChoisissez un libellé reconnaissable par votre équipe.',
   'admin.ingestion.file': 'Fichier',
   'admin.ingestion.fileHelp':
-    'Téléversez un CSV ou PDF. Le fichier reste sur votre serveur et devient du texte searchable.',
+    'Téléversez un CSV ou PDF.\n\nFormats pris en charge : .csv / .pdf\nLe fichier reste sur votre serveur et devient du texte searchable.',
   'admin.ingestion.unsupportedFile': 'Seuls les fichiers .csv et .pdf sont pris en charge.',
   'admin.ingestion.previewFile': 'Aperçu',
   'admin.ingestion.previewing': 'Aperçu…',
@@ -62,13 +62,28 @@ export const fr = defineMessages({
   'admin.ingestion.pdfPageCount': '{count} pages détectées',
   'admin.ingestion.titleColumn': 'Colonne titre',
   'admin.ingestion.titleColumnHelp':
-    'Colonne CSV utilisée comme titre de chaque ligne (ex. nom du produit).',
+    'Colonne CSV utilisée comme titre de chaque ligne.\nExemple : nom du produit\nAffichée dans l’admin et les citations.',
   'admin.ingestion.contentColumns': 'Colonnes contenu',
   'admin.ingestion.contentColumnsHelp':
-    'Colonnes combinées dans le corps de réponse. Sélectionnez celles utiles aux questions des visiteurs.',
+    'Colonnes combinées dans le corps de réponse.\nSélectionnez celles utiles aux questions des visiteurs.',
   'admin.ingestion.metadataColumns': 'Colonnes métadonnées (optionnel)',
   'admin.ingestion.metadataColumnsHelp':
-    'Colonnes optionnelles stockées avec la ligne (URL, catégorie…) mais pas utilisées comme corps principal.',
+    'Colonnes optionnelles stockées avec la ligne.\nExemples : URL, catégorie, SKU\nNon utilisées comme corps principal de réponse.',
+  'admin.ingestion.columnMappingGuideTitle': 'Guide de mapping des colonnes (débutant)',
+  'admin.ingestion.columnMappingGuideIntro':
+    'Définissez comment chaque colonne CSV est utilisée dans le chat.\nChoisissez un titre, une ou plusieurs colonnes contenu, et des métadonnées optionnelles.',
+  'admin.ingestion.columnMappingGuideTitleHeading': 'Colonne titre',
+  'admin.ingestion.columnMappingGuideTitleBody':
+    'Nom affiché pour chaque ligne.\nVisible dans l’admin et lors des citations dans le chat.\n\nExemples : nom du produit, titre d’article, question FAQ',
+  'admin.ingestion.columnMappingGuideContentHeading': 'Colonnes contenu',
+  'admin.ingestion.columnMappingGuideContentBody':
+    'Texte que l’IA lit pour répondre. Plusieurs colonnes possibles.\n\nEn cas de doute, incluez toutes les colonnes utiles aux visiteurs.\n\nExemples : description, corps, réponse, notes',
+  'admin.ingestion.columnMappingGuideMetadataHeading': 'Colonnes métadonnées (optionnel)',
+  'admin.ingestion.columnMappingGuideMetadataBody':
+    'Informations stockées avec la ligne mais pas utilisées comme réponse principale.\n\nExemples : SKU, prix, catégorie, URL, stock\n\nIdéal pour codes et chiffres hors corps de réponse.',
+  'admin.ingestion.columnMappingGuideExampleHeading': 'Exemple : CSV produits WooCommerce',
+  'admin.ingestion.columnMappingGuideExampleBody':
+    'Colonne titre : Nom\nColonnes contenu : Description, Description courte\nMétadonnées : SKU, Catégories, Prix normal\n\nLe seul nom produit est souvent insuffisant — mettez les textes descriptifs en contenu.',
   'admin.ingestion.ingest': 'Ingérer dans le corpus',
   'admin.ingestion.ingesting': 'Ingestion…',
   'admin.ingestion.ingestSuccess': 'Source ingérée avec succès.',

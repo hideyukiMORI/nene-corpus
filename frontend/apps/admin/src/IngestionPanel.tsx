@@ -9,6 +9,7 @@ import {
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
+import { ColumnMappingGuide } from './ColumnMappingGuide';
 import { detectSourceType, readFileAsBase64 } from './fileBase64';
 
 interface IngestionPanelProps {
@@ -201,6 +202,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
               delimiter: csvPreview.detected_delimiter,
             })}
           </p>
+          <ColumnMappingGuide />
           <ColumnMappingEditor
             headers={csvPreview.headers}
             titleColumn={titleColumn}
