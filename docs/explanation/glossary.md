@@ -33,8 +33,8 @@ Canonical English terms for NeNe Corpus documentation, OpenAPI, code comments, a
 
 | Canonical term | Definition | Japanese note | Do not use |
 | --- | --- | --- | --- |
-| **sync JSON chat** | Default consumer chat transport: HTTP POST → wait → single JSON body with message text and **citations**. Tier A and Tier B default. | 同期 JSON チャット | "synchronous JSON", "async chat", "REST polling" (unless describing a future job poll API) |
-| **SSE streaming** | Optional Tier B enhancement: token-by-token Server-Sent Events stream. Not required for FAQ traffic. | SSE ストリーミング | "streaming chat" (ambiguous), "websocket chat" |
+| **sync JSON chat** | Default and **only** consumer chat transport: HTTP POST → wait → single JSON body with message text and **citations**. Tier A and Tier B. Widget UX (loading, bubble motion) is CSS-only. | 同期 JSON チャット | "synchronous JSON", "async chat", "REST polling" (unless describing a future job poll API), "streaming chat" |
+| ~~**SSE streaming**~~ | **Non-goal** — not planned. Do not add SSE endpoints or token-by-token display. | （非ゴール） | "streaming chat", "websocket chat", "SSE" in new specs |
 | **embed widget** | The `widget.js` bundle plus one same-origin `<script>` embed on an existing site. Phase 3. | 埋め込みウィジェット | "chat widget" alone, "plugin", "snippet" |
 | **consumer chat** | End-user Q&A feature (sessions, messages, citations). Distinct from admin UI and MCP. | コンシューマーチャット | "user chatbot", "public bot" |
 | **same origin** | Widget and API share scheme + host + port; avoids CORS on shared hosting. | 同一オリジン | "same domain" (acceptable in casual Japanese; English docs use **same origin**) |

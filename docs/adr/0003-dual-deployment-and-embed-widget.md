@@ -8,7 +8,7 @@ accepted
 
 NeNe Corpus targets self-hosted knowledge chat for small and medium businesses. In Japan, many operators already run company websites on **PHP-capable shared hosting** (FTP upload, MySQL, same domain as their public site). Developers and VPS operators prefer **Docker Compose** for reproducible setup.
 
-These audiences share the same product (corpus, cited chat, admin UI) but need different **installation paths**. The consumer chat use case is typically **low frequency** (rate limits per session/IP, not high-throughput streaming), so token-by-token SSE is a UX enhancement, not a core requirement.
+These audiences share the same product (corpus, cited chat, admin UI) but need different **installation paths**. The consumer chat use case is typically **low frequency** (rate limits per session/IP, not high-throughput streaming). **sync JSON chat** is the only transport; progressive UX is handled in the **embed widget** via CSS (loading indicator, bubble motion, scroll) — not token-by-token streaming.
 
 Alternatives considered:
 
@@ -22,8 +22,8 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 | Tier | Audience | Install path | Chat transport |
 | --- | --- | --- | --- |
-| **A — Shared hosting** | Japan SMB primary | ZIP + web installer + FTP/SSH; MySQL | **sync JSON chat** (default) |
-| **B — Docker / VPS** | Developers, VPS, private cloud | `docker compose up` | **sync JSON chat** (default); **SSE streaming** optional later |
+| **A — Shared hosting** | Japan SMB primary | ZIP + web installer + FTP/SSH; MySQL | **sync JSON chat** |
+| **B — Docker / VPS** | Developers, VPS, private cloud | `docker compose up` | **sync JSON chat** |
 
 **Product delivery:**
 
@@ -33,8 +33,8 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 **Chat API (Phase 2):**
 
-- Default (**sync JSON chat**): `POST` message → wait → JSON response with full text and `citations[]`.
-- Optional later (Tier B — **SSE streaming**): progressive display endpoint.
+- **sync JSON chat** only: `POST` message → wait → JSON response with full text and `citations[]`.
+- **Non-goal:** **SSE streaming** / token-by-token Server-Sent Events — not planned on Tier A or Tier B.
 
 **Markets:**
 
@@ -60,8 +60,8 @@ NeNe Corpus supports **two deployment tiers** with one runtime codebase:
 
 - `docs/deployment/shared-hosting.md` — Tier A operator guide (stub until installer lands).
 - `docs/development/docker.md` — Tier B (existing).
-- Phase 2 OpenAPI: document **sync JSON chat** first; **SSE streaming** as optional extension.
-- Phase 3: **web installer**, **release ZIP**, **embed widget** bundle.
+- Phase 2 OpenAPI: **sync JSON chat** only.
+- Phase 3: **web installer**, **release ZIP**, **embed widget** bundle (CSS motion UX on **sync JSON chat**).
 - Terminology: `docs/explanation/glossary.md`, `docs/development/naming-conventions.md`.
 
 ## Related

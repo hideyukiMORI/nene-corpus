@@ -40,7 +40,7 @@ NeNe Corpus is a self-hosted knowledge chat OSS on NENE2:
 
 - **Primary operators:** Japan SMB on PHP shared hosting (Tier A); **also** Docker/VPS (Tier B). Same codebase — ADR 0003.
 - Ingest PDF, CSV, and structured sources into a searchable corpus.
-- Answer end-user questions with **cited** responses (**sync JSON chat** default; **SSE streaming** optional on Tier B).
+- Answer end-user questions with **cited** responses via **sync JSON chat** (widget CSS for loading/motion; **SSE streaming** is a non-goal).
 - Embed **embed widget** on existing homepages with one same-origin `<script>` (Phase 3).
 - Admin UI for ingestion, corpus management, conversation logs, and settings.
 - OpenAPI as the contract; MCP for ops/read-only agent tooling only.

@@ -44,7 +44,7 @@ NeNe Corpus is **not a WordPress plugin**. It installs as a separate PHP app on 
 ></script>
 ```
 
-Works alongside WordPress, static HTML, or other CMS pages on the **same origin**. The **embed widget** calls **sync JSON chat** (loading indicator while waiting; **SSE streaming** not required on Tier A).
+Works alongside WordPress, static HTML, or other CMS pages on the **same origin**. The **embed widget** calls **sync JSON chat** (loading indicator and CSS motion while waiting).
 
 ## Manual deploy (until web installer exists)
 
@@ -61,7 +61,6 @@ See [Docker development](../development/docker.md) for the canonical runtime lay
 ## Limitations on shared hosting
 
 - **PDF ingestion** may hit execution time and upload size limits — split large files or use Tier B for heavy **ingestion**.
-- **SSE streaming** is not planned as Tier A default; use **sync JSON chat**.
 - **Claude API** usage is pay-as-you-go — configure keys in admin UI (Phase 2+).
 
 ## Troubleshooting

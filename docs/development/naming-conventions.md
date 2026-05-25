@@ -223,7 +223,7 @@ When adding a new public term, update [`glossary.md`](../explanation/glossary.md
 - SQL outside `Pdo*Repository`
 - camelCase in public JSON property names
 - Renaming shipped `operationId` values
-- New synonyms for glossary terms in English docs (e.g. do not write "streaming chat" when the doc means **SSE streaming**; do not write "synchronous JSON" when the doc means **sync JSON chat**)
+- New synonyms for glossary terms in English docs (e.g. do not write "streaming chat" for **sync JSON chat** or widget CSS motion; do not write "synchronous JSON" when the doc means **sync JSON chat**)
 - MCP tools exposed to **embed widget** or consumer chat clients
 
 ---

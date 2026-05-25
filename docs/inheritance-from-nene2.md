@@ -53,7 +53,7 @@ Install NENE2 as a Composer dependency and treat `vendor/hideyukimori/nene2/docs
 | Backend standards | `docs/development/backend-standards.md` |
 | Language policy | English for public docs, OpenAPI, API errors; Japanese allowed in Issues, PRs, commits, `.cursor/rules/` |
 | Review checklists | `docs/review/` — task-specific lists for this product |
-| Transport | **sync JSON chat** (Phase 2+ default); **SSE streaming** optional (Tier B) — ADR 0003, [`glossary.md`](./explanation/glossary.md) |
+| Transport | **sync JSON chat** only — ADR 0003, [`glossary.md`](./explanation/glossary.md) |
 | Deployment | Tier A shared hosting + Tier B Docker/VPS — `docs/deployment/` |
 | External services | Claude API (server-side), optional NeNe Records HTTP client |
 

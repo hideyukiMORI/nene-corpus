@@ -30,7 +30,7 @@ Operators who already have a company website on **shared hosting** and want a FA
 
 **Secondary — Tier B developers and VPS / private cloud**
 
-Docker Compose for local dev and production on VPS. Same API and **embed widget** as Tier A; optional **SSE streaming** later.
+Docker Compose for local dev and production on VPS. Same API and **embed widget** as Tier A.
 
 **Later — international**
 
@@ -60,8 +60,8 @@ Same codebase, two installation paths (ADR 0003):
 
 | Tier | Path | Chat transport |
 | --- | --- | --- |
-| **Tier A — shared hosting** | **release ZIP** + **web installer** + MySQL | **sync JSON chat** (default) |
-| **Tier B — Docker / VPS** | `docker compose up` | **sync JSON chat** (default); **SSE streaming** optional |
+| **Tier A — shared hosting** | **release ZIP** + **web installer** + MySQL | **sync JSON chat** |
+| **Tier B — Docker / VPS** | `docker compose up` | **sync JSON chat** |
 
 See [`docs/deployment/README.md`](../deployment/README.md) and [`glossary.md`](./glossary.md).
 
@@ -75,7 +75,7 @@ See [`docs/deployment/README.md`](../deployment/README.md) and [`glossary.md`](.
 
 No site rebuild required. Works with WordPress themes, static HTML, or any CMS that allows a custom script include.
 
-FAQ-style traffic is **low frequency** (**rate limit** per session/IP). **sync JSON chat** with a loading state is sufficient; **SSE streaming** is optional polish for Tier B.
+FAQ-style traffic is **low frequency** (**rate limit** per session/IP). **sync JSON chat** with a loading state and widget CSS motion (bubble fade-in, smooth scroll) is sufficient. **SSE streaming** is a **non-goal**.
 
 ## Philosophy
 
@@ -104,7 +104,7 @@ NENE2 (framework)
 | **NENE2 runtime** | HTTP, DI, middleware, Problem Details |
 | **NeNe Corpus API** | Ingestion, corpus storage, chat, rate limits, audit |
 | **Admin UI** | Upload, reindex, logs, prompt settings, **embed widget** snippet |
-| **Embed widget** | **Consumer chat** UX over **sync JSON chat** (**SSE streaming** optional on Tier B) |
+| **Embed widget** | **Consumer chat** UX over **sync JSON chat** (CSS loading/motion; no token streaming) |
 | **Claude API** | Reasoning + tool_use (server-side only) |
 | **Upstream APIs** | NeNe Records public/search APIs (read-only client) |
 | **MCP tools** | Ops read-only — never consumer-facing |
