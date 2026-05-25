@@ -51,12 +51,12 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
     <section className="nc-panel">
       <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.sources.title)}</h2>
-        <p className="text-sm text-fg-muted">{t(Msg.admin.sources.subtitle)}</p>
+        <p>{t(Msg.admin.sources.subtitle)}</p>
       </div>
-      {isLoading && <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.sources.loading)}</p>}
+      {isLoading && <p className="px-4 py-6 nc-text-muted">{t(Msg.admin.sources.loading)}</p>}
       {error !== null && <p className="px-4 py-6 text-sm text-red-600">{error}</p>}
       {!isLoading && error === null && sources.length === 0 && (
-        <p className="px-4 py-6 text-sm text-fg-muted">{t(Msg.admin.sources.empty)}</p>
+        <p className="px-4 py-6 nc-text-muted">{t(Msg.admin.sources.empty)}</p>
       )}
       {!isLoading && sources.length > 0 && (
         <div className="overflow-x-auto">
@@ -90,7 +90,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
               {sources.map((source) => (
                 <tr key={source.source_id} className="nc-table-row">
                   <td className="px-4 py-2 font-medium">{source.name}</td>
-                  <td className="px-4 py-2 uppercase text-xs tracking-wide text-fg-subtle">
+                  <td className="px-4 py-2 uppercase nc-text-subtle tracking-wide">
                     {t(SOURCE_TYPE_MSG[source.source_type])}
                   </td>
                   <td className="px-4 py-2">
@@ -98,7 +98,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
                   </td>
                   <td className="px-4 py-2 tabular-nums">{source.document_count}</td>
                   <td className="px-4 py-2 tabular-nums">{source.chunk_count}</td>
-                  <td className="px-4 py-2 text-fg-muted">
+                  <td className="px-4 py-2 nc-text-muted">
                     {formatTimestamp(source.updated_at, locale)}
                   </td>
                 </tr>
@@ -152,7 +152,7 @@ export function LoginForm({ error, onLogin }: LoginFormProps) {
   return (
     <section className="nc-panel mx-auto max-w-md p-6">
       <h2 className="text-lg font-medium">{t(Msg.admin.auth.title)}</h2>
-      <p className="mt-1 text-sm text-fg-muted">{t(Msg.admin.auth.subtitle)}</p>
+      <p className="mt-1 nc-text-muted">{t(Msg.admin.auth.subtitle)}</p>
       <form className="mt-4 space-y-4" onSubmit={(event) => void handleSubmit(event)}>
         <label className="block text-sm">
           <span className="font-medium text-fg">{t(Msg.admin.auth.email)}</span>

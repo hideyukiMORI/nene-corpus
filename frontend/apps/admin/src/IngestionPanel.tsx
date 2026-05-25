@@ -150,7 +150,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
     <section className="nc-panel">
       <div className="nc-panel-head">
         <h2 className="font-medium">{t(Msg.admin.ingestion.title)}</h2>
-        <p className="text-sm text-fg-muted">{t(Msg.admin.ingestion.subtitle)}</p>
+        <p>{t(Msg.admin.ingestion.subtitle)}</p>
       </div>
       <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handlePreview(event)}>
         <label className="block text-sm">
@@ -174,7 +174,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
             help={t(Msg.admin.ingestion.fileHelp)}
           />
           <input
-            className="mt-1 block w-full text-sm text-fg-muted"
+            className="mt-1 block w-full nc-text-muted"
             type="file"
             accept=".csv,.pdf,text/csv,application/pdf"
             onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
@@ -192,7 +192,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
 
       {csvPreview !== null && (
         <div className="space-y-4 border-t border-border px-4 py-4">
-          <p className="text-sm text-fg-muted">
+          <p className="nc-text-muted">
             {t(Msg.admin.ingestion.csvSummary, {
               count: csvPreview.row_count,
               delimiter: csvPreview.detected_delimiter,
@@ -214,10 +214,10 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
 
       {pdfPreview !== null && (
         <div className="space-y-3 border-t border-border px-4 py-4">
-          <p className="text-sm text-fg-muted">
+          <p className="nc-text-muted">
             {t(Msg.admin.ingestion.pdfPageCount, { count: pdfPreview.page_count })}
           </p>
-          <pre className="max-h-40 overflow-auto rounded-admin bg-surface-muted p-3 text-xs text-fg whitespace-pre-wrap">
+          <pre className="max-h-40 overflow-auto rounded-admin bg-surface-muted p-3 nc-text-muted whitespace-pre-wrap">
             {pdfPreview.sample_text.slice(0, 800)}
             {pdfPreview.sample_text.length > 800 ? '…' : ''}
           </pre>

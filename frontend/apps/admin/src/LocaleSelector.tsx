@@ -14,7 +14,7 @@ export function LocaleSelector() {
   const { locale, setLocale, supportedLocales } = useLocale();
 
   return (
-    <label className="flex items-center gap-2 text-sm text-fg-muted">
+    <label className="flex items-center gap-2 nc-text-muted">
       <span className="whitespace-nowrap">{t(Msg.admin.app.language)}</span>
       <select
         className="nc-select px-2 py-1.5"

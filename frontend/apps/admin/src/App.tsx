@@ -29,7 +29,7 @@ export function App() {
 
   if (!isReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-fg-muted">
+      <div className="flex min-h-screen items-center justify-center nc-text-muted">
         {t(Msg.common.loading)}
       </div>
     );
@@ -41,7 +41,7 @@ export function App() {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">{t(Msg.admin.app.title)}</h1>
-            <p className="text-sm text-fg-muted">
+            <p className="nc-text-muted">
               {health
                 ? t(Msg.admin.app.healthStatus, {
                     service: health.service,
@@ -55,7 +55,7 @@ export function App() {
             <LocaleSelector />
             {profile && (
               <>
-                <span className="text-fg-muted">{profile.email}</span>
+                <span className="nc-text-muted">{profile.email}</span>
                 <button className="nc-btn" type="button" onClick={logout}>
                   {t(Msg.common.signOut)}
                 </button>
