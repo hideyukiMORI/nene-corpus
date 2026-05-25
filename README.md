@@ -9,7 +9,9 @@
 
 NeNe Corpus is a self-hosted, open-source knowledge chat platform built on [NENE2](https://github.com/hideyukiMORI/NENE2). Upload PDF and CSV, build a searchable corpus, and answer end-user questions with source citations — without sending your data to a SaaS vendor.
 
-**Primary audience:** Japan SMB on **Tier A** **shared hosting** — add **embed widget** to an existing homepage with one script tag. **Also:** **Tier B** developers and VPS operators via Docker Compose (**dual deployment** — ADR 0003).
+**Primary audience:** Japan SMB on **Tier A** **shared hosting** — add a **cited search assistant** to an existing homepage with one script tag (catalog-heavy makers, regional brands, FAQ sites). **Also:** **Tier B** developers and VPS operators via Docker Compose (**dual deployment** — ADR 0003).
+
+> **Example operator:** a non-engineer staff member on shared hosting uploads product PDFs, enables the **embed widget**, and pays for **Claude API** usage instead of a chatbot subscription — see [`docs/explanation/product-vision.md`](./docs/explanation/product-vision.md#primary-persona).
 
 ## Goals
 

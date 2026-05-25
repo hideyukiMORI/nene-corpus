@@ -6,6 +6,7 @@ Last updated: 2026-05-25
 
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 開始 — chat sessions/messages schema (#17), chunk search (#19)
+- Primary persona と公開 corpus 訴求を product vision に追記 (#23)
 
 ## 状態サマリー
 
