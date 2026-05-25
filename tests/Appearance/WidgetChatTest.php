@@ -37,6 +37,15 @@ final class WidgetChatTest extends TestCase
         self::assertSame(WidgetChat::USER_AVATAR_SILHOUETTE, $chat->userAvatarMode);
     }
 
+    public function test_from_array_parses_loose_boolean_values(): void
+    {
+        $chat = WidgetChat::fromArray([
+            'show_assistant_avatar' => 'false',
+        ]);
+
+        self::assertFalse($chat->showAssistantAvatar);
+    }
+
     public function test_to_array(): void
     {
         $chat = new WidgetChat(

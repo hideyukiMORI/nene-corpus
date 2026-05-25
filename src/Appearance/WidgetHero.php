@@ -131,20 +131,6 @@ final readonly class WidgetHero
             return $fallback;
         }
 
-        $value = $data[$key];
-
-        if (is_bool($value)) {
-            return $value;
-        }
-
-        if ($value === 1 || $value === '1') {
-            return true;
-        }
-
-        if ($value === 0 || $value === '0') {
-            return false;
-        }
-
-        return $fallback;
+        return AppearanceBoolean::toBool($data[$key], $fallback);
     }
 }

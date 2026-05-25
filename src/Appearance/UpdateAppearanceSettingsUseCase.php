@@ -16,20 +16,22 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
 
     public function execute(UpdateAppearanceSettingsInput $input): AppearanceSettings
     {
-        $errors = $this->validator->validate($input->body);
+        /** @var array<string, mixed> $body */
+        $body = $this->normalizeBody($input->body);
+        $errors = $this->validator->validate($body);
 
         if ($errors !== []) {
             throw new ValidationException($errors);
         }
 
-        $widgetLocale = $input->body['widget_locale'] ?? null;
+        $widgetLocale = $body['widget_locale'] ?? null;
         $normalizedLocale = is_string($widgetLocale) && $widgetLocale !== '' ? $widgetLocale : null;
         /** @var array<string, mixed> $themeData */
-        $themeData = $input->body['theme'];
+        $themeData = $body['theme'];
         /** @var array<string, mixed> $heroData */
-        $heroData = is_array($input->body['hero'] ?? null) ? $input->body['hero'] : [];
+        $heroData = is_array($body['hero'] ?? null) ? $body['hero'] : [];
         /** @var array<string, mixed> $chatData */
-        $chatData = is_array($input->body['chat'] ?? null) ? $input->body['chat'] : [];
+        $chatData = is_array($body['chat'] ?? null) ? $body['chat'] : [];
 
         $settings = new AppearanceSettings(
             widgetLocale: $normalizedLocale,
@@ -41,5 +43,18 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
         $this->repository->save($settings);
 
         return $settings;
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
+    private function normalizeBody(array $body): array
+    {
+        if (!is_array($body['chat'] ?? null)) {
+            $body['chat'] = WidgetChat::defaults()->toArray();
+        }
+
+        return $body;
     }
 }

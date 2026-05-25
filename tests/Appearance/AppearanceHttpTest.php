@@ -289,6 +289,53 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame(422, $response->getStatusCode());
     }
 
+    public function test_update_accepts_string_boolean_flags(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => [
+                ...self::defaultHeroPayload(),
+                'show_title' => 'true',
+                'show_description' => 'false',
+                'show_cta' => '1',
+                'show_image' => '0',
+            ],
+            'chat' => [
+                'user_avatar_mode' => 'silhouette',
+                'show_assistant_avatar' => 'false',
+            ],
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertTrue($payload['hero']['show_title']);
+        self::assertFalse($payload['hero']['show_description']);
+        self::assertTrue($payload['hero']['show_cta']);
+        self::assertFalse($payload['hero']['show_image']);
+        self::assertFalse($payload['chat']['show_assistant_avatar']);
+    }
+
+    public function test_update_defaults_chat_when_missing(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('silhouette', $payload['chat']['user_avatar_mode']);
+        self::assertTrue($payload['chat']['show_assistant_avatar']);
+    }
+
     public function test_update_rejects_invalid_color(): void
     {
         $token = $this->loginToken();

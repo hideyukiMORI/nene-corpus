@@ -12,6 +12,7 @@ import {
 } from '@nene-corpus/api-client';
 import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
+import { APPEARANCE_CHAT_TOGGLE_FALLBACK } from './appearanceChatToggleFallback';
 import { APPEARANCE_HERO_TOGGLE_FALLBACK } from './appearanceHeroToggleFallback';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
 import { HelpLabel } from './HelpLabel';
@@ -27,6 +28,18 @@ const HERO_TOGGLE_MSG = {
   showCtaHelp: 'admin.appearance.heroShowCtaHelp',
   showImage: 'admin.appearance.heroShowImage',
   showImageHelp: 'admin.appearance.heroShowImageHelp',
+} as const satisfies Record<string, MsgKey>;
+
+/** Literal keys — do not read `Msg.admin.appearance` chat toggles at module init (Vite HMR may serve stale `keys.ts`). */
+const CHAT_APPEARANCE_MSG = {
+  chatTitle: 'admin.appearance.chatTitle',
+  chatSubtitle: 'admin.appearance.chatSubtitle',
+  userAvatarMode: 'admin.appearance.userAvatarMode',
+  userAvatarModeHelp: 'admin.appearance.userAvatarModeHelp',
+  userAvatarModeSilhouette: 'admin.appearance.userAvatarModeSilhouette',
+  userAvatarModeNone: 'admin.appearance.userAvatarModeNone',
+  showAssistantAvatar: 'admin.appearance.showAssistantAvatar',
+  showAssistantAvatarHelp: 'admin.appearance.showAssistantAvatarHelp',
 } as const satisfies Record<string, MsgKey>;
 
 const HERO_IMAGE_MAX_BYTES = 2_097_152;
@@ -94,27 +107,78 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const t = useMsg();
   const { locale } = useLocale();
   const heroToggleFallback = APPEARANCE_HERO_TOGGLE_FALLBACK[locale];
+  const chatAppearanceFallback = APPEARANCE_CHAT_TOGGLE_FALLBACK[locale];
+
+  const resolveAppearanceCopy = useMemo(
+    () =>
+      (key: MsgKey, emergency: string): string => {
+        const text = t(key);
+        return isUnresolvedTranslation(text, key) ? emergency : text;
+      },
+    [t],
+  );
 
   const heroToggleCopy = useMemo(() => {
-    const resolve = (key: MsgKey, emergency: string): string => {
-      const text = t(key);
-      return isUnresolvedTranslation(text, key) ? emergency : text;
-    };
-
     return {
-      showTitle: resolve(HERO_TOGGLE_MSG.showTitle, heroToggleFallback.showTitle),
-      showTitleHelp: resolve(HERO_TOGGLE_MSG.showTitleHelp, heroToggleFallback.showTitleHelp),
-      showDescription: resolve(HERO_TOGGLE_MSG.showDescription, heroToggleFallback.showDescription),
-      showDescriptionHelp: resolve(
+      showTitle: resolveAppearanceCopy(HERO_TOGGLE_MSG.showTitle, heroToggleFallback.showTitle),
+      showTitleHelp: resolveAppearanceCopy(
+        HERO_TOGGLE_MSG.showTitleHelp,
+        heroToggleFallback.showTitleHelp,
+      ),
+      showDescription: resolveAppearanceCopy(
+        HERO_TOGGLE_MSG.showDescription,
+        heroToggleFallback.showDescription,
+      ),
+      showDescriptionHelp: resolveAppearanceCopy(
         HERO_TOGGLE_MSG.showDescriptionHelp,
         heroToggleFallback.showDescriptionHelp,
       ),
-      showCta: resolve(HERO_TOGGLE_MSG.showCta, heroToggleFallback.showCta),
-      showCtaHelp: resolve(HERO_TOGGLE_MSG.showCtaHelp, heroToggleFallback.showCtaHelp),
-      showImage: resolve(HERO_TOGGLE_MSG.showImage, heroToggleFallback.showImage),
-      showImageHelp: resolve(HERO_TOGGLE_MSG.showImageHelp, heroToggleFallback.showImageHelp),
+      showCta: resolveAppearanceCopy(HERO_TOGGLE_MSG.showCta, heroToggleFallback.showCta),
+      showCtaHelp: resolveAppearanceCopy(HERO_TOGGLE_MSG.showCtaHelp, heroToggleFallback.showCtaHelp),
+      showImage: resolveAppearanceCopy(HERO_TOGGLE_MSG.showImage, heroToggleFallback.showImage),
+      showImageHelp: resolveAppearanceCopy(
+        HERO_TOGGLE_MSG.showImageHelp,
+        heroToggleFallback.showImageHelp,
+      ),
     };
-  }, [t, heroToggleFallback]);
+  }, [resolveAppearanceCopy, heroToggleFallback]);
+
+  const chatAppearanceCopy = useMemo(() => {
+    return {
+      chatTitle: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.chatTitle,
+        chatAppearanceFallback.chatTitle,
+      ),
+      chatSubtitle: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.chatSubtitle,
+        chatAppearanceFallback.chatSubtitle,
+      ),
+      userAvatarMode: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.userAvatarMode,
+        chatAppearanceFallback.userAvatarMode,
+      ),
+      userAvatarModeHelp: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.userAvatarModeHelp,
+        chatAppearanceFallback.userAvatarModeHelp,
+      ),
+      userAvatarModeSilhouette: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.userAvatarModeSilhouette,
+        chatAppearanceFallback.userAvatarModeSilhouette,
+      ),
+      userAvatarModeNone: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.userAvatarModeNone,
+        chatAppearanceFallback.userAvatarModeNone,
+      ),
+      showAssistantAvatar: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.showAssistantAvatar,
+        chatAppearanceFallback.showAssistantAvatar,
+      ),
+      showAssistantAvatarHelp: resolveAppearanceCopy(
+        CHAT_APPEARANCE_MSG.showAssistantAvatarHelp,
+        chatAppearanceFallback.showAssistantAvatarHelp,
+      ),
+    };
+  }, [resolveAppearanceCopy, chatAppearanceFallback]);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [widgetLocale, setWidgetLocale] = useState('');
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
@@ -456,12 +520,12 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
           </div>
           <div className="space-y-3 rounded-admin border border-border p-4">
             <div>
-              <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.chatTitle)}</h3>
-              <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.chatSubtitle)}</p>
+              <h3 className="text-sm font-medium text-fg">{chatAppearanceCopy.chatTitle}</h3>
+              <p className="mt-1 text-sm nc-text-muted">{chatAppearanceCopy.chatSubtitle}</p>
             </div>
             <fieldset className="block text-sm">
-              <legend className="font-medium text-fg">{t(Msg.admin.appearance.userAvatarMode)}</legend>
-              <p className="mt-1 text-xs nc-text-muted">{t(Msg.admin.appearance.userAvatarModeHelp)}</p>
+              <legend className="font-medium text-fg">{chatAppearanceCopy.userAvatarMode}</legend>
+              <p className="mt-1 text-xs nc-text-muted">{chatAppearanceCopy.userAvatarModeHelp}</p>
               <div className="mt-2 space-y-2">
                 {USER_AVATAR_MODES.map((mode) => (
                   <label key={mode} className="flex items-center gap-2">
@@ -474,8 +538,8 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                     />
                     <span>
                       {mode === 'silhouette'
-                        ? t(Msg.admin.appearance.userAvatarModeSilhouette)
-                        : t(Msg.admin.appearance.userAvatarModeNone)}
+                        ? chatAppearanceCopy.userAvatarModeSilhouette
+                        : chatAppearanceCopy.userAvatarModeNone}
                     </span>
                   </label>
                 ))}
@@ -492,8 +556,8 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 />
                 <HelpLabel
                   className="font-medium text-fg"
-                  label={t(Msg.admin.appearance.showAssistantAvatar)}
-                  help={t(Msg.admin.appearance.showAssistantAvatarHelp)}
+                  label={chatAppearanceCopy.showAssistantAvatar}
+                  help={chatAppearanceCopy.showAssistantAvatarHelp}
                 />
               </div>
             </div>

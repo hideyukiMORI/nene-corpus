@@ -95,16 +95,12 @@ final readonly class AppearanceSettingsValidator
             }
         }
 
-        if (array_key_exists('show_assistant_avatar', $chat)) {
-            $value = $chat['show_assistant_avatar'];
-
-            if (!is_bool($value)) {
-                $errors[] = new ValidationError(
-                    'chat.show_assistant_avatar',
-                    'Show assistant avatar must be a boolean.',
-                    'invalid',
-                );
-            }
+        if (array_key_exists('show_assistant_avatar', $chat) && !AppearanceBoolean::isValid($chat['show_assistant_avatar'])) {
+            $errors[] = new ValidationError(
+                'chat.show_assistant_avatar',
+                'Show assistant avatar must be a boolean.',
+                'invalid',
+            );
         }
 
         return $errors;
@@ -143,9 +139,7 @@ final readonly class AppearanceSettingsValidator
             return [];
         }
 
-        $value = $hero[$key];
-
-        if (is_bool($value)) {
+        if (AppearanceBoolean::isValid($hero[$key])) {
             return [];
         }
 
