@@ -5,7 +5,7 @@ import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { EmbedWidget } from './EmbedWidget';
 import { applyWidgetLayout, isFixedLayout } from './layout';
-import { applyWidgetTheme } from './theme';
+import { applyWidgetHeroSpacing, applyWidgetTheme } from './theme';
 
 export interface WidgetChromeProps {
   apiBase?: string;
@@ -45,8 +45,9 @@ export function WidgetChrome({
     }
 
     applyWidgetTheme(rootRef.current, theme);
+    applyWidgetHeroSpacing(rootRef.current, hero);
     applyWidgetLayout(rootRef.current, layout);
-  }, [theme, layout]);
+  }, [theme, hero, layout]);
 
   useEffect(() => {
     if (!usesLauncher) {

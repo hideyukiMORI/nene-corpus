@@ -41,7 +41,8 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateThemeField($theme, 'color_primary', 'hex_color')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'color_surface', 'hex_color')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'color_text', 'hex_color')];
-        $errors = [...$errors, ...$this->validateThemeField($theme, 'radius_md', 'css_length')];
+        $errors = [...$errors, ...$this->validateThemeField($theme, 'radius_panel', 'css_length')];
+        $errors = [...$errors, ...$this->validateThemeField($theme, 'radius_control', 'css_length')];
         $errors = [...$errors, ...$this->validateThemeField($theme, 'max_width', 'css_length')];
 
         $hero = $body['hero'] ?? null;
@@ -61,6 +62,9 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_description')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_cta')];
         $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_image')];
+        $errors = [...$errors, ...$this->validateOptionalHeroCssLength($hero, 'gap_after')];
+        $errors = [...$errors, ...$this->validateOptionalHeroCssLength($hero, 'padding_bottom')];
+        $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_divider')];
 
         $chat = $body['chat'] ?? null;
 
@@ -277,6 +281,29 @@ final readonly class AppearanceSettingsValidator
         }
 
         return [new ValidationError("hero.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' must be a boolean.', 'invalid')];
+    }
+
+    /**
+     * @param array<string, mixed> $hero
+     * @return list<ValidationError>
+     */
+    private function validateOptionalHeroCssLength(array $hero, string $key): array
+    {
+        if (!array_key_exists($key, $hero)) {
+            return [];
+        }
+
+        $value = $hero[$key];
+
+        if (!is_string($value) || $value === '') {
+            return [new ValidationError("hero.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' is required.', 'required')];
+        }
+
+        if (!preg_match('/^\d+(\.\d+)?(px|rem|em|%)$/', $value)) {
+            return [new ValidationError("hero.{$key}", 'Must be a CSS length (e.g. 1rem or 0px).', 'invalid')];
+        }
+
+        return [];
     }
 
     /**

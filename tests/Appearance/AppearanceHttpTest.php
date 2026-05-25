@@ -70,6 +70,8 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertNull($payload['widget_locale']);
         self::assertSame('#2563eb', $payload['theme']['color_primary']);
+        self::assertSame('0.5rem', $payload['theme']['radius_panel']);
+        self::assertSame('0.5rem', $payload['theme']['radius_control']);
         self::assertSame('100%', $payload['theme']['max_width']);
         self::assertNull($payload['hero']['title']);
         self::assertTrue($payload['hero']['show_title']);
@@ -77,6 +79,9 @@ final class AppearanceHttpTest extends TestCase
         self::assertTrue($payload['hero']['show_cta']);
         self::assertTrue($payload['hero']['show_image']);
         self::assertNull($payload['hero']['image_url']);
+        self::assertSame('1rem', $payload['hero']['gap_after']);
+        self::assertSame('1rem', $payload['hero']['padding_bottom']);
+        self::assertTrue($payload['hero']['show_divider']);
         self::assertSame('silhouette', $payload['chat']['user_avatar_mode']);
         self::assertTrue($payload['chat']['show_assistant_avatar']);
         self::assertSame('32rem', $payload['layout']['max_height']);
@@ -225,13 +230,7 @@ final class AppearanceHttpTest extends TestCase
 
         $response = $this->authorizedPut($token, [
             'widget_locale' => null,
-            'theme' => [
-                'color_primary' => '#2563eb',
-                'color_surface' => '#ffffff',
-                'color_text' => '#1f2937',
-                'radius_md' => '0.5rem',
-                'max_width' => '100%',
-            ],
+            'theme' => self::defaultThemePayload(),
             'hero' => [
                 'title' => null,
                 'description' => null,
@@ -368,16 +367,19 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('ja', $payload['widget_locale']);
         self::assertSame('#dc2626', $payload['theme']['color_primary']);
+        self::assertSame('0.75rem', $payload['theme']['radius_panel']);
+        self::assertSame('0.75rem', $payload['theme']['radius_control']);
 
         $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
         self::assertSame('ja', $public['widget_locale']);
         self::assertSame('#dc2626', $public['theme']['color_primary']);
+        self::assertSame('0.75rem', $public['theme']['radius_panel']);
         self::assertSame('480px', $public['theme']['max_width']);
         self::assertSame('商品について質問', $public['hero']['title']);
         self::assertFalse($public['hero']['show_cta']);
     }
 
-    public function test_update_rejects_invalid_hero_show_flag(): void
+    public function test_update_accepts_legacy_radius_md(): void
     {
         $token = $this->loginToken();
 
@@ -387,9 +389,51 @@ final class AppearanceHttpTest extends TestCase
                 'color_primary' => '#2563eb',
                 'color_surface' => '#ffffff',
                 'color_text' => '#1f2937',
-                'radius_md' => '0.5rem',
+                'radius_md' => '1rem',
                 'max_width' => '100%',
             ],
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('1rem', $payload['theme']['radius_panel']);
+        self::assertSame('1rem', $payload['theme']['radius_control']);
+    }
+
+    public function test_admin_can_update_hero_spacing(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => [
+                ...self::defaultHeroPayload(),
+                'gap_after' => '0px',
+                'padding_bottom' => '0.5rem',
+                'show_divider' => false,
+            ],
+            'chat' => self::defaultChatPayload(),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('0px', $payload['hero']['gap_after']);
+        self::assertSame('0.5rem', $payload['hero']['padding_bottom']);
+        self::assertFalse($payload['hero']['show_divider']);
+    }
+
+    public function test_update_rejects_invalid_hero_show_flag(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
             'hero' => [
                 'title' => null,
                 'description' => null,
@@ -464,20 +508,11 @@ final class AppearanceHttpTest extends TestCase
                 'color_primary' => 'red',
                 'color_surface' => '#ffffff',
                 'color_text' => '#111827',
-                'radius_md' => '0.5rem',
+                'radius_panel' => '0.5rem',
+                'radius_control' => '0.5rem',
                 'max_width' => '100%',
             ],
-            'hero' => [
-                'title' => null,
-                'description' => null,
-                'cta_label' => null,
-                'show_title' => true,
-                'show_description' => true,
-                'show_cta' => true,
-                'show_image' => true,
-                'image_url' => null,
-                'image_alt' => null,
-            ],
+            'hero' => self::defaultHeroPayload(),
             'chat' => self::defaultChatPayload(),
         ]);
 
@@ -493,7 +528,8 @@ final class AppearanceHttpTest extends TestCase
             'color_primary' => '#2563eb',
             'color_surface' => '#ffffff',
             'color_text' => '#1f2937',
-            'radius_md' => '0.5rem',
+            'radius_panel' => '0.5rem',
+            'radius_control' => '0.5rem',
             'max_width' => '100%',
         ];
     }
@@ -513,6 +549,9 @@ final class AppearanceHttpTest extends TestCase
             'show_image' => true,
             'image_url' => null,
             'image_alt' => null,
+            'gap_after' => '1rem',
+            'padding_bottom' => '1rem',
+            'show_divider' => true,
         ];
     }
 

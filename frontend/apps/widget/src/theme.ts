@@ -6,7 +6,8 @@ export const DEFAULT_WIDGET_THEME: WidgetTheme = {
   color_primary: '#2563eb',
   color_surface: '#ffffff',
   color_text: '#1f2937',
-  radius_md: '0.5rem',
+  radius_panel: '0.5rem',
+  radius_control: '0.5rem',
   max_width: '100%',
 };
 
@@ -14,8 +15,14 @@ export function applyWidgetTheme(root: HTMLElement, theme: WidgetTheme): void {
   root.style.setProperty(cssVars.colorPrimary, theme.color_primary);
   root.style.setProperty(cssVars.colorSurface, theme.color_surface);
   root.style.setProperty(cssVars.colorText, theme.color_text);
-  root.style.setProperty(cssVars.radiusMd, theme.radius_md);
+  root.style.setProperty(cssVars.radiusPanel, theme.radius_panel);
+  root.style.setProperty(cssVars.radiusControl, theme.radius_control);
   root.style.setProperty(cssVars.maxWidth, theme.max_width);
+}
+
+export function applyWidgetHeroSpacing(root: HTMLElement, hero: WidgetHero): void {
+  root.style.setProperty(cssVars.heroGapAfter, hero.gap_after);
+  root.style.setProperty(cssVars.heroPaddingBottom, hero.padding_bottom);
 }
 
 export function readPreviewThemeFromSearchParams(): WidgetTheme | null {
@@ -24,18 +31,29 @@ export function readPreviewThemeFromSearchParams(): WidgetTheme | null {
   }
 
   const params = new URLSearchParams(window.location.search);
-  const keys = ['color_primary', 'color_surface', 'color_text', 'radius_md', 'max_width'] as const;
+  const keys = [
+    'color_primary',
+    'color_surface',
+    'color_text',
+    'radius_panel',
+    'radius_control',
+    'radius_md',
+    'max_width',
+  ] as const;
   const hasOverride = keys.some((key) => params.get(key) !== null);
 
   if (!hasOverride) {
     return null;
   }
 
+  const legacyRadius = params.get('radius_md') ?? DEFAULT_WIDGET_THEME.radius_panel;
+
   return {
     color_primary: params.get('color_primary') ?? DEFAULT_WIDGET_THEME.color_primary,
     color_surface: params.get('color_surface') ?? DEFAULT_WIDGET_THEME.color_surface,
     color_text: params.get('color_text') ?? DEFAULT_WIDGET_THEME.color_text,
-    radius_md: params.get('radius_md') ?? DEFAULT_WIDGET_THEME.radius_md,
+    radius_panel: params.get('radius_panel') ?? legacyRadius,
+    radius_control: params.get('radius_control') ?? legacyRadius,
     max_width: params.get('max_width') ?? DEFAULT_WIDGET_THEME.max_width,
   };
 }
@@ -66,6 +84,9 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     'hero_show_image',
     'hero_image_url',
     'hero_image_alt',
+    'hero_gap_after',
+    'hero_padding_bottom',
+    'hero_show_divider',
   ] as const;
   const hasOverride = keys.some((key) => params.get(key) !== null);
 
@@ -83,6 +104,9 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     show_image: readPreviewShowFlag(params, 'hero_show_image', DEFAULT_WIDGET_HERO.show_image),
     image_url: params.get('hero_image_url'),
     image_alt: params.get('hero_image_alt'),
+    gap_after: params.get('hero_gap_after') ?? DEFAULT_WIDGET_HERO.gap_after,
+    padding_bottom: params.get('hero_padding_bottom') ?? DEFAULT_WIDGET_HERO.padding_bottom,
+    show_divider: readPreviewShowFlag(params, 'hero_show_divider', DEFAULT_WIDGET_HERO.show_divider),
   };
 }
 

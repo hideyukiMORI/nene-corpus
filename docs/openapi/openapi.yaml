@@ -965,7 +965,8 @@ components:
         - color_primary
         - color_surface
         - color_text
-        - radius_md
+        - radius_panel
+        - radius_control
         - max_width
       properties:
         color_primary:
@@ -980,9 +981,18 @@ components:
           type: string
           pattern: '^#[0-9A-Fa-f]{6}$'
           example: '#1f2937'
-        radius_md:
+        radius_panel:
           type: string
           example: 0.5rem
+          description: Border radius of the chat panel outer frame.
+        radius_control:
+          type: string
+          example: 0.5rem
+          description: Border radius of inputs, buttons, bubbles, and hero controls.
+        radius_md:
+          type: string
+          deprecated: true
+          description: Legacy alias; use radius_panel and radius_control. Accepted on write as fallback only.
         max_width:
           type: string
           example: 100%
@@ -1032,6 +1042,18 @@ components:
           type: boolean
           default: true
           description: When false, the hero image is hidden.
+        gap_after:
+          type: string
+          example: 1rem
+          description: Space between the hero block and the message list (CSS length; 0 removes the gap).
+        padding_bottom:
+          type: string
+          example: 1rem
+          description: Padding below hero content, above the optional divider line.
+        show_divider:
+          type: boolean
+          default: true
+          description: When false, hides the divider line under the hero block.
         image_url:
           type:
             - string

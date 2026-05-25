@@ -20,6 +20,7 @@ import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type Ms
 import { adminApiBase } from './config';
 import { APPEARANCE_CHAT_TOGGLE_FALLBACK } from './appearanceChatToggleFallback';
 import { APPEARANCE_HERO_TOGGLE_FALLBACK } from './appearanceHeroToggleFallback';
+import { APPEARANCE_HERO_SPACING_FALLBACK } from './appearanceHeroSpacingFallback';
 import { EmbedSnippetSection } from './EmbedSnippetSection';
 import { HelpLabel } from './HelpLabel';
 import { readFileAsBase64 } from './fileBase64';
@@ -34,6 +35,17 @@ const HERO_TOGGLE_MSG = {
   showCtaHelp: 'admin.appearance.heroShowCtaHelp',
   showImage: 'admin.appearance.heroShowImage',
   showImageHelp: 'admin.appearance.heroShowImageHelp',
+} as const satisfies Record<string, MsgKey>;
+
+/** Literal keys — do not read `Msg.admin.appearance` hero spacing at module init (Vite HMR may serve stale `keys.ts`). */
+const HERO_SPACING_MSG = {
+  spacingTitle: 'admin.appearance.heroSpacingTitle',
+  gapAfter: 'admin.appearance.heroGapAfter',
+  gapAfterHelp: 'admin.appearance.heroGapAfterHelp',
+  paddingBottom: 'admin.appearance.heroPaddingBottom',
+  paddingBottomHelp: 'admin.appearance.heroPaddingBottomHelp',
+  showDivider: 'admin.appearance.heroShowDivider',
+  showDividerHelp: 'admin.appearance.heroShowDividerHelp',
 } as const satisfies Record<string, MsgKey>;
 
 /** Literal keys — do not read `Msg.admin.appearance` chat toggles at module init (Vite HMR may serve stale `keys.ts`). */
@@ -61,6 +73,9 @@ interface HeroFormState {
   show_description: boolean;
   show_cta: boolean;
   show_image: boolean;
+  gap_after: string;
+  padding_bottom: string;
+  show_divider: boolean;
 }
 
 const EMPTY_HERO_FORM: HeroFormState = {
@@ -73,6 +88,9 @@ const EMPTY_HERO_FORM: HeroFormState = {
   show_description: true,
   show_cta: true,
   show_image: true,
+  gap_after: '1rem',
+  padding_bottom: '1rem',
+  show_divider: true,
 };
 
 interface ChatFormState {
@@ -95,7 +113,8 @@ const DEFAULT_THEME: WidgetTheme = {
   color_primary: '#2563eb',
   color_surface: '#ffffff',
   color_text: '#1f2937',
-  radius_md: '0.5rem',
+  radius_panel: '0.5rem',
+  radius_control: '0.5rem',
   max_width: '100%',
 };
 
@@ -125,6 +144,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const t = useMsg();
   const { locale } = useLocale();
   const heroToggleFallback = APPEARANCE_HERO_TOGGLE_FALLBACK[locale];
+  const heroSpacingFallback = APPEARANCE_HERO_SPACING_FALLBACK[locale];
   const chatAppearanceFallback = APPEARANCE_CHAT_TOGGLE_FALLBACK[locale];
 
   const resolveAppearanceCopy = useMemo(
@@ -160,6 +180,36 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       ),
     };
   }, [resolveAppearanceCopy, heroToggleFallback]);
+
+  const heroSpacingCopy = useMemo(() => {
+    return {
+      spacingTitle: resolveAppearanceCopy(
+        HERO_SPACING_MSG.spacingTitle,
+        heroSpacingFallback.spacingTitle,
+      ),
+      gapAfter: resolveAppearanceCopy(HERO_SPACING_MSG.gapAfter, heroSpacingFallback.gapAfter),
+      gapAfterHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.gapAfterHelp,
+        heroSpacingFallback.gapAfterHelp,
+      ),
+      paddingBottom: resolveAppearanceCopy(
+        HERO_SPACING_MSG.paddingBottom,
+        heroSpacingFallback.paddingBottom,
+      ),
+      paddingBottomHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.paddingBottomHelp,
+        heroSpacingFallback.paddingBottomHelp,
+      ),
+      showDivider: resolveAppearanceCopy(
+        HERO_SPACING_MSG.showDivider,
+        heroSpacingFallback.showDivider,
+      ),
+      showDividerHelp: resolveAppearanceCopy(
+        HERO_SPACING_MSG.showDividerHelp,
+        heroSpacingFallback.showDividerHelp,
+      ),
+    };
+  }, [resolveAppearanceCopy, heroSpacingFallback]);
 
   const chatAppearanceCopy = useMemo(() => {
     return {
@@ -255,6 +305,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       show_description: settings.hero.show_description,
       show_cta: settings.hero.show_cta,
       show_image: settings.hero.show_image,
+      gap_after: settings.hero.gap_after,
+      padding_bottom: settings.hero.padding_bottom,
+      show_divider: settings.hero.show_divider,
     });
     setChatForm({
       user_avatar_mode: settings.chat.user_avatar_mode,
@@ -340,6 +393,9 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       show_image: heroForm.show_image,
       image_url: heroForm.image_url.trim() === '' ? null : heroForm.image_url.trim(),
       image_alt: heroForm.image_alt.trim() === '' ? null : heroForm.image_alt.trim(),
+      gap_after: heroForm.gap_after.trim(),
+      padding_bottom: heroForm.padding_bottom.trim(),
+      show_divider: heroForm.show_divider,
     };
   }
 
@@ -612,6 +668,45 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 disabled={!heroForm.show_cta}
               />
             </div>
+            <div className="mt-4 space-y-3 border-t border-border pt-4">
+              <h4 className="text-sm font-medium text-fg">{heroSpacingCopy.spacingTitle}</h4>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{heroSpacingCopy.gapAfter}</span>
+                <span className="mt-0.5 block text-xs nc-text-muted">{heroSpacingCopy.gapAfterHelp}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="text"
+                  value={heroForm.gap_after}
+                  onChange={(event) => updateHeroField('gap_after', event.target.value)}
+                  placeholder="1rem"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{heroSpacingCopy.paddingBottom}</span>
+                <span className="mt-0.5 block text-xs nc-text-muted">
+                  {heroSpacingCopy.paddingBottomHelp}
+                </span>
+                <input
+                  className="nc-input mt-1"
+                  type="text"
+                  value={heroForm.padding_bottom}
+                  onChange={(event) => updateHeroField('padding_bottom', event.target.value)}
+                  placeholder="1rem"
+                />
+              </label>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  className="mt-1"
+                  type="checkbox"
+                  checked={heroForm.show_divider}
+                  onChange={(event) => updateHeroField('show_divider', event.target.checked)}
+                />
+                <span>
+                  <span className="font-medium text-fg">{heroSpacingCopy.showDivider}</span>
+                  <span className="mt-0.5 block nc-text-muted">{heroSpacingCopy.showDividerHelp}</span>
+                </span>
+              </label>
+            </div>
           </div>
           <div className="space-y-3 rounded-admin border border-border p-4">
             <div>
@@ -806,12 +901,25 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               onChange={(value) => updateThemeField('color_text', value)}
             />
             <label className="block text-sm">
-              <span className="font-medium text-fg">{t(Msg.admin.appearance.radiusMd)}</span>
+              <span className="font-medium text-fg">
+                {t(resolveMsgKey(Msg.admin.appearance.radiusPanel, 'admin.appearance.radiusPanel'))}
+              </span>
               <input
                 className="nc-input"
                 type="text"
-                value={theme.radius_md}
-                onChange={(event) => updateThemeField('radius_md', event.target.value)}
+                value={theme.radius_panel}
+                onChange={(event) => updateThemeField('radius_panel', event.target.value)}
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium text-fg">
+                {t(resolveMsgKey(Msg.admin.appearance.radiusControl, 'admin.appearance.radiusControl'))}
+              </span>
+              <input
+                className="nc-input"
+                type="text"
+                value={theme.radius_control}
+                onChange={(event) => updateThemeField('radius_control', event.target.value)}
               />
             </label>
             <label className="block text-sm">

@@ -7,7 +7,7 @@ import { ChatHero } from './ChatHero';
 import { ChatMessageRow, ChatPendingRow } from './ChatMessageRow';
 import { hasHeroContent, resolveHeroDisplay } from './resolveHeroDisplay';
 import { useChatSession } from './useChatSession';
-import { applyWidgetTheme } from './theme';
+import { applyWidgetHeroSpacing, applyWidgetTheme } from './theme';
 
 export interface EmbedWidgetProps {
   apiBase?: string;
@@ -33,6 +33,8 @@ export function EmbedWidget({
   const inputRef = useRef<HTMLInputElement>(null);
   const { turns, isLoading, isReady, error, sendMessage } = useChatSession({ apiBase });
   const [draft, setDraft] = useState('');
+  const resolvedHero: WidgetHero = hero ?? DEFAULT_WIDGET_HERO;
+  const resolvedChat: WidgetChat = chat ?? DEFAULT_WIDGET_CHAT;
 
   useEffect(() => {
     if (bare || rootRef.current === null || theme === undefined) {
@@ -40,7 +42,8 @@ export function EmbedWidget({
     }
 
     applyWidgetTheme(rootRef.current, theme);
-  }, [bare, theme]);
+    applyWidgetHeroSpacing(rootRef.current, resolvedHero);
+  }, [bare, theme, resolvedHero]);
 
   useEffect(() => {
     const container = messagesRef.current;
@@ -62,8 +65,6 @@ export function EmbedWidget({
     inputRef.current?.focus();
   }
 
-  const resolvedHero: WidgetHero = hero ?? DEFAULT_WIDGET_HERO;
-  const resolvedChat: WidgetChat = chat ?? DEFAULT_WIDGET_CHAT;
   const heroDisplay = resolveHeroDisplay(resolvedHero, t);
   const showHero = turns.length === 0 && !isLoading && hasHeroContent(heroDisplay);
 
