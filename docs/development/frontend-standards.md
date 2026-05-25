@@ -58,6 +58,7 @@ frontend/
 - Supported locales match NENE2 docs: `en`, `ja`, `fr`, `zh-Hans`, `pt-BR`, `de`.
 - OpenAPI / API error `code` / Problem Details stay **English** (NENE2 language policy); only client UI is localized.
 - Wrap admin and widget roots with `LocaleProvider`. Admin: `nene-corpus.admin.locale`; widget: `nene-corpus.widget.locale`. Initial locale: `localStorage` → browser language → `en`.
+- Admin header exposes a locale `<select>` (`LocaleSelector`) — preference is **localStorage only** (no server persistence).
 - Use `formatTimestamp(value, locale)` for locale-aware dates.
 - Pair labels with optional help via `HelpLabel` (`label` + `help` strings from `Msg.*Help` keys). Tooltip opens on hover and keyboard focus; use `\n` in help strings for line breaks. CSV column mapping also has a collapsible `ColumnMappingGuide` accordion after preview.
 

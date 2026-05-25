@@ -20,6 +20,7 @@ export const zhHans = defineMessages({
   'sourceStatus.ready': '就绪',
   'sourceStatus.failed': '失败',
   'admin.app.title': 'NeNe Corpus 管理后台',
+  'admin.app.language': '管理后台语言',
   'admin.app.healthUnavailable': '无法获取 API 状态',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': '管理员登录',

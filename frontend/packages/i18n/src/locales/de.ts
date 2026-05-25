@@ -20,6 +20,7 @@ export const de = defineMessages({
   'sourceStatus.ready': 'Bereit',
   'sourceStatus.failed': 'Fehlgeschlagen',
   'admin.app.title': 'NeNe Corpus Admin',
+  'admin.app.language': 'Admin-Sprache',
   'admin.app.healthUnavailable': 'API-Status nicht verfügbar',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': 'Admin-Anmeldung',

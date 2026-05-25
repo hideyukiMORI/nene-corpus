@@ -5,6 +5,7 @@ import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
+import { LocaleSelector } from './LocaleSelector';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
@@ -47,18 +48,21 @@ export function App() {
                 : t(Msg.admin.app.healthUnavailable)}
             </p>
           </div>
-          {profile && (
-            <div className="flex items-center gap-3 text-sm">
-              <span className="text-slate-600">{profile.email}</span>
-              <button
-                className="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-50"
-                type="button"
-                onClick={logout}
-              >
-                {t(Msg.common.signOut)}
-              </button>
-            </div>
-          )}
+          <div className="flex flex-wrap items-center justify-end gap-3 text-sm">
+            <LocaleSelector />
+            {profile && (
+              <>
+                <span className="text-slate-600">{profile.email}</span>
+                <button
+                  className="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-50"
+                  type="button"
+                  onClick={logout}
+                >
+                  {t(Msg.common.signOut)}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">

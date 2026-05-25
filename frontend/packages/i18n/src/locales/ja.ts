@@ -20,6 +20,7 @@ export const ja = defineMessages({
   'sourceStatus.ready': '準備完了',
   'sourceStatus.failed': '失敗',
   'admin.app.title': 'NeNe Corpus 管理画面',
+  'admin.app.language': '管理画面の言語',
   'admin.app.healthUnavailable': 'API の状態を取得できません',
   'admin.app.healthStatus': '{service} — {status}',
   'admin.auth.title': '管理者ログイン',
