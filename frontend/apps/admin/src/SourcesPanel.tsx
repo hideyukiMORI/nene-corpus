@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { listSources, type SourceListItem } from '@nene-corpus/api-client';
+import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
+import { SOURCE_STATUS_MSG, SOURCE_TYPE_MSG } from './i18nLabels';
 
 interface SourcesPanelProps {
   token: string;
@@ -7,6 +9,8 @@ interface SourcesPanelProps {
 }
 
 export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
+  const t = useMsg();
+  const { locale } = useLocale();
   const [sources, setSources] = useState<SourceListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
         }
       } catch (cause: unknown) {
         if (!cancelled) {
-          setError(cause instanceof Error ? cause.message : 'Failed to load sources.');
+          setError(cause instanceof Error ? cause.message : t(Msg.admin.sources.loadFailed));
         }
       } finally {
         if (!cancelled) {
@@ -40,30 +44,30 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [token, reloadKey]);
+  }, [token, reloadKey, t]);
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="font-medium">Sources</h2>
-        <p className="text-sm text-slate-600">Corpus uploads and ingestion status.</p>
+        <h2 className="font-medium">{t(Msg.admin.sources.title)}</h2>
+        <p className="text-sm text-slate-600">{t(Msg.admin.sources.subtitle)}</p>
       </div>
-      {isLoading && <p className="px-4 py-6 text-sm text-slate-600">Loading sources…</p>}
+      {isLoading && <p className="px-4 py-6 text-sm text-slate-600">{t(Msg.admin.sources.loading)}</p>}
       {error !== null && <p className="px-4 py-6 text-sm text-red-600">{error}</p>}
       {!isLoading && error === null && sources.length === 0 && (
-        <p className="px-4 py-6 text-sm text-slate-600">No sources yet. Upload a CSV or PDF above.</p>
+        <p className="px-4 py-6 text-sm text-slate-600">{t(Msg.admin.sources.empty)}</p>
       )}
       {!isLoading && sources.length > 0 && (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-left text-slate-600">
               <tr>
-                <th className="px-4 py-2 font-medium">Name</th>
-                <th className="px-4 py-2 font-medium">Type</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Documents</th>
-                <th className="px-4 py-2 font-medium">Chunks</th>
-                <th className="px-4 py-2 font-medium">Updated</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnName)}</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnType)}</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnStatus)}</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnDocuments)}</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnChunks)}</th>
+                <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnUpdated)}</th>
               </tr>
             </thead>
             <tbody>
@@ -71,14 +75,16 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
                 <tr key={source.source_id} className="border-t border-slate-100">
                   <td className="px-4 py-2 font-medium">{source.name}</td>
                   <td className="px-4 py-2 uppercase text-xs tracking-wide text-slate-500">
-                    {source.source_type}
+                    {t(SOURCE_TYPE_MSG[source.source_type])}
                   </td>
                   <td className="px-4 py-2">
                     <StatusBadge status={source.status} />
                   </td>
                   <td className="px-4 py-2 tabular-nums">{source.document_count}</td>
                   <td className="px-4 py-2 tabular-nums">{source.chunk_count}</td>
-                  <td className="px-4 py-2 text-slate-600">{formatTimestamp(source.updated_at)}</td>
+                  <td className="px-4 py-2 text-slate-600">
+                    {formatTimestamp(source.updated_at, locale)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -90,6 +96,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
 }
 
 function StatusBadge({ status }: { status: SourceListItem['status'] }) {
+  const t = useMsg();
   const styles: Record<SourceListItem['status'], string> = {
     pending: 'bg-slate-100 text-slate-700',
     processing: 'bg-amber-100 text-amber-800',
@@ -99,19 +106,9 @@ function StatusBadge({ status }: { status: SourceListItem['status'] }) {
 
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${styles[status]}`}>
-      {status}
+      {t(SOURCE_STATUS_MSG[status])}
     </span>
   );
-}
-
-function formatTimestamp(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleString();
 }
 
 interface LoginFormProps {
@@ -120,6 +117,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ error, onLogin }: LoginFormProps) {
+  const t = useMsg();
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,11 +135,11 @@ export function LoginForm({ error, onLogin }: LoginFormProps) {
 
   return (
     <section className="mx-auto max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-medium">Admin login</h2>
-      <p className="mt-1 text-sm text-slate-600">Sign in with your operator credentials.</p>
+      <h2 className="text-lg font-medium">{t(Msg.admin.auth.title)}</h2>
+      <p className="mt-1 text-sm text-slate-600">{t(Msg.admin.auth.subtitle)}</p>
       <form className="mt-4 space-y-4" onSubmit={(event) => void handleSubmit(event)}>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">Email</span>
+          <span className="font-medium text-slate-700">{t(Msg.admin.auth.email)}</span>
           <input
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
             type="email"
@@ -152,7 +150,7 @@ export function LoginForm({ error, onLogin }: LoginFormProps) {
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">Password</span>
+          <span className="font-medium text-slate-700">{t(Msg.admin.auth.password)}</span>
           <input
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
             type="password"
@@ -168,7 +166,7 @@ export function LoginForm({ error, onLogin }: LoginFormProps) {
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Signing in…' : 'Sign in'}
+          {isSubmitting ? t(Msg.admin.auth.submitting) : t(Msg.admin.auth.submit)}
         </button>
       </form>
     </section>

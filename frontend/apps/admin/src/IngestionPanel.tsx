@@ -7,6 +7,7 @@ import {
   type PreviewCsvIngestionResponse,
   type PreviewPdfIngestionResponse,
 } from '@nene-corpus/api-client';
+import { Msg, useMsg } from '@nene-corpus/i18n';
 import { detectSourceType, readFileAsBase64 } from './fileBase64';
 
 interface IngestionPanelProps {
@@ -15,6 +16,7 @@ interface IngestionPanelProps {
 }
 
 export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
+  const t = useMsg();
   const [name, setName] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [csvPreview, setCsvPreview] = useState<PreviewCsvIngestionResponse | null>(null);
@@ -52,7 +54,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
     event.preventDefault();
 
     if (file === null || sourceType === null) {
-      setError('Choose a CSV or PDF file.');
+      setError(t(Msg.admin.ingestion.chooseFile));
       return;
     }
 
@@ -75,7 +77,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
         setCsvPreview(null);
       }
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : 'Preview failed.');
+      setError(cause instanceof Error ? cause.message : t(Msg.admin.ingestion.previewFailed));
     } finally {
       setIsPreviewing(false);
     }
@@ -89,7 +91,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
     const trimmedName = name.trim();
 
     if (trimmedName === '') {
-      setError('Source name is required.');
+      setError(t(Msg.admin.ingestion.sourceNameRequired));
       return;
     }
 
@@ -117,13 +119,17 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
 
       const result = await createSource(token, payload);
       setSuccess(
-        `Ingested "${result.name}" — ${result.document_count} documents, ${result.chunk_count} chunks.`,
+        t(Msg.admin.ingestion.ingestResult, {
+          name: result.name,
+          documentCount: result.document_count,
+          chunkCount: result.chunk_count,
+        }),
       );
       handleFileChange(null);
       setName('');
       onUploaded();
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : 'Ingestion failed.');
+      setError(cause instanceof Error ? cause.message : t(Msg.admin.ingestion.ingestionFailed));
     } finally {
       setIsSubmitting(false);
     }
@@ -141,22 +147,22 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="font-medium">Upload source</h2>
-        <p className="text-sm text-slate-600">Add CSV or PDF files to the corpus.</p>
+        <h2 className="font-medium">{t(Msg.admin.ingestion.title)}</h2>
+        <p className="text-sm text-slate-600">{t(Msg.admin.ingestion.subtitle)}</p>
       </div>
       <form className="space-y-4 px-4 py-4" onSubmit={(event) => void handlePreview(event)}>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">Source name</span>
+          <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.sourceName)}</span>
           <input
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Product catalog"
+            placeholder={t(Msg.admin.ingestion.sourceNamePlaceholder)}
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-700">File</span>
+          <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.file)}</span>
           <input
             className="mt-1 block w-full text-sm text-slate-600"
             type="file"
@@ -165,7 +171,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
           />
         </label>
         {sourceType === null && file !== null && (
-          <p className="text-sm text-red-600">Only .csv and .pdf files are supported.</p>
+          <p className="text-sm text-red-600">{t(Msg.admin.ingestion.unsupportedFile)}</p>
         )}
         {file !== null && sourceType !== null && csvPreview === null && pdfPreview === null && (
           <button
@@ -173,7 +179,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
             type="submit"
             disabled={isPreviewing}
           >
-            {isPreviewing ? 'Previewing…' : 'Preview file'}
+            {isPreviewing ? t(Msg.admin.ingestion.previewing) : t(Msg.admin.ingestion.previewFile)}
           </button>
         )}
       </form>
@@ -181,7 +187,10 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       {csvPreview !== null && (
         <div className="space-y-4 border-t border-slate-200 px-4 py-4">
           <p className="text-sm text-slate-600">
-            {csvPreview.row_count} rows · delimiter &quot;{csvPreview.detected_delimiter}&quot;
+            {t(Msg.admin.ingestion.csvSummary, {
+              count: csvPreview.row_count,
+              delimiter: csvPreview.detected_delimiter,
+            })}
           </p>
           <ColumnMappingEditor
             headers={csvPreview.headers}
@@ -198,7 +207,9 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
 
       {pdfPreview !== null && (
         <div className="space-y-3 border-t border-slate-200 px-4 py-4">
-          <p className="text-sm text-slate-600">{pdfPreview.page_count} pages detected</p>
+          <p className="text-sm text-slate-600">
+            {t(Msg.admin.ingestion.pdfPageCount, { count: pdfPreview.page_count })}
+          </p>
           <pre className="max-h-40 overflow-auto rounded-md bg-slate-50 p-3 text-xs text-slate-700 whitespace-pre-wrap">
             {pdfPreview.sample_text.slice(0, 800)}
             {pdfPreview.sample_text.length > 800 ? '…' : ''}
@@ -214,7 +225,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
             disabled={isSubmitting || (sourceType === 'csv' && contentColumns.length === 0)}
             onClick={() => void handleIngest()}
           >
-            {isSubmitting ? 'Ingesting…' : 'Ingest into corpus'}
+            {isSubmitting ? t(Msg.admin.ingestion.ingesting) : t(Msg.admin.ingestion.ingest)}
           </button>
         </div>
       )}
@@ -261,10 +272,12 @@ function ColumnMappingEditor({
   onToggleContent,
   onToggleMetadata,
 }: ColumnMappingEditorProps) {
+  const t = useMsg();
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <label className="block text-sm">
-        <span className="font-medium text-slate-700">Title column</span>
+        <span className="font-medium text-slate-700">{t(Msg.admin.ingestion.titleColumn)}</span>
         <select
           className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
           value={titleColumn}
@@ -278,7 +291,7 @@ function ColumnMappingEditor({
         </select>
       </label>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">Content columns</legend>
+        <legend className="font-medium text-slate-700">{t(Msg.admin.ingestion.contentColumns)}</legend>
         <div className="mt-2 space-y-1">
           {headers.map((header) => (
             <label key={header} className="flex items-center gap-2">
@@ -293,7 +306,7 @@ function ColumnMappingEditor({
         </div>
       </fieldset>
       <fieldset className="text-sm">
-        <legend className="font-medium text-slate-700">Metadata columns (optional)</legend>
+        <legend className="font-medium text-slate-700">{t(Msg.admin.ingestion.metadataColumns)}</legend>
         <div className="mt-2 space-y-1">
           {headers.map((header) => (
             <label key={header} className="flex items-center gap-2">

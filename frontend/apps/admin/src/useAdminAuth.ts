@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getAdminMe, loginAdmin, type AdminMeResponse } from '@nene-corpus/api-client';
+import { Msg, useMsg } from '@nene-corpus/i18n';
 import { clearAdminToken, loadStoredAdminToken, storeAdminToken } from './authStorage';
 
 interface UseAdminAuthResult {
@@ -12,6 +13,7 @@ interface UseAdminAuthResult {
 }
 
 export function useAdminAuth(): UseAdminAuthResult {
+  const t = useMsg();
   const [token, setToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<AdminMeResponse | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -54,20 +56,23 @@ export function useAdminAuth(): UseAdminAuthResult {
     };
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    setError(null);
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setError(null);
 
-    try {
-      const response = await loginAdmin(email, password);
-      storeAdminToken(response.access_token);
-      const me = await getAdminMe(response.access_token);
-      setToken(response.access_token);
-      setProfile(me);
-    } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : 'Login failed.');
-      throw cause;
-    }
-  }, []);
+      try {
+        const response = await loginAdmin(email, password);
+        storeAdminToken(response.access_token);
+        const me = await getAdminMe(response.access_token);
+        setToken(response.access_token);
+        setProfile(me);
+      } catch (cause: unknown) {
+        setError(cause instanceof Error ? cause.message : t(Msg.admin.auth.loginFailed));
+        throw cause;
+      }
+    },
+    [t],
+  );
 
   const logout = useCallback(() => {
     clearAdminToken();
