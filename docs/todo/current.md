@@ -7,6 +7,7 @@ Last updated: 2026-05-25
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 開始 — chat sessions/messages schema (#17), chunk search (#19)
 - Primary persona と公開 corpus 訴求を product vision に追記 (#23)
+- sync JSON chat API + Claude tool_use (#25)
 
 ## 状態サマリー
 
@@ -17,8 +18,8 @@ Last updated: 2026-05-25
 **Phase 2 — Chat & Citations: 進行中（2026-05-25）**
 
 - ✅ Sessions + messages schema（#17）
-- 🔜 Chunk search（#19）
-- 🔜 Sync JSON chat
+- ✅ Chunk search（#19）
+- 🔜 Sync JSON chat（#25 — PR 待ち）
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -44,8 +45,8 @@ Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05
 | --- | --- |
 | Schema: chat_sessions, chat_messages | ✅ (#17) |
 | Chunk search (full-text) | ✅ (#19) |
-| Claude tool_use + citations | 🔜 |
-| Sync JSON chat API | 🔜 |
+| Claude tool_use + citations | 🔜 (#25) |
+| Sync JSON chat API | 🔜 (#25) |
 | Rate limiting | 🔜 |
 
 Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-05-chat-and-citations.md)
@@ -85,8 +86,8 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 | --- | --- | --- |
 | ~~P0~~ | ~~Sessions + messages~~ | ✅ #17 |
 | ~~P0~~ | ~~Chunk search~~ | ✅ #19 |
-| P0 | Claude tool_use + citations | サーバー側のみ |
-| P0 | Sync JSON chat API | Tier A/B 共通デフォルト（ADR 0003） — 用語: **sync JSON chat** |
+| P0 | Claude tool_use + citations | #25 進行中 |
+| P0 | Sync JSON chat API | #25 進行中 |
 | P1 | Rate limiting | session / IP — 用語: **rate limit** |
 | P2 | SSE streaming | Tier B 任意 — 用語: **SSE streaming** |
 
