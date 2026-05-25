@@ -28,11 +28,14 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
         $themeData = $input->body['theme'];
         /** @var array<string, mixed> $heroData */
         $heroData = is_array($input->body['hero'] ?? null) ? $input->body['hero'] : [];
+        /** @var array<string, mixed> $chatData */
+        $chatData = is_array($input->body['chat'] ?? null) ? $input->body['chat'] : [];
 
         $settings = new AppearanceSettings(
             widgetLocale: $normalizedLocale,
             theme: WidgetTheme::fromArray($themeData),
             hero: WidgetHero::fromArray($heroData),
+            chat: WidgetChat::fromArray($chatData),
         );
 
         $this->repository->save($settings);

@@ -4,6 +4,7 @@ import type {
   UpdateAppearanceSettingsRequest,
   UploadHeroImageRequest,
   UploadHeroImageResponse,
+  WidgetChat,
   WidgetHero,
   WidgetTheme,
 } from './types';
@@ -78,10 +79,16 @@ function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): voi
   }
 }
 
+function appendChatPreviewParams(params: URLSearchParams, chat: WidgetChat): void {
+  params.set('chat_user_avatar_mode', chat.user_avatar_mode);
+  params.set('chat_show_assistant_avatar', chat.show_assistant_avatar ? '1' : '0');
+}
+
 export function buildWidgetPreviewSearchParams(
   theme: WidgetTheme,
   widgetLocale: string | null,
   hero?: WidgetHero | null,
+  chat?: WidgetChat | null,
 ): string {
   const params = new URLSearchParams({
     color_primary: theme.color_primary,
@@ -98,6 +105,10 @@ export function buildWidgetPreviewSearchParams(
 
   if (hero !== null && hero !== undefined) {
     appendHeroPreviewParams(params, hero);
+  }
+
+  if (chat !== null && chat !== undefined) {
+    appendChatPreviewParams(params, chat);
   }
 
   return params.toString();

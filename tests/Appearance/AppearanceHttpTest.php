@@ -77,6 +77,50 @@ final class AppearanceHttpTest extends TestCase
         self::assertTrue($payload['hero']['show_cta']);
         self::assertTrue($payload['hero']['show_image']);
         self::assertNull($payload['hero']['image_url']);
+        self::assertSame('silhouette', $payload['chat']['user_avatar_mode']);
+        self::assertTrue($payload['chat']['show_assistant_avatar']);
+    }
+
+    public function test_admin_can_update_chat_display_settings(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => [
+                'user_avatar_mode' => 'none',
+                'show_assistant_avatar' => false,
+            ],
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('none', $payload['chat']['user_avatar_mode']);
+        self::assertFalse($payload['chat']['show_assistant_avatar']);
+
+        $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
+        self::assertSame('none', $public['chat']['user_avatar_mode']);
+        self::assertFalse($public['chat']['show_assistant_avatar']);
+    }
+
+    public function test_update_rejects_invalid_user_avatar_mode(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => [
+                'user_avatar_mode' => 'photo',
+                'show_assistant_avatar' => true,
+            ],
+        ]);
+
+        self::assertSame(422, $response->getStatusCode());
     }
 
     public function test_admin_can_upload_and_serve_hero_image(): void
@@ -145,6 +189,7 @@ final class AppearanceHttpTest extends TestCase
                 'image_url' => $uploadPayload['image_url'],
                 'image_alt' => 'Product logo',
             ],
+            'chat' => self::defaultChatPayload(),
         ]);
 
         self::assertSame(200, $response->getStatusCode());
@@ -193,7 +238,11 @@ final class AppearanceHttpTest extends TestCase
                 'show_title' => true,
                 'show_description' => true,
                 'show_cta' => false,
+                'show_image' => true,
+                'image_url' => null,
+                'image_alt' => null,
             ],
+            'chat' => self::defaultChatPayload(),
         ]);
 
         $payload = $this->decodeJson($response);
@@ -231,7 +280,10 @@ final class AppearanceHttpTest extends TestCase
                 'show_description' => true,
                 'show_cta' => true,
                 'show_image' => true,
+                'image_url' => null,
+                'image_alt' => null,
             ],
+            'chat' => self::defaultChatPayload(),
         ]);
 
         self::assertSame(422, $response->getStatusCode());
@@ -258,10 +310,56 @@ final class AppearanceHttpTest extends TestCase
                 'show_description' => true,
                 'show_cta' => true,
                 'show_image' => true,
+                'image_url' => null,
+                'image_alt' => null,
             ],
+            'chat' => self::defaultChatPayload(),
         ]);
 
         self::assertSame(422, $response->getStatusCode());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function defaultThemePayload(): array
+    {
+        return [
+            'color_primary' => '#2563eb',
+            'color_surface' => '#ffffff',
+            'color_text' => '#1f2937',
+            'radius_md' => '0.5rem',
+            'max_width' => '100%',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function defaultHeroPayload(): array
+    {
+        return [
+            'title' => null,
+            'description' => null,
+            'cta_label' => null,
+            'show_title' => true,
+            'show_description' => true,
+            'show_cta' => true,
+            'show_image' => true,
+            'image_url' => null,
+            'image_alt' => null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function defaultChatPayload(): array
+    {
+        return [
+            'user_avatar_mode' => 'silhouette',
+            'show_assistant_avatar' => true,
+        ];
     }
 
     private function loginToken(): string

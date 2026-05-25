@@ -1,6 +1,6 @@
 import { cssVars } from '@nene-corpus/tokens';
-import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
-import { DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
+import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
 
 export const DEFAULT_WIDGET_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -83,5 +83,30 @@ export function readPreviewHeroFromSearchParams(): WidgetHero | null {
     show_image: readPreviewShowFlag(params, 'hero_show_image', DEFAULT_WIDGET_HERO.show_image),
     image_url: params.get('hero_image_url'),
     image_alt: params.get('hero_image_alt'),
+  };
+}
+
+export function readPreviewChatFromSearchParams(): WidgetChat | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('chat_user_avatar_mode');
+  const showAssistant = params.get('chat_show_assistant_avatar');
+
+  if (mode === null && showAssistant === null) {
+    return null;
+  }
+
+  const userAvatarMode =
+    mode === 'none' || mode === 'silhouette' ? mode : DEFAULT_WIDGET_CHAT.user_avatar_mode;
+
+  return {
+    user_avatar_mode: userAvatarMode,
+    show_assistant_avatar:
+      showAssistant === null
+        ? DEFAULT_WIDGET_CHAT.show_assistant_avatar
+        : showAssistant === '1' || showAssistant === 'true',
   };
 }

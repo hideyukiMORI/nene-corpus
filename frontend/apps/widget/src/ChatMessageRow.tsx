@@ -1,4 +1,4 @@
-import type { Citation } from '@nene-corpus/api-client';
+import type { Citation, WidgetChat } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 
@@ -43,17 +43,38 @@ function UserAvatar() {
 
 export interface ChatMessageRowProps {
   turn: ChatBubbleTurn;
+  chat: WidgetChat;
 }
 
-export function ChatMessageRow({ turn }: ChatMessageRowProps) {
+export function ChatMessageRow({ turn, chat }: ChatMessageRowProps) {
   const t = useMsg();
   const isUser = turn.role === 'user';
+  const showUserAvatar = isUser && chat.user_avatar_mode === 'silhouette';
+  const showAssistantAvatar = !isUser && chat.show_assistant_avatar;
+  const showTail = showUserAvatar || showAssistantAvatar;
+
+  const rowClassName = [
+    nc.chatRow,
+    isUser ? nc.chatRowUser : nc.chatRowAssistant,
+    isUser && chat.user_avatar_mode === 'none' ? nc.chatRowNoUserAvatar : '',
+    !isUser && !chat.show_assistant_avatar ? nc.chatRowNoAssistantAvatar : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const bubbleClassName = [
+    nc.chatBubble,
+    isUser ? nc.chatBubbleUser : nc.chatBubbleAssistant,
+    showTail ? nc.chatBubbleTailed : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={`${nc.chatRow} ${isUser ? nc.chatRowUser : nc.chatRowAssistant}`}>
-      {!isUser && <AssistantAvatar />}
+    <div className={rowClassName}>
+      {showAssistantAvatar && <AssistantAvatar />}
       <article
-        className={`${nc.chatBubble} ${isUser ? nc.chatBubbleUser : nc.chatBubbleAssistant}`}
+        className={bubbleClassName}
         aria-label={isUser ? t(Msg.role.user) : t(Msg.role.assistant)}
       >
         <p className={nc.chatBubbleText}>{turn.content}</p>
@@ -72,18 +93,38 @@ export function ChatMessageRow({ turn }: ChatMessageRowProps) {
           </ul>
         )}
       </article>
-      {isUser && <UserAvatar />}
+      {showUserAvatar && <UserAvatar />}
     </div>
   );
 }
 
-export function ChatPendingRow() {
+export interface ChatPendingRowProps {
+  chat: WidgetChat;
+}
+
+export function ChatPendingRow({ chat }: ChatPendingRowProps) {
   const t = useMsg();
+  const showAssistantAvatar = chat.show_assistant_avatar;
+  const rowClassName = [
+    nc.chatRow,
+    nc.chatRowAssistant,
+    !showAssistantAvatar ? nc.chatRowNoAssistantAvatar : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const bubbleClassName = [
+    nc.chatBubble,
+    nc.chatBubbleAssistant,
+    nc.chatBubblePending,
+    showAssistantAvatar ? nc.chatBubbleTailed : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={`${nc.chatRow} ${nc.chatRowAssistant}`}>
-      <AssistantAvatar />
-      <div className={`${nc.chatBubble} ${nc.chatBubbleAssistant} ${nc.chatBubblePending}`}>
+    <div className={rowClassName}>
+      {showAssistantAvatar && <AssistantAvatar />}
+      <div className={bubbleClassName}>
         <span className={nc.chatTypingDots} aria-hidden="true">
           <span />
           <span />

@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
-import { DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
+import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { ChatHero } from './ChatHero';
@@ -13,9 +13,10 @@ export interface EmbedWidgetProps {
   apiBase?: string;
   theme?: WidgetTheme;
   hero?: WidgetHero;
+  chat?: WidgetChat;
 }
 
-export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
+export function EmbedWidget({ apiBase, theme, hero, chat }: EmbedWidgetProps = {}) {
   const t = useMsg();
   const rootRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,7 @@ export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
   }
 
   const resolvedHero: WidgetHero = hero ?? DEFAULT_WIDGET_HERO;
+  const resolvedChat: WidgetChat = chat ?? DEFAULT_WIDGET_CHAT;
   const heroDisplay = resolveHeroDisplay(resolvedHero, t);
   const showHero = turns.length === 0 && !isLoading && hasHeroContent(heroDisplay);
 
@@ -59,9 +61,9 @@ export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
         {showHero && <ChatHero hero={resolvedHero} apiBase={apiBase} onCtaClick={focusInput} />}
         <div ref={messagesRef} className={nc.chatMessages} aria-live="polite">
           {turns.map((turn) => (
-            <ChatMessageRow key={turn.id} turn={turn} />
+            <ChatMessageRow key={turn.id} turn={turn} chat={resolvedChat} />
           ))}
-          {isLoading && <ChatPendingRow />}
+          {isLoading && <ChatPendingRow chat={resolvedChat} />}
         </div>
         {error !== null && <p className={nc.chatError}>{error}</p>}
         <form className={nc.chatForm} onSubmit={(event) => void handleSubmit(event)}>

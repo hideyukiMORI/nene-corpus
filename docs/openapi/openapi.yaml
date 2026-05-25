@@ -982,6 +982,23 @@ components:
             - 'null'
           maxLength: 120
           description: Optional alt text for the hero image.
+    WidgetChat:
+      type: object
+      required:
+        - user_avatar_mode
+        - show_assistant_avatar
+      properties:
+        user_avatar_mode:
+          type: string
+          enum:
+            - silhouette
+            - none
+          default: silhouette
+          description: User message avatar display. `silhouette` shows a generic icon; `none` hides it.
+        show_assistant_avatar:
+          type: boolean
+          default: true
+          description: When false, the assistant avatar is hidden in chat bubbles.
     UploadHeroImageRequest:
       type: object
       required:
@@ -1007,6 +1024,7 @@ components:
         - widget_locale
         - theme
         - hero
+        - chat
       properties:
         widget_locale:
           type:
@@ -1024,11 +1042,14 @@ components:
           $ref: '#/components/schemas/WidgetTheme'
         hero:
           $ref: '#/components/schemas/WidgetHero'
+        chat:
+          $ref: '#/components/schemas/WidgetChat'
     UpdateAppearanceSettingsRequest:
       type: object
       required:
         - theme
         - hero
+        - chat
       properties:
         widget_locale:
           type:
@@ -1046,6 +1067,8 @@ components:
           $ref: '#/components/schemas/WidgetTheme'
         hero:
           $ref: '#/components/schemas/WidgetHero'
+        chat:
+          $ref: '#/components/schemas/WidgetChat'
     PreviewCsvIngestionRequest:
       type: object
       required:
