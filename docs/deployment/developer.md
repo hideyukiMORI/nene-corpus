@@ -60,8 +60,6 @@ The installer:
 After install, add the widget on any page served from the **same origin**:
 
 ```html
-<link rel="stylesheet" href="/nene-corpus/widget.css" />
-<div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
 ```
 

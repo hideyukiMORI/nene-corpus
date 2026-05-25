@@ -13,12 +13,12 @@ import {
 } from '@nene-corpus/i18n';
 import '../../../themes/default.css';
 import { WidgetChrome } from './WidgetChrome';
+import { prepareEmbedMount } from './embedBootstrap';
 import { resolveWidgetConfig } from './config';
 import { readPreviewLayoutFromSearchParams } from './layout';
 import { DEFAULT_WIDGET_THEME, readPreviewChatFromSearchParams, readPreviewHeroFromSearchParams, readPreviewThemeFromSearchParams } from './theme';
 import './widget.css';
 
-const mountId = 'nene-corpus-widget-root';
 const mountedAttr = 'data-nene-corpus-mounted';
 
 export interface WidgetInitOptions {
@@ -123,7 +123,7 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
 }
 
 function tryAutoInit(): void {
-  const container = document.getElementById(mountId);
+  const container = prepareEmbedMount();
 
   if (container === null || container.hasAttribute(mountedAttr)) {
     return;

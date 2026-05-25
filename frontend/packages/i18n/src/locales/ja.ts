@@ -157,7 +157,7 @@ export const ja = defineMessages({
   'admin.appearance.previewTitle': 'プレビュー',
   'admin.appearance.embedTitle': 'サイトへの埋め込み',
   'admin.appearance.embedSubtitle':
-    'この HTML を WordPress のカスタム HTML ブロック、テーマのフッター、同一オリジンのページに貼り付けてください。ウィジェットは自動で起動します。',
+    'WordPress のカスタム HTML ブロックやフッターなど、同一オリジンのページにこの script タグを 1 行貼るだけです。CSS の読み込みとチャット起動は widget.js が自動で行います。',
   'admin.appearance.embedCopy': 'スニペットをコピー',
   'admin.appearance.embedCopied': 'コピーしました',
   'admin.appearance.embedCopyFailed': 'クリップボードにコピーできませんでした。',
