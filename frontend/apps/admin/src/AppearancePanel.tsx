@@ -7,6 +7,7 @@ import {
   type WidgetTheme,
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
+import { adminApiBase } from './config';
 
 const DEFAULT_THEME: WidgetTheme = {
   color_primary: '#2563eb',
@@ -46,7 +47,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       setError(null);
 
       try {
-        const settings = await getAppearanceSettings(token);
+        const settings = await getAppearanceSettings(token, adminApiBase);
 
         if (!cancelled) {
           applySettings(settings);
@@ -88,7 +89,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       const saved = await updateAppearanceSettings(token, {
         widget_locale: widgetLocale === '' ? null : (widgetLocale as AppearanceSettingsResponse['widget_locale']),
         theme,
-      });
+      }, adminApiBase);
       applySettings(saved);
       setSuccess(t(Msg.admin.appearance.saveSuccess));
     } catch (cause: unknown) {

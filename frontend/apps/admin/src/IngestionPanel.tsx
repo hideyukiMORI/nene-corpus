@@ -8,6 +8,7 @@ import {
   type PreviewPdfIngestionResponse,
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
+import { adminApiBase } from './config';
 import { HelpLabel } from './HelpLabel';
 import { ColumnMappingGuide } from './ColumnMappingGuide';
 import { FileUploadField } from './FileUploadField';
@@ -69,13 +70,13 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
       const content = await readFileAsBase64(file);
 
       if (sourceType === 'csv') {
-        const preview = await previewCsvIngestion(token, file.name, content);
+        const preview = await previewCsvIngestion(token, file.name, content, adminApiBase);
         setCsvPreview(preview);
         setPdfPreview(null);
         setTitleColumn(preview.headers[0] ?? '');
         setContentColumns(preview.headers.length > 1 ? preview.headers.slice(1) : preview.headers);
       } else {
-        const preview = await previewPdfIngestion(token, file.name, content);
+        const preview = await previewPdfIngestion(token, file.name, content, adminApiBase);
         setPdfPreview(preview);
         setCsvPreview(null);
       }
@@ -120,7 +121,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
               content,
             };
 
-      const result = await createSource(token, payload);
+      const result = await createSource(token, payload, adminApiBase);
       setSuccess(
         t(Msg.admin.ingestion.ingestResult, {
           name: result.name,

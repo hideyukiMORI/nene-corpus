@@ -32,6 +32,7 @@ required_paths=(
   public_html/index.php
   public_html/install/index.html
   public_html/admin/index.html
+  public_html/admin/.htaccess
   public_html/widget.js
   public_html/widget.css
   vendor/autoload.php

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getAdminMe, loginAdmin, type AdminMeResponse } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { clearAdminToken, loadStoredAdminToken, storeAdminToken } from './authStorage';
+import { adminApiBase } from './config';
 
 interface UseAdminAuthResult {
   token: string | null;
@@ -30,7 +31,7 @@ export function useAdminAuth(): UseAdminAuthResult {
 
     async function restoreSession(): Promise<void> {
       try {
-        const me = await getAdminMe(stored!);
+        const me = await getAdminMe(stored!, adminApiBase);
 
         if (cancelled) {
           return;
@@ -61,9 +62,9 @@ export function useAdminAuth(): UseAdminAuthResult {
       setError(null);
 
       try {
-        const response = await loginAdmin(email, password);
+        const response = await loginAdmin(email, password, adminApiBase);
         storeAdminToken(response.access_token);
-        const me = await getAdminMe(response.access_token);
+        const me = await getAdminMe(response.access_token, adminApiBase);
         setToken(response.access_token);
         setProfile(me);
       } catch (cause: unknown) {
