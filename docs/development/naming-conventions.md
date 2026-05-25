@@ -200,7 +200,7 @@ Policy lands with `frontend/`. Until then, reserve:
 | Embed bundle | **`widget.js`** (fixed public file name) |
 | CSS | BEM-style or scoped modules; prefix block with `nene-corpus-` to avoid host site collisions |
 
-Full frontend standards: add `docs/development/frontend-standards.md` in the Phase 3 Issue that introduces `frontend/`.
+Full frontend standards: **`docs/development/frontend-standards.md`** (Phase 3).
 
 ---
 

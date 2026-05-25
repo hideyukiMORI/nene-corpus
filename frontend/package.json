@@ -1,0 +1,17 @@
+{
+  "name": "nene-corpus-frontend",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "check": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "dev:admin": "npm run dev -w @nene-corpus/admin",
+    "dev:widget": "npm run dev -w @nene-corpus/widget"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
