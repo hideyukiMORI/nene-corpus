@@ -151,6 +151,81 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/settings/llm:
+    get:
+      tags:
+        - Admin
+      summary: Get LLM settings
+      description: Returns masked Anthropic API key status, model, and max tokens. Never returns the full API key.
+      operationId: getLlmSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current LLM settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LlmSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Admin
+      summary: Update LLM settings
+      description: Validates connectivity, then updates ANTHROPIC_* values in `.env`. Omit or empty `api_key` to keep the current key.
+      operationId: updateLlmSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLlmSettingsRequest'
+      responses:
+        '200':
+          description: Updated LLM settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LlmSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/settings/llm/test:
+    post:
+      tags:
+        - Admin
+      summary: Test LLM connectivity
+      description: Sends a lightweight Anthropic Messages API request. Optional `api_key` tests a draft key before save.
+      operationId: testLlmConnection
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestLlmConnectionRequest'
+      responses:
+        '200':
+          description: Connection succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestLlmConnectionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/appearance:
     get:
       tags:
@@ -1199,6 +1274,56 @@ components:
           $ref: '#/components/schemas/WidgetChat'
         layout:
           $ref: '#/components/schemas/WidgetLayout'
+    LlmSettingsResponse:
+      type: object
+      required:
+        - configured
+        - api_key_masked
+        - model
+        - max_tokens
+      properties:
+        configured:
+          type: boolean
+        api_key_masked:
+          type:
+            - string
+            - 'null'
+        model:
+          type: string
+        max_tokens:
+          type: integer
+          minimum: 1
+          maximum: 8192
+    UpdateLlmSettingsRequest:
+      type: object
+      properties:
+        api_key:
+          type:
+            - string
+            - 'null'
+        model:
+          type: string
+        max_tokens:
+          type: integer
+          minimum: 1
+          maximum: 8192
+    TestLlmConnectionRequest:
+      type: object
+      properties:
+        api_key:
+          type:
+            - string
+            - 'null'
+        model:
+          type: string
+    TestLlmConnectionResponse:
+      type: object
+      required:
+        - ok
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
     UpdateAppearanceSettingsRequest:
       type: object
       required:

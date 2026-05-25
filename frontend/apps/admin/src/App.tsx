@@ -4,6 +4,7 @@ import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
+import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { HelpPanel } from './HelpPanel';
 import { LocaleSelector } from './LocaleSelector';
 import { ThemeToggle } from './ThemeToggle';
@@ -62,6 +63,7 @@ export function App() {
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
             <SourcesPanel token={token} reloadKey={sourcesReloadKey} />
             <ConversationLogsPanel token={token} />
+            <LlmSettingsPanel token={token} />
             <AppearancePanel token={token} />
             <HelpPanel />
           </>

@@ -202,3 +202,21 @@ export interface AppearanceSettingsResponse {
 }
 
 export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;
+
+export interface LlmSettingsResponse {
+  configured: boolean;
+  api_key_masked: string | null;
+  model: string;
+  max_tokens: number;
+}
+
+export interface UpdateLlmSettingsRequest {
+  api_key?: string | null;
+  model?: string;
+  max_tokens?: number;
+}
+
+export interface TestLlmConnectionRequest {
+  api_key?: string | null;
+  model?: string;
+}
