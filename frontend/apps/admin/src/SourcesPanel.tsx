@@ -98,7 +98,7 @@ export function SourcesPanel({ token, reloadKey = 0 }: SourcesPanelProps) {
                   </td>
                   <td className="px-4 py-2 tabular-nums">{source.document_count}</td>
                   <td className="px-4 py-2 tabular-nums">{source.chunk_count}</td>
-                  <td className="px-4 py-2 nc-text-muted">
+                  <td className="px-4 py-2 nc-text-timestamp">
                     {formatTimestamp(source.updated_at, locale)}
                   </td>
                 </tr>

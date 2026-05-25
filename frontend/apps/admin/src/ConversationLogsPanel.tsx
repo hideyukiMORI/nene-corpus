@@ -149,7 +149,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                     >
                       <td className="px-4 py-2 font-medium tabular-nums">#{session.session_id}</td>
                       <td className="px-4 py-2 tabular-nums">{session.message_count}</td>
-                      <td className="px-4 py-2 nc-text-muted">
+                      <td className="px-4 py-2 nc-text-timestamp">
                         {formatTimestamp(session.last_message_at ?? session.updated_at, locale)}
                       </td>
                     </tr>
@@ -180,7 +180,7 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                         : 'border-border bg-surface-muted'
                     }`}
                   >
-                    <div className="mb-1 flex items-center justify-between gap-2 nc-text-subtle uppercase tracking-wide">
+                    <div className="mb-1 flex items-center justify-between gap-2 nc-text-timestamp uppercase tracking-wide">
                       <span>{t(ROLE_MSG[message.role])}</span>
                       <time dateTime={message.created_at}>
                         {formatTimestamp(message.created_at, locale)}
