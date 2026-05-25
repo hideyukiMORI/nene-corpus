@@ -729,6 +729,35 @@ paths:
           $ref: '#/components/responses/DocumentNotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/documents/{id}/chunks:
+    get:
+      tags:
+        - Ingestion
+      summary: List document chunks
+      description: Read-only preview of searchable text segments indexed for a document.
+      operationId: listDocumentChunksById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Document chunks.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDocumentChunksResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/DocumentNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/chat/sessions:
     get:
       tags:
@@ -1684,6 +1713,41 @@ components:
         updated_at:
           type: string
           format: date-time
+    ListDocumentChunksResponse:
+      type: object
+      required:
+        - chunks
+      properties:
+        chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentChunkItem'
+    DocumentChunkItem:
+      type: object
+      required:
+        - chunk_id
+        - chunk_index
+        - content
+      properties:
+        chunk_id:
+          type: integer
+          format: int64
+        chunk_index:
+          type: integer
+          format: int32
+        content:
+          type: string
+        page_number:
+          type: integer
+          format: int32
+          nullable: true
+        section_label:
+          type: string
+          nullable: true
+        token_count:
+          type: integer
+          format: int32
+          nullable: true
     DocumentDetailResponse:
       type: object
       required:

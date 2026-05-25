@@ -1,6 +1,7 @@
 import { fetchJson } from './fetch-json';
 import type {
   DocumentDetailResponse,
+  ListDocumentChunksResponse,
   ListDocumentsResponse,
   UpdateDocumentRequest,
 } from './types';
@@ -21,6 +22,16 @@ export async function getDocument(
   apiBase = '',
 ): Promise<DocumentDetailResponse> {
   return fetchJson<DocumentDetailResponse>(`${apiBase}/admin/documents/${documentId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function listDocumentChunks(
+  token: string,
+  documentId: number,
+  apiBase = '',
+): Promise<ListDocumentChunksResponse> {
+  return fetchJson<ListDocumentChunksResponse>(`${apiBase}/admin/documents/${documentId}/chunks`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }

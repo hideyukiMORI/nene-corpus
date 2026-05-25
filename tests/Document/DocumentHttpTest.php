@@ -84,6 +84,16 @@ final class DocumentHttpTest extends TestCase
         self::assertSame('Return policy FAQ', $detail['title']);
         self::assertStringContainsString('Returns are accepted within 30 days.', $detail['content']);
 
+        $chunksResponse = $this->authorizedRequest('GET', '/admin/documents/' . $documentId . '/chunks');
+        $chunksPayload = $this->decodeJson($chunksResponse);
+
+        self::assertSame(200, $chunksResponse->getStatusCode());
+        self::assertNotEmpty($chunksPayload['chunks']);
+        self::assertStringContainsString(
+            'Returns are accepted within 30 days.',
+            (string) $chunksPayload['chunks'][0]['content'],
+        );
+
         $updateResponse = $this->authorizedRequest('PUT', '/admin/documents/' . $documentId, [
             'title' => 'Updated FAQ',
             'content' => 'Updated return window is 14 days.',

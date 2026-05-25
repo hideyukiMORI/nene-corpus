@@ -84,6 +84,9 @@ export const Msg = {
       deleteSuccess: 'admin.documents.deleteSuccess',
       deleteFailed: 'admin.documents.deleteFailed',
       loadFailed: 'admin.documents.loadFailed',
+      chunksTitle: 'admin.documents.chunksTitle',
+      chunksEmpty: 'admin.documents.chunksEmpty',
+      chunksLoadFailed: 'admin.documents.chunksLoadFailed',
     },
     ingestion: {
       title: 'admin.ingestion.title',
