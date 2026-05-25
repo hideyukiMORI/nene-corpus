@@ -106,6 +106,23 @@ CSV;
         self::assertSame('日本語テスト', $payload['sample_rows'][0][1]);
     }
 
+    public function test_preview_accepts_woocommerce_like_shift_jis_export(): void
+    {
+        $header = 'ID,Type,SKU,Name,Published,Description';
+        $row = mb_convert_encoding('1,simple,SKU-1,Widget,1,日本語の商品説明', 'SJIS-win', 'UTF-8');
+        $csv = $header . "\n" . $row . "\n";
+
+        $response = $this->authorizedPost('/admin/ingestion/csv/preview', [
+            'filename' => 'wc-product-export.csv',
+            'content' => base64_encode($csv),
+        ]);
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('日本語の商品説明', $payload['sample_rows'][0][5]);
+    }
+
     public function test_create_source_persists_corpus_rows(): void
     {
         $csv = <<<'CSV'
