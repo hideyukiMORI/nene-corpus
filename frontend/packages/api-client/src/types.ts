@@ -104,3 +104,17 @@ export interface ListChatSessionMessagesResponse {
   session_id: number;
   messages: ChatMessageListItem[];
 }
+
+export interface WidgetTheme {
+  color_primary: string;
+  color_surface: string;
+  color_text: string;
+  radius_md: string;
+}
+
+export interface AppearanceSettingsResponse {
+  widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;
+  theme: WidgetTheme;
+}
+
+export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;

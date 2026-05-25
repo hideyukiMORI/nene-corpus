@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NeNe Corpus API
-  version: 0.8.0
+  version: 0.9.0
   description: >
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
     Phase 2 adds consumer sync JSON chat with citations.
@@ -103,6 +103,69 @@ paths:
                     role: admin
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/appearance:
+    get:
+      tags:
+        - Admin
+      summary: Get widget appearance settings
+      description: Returns operator-configured embed widget theme and default locale.
+      operationId: getAppearanceSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current appearance settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppearanceSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Admin
+      summary: Update widget appearance settings
+      description: Saves embed widget theme CSS variables and optional default locale.
+      operationId: updateAppearanceSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppearanceSettingsRequest'
+      responses:
+        '200':
+          description: Updated appearance settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppearanceSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /widget/appearance:
+    get:
+      tags:
+        - System
+      summary: Public widget appearance
+      description: Read-only appearance settings for the embed widget bundle. No authentication.
+      operationId: getWidgetAppearance
+      responses:
+        '200':
+          description: Widget appearance settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppearanceSettingsResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /admin/ingestion/csv/preview:
@@ -620,6 +683,68 @@ components:
           format: email
         role:
           type: string
+    WidgetTheme:
+      type: object
+      required:
+        - color_primary
+        - color_surface
+        - color_text
+        - radius_md
+      properties:
+        color_primary:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: '#2563eb'
+        color_surface:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: '#ffffff'
+        color_text:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: '#1f2937'
+        radius_md:
+          type: string
+          example: 0.5rem
+    AppearanceSettingsResponse:
+      type: object
+      required:
+        - widget_locale
+        - theme
+      properties:
+        widget_locale:
+          type:
+            - string
+            - 'null'
+          enum:
+            - en
+            - ja
+            - fr
+            - zh-Hans
+            - pt-BR
+            - de
+            - null
+        theme:
+          $ref: '#/components/schemas/WidgetTheme'
+    UpdateAppearanceSettingsRequest:
+      type: object
+      required:
+        - theme
+      properties:
+        widget_locale:
+          type:
+            - string
+            - 'null'
+          enum:
+            - en
+            - ja
+            - fr
+            - zh-Hans
+            - pt-BR
+            - de
+            - null
+        theme:
+          $ref: '#/components/schemas/WidgetTheme'
     PreviewCsvIngestionRequest:
       type: object
       required:

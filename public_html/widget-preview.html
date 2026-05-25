@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeNe Corpus Widget Preview</title>
+    <link rel="stylesheet" href="/widget.css" />
+  </head>
+  <body>
+    <div id="nene-corpus-widget-root"></div>
+    <script src="/widget.js" defer></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        var target = document.getElementById('nene-corpus-widget-root');
+        if (target && window.NeneCorpusWidget) {
+          window.NeneCorpusWidget.init(target);
+        }
+      });
+    </script>
+  </body>
+</html>

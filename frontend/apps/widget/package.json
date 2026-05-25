@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nene-corpus/api-client": "*",
     "@nene-corpus/i18n": "*",
     "@nene-corpus/tokens": "*",
     "react": "^19.1.0",

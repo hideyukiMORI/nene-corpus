@@ -24,6 +24,7 @@ export default defineConfig({
     proxy: {
       '/health': 'http://localhost:8080',
       '/admin': 'http://localhost:8080',
+      '/widget': 'http://localhost:8080',
     },
   },
   build: {

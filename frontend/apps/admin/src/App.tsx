@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { fetchJson, type HealthResponse } from '@nene-corpus/api-client';
 import { Msg, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
-import { cssVars } from '@nene-corpus/tokens';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
+import { AppearancePanel } from './AppearancePanel';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
@@ -69,12 +69,7 @@ export function App() {
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
             <SourcesPanel token={token} reloadKey={sourcesReloadKey} />
             <ConversationLogsPanel token={token} />
-            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="font-medium">{t(Msg.admin.widgetPreview.title)}</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                {t(Msg.admin.widgetPreview.body, { cssVar: cssVars.colorPrimary })}
-              </p>
-            </section>
+            <AppearancePanel token={token} />
           </>
         )}
       </main>
