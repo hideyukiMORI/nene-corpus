@@ -8,7 +8,7 @@ Last updated: 2026-05-25
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
 - Phase 3+ バックログ追記 — オペレーター docs、テキスト取り込み、Widget UX 拡張
-- SSE 非ゴールを ADR・product docs に統一 (#97)
+- Tier A 完了 — web installer (#101)、release ZIP (#103)、shared-hosting docs (#105)
 
 ## 状態サマリー
 
@@ -16,7 +16,7 @@ Last updated: 2026-05-25
 
 **Phase 2 — Chat & Citations: 完了（2026-05-25）**
 
-**Phase 3 — Admin UI & Widget: 進行中（2026-05-25）**
+**Phase 3 — Admin UI & Widget: 完了（2026-05-25）**
 
 | 項目 | 状態 |
 | --- | --- |
@@ -25,7 +25,7 @@ Last updated: 2026-05-25
 | Widget i18n + Appearance settings | ✅ |
 | Admin i18n + locale fonts + light/dark theme | ✅ |
 | **Tier A web installer + release ZIP** | ✅ installer / ✅ ZIP build |
-| **Shared-hosting operator docs（installer 連動）** | 🔜 |
+| **Shared-hosting operator docs（installer 連動）** | ✅ |
 
 `composer check` / `npm run check --prefix frontend` / GitHub Actions CI green。
 
@@ -33,11 +33,7 @@ Last updated: 2026-05-25
 
 ## Phase 3 残り（Tier A）
 
-| 優先 | 項目 | 説明 |
-| --- | --- | --- |
-| P0 | **Web installer** | DB・管理者・API キー初回設定（ブラウザ完結） |
-| P0 | **Release ZIP** | `composer release:zip` — vendor 同梱、FTP アップロード想定 ✅ |
-| P1 | Shared-hosting docs 更新 | installer 手順と整合 |
+Tier A コア（installer、release ZIP、operator docs）は完了。Phase 3 milestone クローズ後、Phase 3+ バックログを再整理。
 
 Milestone: [`docs/milestones/2026-05-admin-ui-and-widget.md`](../milestones/2026-05-admin-ui-and-widget.md)
 
