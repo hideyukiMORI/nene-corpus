@@ -14,10 +14,11 @@ frontend/
   apps/widget/          # Consumer embed — BEM + CSS variables → widget.js
   packages/tokens/      # CSS var names + BEM class constants (shared)
   packages/api-client/  # snake_case API types + fetch helpers
+  packages/i18n/        # Message keys + locale catalogs + LocaleProvider
   themes/               # Widget theme files (swap to retheme)
 ```
 
-**Do not share styled React components** between admin and widget. Share **tokens** and **api-client** only.
+**Do not share styled React components** between admin and widget. Share **tokens**, **api-client**, and **i18n** (widget adopts i18n in a follow-up).
 
 ---
 
@@ -50,7 +51,18 @@ frontend/
 
 ---
 
-## 4. Build outputs
+## 4. Internationalization (`@nene-corpus/i18n`)
+
+- UI strings live in locale catalogs — **never hard-code user-facing copy** in components (migrate incrementally).
+- Message keys are defined once in `packages/i18n/src/keys.ts` as the `Msg` constant tree; components call `t(Msg.admin.sources.title)`.
+- Supported locales match NENE2 docs: `en`, `ja`, `fr`, `zh-Hans`, `pt-BR`, `de`.
+- OpenAPI / API error `code` / Problem Details stay **English** (NENE2 language policy); only client UI is localized.
+- Wrap admin (and later widget) roots with `LocaleProvider`. Initial locale: `localStorage` → browser language → `en`.
+- Use `formatTimestamp(value, locale)` for locale-aware dates.
+
+---
+
+## 5. Build outputs
 
 | App | Command | Output |
 | --- | --- | --- |
@@ -61,7 +73,7 @@ Public embed file name is fixed: **`widget.js`** (glossary: **embed widget**).
 
 ---
 
-## 5. Verification
+## 6. Verification
 
 ```bash
 npm install --prefix frontend
@@ -72,7 +84,7 @@ composer check   # backend unchanged
 
 ---
 
-## 6. Prohibited
+## 7. Prohibited
 
 - Tailwind inside `apps/widget/`
 - Importing widget CSS from admin (except iframe preview)

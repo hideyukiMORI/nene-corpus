@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchJson, type HealthResponse } from '@nene-corpus/api-client';
+import { toBcp47, useLocale } from '@nene-corpus/i18n';
 import { cssVars } from '@nene-corpus/tokens';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
@@ -7,9 +8,14 @@ import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { useAdminAuth } from './useAdminAuth';
 
 export function App() {
+  const { locale } = useLocale();
   const { token, profile, isReady, error, login, logout } = useAdminAuth();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [sourcesReloadKey, setSourcesReloadKey] = useState(0);
+
+  useEffect(() => {
+    document.documentElement.lang = toBcp47(locale);
+  }, [locale]);
 
   useEffect(() => {
     fetchJson<HealthResponse>('/health')
