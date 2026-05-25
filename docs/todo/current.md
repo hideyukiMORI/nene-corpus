@@ -9,9 +9,27 @@ Last updated: 2026-05-25
 
 ## 状態サマリー
 
-**Phase 0 — Governance & Foundation: 完了（2026-05-25）**
+**Phase 1 — Corpus & Ingestion: 進行中（2026-05-25）**
+
+- ✅ Schema: `sources`, `documents`, `chunks`（#7）
+- 🔜 Admin auth (JWT)
+- 🔜 CSV / PDF ingestion API
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
+
+---
+
+## Phase 1 進捗
+
+| 項目 | 状態 |
+| --- | --- |
+| Schema: sources, documents, chunks | ✅ (#7) |
+| Admin auth (JWT) | 🔜 |
+| CSV upload API | 🔜 |
+| PDF text extraction | 🔜 |
+| Reindex / delete source | 🔜 |
+
+Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05-corpus-ingestion.md)
 
 ---
 
@@ -32,8 +50,7 @@ Last updated: 2026-05-25
 
 | 優先 | 項目 | 説明 |
 | --- | --- | --- |
-| P0 | Issue 起票 + branch | 例: `feat/2-schema-sources-documents-chunks` |
-| P0 | Schema: sources, documents, chunks | 取り込み正本 |
+| ~~P0~~ | ~~Schema: sources, documents, chunks~~ | ✅ #7 |
 | P0 | Admin auth (JWT) | 管理 API 保護 |
 | P1 | CSV upload API | 列マッピング preview |
 | P1 | PDF text extraction | テキスト PDF のみ（Phase 1） |

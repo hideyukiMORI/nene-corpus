@@ -7,6 +7,9 @@ namespace NeneCorpus;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\DomainExceptionHandlerInterface;
+use NeneCorpus\Chunk\ChunkServiceProvider;
+use NeneCorpus\Document\DocumentServiceProvider;
+use NeneCorpus\Source\SourceServiceProvider;
 use Psr\Container\ContainerInterface;
 
 final readonly class ApplicationServiceProvider implements ServiceProviderInterface
@@ -18,6 +21,9 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
     public function register(ContainerBuilder $builder): void
     {
         $builder
+            ->addProvider(new SourceServiceProvider())
+            ->addProvider(new DocumentServiceProvider())
+            ->addProvider(new ChunkServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static fn (ContainerInterface $container): array => [],
