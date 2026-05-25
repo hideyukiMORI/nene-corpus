@@ -39,15 +39,9 @@ After install, add the **embed widget** on any **same-origin** page. Replace `/n
 <link rel="stylesheet" href="/nene-corpus/widget.css" />
 <div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    var target = document.getElementById('nene-corpus-widget-root');
-    if (target && window.NeneCorpusWidget) {
-      window.NeneCorpusWidget.init(target);
-    }
-  });
-</script>
 ```
+
+Copy the snippet from **Admin → Appearance** after sign-in. The widget auto-starts when the script loads.
 
 **Same origin** avoids CORS complexity on shared hosting. See [`shared-hosting.md`](./shared-hosting.md) for subdirectory and WordPress notes.
 

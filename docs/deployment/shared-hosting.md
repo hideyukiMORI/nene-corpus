@@ -137,17 +137,9 @@ Replace `/nene-corpus` with your **base path** if different (installer shows det
 <link rel="stylesheet" href="/nene-corpus/widget.css" />
 <div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    var target = document.getElementById('nene-corpus-widget-root');
-    if (target && window.NeneCorpusWidget) {
-      window.NeneCorpusWidget.init(target);
-    }
-  });
-</script>
 ```
 
-- `data-endpoint` — public API base path (same as base path; **no** `/api` suffix)
+- `data-endpoint` — public API base path (same as base path; **no** `/api` suffix). The widget **auto-starts** when the script loads — no extra init block required.
 - Widget appearance (colors, default language) — configure in Admin → Appearance
 
 The **embed widget** uses **sync JSON chat** (full reply + citations). A loading indicator and CSS motion appear while waiting — no token streaming.

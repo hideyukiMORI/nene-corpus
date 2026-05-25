@@ -8,12 +8,14 @@ import {
 } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
+import { EmbedSnippetSection } from './EmbedSnippetSection';
 
 const DEFAULT_THEME: WidgetTheme = {
   color_primary: '#2563eb',
   color_surface: '#ffffff',
   color_text: '#1f2937',
   radius_md: '0.5rem',
+  max_width: '100%',
 };
 
 const WIDGET_LOCALES = ['', 'en', 'ja', 'fr', 'zh-Hans', 'pt-BR', 'de'] as const;
@@ -174,6 +176,16 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 onChange={(event) => updateThemeField('radius_md', event.target.value)}
               />
             </label>
+            <label className="block text-sm">
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.maxWidth)}</span>
+              <input
+                className="nc-input"
+                type="text"
+                value={theme.max_width}
+                onChange={(event) => updateThemeField('max_width', event.target.value)}
+                placeholder="480px"
+              />
+            </label>
           </div>
           <div>
             <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.previewTitle)}</h3>
@@ -188,6 +200,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
           </button>
           {error !== null && <p className="text-sm text-red-600">{error}</p>}
           {success !== null && <p className="text-sm text-emerald-700">{success}</p>}
+          <EmbedSnippetSection />
         </form>
       )}
     </section>

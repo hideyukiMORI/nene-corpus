@@ -110,6 +110,7 @@ export interface WidgetTheme {
   color_surface: string;
   color_text: string;
   radius_md: string;
+  max_width: string;
 }
 
 export interface AppearanceSettingsResponse {

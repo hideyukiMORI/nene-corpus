@@ -63,17 +63,9 @@ After install, add the widget on any page served from the **same origin**:
 <link rel="stylesheet" href="/nene-corpus/widget.css" />
 <div id="nene-corpus-widget-root"></div>
 <script src="/nene-corpus/widget.js" data-endpoint="/nene-corpus" defer></script>
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    var target = document.getElementById('nene-corpus-widget-root');
-    if (target && window.NeneCorpusWidget) {
-      window.NeneCorpusWidget.init(target);
-    }
-  });
-</script>
 ```
 
-Replace `/nene-corpus` with the value from `GET /install/status` → `paths.api_base`.
+Replace `/nene-corpus` with the value from `GET /install/status` → `paths.api_base`. The widget auto-starts — copy the snippet from **Admin → Appearance** for your base path.
 
 ## Integrating from another backend
 

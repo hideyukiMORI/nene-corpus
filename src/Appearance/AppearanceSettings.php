@@ -21,7 +21,7 @@ final readonly class AppearanceSettings
     }
 
     /**
-     * @return array{widget_locale: string|null, theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string}}
+     * @return array{widget_locale: string|null, theme: array{color_primary: string, color_surface: string, color_text: string, radius_md: string, max_width: string}}
      */
     public function toArray(): array
     {

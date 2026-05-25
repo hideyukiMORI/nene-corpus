@@ -69,6 +69,7 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertNull($payload['widget_locale']);
         self::assertSame('#2563eb', $payload['theme']['color_primary']);
+        self::assertSame('100%', $payload['theme']['max_width']);
     }
 
     public function test_admin_can_update_appearance(): void
@@ -82,6 +83,7 @@ final class AppearanceHttpTest extends TestCase
                 'color_surface' => '#ffffff',
                 'color_text' => '#111827',
                 'radius_md' => '0.75rem',
+                'max_width' => '480px',
             ],
         ]);
 
@@ -94,6 +96,7 @@ final class AppearanceHttpTest extends TestCase
         $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
         self::assertSame('ja', $public['widget_locale']);
         self::assertSame('#dc2626', $public['theme']['color_primary']);
+        self::assertSame('480px', $public['theme']['max_width']);
     }
 
     public function test_update_rejects_invalid_color(): void
@@ -107,6 +110,7 @@ final class AppearanceHttpTest extends TestCase
                 'color_surface' => '#ffffff',
                 'color_text' => '#111827',
                 'radius_md' => '0.5rem',
+                'max_width' => '100%',
             ],
         ]);
 
