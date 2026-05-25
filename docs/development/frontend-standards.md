@@ -70,8 +70,10 @@ frontend/
 
 | App | Command | Output |
 | --- | --- | --- |
-| Admin | `npm run build -w @nene-corpus/admin` | `frontend/apps/admin/dist/` |
+| Admin (dev) | `npm run build -w @nene-corpus/admin` | `frontend/apps/admin/dist/` |
+| Admin (release) | `npm run build:release:admin` | `public_html/admin/` |
 | Widget | `npm run build -w @nene-corpus/widget` | `public_html/widget.js` (+ `widget.css`) |
+| **Tier A ZIP** | `composer release:zip` | `build/release/nene-corpus-<git-sha>.zip` |
 
 Public embed file name is fixed: **`widget.js`** (glossary: **embed widget**).
 
