@@ -2,7 +2,7 @@
 
 Goal: grounded consumer Q&A with cited responses via **sync JSON chat**.
 
-**Status: in progress**
+**Status: complete (2026-05-25)**
 
 Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 
@@ -16,7 +16,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 2.
 - [x] Claude tool_use orchestration (server-side) (#25)
 - [x] **sync JSON chat** endpoint + OpenAPI (#25)
 - [x] **Citation** payload in responses (#25)
-- [ ] Rate limiting (session / IP) (#29)
+- [x] Rate limiting (session / IP) (#29)
 
 ## Verification
 
