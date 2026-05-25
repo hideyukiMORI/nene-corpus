@@ -55,8 +55,30 @@ final readonly class AppearanceSettingsValidator
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'title', 120)];
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'description', 500)];
         $errors = [...$errors, ...$this->validateOptionalHeroField($hero, 'cta_label', 40)];
+        $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_title')];
+        $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_description')];
+        $errors = [...$errors, ...$this->validateOptionalHeroBool($hero, 'show_cta')];
 
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $hero
+     * @return list<ValidationError>
+     */
+    private function validateOptionalHeroBool(array $hero, string $key): array
+    {
+        if (!array_key_exists($key, $hero)) {
+            return [];
+        }
+
+        $value = $hero[$key];
+
+        if (is_bool($value)) {
+            return [];
+        }
+
+        return [new ValidationError("hero.{$key}", ucfirst(str_replace('_', ' ', $key)) . ' must be a boolean.', 'invalid')];
     }
 
     /**

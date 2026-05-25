@@ -1,9 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import type { WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
+import { DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { ChatHero } from './ChatHero';
 import { ChatMessageRow, ChatPendingRow } from './ChatMessageRow';
+import { hasHeroContent, resolveHeroDisplay } from './resolveHeroDisplay';
 import { useChatSession } from './useChatSession';
 import { applyWidgetTheme } from './theme';
 
@@ -47,8 +49,9 @@ export function EmbedWidget({ apiBase, theme, hero }: EmbedWidgetProps = {}) {
     inputRef.current?.focus();
   }
 
-  const resolvedHero: WidgetHero = hero ?? { title: null, description: null, cta_label: null };
-  const showHero = turns.length === 0 && !isLoading;
+  const resolvedHero: WidgetHero = hero ?? DEFAULT_WIDGET_HERO;
+  const heroDisplay = resolveHeroDisplay(resolvedHero, t);
+  const showHero = turns.length === 0 && !isLoading && hasHeroContent(heroDisplay);
 
   return (
     <div ref={rootRef} className={nc.widgetRoot}>

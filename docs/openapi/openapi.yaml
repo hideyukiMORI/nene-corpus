@@ -865,25 +865,40 @@ components:
         - title
         - description
         - cta_label
+        - show_title
+        - show_description
+        - show_cta
       properties:
         title:
           type:
             - string
             - 'null'
           maxLength: 120
-          description: Welcome title shown before the first message. Null uses widget i18n default.
+          description: Welcome title when `show_title` is true. Null uses widget i18n default.
         description:
           type:
             - string
             - 'null'
           maxLength: 500
-          description: Welcome description. Null uses widget i18n default.
+          description: Welcome description when `show_description` is true. Null uses widget i18n default.
         cta_label:
           type:
             - string
             - 'null'
           maxLength: 40
-          description: CTA button label that focuses the input. Null uses widget i18n default.
+          description: CTA label when `show_cta` is true. Null uses widget i18n default.
+        show_title:
+          type: boolean
+          default: true
+          description: When false, the welcome title is hidden.
+        show_description:
+          type: boolean
+          default: true
+          description: When false, the welcome description is hidden.
+        show_cta:
+          type: boolean
+          default: true
+          description: When false, the CTA button is hidden.
     AppearanceSettingsResponse:
       type: object
       required:

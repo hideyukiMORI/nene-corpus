@@ -117,7 +117,19 @@ export interface WidgetHero {
   title: string | null;
   description: string | null;
   cta_label: string | null;
+  show_title: boolean;
+  show_description: boolean;
+  show_cta: boolean;
 }
+
+export const DEFAULT_WIDGET_HERO: WidgetHero = {
+  title: null,
+  description: null,
+  cta_label: null,
+  show_title: true,
+  show_description: true,
+  show_cta: true,
+};
 
 export interface AppearanceSettingsResponse {
   widget_locale: 'en' | 'ja' | 'fr' | 'zh-Hans' | 'pt-BR' | 'de' | null;

@@ -4,6 +4,7 @@ export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingest
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
 export { fetchJson } from './fetch-json';
+export { DEFAULT_WIDGET_HERO } from './types';
 export type {
   AdminMeResponse,
   Citation,
