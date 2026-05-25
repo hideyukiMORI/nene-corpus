@@ -1,6 +1,6 @@
 import { cssVars } from '@nene-corpus/tokens';
-import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client';
-import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client';
+import type { WidgetChat, WidgetHero, WidgetTheme } from '@nene-corpus/api-client/types';
+import { DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_HERO } from '@nene-corpus/api-client/types';
 
 export const DEFAULT_WIDGET_THEME: WidgetTheme = {
   color_primary: '#2563eb',

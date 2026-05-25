@@ -85,6 +85,12 @@
   max-height: 24rem;
   overflow-y: auto;
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nene-corpus-chat__messages::-webkit-scrollbar {
+  display: none;
 }
 
 .nene-corpus-chat__row {

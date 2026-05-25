@@ -10,6 +10,8 @@ export default defineConfig({
   plugins: [react(), workspacePackageFullReload(appRoot)],
   resolve: {
     alias: {
+      '@nene-corpus/api-client/appearance': resolve(appRoot, '../../packages/api-client/src/appearance.ts'),
+      '@nene-corpus/api-client/types': resolve(appRoot, '../../packages/api-client/src/types.ts'),
       '@nene-corpus/api-client': resolve(appRoot, '../../packages/api-client/src/index.ts'),
       '@nene-corpus/i18n': resolve(appRoot, '../../packages/i18n/src/index.ts'),
       '@nene-corpus/tokens': resolve(appRoot, '../../packages/tokens/src/index.ts'),

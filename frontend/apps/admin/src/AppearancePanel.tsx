@@ -5,12 +5,14 @@ import {
   updateAppearanceSettings,
   uploadHeroImage,
   uploadAvatarImage,
-  type AppearanceSettingsResponse,
-  type UserAvatarMode,
-  type WidgetChat,
-  type WidgetHero,
-  type WidgetTheme,
-} from '@nene-corpus/api-client';
+} from '@nene-corpus/api-client/appearance';
+import type {
+  AppearanceSettingsResponse,
+  UserAvatarMode,
+  WidgetChat,
+  WidgetHero,
+  WidgetTheme,
+} from '@nene-corpus/api-client/types';
 import { Msg, resolveMsgKey, useLocale, useMsg, isUnresolvedTranslation, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 import { APPEARANCE_CHAT_TOGGLE_FALLBACK } from './appearanceChatToggleFallback';
