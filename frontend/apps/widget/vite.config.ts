@@ -4,8 +4,12 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    exclude: ['@nene-corpus/api-client', '@nene-corpus/tokens'],
+  },
   server: {
     port: 5174,
+    strictPort: true,
     proxy: {
       '/chat': 'http://localhost:8080',
     },
