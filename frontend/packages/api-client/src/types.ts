@@ -54,6 +54,37 @@ export interface ListSourcesResponse {
   sources: SourceListItem[];
 }
 
+export interface DocumentListItem {
+  document_id: number;
+  source_id: number;
+  title: string;
+  position: number;
+  chunk_count: number;
+  content_preview: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ListDocumentsResponse {
+  documents: DocumentListItem[];
+}
+
+export interface DocumentDetailResponse {
+  document_id: number;
+  source_id: number;
+  title: string;
+  position: number;
+  chunk_count: number;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateDocumentRequest {
+  title: string;
+  content: string;
+}
+
 export interface PreviewCsvIngestionResponse {
   headers: string[];
   sample_rows: string[][];

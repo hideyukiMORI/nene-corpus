@@ -11,7 +11,12 @@ interface DocumentRepositoryInterface
     /** @return list<Document> */
     public function findBySourceId(int $sourceId, int $limit, int $offset): array;
 
+    /** @return list<DocumentSummary> */
+    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset): array;
+
     public function save(Document $document): int;
+
+    public function update(Document $document): void;
 
     public function softDelete(int $id, string $deletedAt): void;
 }

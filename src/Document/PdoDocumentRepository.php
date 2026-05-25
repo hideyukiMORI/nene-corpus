@@ -38,6 +38,50 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
         return array_map(fn (array $row): Document => $this->mapRow($row), $rows);
     }
 
+    /** @return list<DocumentSummary> */
+    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset): array
+    {
+        $rows = $this->query->fetchAll(
+            <<<'SQL'
+                SELECT
+                    d.id, d.source_id, d.title, d.position, d.metadata_json,
+                    d.created_at, d.updated_at, d.is_deleted, d.deleted_at,
+                    (
+                        SELECT COUNT(*)
+                        FROM chunks c
+                        WHERE c.document_id = d.id
+                    ) AS chunk_count,
+                    (
+                        SELECT c.content
+                        FROM chunks c
+                        WHERE c.document_id = d.id
+                        ORDER BY c.chunk_index ASC, c.id ASC
+                        LIMIT 1
+                    ) AS first_chunk_content
+                FROM documents d
+                WHERE d.source_id = ? AND d.is_deleted = 0
+                ORDER BY d.position ASC, d.id ASC
+                LIMIT ? OFFSET ?
+                SQL,
+            [$sourceId, $limit, $offset],
+        );
+
+        return array_map(function (array $row): DocumentSummary {
+            $previewSource = isset($row['first_chunk_content']) ? (string) $row['first_chunk_content'] : '';
+            $preview = $previewSource;
+
+            if (mb_strlen($preview) > 120) {
+                $preview = mb_substr($preview, 0, 120) . '…';
+            }
+
+            return new DocumentSummary(
+                document: $this->mapRow($row),
+                chunkCount: (int) $row['chunk_count'],
+                contentPreview: $preview,
+            );
+        }, $rows);
+    }
+
     public function save(Document $document): int
     {
         $now = $this->now();
@@ -59,6 +103,24 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
         );
 
         return $this->query->lastInsertId();
+    }
+
+    public function update(Document $document): void
+    {
+        if ($document->id === null) {
+            throw new \InvalidArgumentException('Document id is required for update.');
+        }
+
+        $this->query->execute(
+            'UPDATE documents SET title = ?, position = ?, metadata_json = ?, updated_at = ? WHERE id = ? AND is_deleted = 0',
+            [
+                $document->title,
+                $document->position,
+                $document->metadataJson,
+                $this->now(),
+                $document->id,
+            ],
+        );
     }
 
     public function softDelete(int $id, string $deletedAt): void
