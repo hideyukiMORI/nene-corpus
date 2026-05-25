@@ -10,6 +10,7 @@ Last updated: 2026-05-25
 - sync JSON chat API + Claude tool_use (#25)
 - consumer chat rate limiting (#29)
 - **Phase 2 完了**
+- Phase 3 開始 — frontend monorepo scaffold (#33)
 
 ## 状態サマリー
 
@@ -23,6 +24,11 @@ Last updated: 2026-05-25
 - ✅ Chunk search（#19）
 - ✅ Sync JSON chat（#25）
 - ✅ Rate limiting（#29）
+
+**Phase 3 — Admin UI & Widget: 進行中（2026-05-25）**
+
+- 🔜 Frontend scaffold（#33 — PR 待ち）
+- 🔜 Admin screens + widget chat wiring
 
 `composer check` ローカル / GitHub Actions Backend CI ともに green。
 
@@ -53,6 +59,20 @@ Milestone: [`docs/milestones/2026-05-corpus-ingestion.md`](../milestones/2026-05
 | Rate limiting | ✅ (#29) |
 
 Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-05-chat-and-citations.md)
+
+---
+
+## Phase 3 進捗
+
+| 項目 | 状態 |
+| --- | --- |
+| Frontend monorepo scaffold | 🔜 (#33) |
+| Admin UI (sources, logs) | 🔜 |
+| embed widget + sync JSON chat | 🔜 |
+| Appearance settings | 🔜 |
+| Tier A installer + release ZIP | 🔜 |
+
+Milestone: [`docs/milestones/2026-05-admin-ui-and-widget.md`](../milestones/2026-05-admin-ui-and-widget.md)
 
 ---
 
@@ -96,6 +116,18 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 
 ---
 
+## Up Next — Phase 3（Admin & Widget）
+
+| 優先 | 項目 | 説明 |
+| --- | --- | --- |
+| P0 | Frontend scaffold | monorepo + frontend-standards（#33 進行中） |
+| P0 | Admin UI | sources, ingestion, logs |
+| P0 | embed widget | sync JSON chat 接続 |
+| P1 | Appearance settings | operator theme overrides |
+| P1 | Tier A installer + ZIP | shared hosting |
+
+---
+
 ## 設計原則（再掲）
 
 > **NeNe Records とは完全に分離。** 依存方向は `NeNe Corpus → NeNe Records API` のみ。
@@ -110,6 +142,7 @@ Milestone: [`docs/milestones/2026-05-chat-and-citations.md`](../milestones/2026-
 
 ```bash
 composer check
+npm run check --prefix frontend
 docker compose up --build -d
 curl -fsS http://localhost:8080/health
 curl -fsS http://localhost:8080/openapi.php

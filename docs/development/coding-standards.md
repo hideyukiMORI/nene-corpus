@@ -7,7 +7,7 @@ NeNe Corpus coding standards split by surface. **Full policies live in the dedic
 | **PHP / API / database** | [`backend-standards.md`](./backend-standards.md) |
 | **Naming (code, API, DB, tests)** | [`naming-conventions.md`](./naming-conventions.md) |
 | **Product terms (glossary)** | [`../explanation/glossary.md`](../explanation/glossary.md) |
-| **React / TypeScript admin & widget** | Phase 3 — policy will be added with `frontend/` |
+| **React / TypeScript admin & widget** | [`frontend-standards.md`](./frontend-standards.md) |
 | **NENE2 inheritance map** | [`../inheritance-from-nene2.md`](../inheritance-from-nene2.md) |
 
 **Framework baseline:** [NENE2 coding standards](https://github.com/hideyukiMORI/NENE2/blob/main/docs/development/coding-standards.md) — NeNe Corpus deviates only where local docs or ADRs say so.

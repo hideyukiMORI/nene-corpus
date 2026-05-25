@@ -1,0 +1,13 @@
+/**
+ * Default embed widget theme — swap this file to retheme without touching components.
+ * Operator overrides (Phase 3+) will inject these CSS variables at runtime.
+ */
+.nene-corpus-widget {
+  --nc-color-primary: #2563eb;
+  --nc-color-surface: #ffffff;
+  --nc-color-text: #1f2937;
+  --nc-font-family: system-ui, sans-serif;
+  --nc-font-size-base: 16px;
+  --nc-spacing-md: 1rem;
+  --nc-radius-md: 0.5rem;
+}
