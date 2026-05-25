@@ -12,7 +12,7 @@ Tracked by [`docs/roadmap.md`](../roadmap.md) Phase 1.
 - [x] Schema snapshots in `database/schema/`
 - [x] Domain entities + `Pdo*Repository` adapters + service providers
 - [x] Repository tests (SQLite `:memory:`)
-- [ ] Admin auth (JWT) for mutating routes
+- [x] Admin auth (JWT) for mutating routes (#9)
 - [ ] CSV upload API + column mapping preview
 - [ ] PDF text extraction (text PDF first)
 - [ ] Admin HTTP routes + OpenAPI
