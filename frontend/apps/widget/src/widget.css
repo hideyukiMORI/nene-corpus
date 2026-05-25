@@ -49,16 +49,6 @@
   width: 100%;
 }
 
-.nene-corpus-widget--fixed .nene-corpus-widget__panel {
-  margin-bottom: 0.75rem;
-}
-
-.nene-corpus-widget--top-right .nene-corpus-widget__panel,
-.nene-corpus-widget--top-left .nene-corpus-widget__panel {
-  margin-bottom: 0;
-  margin-top: 0.75rem;
-}
-
 .nene-corpus-chat__launcher {
   display: inline-flex;
   align-items: center;
