@@ -14,6 +14,7 @@ export { formatTimestamp, toBcp47 } from './format';
 export {
   DEFAULT_LOCALE,
   LOCALE_STORAGE_KEY,
+  WIDGET_LOCALE_STORAGE_KEY,
   SUPPORTED_LOCALES,
   type MessageCatalog,
   type MessageParams,

@@ -18,7 +18,7 @@ frontend/
   themes/               # Widget theme files (swap to retheme)
 ```
 
-**Do not share styled React components** between admin and widget. Share **tokens**, **api-client**, and **i18n** (widget adopts i18n in a follow-up).
+**Do not share styled React components** between admin and widget. Share **tokens**, **api-client**, and **i18n** (admin and widget both use `@nene-corpus/i18n`; separate `localStorage` keys).
 
 ---
 
@@ -57,7 +57,7 @@ frontend/
 - Message keys are defined once in `packages/i18n/src/keys.ts` as the `Msg` constant tree; components call `t(Msg.admin.sources.title)`.
 - Supported locales match NENE2 docs: `en`, `ja`, `fr`, `zh-Hans`, `pt-BR`, `de`.
 - OpenAPI / API error `code` / Problem Details stay **English** (NENE2 language policy); only client UI is localized.
-- Wrap admin (and later widget) roots with `LocaleProvider`. Initial locale: `localStorage` → browser language → `en`.
+- Wrap admin and widget roots with `LocaleProvider`. Admin: `nene-corpus.admin.locale`; widget: `nene-corpus.widget.locale`. Initial locale: `localStorage` → browser language → `en`.
 - Use `formatTimestamp(value, locale)` for locale-aware dates.
 - Pair labels with optional help via `HelpLabel` (`label` + `help` strings from `Msg.*Help` keys). Tooltip opens on hover and keyboard focus; use `\n` in help strings for line breaks. CSV column mapping also has a collapsible `ColumnMappingGuide` accordion after preview.
 

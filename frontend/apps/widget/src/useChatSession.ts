@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createChatSession, sendChatMessage } from '@nene-corpus/api-client';
 import type { Citation } from '@nene-corpus/api-client';
+import { Msg, useMsg } from '@nene-corpus/i18n';
 import { loadStoredSessionToken, resolveWidgetConfig, storeSessionToken } from './config';
 
 export interface ChatTurn {
@@ -19,6 +20,7 @@ interface UseChatSessionResult {
 }
 
 export function useChatSession(configOverride?: { apiBase?: string }): UseChatSessionResult {
+  const t = useMsg();
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +52,7 @@ export function useChatSession(configOverride?: { apiBase?: string }): UseChatSe
         setSessionToken(session.session_token);
       } catch (cause: unknown) {
         if (!cancelled) {
-          setError(cause instanceof Error ? cause.message : 'Failed to start chat session.');
+          setError(cause instanceof Error ? cause.message : t(Msg.widget.errors.sessionStartFailed));
         }
       }
     }
@@ -60,7 +62,7 @@ export function useChatSession(configOverride?: { apiBase?: string }): UseChatSe
     return () => {
       cancelled = true;
     };
-  }, [apiBase]);
+  }, [apiBase, t]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -90,12 +92,12 @@ export function useChatSession(configOverride?: { apiBase?: string }): UseChatSe
           },
         ]);
       } catch (cause: unknown) {
-        setError(cause instanceof Error ? cause.message : 'Failed to send message.');
+        setError(cause instanceof Error ? cause.message : t(Msg.widget.errors.sendFailed));
       } finally {
         setIsLoading(false);
       }
     },
-    [apiBase, isLoading, sessionToken],
+    [apiBase, isLoading, sessionToken, t],
   );
 
   return {

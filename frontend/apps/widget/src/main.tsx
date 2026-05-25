@@ -1,5 +1,11 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import {
+  LocaleProvider,
+  WIDGET_LOCALE_STORAGE_KEY,
+  toBcp47,
+  useLocale,
+} from '@nene-corpus/i18n';
 import '../../../themes/default.css';
 import { EmbedWidget } from './EmbedWidget';
 import './widget.css';
@@ -10,10 +16,22 @@ export interface WidgetInitOptions {
   apiBase?: string;
 }
 
+function WidgetRoot({ apiBase }: { apiBase?: string }) {
+  const { locale } = useLocale();
+
+  useEffect(() => {
+    document.documentElement.lang = toBcp47(locale);
+  }, [locale]);
+
+  return <EmbedWidget apiBase={apiBase} />;
+}
+
 export function init(target: HTMLElement, options?: WidgetInitOptions): void {
   createRoot(target).render(
     <StrictMode>
-      <EmbedWidget {...options} />
+      <LocaleProvider storageKey={WIDGET_LOCALE_STORAGE_KEY}>
+        <WidgetRoot apiBase={options?.apiBase} />
+      </LocaleProvider>
     </StrictMode>,
   );
 }

@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react';
+import { Msg, useMsg } from '@nene-corpus/i18n';
 import { nc } from '@nene-corpus/tokens';
 import { useChatSession } from './useChatSession';
 
@@ -7,6 +8,7 @@ export interface EmbedWidgetProps {
 }
 
 export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
+  const t = useMsg();
   const { turns, isLoading, isReady, error, sendMessage } = useChatSession({ apiBase });
   const [draft, setDraft] = useState('');
 
@@ -20,11 +22,11 @@ export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
 
   return (
     <div className={nc.widgetRoot}>
-      <section className={nc.chatPanel} aria-label="NeNe Corpus chat">
+      <section className={nc.chatPanel} aria-label={t(Msg.widget.chat.panelLabel)}>
         <div className={nc.chatMessages} aria-live="polite">
           {turns.length === 0 && (
             <div className={`${nc.chatBubble} ${nc.chatBubbleAssistant}`}>
-              Ask a question about our products.
+              {t(Msg.widget.chat.emptyPrompt)}
             </div>
           )}
           {turns.map((turn) => (
@@ -41,7 +43,9 @@ export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
                     <li key={citation.chunk_id} className={nc.chatCitation}>
                       <span className={nc.chatCitationExcerpt}>{citation.excerpt}</span>
                       {citation.page_number !== undefined && (
-                        <span className={nc.chatCitationMeta}>p.{citation.page_number}</span>
+                        <span className={nc.chatCitationMeta}>
+                          {t(Msg.widget.chat.citationPage, { page: citation.page_number })}
+                        </span>
                       )}
                     </li>
                   ))}
@@ -51,7 +55,7 @@ export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
           ))}
           {isLoading && (
             <div className={`${nc.chatBubble} ${nc.chatBubbleAssistant} ${nc.chatBubblePending}`}>
-              Searching the corpus…
+              {t(Msg.widget.chat.loading)}
             </div>
           )}
         </div>
@@ -60,14 +64,14 @@ export function EmbedWidget({ apiBase }: EmbedWidgetProps = {}) {
           <input
             className={nc.chatInput}
             type="text"
-            placeholder="Type your question…"
-            aria-label="Chat message"
+            placeholder={t(Msg.widget.chat.inputPlaceholder)}
+            aria-label={t(Msg.widget.chat.inputLabel)}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             disabled={!isReady || isLoading}
           />
           <button className={nc.chatSubmit} type="submit" disabled={!isReady || isLoading}>
-            Send
+            {t(Msg.widget.chat.send)}
           </button>
         </form>
       </section>

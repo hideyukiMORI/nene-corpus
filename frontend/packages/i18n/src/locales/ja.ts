@@ -115,4 +115,13 @@ export const ja = defineMessages({
   'admin.widgetPreview.title': 'ウィジェットテーマのプレビュー',
   'admin.widgetPreview.body':
     '管理画面は Tailwind を使用します。埋め込みウィジェットは BEM + CSS 変数（例: {cssVar}）を使います。',
+  'widget.chat.panelLabel': 'NeNe Corpus チャット',
+  'widget.chat.emptyPrompt': '商品やサービスについて質問してみてください。',
+  'widget.chat.loading': '資料を検索しています…',
+  'widget.chat.inputPlaceholder': '質問を入力…',
+  'widget.chat.inputLabel': 'チャットメッセージ',
+  'widget.chat.send': '送信',
+  'widget.chat.citationPage': 'p.{page}',
+  'widget.errors.sessionStartFailed': 'チャットを開始できませんでした。',
+  'widget.errors.sendFailed': 'メッセージを送信できませんでした。',
 });

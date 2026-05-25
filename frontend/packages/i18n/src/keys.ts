@@ -123,4 +123,19 @@ export const Msg = {
       body: 'admin.widgetPreview.body',
     },
   },
+  widget: {
+    chat: {
+      panelLabel: 'widget.chat.panelLabel',
+      emptyPrompt: 'widget.chat.emptyPrompt',
+      loading: 'widget.chat.loading',
+      inputPlaceholder: 'widget.chat.inputPlaceholder',
+      inputLabel: 'widget.chat.inputLabel',
+      send: 'widget.chat.send',
+      citationPage: 'widget.chat.citationPage',
+    },
+    errors: {
+      sessionStartFailed: 'widget.errors.sessionStartFailed',
+      sendFailed: 'widget.errors.sendFailed',
+    },
+  },
 } as const;
