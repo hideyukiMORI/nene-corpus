@@ -4,8 +4,9 @@ export function translate(
   catalog: MessageCatalog,
   key: MsgKey,
   params?: MessageParams,
+  fallbackCatalog?: MessageCatalog,
 ): string {
-  let text = catalog[key] ?? key;
+  let text = catalog[key] ?? fallbackCatalog?.[key] ?? key;
 
   if (params === undefined) {
     return text;
