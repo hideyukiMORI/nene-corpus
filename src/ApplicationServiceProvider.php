@@ -17,6 +17,7 @@ use NeneCorpus\Ingestion\CsvIngestionExceptionHandler;
 use NeneCorpus\Ingestion\IngestionRouteRegistrar;
 use NeneCorpus\Ingestion\IngestionServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
+use NeneCorpus\Search\SearchServiceProvider;
 use NeneCorpus\Session\SessionServiceProvider;
 use NeneCorpus\Source\SourceNotFoundExceptionHandler;
 use NeneCorpus\Source\SourceRouteRegistrar;
@@ -37,6 +38,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new ChunkServiceProvider())
             ->addProvider(new SessionServiceProvider())
             ->addProvider(new MessageServiceProvider())
+            ->addProvider(new SearchServiceProvider())
             ->addProvider(new AdminAuthServiceProvider())
             ->addProvider(new IngestionServiceProvider())
             ->set(
