@@ -12,7 +12,7 @@ use NeneCorpus\Chunk\Chunk;
 use NeneCorpus\Chunk\PdoChunkRepository;
 use NeneCorpus\Document\Document;
 use NeneCorpus\Document\PdoDocumentRepository;
-use NeneCorpus\Llm\CorpusSearchToolHandler;
+use NeneCorpus\Llm\CorpusSearchTool;
 use NeneCorpus\Llm\GenerateChatReplyInput;
 use NeneCorpus\Llm\GenerateChatReplyUseCase;
 use NeneCorpus\Llm\StubClaudeMessagesClient;
@@ -69,7 +69,7 @@ final class GenerateChatReplyUseCaseTest extends TestCase
         $search = new SearchChunksUseCase(new PdoChunkSearchRepository($executor));
         $useCase = new GenerateChatReplyUseCase(
             new StubClaudeMessagesClient(),
-            new CorpusSearchToolHandler($search),
+            new CorpusSearchTool($search),
             new InMemoryChatSettingsRepository(ChatSettings::defaults()),
         );
 

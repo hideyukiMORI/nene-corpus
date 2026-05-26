@@ -41,6 +41,8 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                     $sessions = $container->get(ChatSessionRepositoryInterface::class);
                     $messages = $container->get(ChatMessageRepositoryInterface::class);
                     $generateReply = $container->get(GenerateChatReplyUseCaseInterface::class);
+                    $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
+                    $tokenTracker = $container->get(ChatTokenTrackerInterface::class);
 
                     if (!$sessions instanceof ChatSessionRepositoryInterface) {
                         throw new LogicException('Chat session repository service is invalid.');
@@ -54,7 +56,15 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Generate chat reply use case service is invalid.');
                     }
 
-                    return new SendChatMessageUseCase($sessions, $messages, $generateReply);
+                    if (!$limitsRepository instanceof ChatLimitsRepositoryInterface) {
+                        throw new LogicException('Chat limits repository service is invalid.');
+                    }
+
+                    if (!$tokenTracker instanceof ChatTokenTrackerInterface) {
+                        throw new LogicException('Chat token tracker service is invalid.');
+                    }
+
+                    return new SendChatMessageUseCase($sessions, $messages, $generateReply, $limitsRepository, $tokenTracker);
                 },
             )
             ->set(
@@ -79,8 +89,6 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): SendChatMessageHandler {
                     $useCase = $container->get(SendChatMessageUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
-                    $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
-                    $tokenTracker = $container->get(ChatTokenTrackerInterface::class);
 
                     if (!$useCase instanceof SendChatMessageUseCaseInterface) {
                         throw new LogicException('Send chat message use case service is invalid.');
@@ -90,15 +98,7 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                         throw new LogicException('JSON response factory service is invalid.');
                     }
 
-                    if (!$limitsRepository instanceof ChatLimitsRepositoryInterface) {
-                        throw new LogicException('Chat limits repository service is invalid.');
-                    }
-
-                    if (!$tokenTracker instanceof ChatTokenTrackerInterface) {
-                        throw new LogicException('Chat token tracker service is invalid.');
-                    }
-
-                    return new SendChatMessageHandler($useCase, $response, $limitsRepository, $tokenTracker);
+                    return new SendChatMessageHandler($useCase, $response);
                 },
             )
             ->set(

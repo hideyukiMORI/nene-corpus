@@ -17,7 +17,7 @@ final readonly class GenerateChatReplyUseCase implements GenerateChatReplyUseCas
 
     public function __construct(
         private ClaudeMessagesClientInterface $client,
-        private CorpusSearchToolHandler $searchTool,
+        private CorpusSearchTool $searchTool,
         private ChatSettingsRepositoryInterface $chatSettings,
     ) {
     }

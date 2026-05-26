@@ -9,6 +9,9 @@ use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Chat\SendChatMessageInput;
 use NeneCorpus\Chat\SendChatMessageUseCase;
+use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatLimitsSettings;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Llm\Citation;
 use NeneCorpus\Llm\GenerateChatReplyOutput;
 use NeneCorpus\Llm\GenerateChatReplyUseCaseInterface;
@@ -57,10 +60,25 @@ final class SendChatMessageUseCaseTest extends TestCase
                 ],
             ));
 
+        $limitsRepository = $this->createMock(ChatLimitsRepositoryInterface::class);
+        $limitsRepository->method('get')->willReturn(new ChatLimitsSettings(
+            maxMessageChars: 0,
+            messageIntervalSeconds: 0,
+            sessionRequestsPerHour: 0,
+            ipRequestsPerHour: 0,
+            dailyRequestsPerIp: 0,
+            dailyRequestsGlobal: 0,
+            dailyTokensPerIp: 0,
+            dailyTokensGlobal: 0,
+        ));
+        $tokenTracker = $this->createMock(ChatTokenTrackerInterface::class);
+
         $output = (new SendChatMessageUseCase(
             $sessions,
             new PdoChatMessageRepository($executor),
             $generateReply,
+            $limitsRepository,
+            $tokenTracker,
         ))->execute(new SendChatMessageInput(
             sessionToken: 'token-abc',
             content: 'User question?',

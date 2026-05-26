@@ -6,8 +6,5 @@ namespace NeneCorpus\Settings;
 
 interface TestLlmConnectionUseCaseInterface
 {
-    /**
-     * @param array<string, mixed> $body
-     */
-    public function executeFromBody(array $body): void;
+    public function execute(TestLlmConnectionInput $input): void;
 }

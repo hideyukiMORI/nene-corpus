@@ -8,7 +8,6 @@ final readonly class UpdateChatLimitsUseCase implements UpdateChatLimitsUseCaseI
 {
     public function __construct(
         private ChatLimitsRepositoryInterface $repository,
-        private ChatLimitsValidator $validator,
     ) {
     }
 
@@ -30,11 +29,4 @@ final readonly class UpdateChatLimitsUseCase implements UpdateChatLimitsUseCaseI
         return ChatLimitsView::fromSettings($settings);
     }
 
-    /**
-     * @param array<string, mixed> $body
-     */
-    public function executeFromBody(array $body): ChatLimitsView
-    {
-        return $this->execute($this->validator->validateUpdate($body));
-    }
 }

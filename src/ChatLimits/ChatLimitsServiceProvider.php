@@ -62,17 +62,12 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                 UpdateChatLimitsUseCaseInterface::class,
                 static function (ContainerInterface $container): UpdateChatLimitsUseCaseInterface {
                     $repository = $container->get(ChatLimitsRepositoryInterface::class);
-                    $validator = $container->get(ChatLimitsValidator::class);
 
                     if (!$repository instanceof ChatLimitsRepositoryInterface) {
                         throw new LogicException('Chat limits repository service is invalid.');
                     }
 
-                    if (!$validator instanceof ChatLimitsValidator) {
-                        throw new LogicException('Chat limits validator service is invalid.');
-                    }
-
-                    return new UpdateChatLimitsUseCase($repository, $validator);
+                    return new UpdateChatLimitsUseCase($repository);
                 },
             )
             ->set(
@@ -97,6 +92,7 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                 static function (ContainerInterface $container): UpdateChatLimitsHandler {
                     $useCase = $container->get(UpdateChatLimitsUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
+                    $validator = $container->get(ChatLimitsValidator::class);
 
                     if (!$useCase instanceof UpdateChatLimitsUseCaseInterface) {
                         throw new LogicException('Update chat limits use case service is invalid.');
@@ -106,7 +102,11 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                         throw new LogicException('JSON response factory service is invalid.');
                     }
 
-                    return new UpdateChatLimitsHandler($useCase, $response);
+                    if (!$validator instanceof ChatLimitsValidator) {
+                        throw new LogicException('Chat limits validator service is invalid.');
+                    }
+
+                    return new UpdateChatLimitsHandler($useCase, $response, $validator);
                 },
             )
             ->set(

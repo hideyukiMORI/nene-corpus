@@ -8,7 +8,7 @@ use NeneCorpus\Search\ChunkSearchResult;
 use NeneCorpus\Search\SearchChunksInput;
 use NeneCorpus\Search\SearchChunksUseCaseInterface;
 
-final readonly class CorpusSearchToolHandler
+final readonly class CorpusSearchTool
 {
     private const EXCERPT_MAX_LENGTH = 240;
 

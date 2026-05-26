@@ -55,6 +55,7 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                 static function (ContainerInterface $container): UpdateNotificationSettingsUseCase {
                     $envWriter = $container->get(EnvFileWriter::class);
                     $envUpdater = $container->get(EnvironmentVariableUpdater::class);
+                    $getUseCase = $container->get(GetNotificationSettingsUseCase::class);
 
                     if (!$envWriter instanceof EnvFileWriter) {
                         throw new LogicException('EnvFileWriter service is invalid.');
@@ -64,7 +65,11 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                         throw new LogicException('EnvironmentVariableUpdater service is invalid.');
                     }
 
-                    return new UpdateNotificationSettingsUseCase($envWriter, $envUpdater);
+                    if (!$getUseCase instanceof GetNotificationSettingsUseCase) {
+                        throw new LogicException('GetNotificationSettingsUseCase service is invalid.');
+                    }
+
+                    return new UpdateNotificationSettingsUseCase($envWriter, $envUpdater, $getUseCase);
                 },
             )
             ->set(

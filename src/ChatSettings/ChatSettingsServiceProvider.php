@@ -50,17 +50,12 @@ final readonly class ChatSettingsServiceProvider implements ServiceProviderInter
                 UpdateChatSettingsUseCaseInterface::class,
                 static function (ContainerInterface $container): UpdateChatSettingsUseCaseInterface {
                     $repository = $container->get(ChatSettingsRepositoryInterface::class);
-                    $validator = $container->get(ChatSettingsValidator::class);
 
                     if (!$repository instanceof ChatSettingsRepositoryInterface) {
                         throw new LogicException('Chat settings repository service is invalid.');
                     }
 
-                    if (!$validator instanceof ChatSettingsValidator) {
-                        throw new LogicException('Chat settings validator service is invalid.');
-                    }
-
-                    return new UpdateChatSettingsUseCase($repository, $validator);
+                    return new UpdateChatSettingsUseCase($repository);
                 },
             )
             ->set(
@@ -85,6 +80,7 @@ final readonly class ChatSettingsServiceProvider implements ServiceProviderInter
                 static function (ContainerInterface $container): UpdateChatSettingsHandler {
                     $useCase = $container->get(UpdateChatSettingsUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
+                    $validator = $container->get(ChatSettingsValidator::class);
 
                     if (!$useCase instanceof UpdateChatSettingsUseCaseInterface) {
                         throw new LogicException('Update chat settings use case service is invalid.');
@@ -94,7 +90,11 @@ final readonly class ChatSettingsServiceProvider implements ServiceProviderInter
                         throw new LogicException('JSON response factory service is invalid.');
                     }
 
-                    return new UpdateChatSettingsHandler($useCase, $response);
+                    if (!$validator instanceof ChatSettingsValidator) {
+                        throw new LogicException('Chat settings validator service is invalid.');
+                    }
+
+                    return new UpdateChatSettingsHandler($useCase, $response, $validator);
                 },
             )
             ->set(
