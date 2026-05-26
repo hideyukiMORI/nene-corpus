@@ -34,6 +34,8 @@ final class ChatSchemaSetup
                     role TEXT NOT NULL,
                     content TEXT NOT NULL,
                     citations_json TEXT NULL,
+                    input_tokens INTEGER NULL,
+                    output_tokens INTEGER NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     FOREIGN KEY (session_id) REFERENCES chat_sessions (id) ON DELETE CASCADE

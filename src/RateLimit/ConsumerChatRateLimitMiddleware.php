@@ -8,6 +8,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Chat\SendChatMessageHandler;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Http\RequestMetadataExtractor;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,9 +21,11 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Checks (in order, first failure wins):
  *   1. Daily global request budget
  *   2. Daily per-IP request budget
- *   3. Hourly per-IP request limit
- *   4. Hourly per-session request limit
- *   5. Per-session message interval (minimum seconds between messages)
+ *   3. Daily global token budget (pre-check)
+ *   4. Daily per-IP token budget (pre-check)
+ *   5. Hourly per-IP request limit
+ *   6. Hourly per-session request limit
+ *   7. Per-session message interval (minimum seconds between messages)
  */
 final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterface
 {
@@ -36,6 +39,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         private ProblemDetailsResponseFactory $problemDetails,
         private RateLimitStorageInterface $storage,
         private ChatLimitsRepositoryInterface $limitsRepository,
+        private ChatTokenTrackerInterface $tokenTracker,
     ) {
     }
 
@@ -81,7 +85,43 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
             }
         }
 
-        // 3. Hourly per-IP limit
+        // 3. Daily global token budget (pre-check — tokens are tracked post-response)
+        if ($limits->dailyTokensGlobal > 0) {
+            $used = $this->tokenTracker->dailyTokensGlobal();
+
+            if ($used >= $limits->dailyTokensGlobal) {
+                return $this->problemDetails->create(
+                    $request,
+                    'rate-limit-exceeded',
+                    'Too Many Requests',
+                    429,
+                    sprintf(
+                        'Global daily token budget of %d tokens exceeded.',
+                        $limits->dailyTokensGlobal,
+                    ),
+                )->withHeader('Retry-After', (string) self::DAILY_WINDOW);
+            }
+        }
+
+        // 4. Daily per-IP token budget (pre-check)
+        if ($limits->dailyTokensPerIp > 0) {
+            $used = $this->tokenTracker->dailyTokensForIp($ip);
+
+            if ($used >= $limits->dailyTokensPerIp) {
+                return $this->problemDetails->create(
+                    $request,
+                    'rate-limit-exceeded',
+                    'Too Many Requests',
+                    429,
+                    sprintf(
+                        'IP daily token budget of %d tokens exceeded.',
+                        $limits->dailyTokensPerIp,
+                    ),
+                )->withHeader('Retry-After', (string) self::DAILY_WINDOW);
+            }
+        }
+
+        // 5. Hourly per-IP limit
         $ipCount = 0;
         $ipResetAt = time() + self::HOURLY_WINDOW;
 
@@ -105,7 +145,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         $sessionResetAt = time() + self::HOURLY_WINDOW;
 
         if ($sessionToken !== '') {
-            // 4. Hourly per-session limit
+            // 6. Hourly per-session limit
             if ($limits->sessionRequestsPerHour > 0) {
                 $result = $this->storage->hit('chat:session:' . $sessionToken, self::HOURLY_WINDOW);
                 $sessionCount = $result['count'];
@@ -122,7 +162,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
                 }
             }
 
-            // 5. Per-session interval check (limit = 1 hit per interval window)
+            // 7. Per-session interval check (limit = 1 hit per interval window)
             if ($limits->messageIntervalSeconds > 0) {
                 $result = $this->storage->hit(
                     'chat:interval:' . $sessionToken,

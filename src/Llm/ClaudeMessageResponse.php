@@ -12,6 +12,8 @@ final readonly class ClaudeMessageResponse
     public function __construct(
         public string $stopReason,
         public array $contentBlocks,
+        public int $inputTokens = 0,
+        public int $outputTokens = 0,
     ) {
     }
 

@@ -13,6 +13,8 @@ final readonly class UpdateChatLimitsInput
         public int $ipRequestsPerHour,
         public int $dailyRequestsPerIp,
         public int $dailyRequestsGlobal,
+        public int $dailyTokensPerIp,
+        public int $dailyTokensGlobal,
     ) {
     }
 }

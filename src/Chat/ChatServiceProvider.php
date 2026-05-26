@@ -10,6 +10,7 @@ use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Llm\GenerateChatReplyUseCaseInterface;
 use NeneCorpus\Message\ChatMessageRepositoryInterface;
 use NeneCorpus\Session\ChatSessionRepositoryInterface;
@@ -79,6 +80,7 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                     $useCase = $container->get(SendChatMessageUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
                     $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
+                    $tokenTracker = $container->get(ChatTokenTrackerInterface::class);
 
                     if (!$useCase instanceof SendChatMessageUseCaseInterface) {
                         throw new LogicException('Send chat message use case service is invalid.');
@@ -92,7 +94,11 @@ final readonly class ChatServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Chat limits repository service is invalid.');
                     }
 
-                    return new SendChatMessageHandler($useCase, $response, $limitsRepository);
+                    if (!$tokenTracker instanceof ChatTokenTrackerInterface) {
+                        throw new LogicException('Chat token tracker service is invalid.');
+                    }
+
+                    return new SendChatMessageHandler($useCase, $response, $limitsRepository, $tokenTracker);
                 },
             )
             ->set(

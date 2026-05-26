@@ -19,6 +19,10 @@ final readonly class ChatLimitsSettings
         public int $dailyRequestsPerIp,
         /** Max requests across all IPs per day (rolling 24 h). 0 = no limit. */
         public int $dailyRequestsGlobal,
+        /** Max tokens (input+output) per IP per day. 0 = no limit. */
+        public int $dailyTokensPerIp,
+        /** Max tokens (input+output) across all IPs per day. 0 = no limit. */
+        public int $dailyTokensGlobal,
     ) {
     }
 
@@ -31,6 +35,8 @@ final readonly class ChatLimitsSettings
             ipRequestsPerHour: 60,
             dailyRequestsPerIp: 200,
             dailyRequestsGlobal: 2000,
+            dailyTokensPerIp: 0,
+            dailyTokensGlobal: 0,
         );
     }
 }

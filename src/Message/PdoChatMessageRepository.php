@@ -9,7 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 final readonly class PdoChatMessageRepository implements ChatMessageRepositoryInterface
 {
     private const SELECT_COLUMNS = <<<'SQL'
-        id, session_id, role, content, citations_json, created_at, updated_at
+        id, session_id, role, content, citations_json, input_tokens, output_tokens, created_at, updated_at
         SQL;
 
     public function __construct(
@@ -45,14 +45,16 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
         $this->query->execute(
             <<<'SQL'
                 INSERT INTO chat_messages (
-                    session_id, role, content, citations_json, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?)
+                    session_id, role, content, citations_json, input_tokens, output_tokens, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 SQL,
             [
                 $message->sessionId,
                 $message->role->value,
                 $message->content,
                 $message->citationsJson,
+                $message->inputTokens,
+                $message->outputTokens,
                 $now,
                 $now,
             ],
@@ -71,6 +73,8 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
             role: MessageRole::from((string) $row['role']),
             content: (string) $row['content'],
             citationsJson: isset($row['citations_json']) ? (string) $row['citations_json'] : null,
+            inputTokens: isset($row['input_tokens']) ? (int) $row['input_tokens'] : null,
+            outputTokens: isset($row['output_tokens']) ? (int) $row['output_tokens'] : null,
             id: (int) $row['id'],
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],

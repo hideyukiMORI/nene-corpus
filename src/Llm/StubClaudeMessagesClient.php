@@ -23,6 +23,8 @@ final class StubClaudeMessagesClient implements ClaudeMessagesClientInterface
                     'name' => CorpusSearchToolDefinition::NAME,
                     'input' => ['query' => $query],
                 ]],
+                inputTokens: 50,
+                outputTokens: 20,
             );
         }
 
@@ -32,6 +34,8 @@ final class StubClaudeMessagesClient implements ClaudeMessagesClientInterface
                 'type' => 'text',
                 'text' => 'Here is an answer grounded in the corpus search results.',
             ]],
+            inputTokens: 100,
+            outputTokens: 80,
         );
     }
 

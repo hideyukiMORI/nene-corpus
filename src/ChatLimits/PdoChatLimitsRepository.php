@@ -17,7 +17,8 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
     {
         $row = $this->query->fetchOne(
             'SELECT max_message_chars, message_interval_seconds, session_requests_per_hour,
-                    ip_requests_per_hour, daily_requests_per_ip, daily_requests_global
+                    ip_requests_per_hour, daily_requests_per_ip, daily_requests_global,
+                    daily_tokens_per_ip, daily_tokens_global
              FROM chat_limits_settings ORDER BY id ASC LIMIT 1',
         );
 
@@ -32,6 +33,8 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
             ipRequestsPerHour: (int) $row['ip_requests_per_hour'],
             dailyRequestsPerIp: (int) $row['daily_requests_per_ip'],
             dailyRequestsGlobal: (int) $row['daily_requests_global'],
+            dailyTokensPerIp: (int) $row['daily_tokens_per_ip'],
+            dailyTokensGlobal: (int) $row['daily_tokens_global'],
         );
     }
 
@@ -45,8 +48,9 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
                 'INSERT INTO chat_limits_settings
                  (max_message_chars, message_interval_seconds, session_requests_per_hour,
                   ip_requests_per_hour, daily_requests_per_ip, daily_requests_global,
+                  daily_tokens_per_ip, daily_tokens_global,
                   created_at, updated_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     $settings->maxMessageChars,
                     $settings->messageIntervalSeconds,
@@ -54,6 +58,8 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
                     $settings->ipRequestsPerHour,
                     $settings->dailyRequestsPerIp,
                     $settings->dailyRequestsGlobal,
+                    $settings->dailyTokensPerIp,
+                    $settings->dailyTokensGlobal,
                     $now,
                     $now,
                 ],
@@ -66,6 +72,7 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
             'UPDATE chat_limits_settings
              SET max_message_chars = ?, message_interval_seconds = ?, session_requests_per_hour = ?,
                  ip_requests_per_hour = ?, daily_requests_per_ip = ?, daily_requests_global = ?,
+                 daily_tokens_per_ip = ?, daily_tokens_global = ?,
                  updated_at = ?
              WHERE id = ?',
             [
@@ -75,6 +82,8 @@ final readonly class PdoChatLimitsRepository implements ChatLimitsRepositoryInte
                 $settings->ipRequestsPerHour,
                 $settings->dailyRequestsPerIp,
                 $settings->dailyRequestsGlobal,
+                $settings->dailyTokensPerIp,
+                $settings->dailyTokensGlobal,
                 $now,
                 (int) $existing['id'],
             ],
