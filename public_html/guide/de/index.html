@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeNe Corpus — Wissens-Chat für Ihre Website</title>
+  <meta name="description" content="Laden Sie PDFs und CSVs hoch, um ein Corpus aufzubauen, und betten Sie einen zitierbasierten KI-Chat auf Ihrer Website ein. Open Source, selbst gehostet, MIT-Lizenz."/>
+  <meta property="og:title" content="NeNe Corpus — Wissens-Chat für Ihre Website"/>
+  <meta property="og:description" content="Laden Sie PDFs und CSVs hoch, um ein Corpus aufzubauen, und betten Sie einen zitierbasierten KI-Chat auf Ihrer Website ein. Open Source, selbst gehostet, MIT-Lizenz."/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <!-- ダークモード初期化: flash を防ぐため CDN より先に実行 -->
+  <script>
+    (function(){
+      var s = localStorage.getItem('guide-theme');
+      if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    /* Tailwind Play CDN v3: tailwind.config は CDN 読み込み後に設定する */
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT:'#4d8f7f', dark:'#3a6e62', light:'#e6f2ef' },
+          },
+          fontFamily: {
+            sans: ['Inter','system-ui','sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior:smooth; }
+    body { font-family: "Inter", system-ui, sans-serif, sans-serif; }
+    details summary::-webkit-details-marker { display:none; }
+    pre code { font-family:'Menlo','Monaco','Consolas',monospace; }
+    /* bento card */
+    .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
+    .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
+    html.dark .bento-card { border-color:#1e293b; background:#1e293b; }
+    /* features セクション ダークモードカード */
+    html.dark #features .bento-card { background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 100%); border-color:rgba(255,255,255,.14); }
+    .bento-card.card-brand { background:#e6f2ef40; }
+    html.dark #features .bento-card.card-brand { background:linear-gradient(160deg,rgba(77,143,127,.22) 0%,rgba(77,143,127,.05) 100%); border-color:rgba(77,143,127,.5); box-shadow:0 0 50px rgba(77,143,127,.2), inset 0 1px 0 rgba(77,143,127,.35); }
+    /* ブランドラベル（カード番号） */
+    .brand-label { color:#4d8f7f; }
+    html.dark .brand-label { color:#5eb8a4; }
+    /* sect-alt: stats / how-it-works / for-user の薄背景セクション */
+    .sect-alt { background:#fafcfb; }
+    html.dark .sect-alt { background:#0f172a; }
+    /* lang dropdown */
+    #lang-menu { display:none; }
+    #lang-menu.open { display:block; }
+  </style>
+</head>
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
+
+  <!-- ── Nav ── -->
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
+      <a href="#" class="flex items-center gap-2 font-bold text-gray-900 dark:text-white text-lg shrink-0">
+        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black" style="background:#4d8f7f">N</span>
+        NeNe Corpus
+      </a>
+      <div class="flex items-center gap-4 ml-auto">
+      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <a href="#for-admin"  class="hover:text-gray-900 dark:hover:text-white transition-colors">Admin-Anleitung</a>
+        <a href="#for-user"   class="hover:text-gray-900 dark:hover:text-white transition-colors">Nutzer-Anleitung</a>
+        <a href="#faq"        class="hover:text-gray-900 dark:hover:text-white transition-colors">FAQ</a>
+        <a href="#disclaimer" class="hover:text-gray-900 dark:hover:text-white transition-colors">Haftungsausschluss</a>
+      </nav>
+      <div class="flex items-center gap-1.5 sm:gap-2">
+
+        <!-- 言語プルダウン -->
+        <div class="relative" id="lang-dropdown">
+          <button onclick="toggleLangMenu(event)"
+                  class="flex items-center gap-1 px-2.5 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+            <span class="hidden sm:inline font-medium">Deutsch</span>
+            <svg class="w-3 h-3 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="lang-menu"
+               class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 min-w-36 z-50">
+            <a href="../ja/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>日本語
+         </a><a href="../en/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>English
+         </a><span class="flex items-center gap-2 px-4 py-2 text-sm font-semibold" style="color:#4d8f7f">
+           <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Deutsch
+         </span><a href="../fr/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>Français
+         </a><a href="../zh-hans/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>中文
+         </a><a href="../pt-br/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>Português
+         </a>
+          </div>
+        </div>
+
+        <!-- ダークモードトグル -->
+        <button onclick="toggleTheme()"
+                class="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle dark mode">
+          <!-- moon: light mode で表示 -->
+          <svg id="icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <!-- sun: dark mode で表示 -->
+          <svg id="icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+
+        <!-- GitHub -->
+        <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener"
+           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </a>
+      </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── Hero ── -->
+    <section class="pt-16 pb-12 sm:pt-24 sm:pb-16 bg-white dark:bg-gray-950 overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <!-- テキスト (hero is above the fold — no needed) -->
+          <div>
+            <span class="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full text-sm font-medium border"
+                  style="color:#4d8f7f;border-color:#e6f2ef;background:#e6f2ef">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Open Source · MIT-Lizenz
+            </span>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 dark:text-white leading-[1.1] tracking-tight mb-6">
+              KI-gestützter Wissens-Chat für Ihre Website
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
+              Laden Sie PDFs, CSVs oder Text hoch und erstellen Sie ein Corpus. Ein Chat-Widget beantwortet Besucherfragen mit Quellenangaben.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 mb-10">
+              <a href="#for-admin"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-white text-base font-semibold shadow-lg transition-all hover:opacity-90 hover:shadow-xl hover:-translate-y-0.5"
+                 style="background:#4d8f7f">
+                Jetzt starten
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+              <a href="../../admin/"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-gray-700 dark:text-gray-200 text-base font-semibold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+                Admin öffnen
+              </a>
+            </div>
+            <div class="flex flex-wrap gap-x-6 gap-y-3">
+              
+    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="#4d8f7f" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      Selbst gehostet
+    </span>
+    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="#4d8f7f" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      Kein Lock-In
+    </span>
+    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="#4d8f7f" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      MIT-Lizenz
+    </span>
+    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="#4d8f7f" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      6 Sprachen
+    </span>
+            </div>
+          </div>
+          <!-- 製品モックアップ (hero is above the fold — no needed) -->
+          <div class="relative">
+            <div class="absolute -inset-4 rounded-3xl opacity-20 blur-2xl" style="background:linear-gradient(135deg,#e6f2ef,#4d8f7f30)"></div>
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" fill="none" aria-hidden="true">
+    <!-- ブラウザ外枠 -->
+    <rect width="560" height="380" rx="16" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+    <!-- ブラウザ toolbar -->
+    <rect width="560" height="44" rx="16" fill="#f1f5f4"/>
+    <rect y="30" width="560" height="14" fill="#f1f5f4"/>
+    <circle cx="22" cy="22" r="5" fill="#ef4444" opacity="0.5"/>
+    <circle cx="40" cy="22" r="5" fill="#f59e0b" opacity="0.5"/>
+    <circle cx="58" cy="22" r="5" fill="#22c55e" opacity="0.5"/>
+    <!-- URL バー -->
+    <rect x="80" y="12" width="320" height="20" rx="6" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="100" y="25" fill="#94a3b8" font-size="9" font-family="sans-serif">https://example.com/admin/</text>
+    <!-- Admin サイドバー -->
+    <rect x="0" y="44" width="148" height="336" fill="#fafafa" stroke="#e2e8f0" stroke-width="0.5"/>
+    <!-- サイドバー ロゴ -->
+    <rect x="12" y="58" width="80" height="14" rx="3" fill="#4d8f7f" opacity="0.2"/>
+    <rect x="12" y="58" width="20" height="14" rx="3" fill="#4d8f7f" opacity="0.6"/>
+    <!-- サイドバー メニュー -->
+    <rect x="12" y="86"  width="124" height="26" rx="5" fill="#e6f2ef"/>
+    <rect x="12" y="118" width="124" height="22" rx="5" fill="transparent"/>
+    <rect x="12" y="146" width="124" height="22" rx="5" fill="transparent"/>
+    <rect x="12" y="174" width="124" height="22" rx="5" fill="transparent"/>
+    <rect x="20" y="92"  width="6"  height="14" rx="2" fill="#4d8f7f"/>
+    <rect x="32" y="94"  width="60" height="10" rx="2" fill="#4d8f7f" opacity="0.7"/>
+    <rect x="20" y="124" width="6"  height="10" rx="2" fill="#94a3b8"/>
+    <rect x="32" y="126" width="52" height="8"  rx="2" fill="#94a3b8" opacity="0.5"/>
+    <rect x="20" y="152" width="6"  height="10" rx="2" fill="#94a3b8"/>
+    <rect x="32" y="154" width="56" height="8"  rx="2" fill="#94a3b8" opacity="0.5"/>
+    <rect x="20" y="180" width="6"  height="10" rx="2" fill="#94a3b8"/>
+    <rect x="32" y="182" width="44" height="8"  rx="2" fill="#94a3b8" opacity="0.5"/>
+    <!-- メインコンテンツ -->
+    <rect x="148" y="44" width="412" height="336" fill="white"/>
+    <!-- ヘッダー -->
+    <rect x="148" y="44" width="412" height="40" fill="white" stroke="#f1f5f4" stroke-width="1"/>
+    <rect x="164" y="58" width="80" height="12" rx="3" fill="#1e293b" opacity="0.1"/>
+    <rect x="476" y="56" width="68" height="16" rx="6" fill="#4d8f7f"/>
+    <text x="510" y="68" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">+ ソース追加</text>
+    <!-- ソース一覧テーブル -->
+    <rect x="160" y="98" width="388" height="28" rx="4" fill="#f8fafc"/>
+    <rect x="172" y="106" width="50" height="10" rx="2" fill="#94a3b8" opacity="0.5"/>
+    <rect x="260" y="106" width="80" height="10" rx="2" fill="#94a3b8" opacity="0.5"/>
+    <rect x="440" y="106" width="40" height="10" rx="2" fill="#94a3b8" opacity="0.5"/>
+    <!-- 行 1 -->
+    <rect x="160" y="128" width="388" height="36" rx="4" fill="white" stroke="#f1f5f4" stroke-width="1"/>
+    <rect x="172" y="140" width="70" height="10" rx="2" fill="#1e293b" opacity="0.7"/>
+    <rect x="260" y="142" width="90" height="8" rx="2" fill="#64748b" opacity="0.4"/>
+    <rect x="430" y="138" width="48" height="12" rx="6" fill="#e6f2ef"/>
+    <text x="454" y="147" text-anchor="middle" fill="#4d8f7f" font-size="7" font-weight="600" font-family="sans-serif">完了</text>
+    <!-- 行 2 -->
+    <rect x="160" y="166" width="388" height="36" rx="4" fill="white" stroke="#f1f5f4" stroke-width="1"/>
+    <rect x="172" y="178" width="96" height="10" rx="2" fill="#1e293b" opacity="0.7"/>
+    <rect x="260" y="180" width="72" height="8" rx="2" fill="#64748b" opacity="0.4"/>
+    <rect x="430" y="176" width="48" height="12" rx="6" fill="#e6f2ef"/>
+    <text x="454" y="185" text-anchor="middle" fill="#4d8f7f" font-size="7" font-weight="600" font-family="sans-serif">完了</text>
+    <!-- 行 3 (処理中) -->
+    <rect x="160" y="204" width="388" height="36" rx="4" fill="#fff9f0" stroke="#fef3c7" stroke-width="1"/>
+    <rect x="172" y="216" width="60" height="10" rx="2" fill="#1e293b" opacity="0.7"/>
+    <rect x="260" y="218" width="80" height="8" rx="2" fill="#64748b" opacity="0.4"/>
+    <rect x="430" y="214" width="52" height="12" rx="6" fill="#fef3c7"/>
+    <text x="456" y="223" text-anchor="middle" fill="#92400e" font-size="7" font-weight="600" font-family="sans-serif">処理中…</text>
+    <!-- 統計カード -->
+    <rect x="160" y="252" width="116" height="64" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="172" y="272" fill="#64748b" font-size="8" font-family="sans-serif">ソース数</text>
+    <text x="172" y="298" fill="#1e293b" font-size="22" font-weight="700" font-family="sans-serif">3</text>
+    <rect x="284" y="252" width="116" height="64" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="296" y="272" fill="#64748b" font-size="8" font-family="sans-serif">チャンク数</text>
+    <text x="296" y="298" fill="#1e293b" font-size="22" font-weight="700" font-family="sans-serif">847</text>
+    <rect x="408" y="252" width="140" height="64" rx="8" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="1"/>
+    <text x="420" y="272" fill="#3a6e62" font-size="8" font-family="sans-serif">今日のチャット</text>
+    <text x="420" y="298" fill="#4d8f7f" font-size="22" font-weight="700" font-family="sans-serif">24</text>
+    <!-- ウィジェット（右下に浮いてる） -->
+    <rect x="388" y="300" width="156" height="72" rx="14" fill="#4d8f7f" opacity="0.97"/>
+    <rect x="388" y="300" width="156" height="24" rx="14" fill="#4d8f7f"/>
+    <rect x="388" y="314" width="156" height="10" fill="#4d8f7f"/>
+    <text x="400" y="316" fill="white" font-size="9" font-weight="600" font-family="sans-serif">NeNe Corpus Chat</text>
+    <rect x="396" y="328" width="96" height="12" rx="4" fill="white" opacity="0.15"/>
+    <rect x="500" y="328" width="36" height="12" rx="4" fill="white"/>
+    <text x="518" y="337" text-anchor="middle" fill="#4d8f7f" font-size="7" font-weight="600" font-family="sans-serif">送信</text>
+    <rect x="396" y="346" width="140" height="18" rx="6" fill="#e6f2ef" opacity="0.3"/>
+    <text x="404" y="358" fill="white" font-size="8" font-family="sans-serif" opacity="0.8">[1] マニュアル p.3  [2] FAQ p.7</text>
+  </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Stats strip ── -->
+    <section class="py-10 border-y border-gray-100 dark:border-gray-800 sect-alt">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+          
+          <div>
+            <div class="text-3xl sm:text-4xl font-extrabold mb-1" style="color:#4d8f7f">MIT</div>
+            <div class="text-sm text-gray-400 font-medium">License</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-extrabold mb-1" style="color:#4d8f7f">6</div>
+            <div class="text-sm text-gray-400 font-medium">Languages</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-extrabold mb-1" style="color:#4d8f7f">PHP</div>
+            <div class="text-sm text-gray-400 font-medium">8.2+ · MySQL</div>
+          </div>
+          <div>
+            <div class="text-3xl sm:text-4xl font-extrabold mb-1" style="color:#4d8f7f">0</div>
+            <div class="text-sm text-gray-400 font-medium">Cloud Lock-In</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Bento Features ── -->
+    <section id="features" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-14">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">Was Sie tun können</h2>
+          <p class="text-gray-400 text-lg max-w-xl mx-auto">Drei Schritte, um eine Wissens-KI auf Ihrer Website hinzuzufügen.</p>
+        </div>
+
+        <!-- ベントーグリッド -->
+        <div class="flex flex-col gap-4 lg:gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
+
+          <!-- カード 01: コーパス構築 -->
+          <div class="bento-card card-brand p-8 flex flex-col">
+            <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+    <rect x="30" y="54" width="88" height="108" rx="8" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="2.5"/>
+    <rect x="44" y="38" width="88" height="108" rx="8" fill="#f5fcfa" stroke="#4d8f7f" stroke-width="2"/>
+    <rect x="58" y="22" width="88" height="108" rx="8" fill="white" stroke="#4d8f7f" stroke-width="2.5"/>
+    <line x1="74" y1="46"  x2="128" y2="46"  stroke="#e6f2ef" stroke-width="3" stroke-linecap="round"/>
+    <line x1="74" y1="60"  x2="128" y2="60"  stroke="#e6f2ef" stroke-width="3" stroke-linecap="round"/>
+    <line x1="74" y1="74"  x2="110" y2="74"  stroke="#e6f2ef" stroke-width="3" stroke-linecap="round"/>
+    <line x1="74" y1="88"  x2="128" y2="88"  stroke="#e6f2ef" stroke-width="3" stroke-linecap="round"/>
+    <line x1="74" y1="102" x2="116" y2="102" stroke="#e6f2ef" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="148" cy="150" r="34" fill="#4d8f7f" opacity="0.12"/>
+    <circle cx="142" cy="144" r="20" fill="none" stroke="#4d8f7f" stroke-width="3.5"/>
+    <line x1="156" y1="158" x2="170" y2="172" stroke="#4d8f7f" stroke-width="4" stroke-linecap="round"/>
+  </svg></div>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">01</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Corpus aufbauen</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">PDFs, CSVs oder Text hochladen. Automatisch in Chunks aufgeteilt, indiziert und gespeichert. Mehrere Quellen an einem Ort verwalten.</p>
+          </div>
+
+          <!-- 縦カード: 引用チャット -->
+          <div class="bento-card card-brand p-8 flex flex-col">
+            <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+    <rect x="14" y="22" width="128" height="64" rx="20" fill="#4d8f7f"/>
+    <path d="M34 86 L20 108 L54 86Z" fill="#4d8f7f"/>
+    <line x1="32" y1="46" x2="124" y2="46" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="32" y1="62" x2="98"  y2="62" stroke="white" stroke-width="3.5" stroke-linecap="round" opacity="0.75"/>
+    <rect x="130" y="16" width="54" height="54" rx="27" fill="#f59e0b"/>
+    <text x="157" y="50" text-anchor="middle" fill="white" font-size="22" font-weight="700" font-family="sans-serif">[1]</text>
+    <rect x="68" y="116" width="120" height="58" rx="20" fill="#f1f5f4"/>
+    <path d="M170 174 L186 196 L152 174Z" fill="#f1f5f4"/>
+    <line x1="84"  y1="138" x2="172" y2="138" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="84"  y1="154" x2="148" y2="154" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </svg></div>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">02</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">KI-Chat mit Zitaten</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Claude AI durchsucht Ihr Corpus und antwortet mit Seitenzahl-Zitaten, um Halluzinationen zu minimieren.</p>
+          </div>
+
+          <!-- 縦カード: 1行埋め込み -->
+          <div class="bento-card card-brand p-8 flex flex-col">
+            <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+    <rect x="10" y="18" width="180" height="138" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+    <rect x="10" y="18" width="180" height="36" rx="10" fill="#e2e8f0"/>
+    <rect x="10" y="44" width="180" height="10" fill="#e2e8f0"/>
+    <circle cx="32" cy="36" r="5" fill="#ef4444" opacity="0.6"/>
+    <circle cx="50" cy="36" r="5" fill="#f59e0b" opacity="0.6"/>
+    <circle cx="68" cy="36" r="5" fill="#22c55e" opacity="0.6"/>
+    <line x1="28" y1="76"  x2="116" y2="76"  stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="28" y1="92"  x2="96"  y2="92"  stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="28" y1="108" x2="108" y2="108" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+    <line x1="28" y1="124" x2="80"  y2="124" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+    <rect x="116" y="72" width="68" height="82" rx="14" fill="#4d8f7f"/>
+    <line x1="128" y1="92"  x2="172" y2="92"  stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+    <line x1="128" y1="106" x2="162" y2="106" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <rect x="122" y="122" width="56" height="20" rx="6" fill="white" opacity="0.25"/>
+    <circle cx="150" cy="66" r="14" fill="#4d8f7f" stroke="white" stroke-width="2.5"/>
+    <path d="M145 66 Q150 60 155 66 Q150 72 145 66Z" fill="white"/>
+  </svg></div>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">03</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mit einer Zeile einbetten</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Einen einzelnen <code class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-1.5 py-0.5 rounded text-[0.85em] font-mono">&lt;script&gt;</code>-Tag zu jeder bestehenden Website hinzufügen — WordPress, statisches HTML oder anderes.</p>
+          </div>
+
+        </div>
+        <!-- 下段: 2 等分コンパクトカード -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+          <div class="bento-card p-5 sm:p-6 flex items-center gap-4">
+            <div class="text-3xl shrink-0">🌐</div>
+            <div>
+              <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-1">6 Sprachen</h3>
+              <p class="text-gray-500 dark:text-gray-400 text-sm">ja / en / de / fr / zh-Hans / pt-BR</p>
+            </div>
+          </div>
+          <div class="bento-card p-5 sm:p-6 flex items-center gap-4">
+            <div class="text-3xl shrink-0">🏠</div>
+            <div>
+              <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-1">Selbst gehostet</h3>
+              <p class="text-gray-500 dark:text-gray-400 text-sm">Kein Lock-In · MIT-Lizenz</p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section id="how-it-works" class="py-20 sm:py-28 sect-alt">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-14">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">So funktioniert es</h2>
+          <p class="text-gray-400 text-lg max-w-xl mx-auto">Von der Datei bis zur zitierten Antwort — vollautomatisch.</p>
+        </div>
+        <div class="hidden sm:flex items-start justify-between gap-3">
+          
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0faf8">
+          📄
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">1</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Dokumente hochladen</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">PDFs, CSVs oder Text über das Admin-Panel hochladen.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-start mt-5 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0f7ff">
+          ⚙️
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">2</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Chunks & Indizierung</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Text wird extrahiert, in Chunks aufgeteilt und automatisch in der Datenbank gespeichert.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-start mt-5 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#fff7ed">
+          💬
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">3</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Besucher stellt Frage</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Der Nutzer gibt eine Frage in das eingebettete Chat-Widget ein.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-start mt-5 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f5f3ff">
+          🔍
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">4</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">KI durchsucht Corpus</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Claude ruft relevante Chunks per Volltextsuche ab und generiert eine Antwort.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-start mt-5 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0fdf4">
+          ✅
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">5</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Antwort mit Zitaten</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Die Antwort wird im Widget mit Quellenseitenzahlen angezeigt.</p>
+      </div>
+        </div>
+        <div class="sm:hidden space-y-8">
+          
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0faf8">
+          📄
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">1</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Dokumente hochladen</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">PDFs, CSVs oder Text über das Admin-Panel hochladen.</p>
+      </div>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0f7ff">
+          ⚙️
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">2</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Chunks & Indizierung</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Text wird extrahiert, in Chunks aufgeteilt und automatisch in der Datenbank gespeichert.</p>
+      </div>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#fff7ed">
+          💬
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">3</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Besucher stellt Frage</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Der Nutzer gibt eine Frage in das eingebettete Chat-Widget ein.</p>
+      </div>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f5f3ff">
+          🔍
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">4</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">KI durchsucht Corpus</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Claude ruft relevante Chunks per Volltextsuche ab und generiert eine Antwort.</p>
+      </div>
+      <div class="flex flex-col items-center text-center group">
+        <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0fdf4">
+          ✅
+          <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:#4d8f7f">5</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">Antwort mit Zitaten</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Die Antwort wird im Widget mit Quellenseitenzahlen angezeigt.</p>
+      </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── For Admin ── -->
+    <section id="for-admin" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:#4d8f7f">For Operators</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 dark:text-white mb-4">Erste Schritte (Betreiber)</h2>
+            <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">Von der Installation bis zum Live-Widget in 4 Schritten — funktioniert auf Shared Hosting und Docker.</p>
+            
+        <div class="relative flex gap-5 pb-10">
+          <span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Installation</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Release-ZIP herunterladen und in public_html hochladen. Web-Installer öffnen und Datenbank-Zugangsdaten eingeben. Setup abgeschlossen.</p>
+            
+          </div>
+        </div>
+        <div class="relative flex gap-5 pb-10">
+          <span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">LLM-API-Schlüssel konfigurieren</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Einstellungen → LLM öffnen und Anthropic-API-Schlüssel eingeben. Verbindungstest vor dem Speichern durchführen.</p>
+            
+          </div>
+        </div>
+        <div class="relative flex gap-5 pb-10">
+          <span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Quellen hinzufügen</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">PDFs, CSVs oder Text im Quellen-Panel hochladen. Nach der Verarbeitung kann der Chatbot daraus antworten. Mehrere Quellen parallel verwalten.</p>
+            
+          </div>
+        </div>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">4</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Widget einbetten</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Einbettungscode aus Einstellungen → Design kopieren und direkt vor &lt;/body&gt; einfügen. Fertig.</p>
+            
+            <div class="mt-4">
+              <p class="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Einbettungscode (aus Einstellungen → Design kopieren)</p>
+              <pre class="rounded-2xl bg-gray-900 text-green-300 text-xs p-5 overflow-x-auto leading-relaxed font-mono shadow-inner border border-gray-800"><code>&lt;script
+  src="https://your-domain.com/widget.js"
+  data-nene-corpus
+&gt;&lt;/script&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+          </div>
+          <div class="hidden lg:block sticky top-24">
+            <div class="rounded-3xl overflow-hidden shadow-xl border border-gray-100 p-8" style="background:#e6f2ef30">
+              <p class="text-xs font-bold uppercase tracking-widest mb-5 text-gray-400">Setup Checklist</p>
+              <div class="space-y-3">
+                
+                <div class="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-sm border border-brand/20">
+                  <span class="text-xl">🔑</span>
+                  <span class="text-sm font-medium text-gray-700 flex-1">Anthropic API Key</span>
+                  <svg class="w-5 h-5 shrink-0" fill="#4d8f7f" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-sm border border-brand/20">
+                  <span class="text-xl">📁</span>
+                  <span class="text-sm font-medium text-gray-700 flex-1">Sources uploaded</span>
+                  <svg class="w-5 h-5 shrink-0" fill="#4d8f7f" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-sm border border-brand/20">
+                  <span class="text-xl">🤖</span>
+                  <span class="text-sm font-medium text-gray-700 flex-1">AI model configured</span>
+                  <svg class="w-5 h-5 shrink-0" fill="#4d8f7f" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3.5 bg-white rounded-2xl shadow-sm border border-gray-100">
+                  <span class="text-xl">🌐</span>
+                  <span class="text-sm font-medium text-gray-400 flex-1">Widget embedded</span>
+                  <span class="w-5 h-5 rounded-full border-2 border-dashed border-gray-300 shrink-0"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── For Users ── -->
+    <section id="for-user" class="py-20 sm:py-28 sect-alt">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div class="order-2 lg:order-1 flex justify-center">
+            <div class="w-64 sm:w-72 drop-shadow-2xl"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 500" fill="none" aria-hidden="true">
+    <!-- 外枠 -->
+    <rect width="320" height="500" rx="24" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+    <!-- ヘッダー -->
+    <rect width="320" height="72" rx="24" fill="#4d8f7f"/>
+    <rect y="48" width="320" height="24" fill="#4d8f7f"/>
+    <circle cx="36" cy="36" r="18" fill="white" opacity="0.2"/>
+    <circle cx="36" cy="36" r="12" fill="white" opacity="0.3"/>
+    <text x="64" y="30" fill="white" font-size="15" font-weight="700" font-family="sans-serif">NeNe Corpus</text>
+    <text x="64" y="48" fill="white" font-size="11" font-family="sans-serif" opacity="0.85">Knowledge Chat</text>
+    <!-- アシスタントメッセージ 1 -->
+    <rect x="16" y="88" width="210" height="72" rx="14" fill="#f1f5f4"/>
+    <rect x="16" y="88" width="4" height="72" rx="2" fill="#4d8f7f"/>
+    <text x="30" y="110" fill="#334155" font-size="11" font-family="sans-serif">Based on the documentation,</text>
+    <text x="30" y="126" fill="#334155" font-size="11" font-family="sans-serif">NeNe Corpus supports PDF,</text>
+    <text x="30" y="142" fill="#334155" font-size="11" font-family="sans-serif">CSV, and plain text.</text>
+    <!-- 引用バッジ -->
+    <rect x="232" y="88" width="72" height="28" rx="14" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="1.5"/>
+    <text x="268" y="106" text-anchor="middle" fill="#4d8f7f" font-size="11" font-weight="600" font-family="sans-serif">[1] p.3</text>
+    <!-- ユーザーメッセージ -->
+    <rect x="110" y="176" width="194" height="44" rx="14" fill="#4d8f7f" opacity="0.12"/>
+    <rect x="296" y="176" width="4" height="44" rx="2" fill="#4d8f7f" opacity="0.6"/>
+    <text x="120" y="196" fill="#1e3a34" font-size="11" font-family="sans-serif">Does it work on shared</text>
+    <text x="120" y="212" fill="#1e3a34" font-size="11" font-family="sans-serif">hosting?</text>
+    <!-- アシスタントメッセージ 2 -->
+    <rect x="16" y="236" width="232" height="88" rx="14" fill="#f1f5f4"/>
+    <rect x="16" y="236" width="4" height="88" rx="2" fill="#4d8f7f"/>
+    <text x="30" y="258" fill="#334155" font-size="11" font-family="sans-serif">Yes! You can install it on any</text>
+    <text x="30" y="274" fill="#334155" font-size="11" font-family="sans-serif">shared host with PHP 8.2+</text>
+    <text x="30" y="290" fill="#334155" font-size="11" font-family="sans-serif">and MySQL. FTP deploy,</text>
+    <text x="30" y="306" fill="#334155" font-size="11" font-family="sans-serif">no SSH required.</text>
+    <!-- 引用バッジ 2 -->
+    <rect x="254" y="236" width="50" height="24" rx="12" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="1.5"/>
+    <text x="279" y="252" text-anchor="middle" fill="#4d8f7f" font-size="10" font-weight="600" font-family="sans-serif">[2]</text>
+    <!-- 区切り線 -->
+    <line x1="16" y1="342" x2="304" y2="342" stroke="#e2e8f0" stroke-width="1"/>
+    <!-- 入力欄 -->
+    <rect x="12" y="354" width="256" height="44" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="24" y="380" fill="#94a3b8" font-size="11" font-family="sans-serif">Type your question…</text>
+    <!-- 送信ボタン -->
+    <rect x="276" y="354" width="44" height="44" rx="10" fill="#4d8f7f"/>
+    <path d="M288 376 L310 376 M304 370 L310 376 L304 382" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- 引用一覧 -->
+    <rect x="12" y="406" width="296" height="82" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="22" y="424" fill="#4d8f7f" font-size="10" font-weight="700" font-family="sans-serif">Sources</text>
+    <text x="22" y="442" fill="#64748b" font-size="10" font-family="sans-serif">[1] Installation Guide — p.3</text>
+    <text x="22" y="458" fill="#64748b" font-size="10" font-family="sans-serif">[2] Deployment Guide — p.7</text>
+    <text x="22" y="474" fill="#64748b" font-size="10" font-family="sans-serif">[3] FAQ — p.12</text>
+  </svg></div>
+          </div>
+          <div class="order-1 lg:order-2">
+            <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:#4d8f7f">For End Users</span>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 dark:text-white mb-4">Chat-Widget verwenden</h2>
+            <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">Das Widget ist intuitiv. So funktioniert es in 3 Schritten.</p>
+            
+        <div class="relative flex gap-5 pb-10">
+          <span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Widget öffnen</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Chat-Symbol unten rechts auf der Seite anklicken.</p>
+            
+          </div>
+        </div>
+        <div class="relative flex gap-5 pb-10">
+          <span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Eingeben und Senden</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Frage in natürlicher Sprache eingeben und Senden drücken oder Enter betätigen.</p>
+            
+          </div>
+        </div>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:#4d8f7f">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">Antwort mit Zitaten erhalten</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Die KI durchsucht das Corpus und antwortet mit Quellenseitenzahlen. Auf ein Zitat klicken, um zur Quelle zu springen.</p>
+            
+          </div>
+        </div>
+            <div class="mt-6 p-4 rounded-2xl border text-xs leading-relaxed"
+                 style="background:#fffbeb;border-color:#fef3c7;color:#92400e">
+              Hinweis: KI-generierte Antworten dienen nur als Referenz. Überprüfen Sie wichtige Informationen stets anhand der Primärquellen.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <section id="faq" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">Häufige Fragen</h2>
+        </div>
+        <div class="space-y-2.5">
+          
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Welches KI-Modell wird verwendet?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          NeNe Corpus verwendet die Anthropic Claude API (claude-3-5-haiku, claude-opus-4 usw.). Das Modell kann im Admin-Panel geändert werden. Ein Anthropic-Konto und API-Schlüssel sind erforderlich.
+        </div>
+      </details>
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Welche Dateiformate werden unterstützt?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          PDF (mit Textebene), CSV und Klartext werden unterstützt. Nur aus gescannten Bildern bestehende PDFs ohne Textebene werden nicht unterstützt.
+        </div>
+      </details>
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Ist es kostenlos?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          NeNe Corpus selbst ist Open Source unter der MIT-Lizenz. Anthropic-API-Nutzungskosten fallen separat an.
+        </div>
+      </details>
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Wo werden meine Daten gespeichert?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          Alle Corpus-Daten und der Chatverlauf werden in der Datenbank auf Ihrem Server gespeichert. Chat-Anfragen werden für die KI-Inferenz an die Anthropic-API gesendet.
+        </div>
+      </details>
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Funktioniert es auf Shared Hosting?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          Ja. Jeder Server mit PHP 8.2+ und MySQL funktioniert. Deployment per FTP ohne SSH.
+        </div>
+      </details>
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <span class="text-sm">Wie kann ich die Antwortgenauigkeit verbessern?</span>
+          <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
+          Das Hinzufügen hochwertiger Quelldokumente ist am effektivsten. Sie können auch den Systemprompt anpassen und Kosten über Nutzungslimits verwalten.
+        </div>
+      </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="py-20 sm:py-28 text-white" style="background:#4d8f7f">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-5 leading-tight">KI-gestützter Wissens-Chat für Ihre Website</h2>
+        <p class="text-lg mb-8 opacity-85">Laden Sie PDFs, CSVs oder Text hoch und erstellen Sie ein Corpus. Ein Chat-Widget beantwortet Besucherfragen mit Quellenangaben.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="#for-admin"
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white font-semibold text-base transition-all hover:bg-gray-50 hover:-translate-y-0.5 shadow-xl"
+             style="color:#4d8f7f">
+            Jetzt starten
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+          <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener"
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base border border-white/30 hover:bg-white/10 transition-all">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Disclaimer ── -->
+    <section id="disclaimer" class="py-10 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+      <div class="px-6 sm:px-10">
+        <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">Haftungsausschluss & Nutzungsbedingungen</p>
+        <div class="text-xs text-gray-400 leading-relaxed
+          [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
+          [&_p]:inline [&_p]:after:content-['_']
+          [&_section]:block [&_section]:mb-2
+          [&_strong]:font-semibold
+          [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-gray-600
+          [&_.space-y-6]:space-y-0 [&_div]:block">
+          <p>Mit der Nutzung von NeNe Corpus stimmen Sie den folgenden Bedingungen zu.</p>
+<section><h3>1. Keine Gewährleistung (MIT-Lizenz)</h3><p>Die Software wird unter der <strong>MIT-Lizenz</strong> <strong>„wie besehen"</strong> bereitgestellt, ohne jegliche ausdrückliche oder stillschweigende Gewährleistung.</p></section>
+<section><h3>2. Haftungsbeschränkung</h3><p>Die Urheberrechtsinhaber haften nicht für direkte, indirekte oder Folgeschäden aus der Nutzung dieser Software.</p></section>
+<section><h3>3. KI-Antwortgenauigkeit</h3><p>KI-Antworten können Fehler enthalten. <strong>Nicht als alleinige Grundlage für medizinische, rechtliche oder finanzielle Entscheidungen verwenden.</strong></p></section>
+<section><h3>4. Drittanbieterdienste (Anthropic Claude API)</h3><p>Die Nutzung unterliegt Anthropics <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">Nutzungsrichtlinie</a>. Für Verfügbarkeit oder Preisänderungen wird keine Haftung übernommen.</p></section>
+<section><h3>5–10. Datenschutz, Betreiberpflichten, Verbote, Marken, Änderungen, Recht</h3><p>Daten werden lokal gespeichert; Chat-Anfragen gehen an Anthropic. Der Betreiber ist allein verantwortlich für DSGVO-Konformität, API-Kosten und Sicherheit. Illegale Nutzung ist verboten. „Claude" ist eine Marke von Anthropic. Aktuelle Bedingungen im <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener">GitHub-Repository</a>.</p></section>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="bg-gray-950 text-gray-400 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-sm">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-black" style="background:#4d8f7f">N</span>
+          <span class="text-white font-bold">NeNe Corpus</span>
+        </div>
+        <p class="text-gray-500">Powered by <a href="https://nene2.dev" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">NENE2</a> · © <a href="https://ayane.co.jp" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">AYANE</a> Alle Rechte vorbehalten.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="flex items-center gap-1.5 hover:text-white transition-colors">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </a>
+        <span class="text-gray-700">·</span>
+        <span>MIT-Lizenz</span>
+        <span class="text-gray-700">·</span>
+        <a href="#" class="hover:text-white transition-colors">Nach oben ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── ダークモードトグル ──────────────────────────────────
+    function toggleTheme() {
+      var isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('guide-theme', isDark ? 'dark' : 'light');
+      document.getElementById('icon-moon').classList.toggle('hidden', isDark);
+      document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+    }
+    // 初期アイコン状態を合わせる
+    (function(){
+      if (document.documentElement.classList.contains('dark')) {
+        document.getElementById('icon-moon').classList.add('hidden');
+        document.getElementById('icon-sun').classList.remove('hidden');
+      }
+    })();
+
+    // ── 言語プルダウン ──────────────────────────────────────
+    function toggleLangMenu(e) {
+      e.stopPropagation();
+      document.getElementById('lang-menu').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      var dd = document.getElementById('lang-dropdown');
+      if (dd && !dd.contains(e.target)) {
+        document.getElementById('lang-menu').classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
