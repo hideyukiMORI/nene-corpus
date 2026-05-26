@@ -4,261 +4,622 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeNe Corpus — Knowledge Chat for Your Website</title>
-  <meta name="description" content="Upload PDFs and CSVs to build a corpus, then embed a citation-based AI chat widget on your website. Open source, self-hosted." />
+  <meta name="description" content="Upload PDFs and CSVs to build a corpus, then embed a citation-based AI chat widget on your website. Open source, self-hosted, MIT license." />
   <meta property="og:title" content="NeNe Corpus — Knowledge Chat for Your Website" />
-  <meta property="og:description" content="Upload PDFs and CSVs to build a corpus, then embed a citation-based AI chat widget on your website. Open source, self-hosted." />
+  <meta property="og:description" content="Upload PDFs and CSVs to build a corpus, then embed a citation-based AI chat widget on your website. Open source, self-hosted, MIT license." />
   <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand:   { DEFAULT: '#7c3aed', light: '#ede9fe' },
-            fg:      { DEFAULT: '#111827' },
-            muted:   { DEFAULT: '#6b7280' },
-            border:  { DEFAULT: '#e5e7eb' },
-            surface: { DEFAULT: '#ffffff', hover: '#f9fafb' },
-            code:    { DEFAULT: '#1e1b4b', fg: '#c4b5fd' },
-          },
+          fontFamily: { sans: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'] },
+          animation: { 'fade-up': 'fadeUp 0.6s ease-out forwards' },
+          keyframes: { fadeUp: { '0%':{ opacity:'0', transform:'translateY(20px)' }, '100%':{ opacity:'1', transform:'translateY(0)' } } },
         },
       },
     };
-    // dark mode
-    (function(){
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      }
-    })();
   </script>
   <style>
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --tw-text-opacity: 1;
-      }
-    }
-    html.dark {
-      --tw-bg-opacity: 1;
-      background-color: rgb(17 24 39 / var(--tw-bg-opacity));
-      color: rgb(243 244 246);
-    }
-    html.dark .text-fg   { color: #f3f4f6 !important; }
-    html.dark .text-muted { color: #9ca3af !important; }
-    html.dark .bg-surface { background: #111827 !important; }
-    html.dark .bg-surface-hover { background: #1f2937 !important; }
-    html.dark .border-border { border-color: #374151 !important; }
-    html.dark .bg-white { background: #1f2937 !important; }
-    html.dark .bg-gray-50 { background: #111827 !important; }
-    html.dark .text-gray-900 { color: #f3f4f6 !important; }
-    html.dark .text-gray-600 { color: #9ca3af !important; }
-    html.dark .bg-code { background: #0f0c2e !important; }
-    html.dark .text-border { color: #374151 !important; }
-    html, body { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    details summary::-webkit-details-marker { display: none; }
+    pre code { font-family: 'Menlo','Monaco','Consolas','Courier New',monospace; }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
   <!-- ── ヘッダー ── -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-border">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-      <a href="#" class="font-bold text-fg text-lg tracking-tight">NeNe Corpus</a>
-      <nav class="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm text-muted justify-end">
-        <a href="../ja/" class="hover:text-brand transition-colors">日本語</a><span class="text-border mx-1">·</span><span class="font-semibold text-brand">English</span><span class="text-border mx-1">·</span><a href="../de/" class="hover:text-brand transition-colors">Deutsch</a><span class="text-border mx-1">·</span><a href="../fr/" class="hover:text-brand transition-colors">Français</a><span class="text-border mx-1">·</span><a href="../zh-hans/" class="hover:text-brand transition-colors">中文</a><span class="text-border mx-1">·</span><a href="../pt-br/" class="hover:text-brand transition-colors">Português</a>
+  <header class="sticky top-0 z-50 bg-violet-950/95 backdrop-blur-md border-b border-violet-800/50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <a href="#" class="font-bold text-white text-lg tracking-tight flex items-center gap-2">
+        <span class="text-violet-400">◆</span>NeNe Corpus
+      </a>
+      <nav class="hidden sm:flex items-center gap-5 text-sm text-violet-300">
+        <a href="#for-admin" class="hover:text-white transition-colors">Admin Guide</a>
+        <a href="#for-user"  class="hover:text-white transition-colors">User Guide</a>
+        <a href="#faq"       class="hover:text-white transition-colors">FAQ</a>
+        <a href="#disclaimer" class="hover:text-white transition-colors">Disclaimer</a>
       </nav>
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs justify-end">
+        <a href="../ja/" class="hover:text-white transition-colors text-violet-300">日本語</a><span class="text-violet-600 mx-1 text-xs">|</span><span class="font-semibold text-violet-200">English</span><span class="text-violet-600 mx-1 text-xs">|</span><a href="../de/" class="hover:text-white transition-colors text-violet-300">Deutsch</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../fr/" class="hover:text-white transition-colors text-violet-300">Français</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../zh-hans/" class="hover:text-white transition-colors text-violet-300">中文</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../pt-br/" class="hover:text-white transition-colors text-violet-300">Português</a>
+      </div>
     </div>
   </header>
 
   <main>
 
     <!-- ── Hero ── -->
-    <section class="bg-gradient-to-br from-violet-600 to-indigo-700 text-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center">
-        <span class="inline-block mb-5 px-3 py-1 rounded-full bg-white/20 text-sm font-medium">
-          Open Source · MIT License
-        </span>
-        <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight mb-5 tracking-tight">
-          AI-Powered Knowledge Chat for Your Website
-        </h1>
-        <p class="text-base sm:text-lg text-violet-100 max-w-2xl mx-auto mb-8 leading-relaxed">
-          Upload PDFs, CSVs, or paste text to build a corpus. Embed a chat widget that answers your visitors’ questions with source citations.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-          <a href="#for-admin"
-             class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-violet-700 font-semibold hover:bg-violet-50 transition-colors text-sm">
-            Get Started →
-          </a>
-          <a href="../../admin/"
-             class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors text-sm border border-white/30">
-            Open Admin
-          </a>
+    <section class="relative overflow-hidden bg-gradient-to-br from-violet-950 via-violet-900 to-indigo-900 text-white">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-violet-600/5 blur-3xl"></div>
+      </div>
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 lg:py-36">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div>
+            <span class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-violet-400/20 border border-violet-400/30 text-violet-200 text-sm font-medium">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Open Source · MIT License
+            </span>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-6 tracking-tight">
+              AI-Powered Knowledge Chat for Your Website
+            </h1>
+            <p class="text-base sm:text-lg text-violet-200 mb-8 leading-relaxed max-w-lg">
+              Upload PDFs, CSVs, or paste text to build a corpus. A chat widget answers your visitors' questions with source citations.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 mb-10">
+              <a href="#for-admin"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-violet-700 font-semibold hover:bg-violet-50 transition-all shadow-lg hover:shadow-xl text-sm">
+                Get Started
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+              <a href="../../admin/"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-violet-800/50 text-white font-semibold hover:bg-violet-700/50 transition-all border border-violet-600/40 text-sm">
+                Open Admin
+              </a>
+            </div>
+            <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-violet-300">
+              
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>Self-Hosted</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>No Lock-In</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>MIT License</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>6 Languages</span>
+    </div>
+            </div>
+          </div>
+          <div class="hidden lg:flex justify-center lg:justify-end">
+            <div class="w-72 drop-shadow-2xl"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" fill="none" aria-hidden="true">
+    <rect width="280" height="360" rx="16" fill="#1e1b4b"/>
+    <rect x="1" y="1" width="278" height="358" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="0" y="0" width="280" height="52" rx="16" fill="#7c3aed"/>
+    <rect x="0" y="38" width="280" height="14" fill="#7c3aed"/>
+    <circle cx="30" cy="26" r="14" fill="white" opacity="0.2"/>
+    <text x="52" y="22" fill="white" font-size="13" font-weight="600" font-family="sans-serif">NeNe Corpus</text>
+    <text x="52" y="36" fill="white" font-size="10" font-family="sans-serif" opacity="0.8">How can we help?</text>
+    <rect x="16" y="68" width="168" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="88"  fill="#374151" font-size="10" font-family="sans-serif">Based on the documentation,</text>
+    <text x="28" y="102" fill="#374151" font-size="10" font-family="sans-serif">NeNe Corpus supports PDF,</text>
+    <text x="28" y="116" fill="#374151" font-size="10" font-family="sans-serif">CSV, and plain text. <tspan fill="#7c3aed" font-weight="600">[1]</tspan></text>
+    <rect x="96" y="136" width="168" height="40" rx="10" fill="#ede9fe"/>
+    <text x="108" y="152" fill="#4c1d95" font-size="10" font-family="sans-serif">Which formats does it</text>
+    <text x="108" y="166" fill="#4c1d95" font-size="10" font-family="sans-serif">support?</text>
+    <rect x="16" y="188" width="180" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="208" fill="#374151" font-size="10" font-family="sans-serif">You can install it on shared</text>
+    <text x="28" y="222" fill="#374151" font-size="10" font-family="sans-serif">hosting with PHP 8.2+ and</text>
+    <text x="28" y="236" fill="#374151" font-size="10" font-family="sans-serif">MySQL. No SSH needed. <tspan fill="#7c3aed" font-weight="600">[2]</tspan></text>
+    <line x1="16" y1="260" x2="264" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="12" y="272" width="222" height="36" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="24" y="294" fill="#9ca3af" font-size="10" font-family="sans-serif">Type your question…</text>
+    <rect x="244" y="272" width="24" height="36" rx="8" fill="#7c3aed"/>
+    <path d="M251 290 L262 290 M258 286 L262 290 L258 294" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12" y="316" width="256" height="32" rx="6" fill="#faf5ff"/>
+    <text x="20" y="330" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[1] Installation Guide p.3</text>
+    <text x="20" y="342" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[2] Deployment Guide p.7</text>
+  </svg></div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ── Features ── -->
-    <section id="features" class="py-16 sm:py-20 bg-gray-50">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <h2 class="text-2xl sm:text-3xl font-bold text-fg text-center mb-10">
-          What You Can Do
-        </h2>
-        <div class="grid sm:grid-cols-3 gap-6">
+    <section id="features" class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">What You Can Do</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">Three steps to add a knowledge AI to your website.</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 lg:gap-8">
           
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">📁</div>
-            <h3 class="font-semibold text-fg mb-2">Build a Corpus</h3>
-            <p class="text-sm text-muted leading-relaxed">Upload PDFs, CSVs, or paste text directly. Manage multiple sources in one place.</p>
+          <div class="reveal reveal-delay-1 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="28" y="42" width="72" height="88" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="38" y="30" width="72" height="88" rx="6" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="48" y="18" width="72" height="88" rx="6" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+    <line x1="62" y1="40" x2="106" y2="40" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="52" x2="106" y2="52" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="64" x2="94"  y2="64" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="76" x2="106" y2="76" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="88" x2="88"  y2="88" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="112" cy="108" r="22" fill="#7c3aed"/>
+    <circle cx="109" cy="105" r="10" fill="none" stroke="white" stroke-width="2.5"/>
+    <line x1="116" y1="112" x2="124" y2="120" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">Build a Corpus</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">Upload PDFs, CSVs, or paste text. Automatically chunked, indexed, and stored. Manage multiple sources in one place.</p>
           </div>
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">💬</div>
-            <h3 class="font-semibold text-fg mb-2">Citation-Based AI Chat</h3>
-            <p class="text-sm text-muted leading-relaxed">Claude AI searches your corpus and answers with page-number citations.</p>
+          <div class="reveal reveal-delay-2 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="12" y="18" width="100" height="52" rx="16" fill="#7c3aed"/>
+    <path d="M28 70 L16 88 L40 70Z" fill="#7c3aed"/>
+    <line x1="28" y1="38" x2="96" y2="38" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <line x1="28" y1="52" x2="80" y2="52" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <rect x="110" y="14" width="38" height="38" rx="19" fill="#f59e0b"/>
+    <text x="129" y="39" text-anchor="middle" fill="white" font-size="18" font-weight="700" font-family="sans-serif">[1]</text>
+    <rect x="50" y="96" width="100" height="46" rx="16" fill="#e5e7eb"/>
+    <path d="M134 142 L148 158 L120 142Z" fill="#e5e7eb"/>
+    <line x1="66" y1="114" x2="134" y2="114" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+    <line x1="66" y1="128" x2="110" y2="128" stroke="#9ca3af" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">Citation-Based AI Chat</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">Claude AI searches your corpus and replies with page-number citations, minimizing hallucinations.</p>
           </div>
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">🔗</div>
-            <h3 class="font-semibold text-fg mb-2">Embed with One Line</h3>
-            <p class="text-sm text-muted leading-relaxed">Add a single script tag to any existing website and the chat widget appears.</p>
+          <div class="reveal reveal-delay-3 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="8"  y="14" width="144" height="108" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="2"/>
+    <rect x="8"  y="14" width="144" height="28"  rx="8" fill="#e5e7eb"/>
+    <rect x="8"  y="34" width="144" height="8"   fill="#e5e7eb"/>
+    <circle cx="26" cy="28" r="4" fill="#ef4444" opacity="0.7"/>
+    <circle cx="40" cy="28" r="4" fill="#f59e0b" opacity="0.7"/>
+    <circle cx="54" cy="28" r="4" fill="#22c55e" opacity="0.7"/>
+    <line x1="24" y1="60"  x2="92"  y2="60"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="74"  x2="76"  y2="74"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="88"  x2="88"  y2="88"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="102" x2="64"  y2="102" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="92" y="62" width="52" height="58" rx="10" fill="#7c3aed" filter="url(#shadow)"/>
+    <defs><filter id="shadow"><feDropShadow dx="-2" dy="2" stdDeviation="3" flood-color="#7c3aed" flood-opacity="0.4"/></filter></defs>
+    <rect x="98" y="96" width="40" height="16" rx="5" fill="white" opacity="0.25"/>
+    <line x1="100" y1="76" x2="136" y2="76" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="100" y1="87" x2="126" y2="87" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+    <circle cx="118" cy="57" r="11" fill="#7c3aed" stroke="white" stroke-width="2.5"/>
+    <path d="M113 57 Q118 52 123 57 Q118 62 113 57Z" fill="white"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">Embed with One Line</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">Add a single `<script>` tag to any existing site — WordPress, static HTML, or anything else.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section id="how-it-works" class="py-20 sm:py-24 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">From upload to cited answer — fully automated.</p>
+        </div>
+        <div class="relative">
+          <div class="hidden sm:flex items-start justify-between gap-2">
+            
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 text-violet-700 flex items-center justify-center text-2xl mb-3 shadow-sm">📄</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">1</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">Upload Documents</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">Upload PDFs, CSVs, or paste text via the admin panel.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center text-2xl mb-3 shadow-sm">⚙️</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">2</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">Chunk & Index</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">Text is extracted, split into chunks, and stored in the database automatically.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-3 shadow-sm">💬</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">3</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">Visitor Asks a Question</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">The user types a question in the embedded chat widget.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl mb-3 shadow-sm">🔍</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">4</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">AI Searches the Corpus</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">Claude retrieves relevant chunks via full-text search and generates an answer.</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center text-2xl mb-3 shadow-sm">✅</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">5</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">Answer with Citations</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">The answer is displayed in the widget with source page numbers.</p>
+      </div>
+          </div>
+          <div class="sm:hidden space-y-6">
+            <div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">📄</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 1</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">Upload Documents</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">Upload PDFs, CSVs, or paste text via the admin panel.</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">⚙️</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 2</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">Chunk & Index</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">Text is extracted, split into chunks, and stored in the database automatically.</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">💬</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 3</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">Visitor Asks a Question</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">The user types a question in the embedded chat widget.</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">🔍</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 4</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">AI Searches the Corpus</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">Claude retrieves relevant chunks via full-text search and generates an answer.</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">✅</div>
+                  
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 5</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">Answer with Citations</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">The answer is displayed in the widget with source page numbers.</p>
+                </div>
+              </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── For Admin ── -->
-    <section id="for-admin" class="py-16 sm:py-20 bg-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <div class="max-w-2xl">
-          <h2 class="text-2xl sm:text-3xl font-bold text-fg mb-2">Getting Started (Operators)</h2>
-          <p class="text-muted mb-8">From install to live widget in 4 steps.</p>
-          <div class="space-y-6">
-            
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Install</h3>
-            <p class="text-muted text-sm leading-relaxed">Download the ZIP and upload it to public_html. Open the web installer and enter your database settings.</p>
-            
-          </div>
-        </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Configure LLM API Key</h3>
-            <p class="text-muted text-sm leading-relaxed">Open Settings → LLM and enter your Anthropic API key. Use the connection test to verify.</p>
+    <section id="for-admin" class="py-20 sm:py-24 bg-gradient-to-b from-violet-50 to-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">Getting Started (Operators)</h2>
+            <p class="text-gray-500 mb-8">From install to live widget in 4 steps — works on shared hosting and Docker alike.</p>
+            <div>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Install</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Download the release ZIP and upload it to public_html. Open the web installer and enter your database credentials. Setup complete.</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Add a Source</h3>
-            <p class="text-muted text-sm leading-relaxed">Upload a PDF, CSV, or paste text in the Sources panel. Once ingested, the chatbot can answer questions from it.</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Configure LLM API Key</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Open Settings → LLM and enter your Anthropic API key. Use the connection test to verify before saving.</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">4</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Embed the Widget</h3>
-            <p class="text-muted text-sm leading-relaxed">Copy the embed code from Settings → Design and paste it just before &lt;/body&gt; on your page.</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Add Sources</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Upload PDFs, CSVs, or paste text in the Sources panel. Once ingested, the chatbot can answer from them. Manage multiple sources in parallel.</p>
             
-    <pre class="mt-3 rounded-lg bg-code text-code-fg text-xs p-3 overflow-x-auto leading-relaxed"><code>&lt;script
+          </div>
+        </div>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">4</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Embed the Widget</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Copy the embed code from Settings → Design and paste it just before &lt;/body&gt;. That's all it takes to go live.</p>
+            
+            <div class="mt-4">
+              <p class="text-xs text-gray-500 mb-2 font-medium">Embed code (copy from Settings → Design)</p>
+              <pre class="rounded-xl bg-gray-900 text-violet-300 text-xs p-4 overflow-x-auto leading-relaxed font-mono shadow-inner"><code>&lt;script
   src="https://your-domain.com/widget.js"
   data-nene-corpus
 &gt;&lt;/script&gt;</code></pre>
+            </div>
           </div>
-        </div>
+        </div></div>
+          </div>
+          <div class="reveal reveal-delay-1 hidden lg:block">
+            <div class="sticky top-24 bg-white rounded-3xl border border-gray-100 shadow-xl p-8">
+              <div class="text-center text-gray-400 text-5xl mb-4">🗂️</div>
+              <div class="space-y-3">
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🔑</span>
+                  <span class="text-gray-700 font-mono text-xs">Anthropic API Key</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">📁</span>
+                  <span class="text-gray-700 font-mono text-xs">sources/</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🤖</span>
+                  <span class="text-gray-700 font-mono text-xs">claude-3-5-haiku</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🌐</span>
+                  <span class="text-gray-700 font-mono text-xs">widget.js</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── For Users ── -->
-    <section id="for-user" class="py-16 sm:py-20 bg-gray-50">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <div class="max-w-2xl">
-          <h2 class="text-2xl sm:text-3xl font-bold text-fg mb-2">Using the Chat Widget</h2>
-          <p class="text-muted mb-8">The chat widget is ready in 3 simple steps.</p>
-          <div class="space-y-6">
-            
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Open the Widget</h3>
-            <p class="text-muted text-sm leading-relaxed">Click the chat icon in the bottom-right corner of the page to open the chat widget.</p>
+    <section id="for-user" class="py-20 sm:py-24 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="order-2 lg:order-1 flex justify-center">
+            <div class="w-64 sm:w-72 drop-shadow-xl reveal"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" fill="none" aria-hidden="true">
+    <rect width="280" height="360" rx="16" fill="#1e1b4b"/>
+    <rect x="1" y="1" width="278" height="358" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="0" y="0" width="280" height="52" rx="16" fill="#7c3aed"/>
+    <rect x="0" y="38" width="280" height="14" fill="#7c3aed"/>
+    <circle cx="30" cy="26" r="14" fill="white" opacity="0.2"/>
+    <text x="52" y="22" fill="white" font-size="13" font-weight="600" font-family="sans-serif">NeNe Corpus</text>
+    <text x="52" y="36" fill="white" font-size="10" font-family="sans-serif" opacity="0.8">How can we help?</text>
+    <rect x="16" y="68" width="168" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="88"  fill="#374151" font-size="10" font-family="sans-serif">Based on the documentation,</text>
+    <text x="28" y="102" fill="#374151" font-size="10" font-family="sans-serif">NeNe Corpus supports PDF,</text>
+    <text x="28" y="116" fill="#374151" font-size="10" font-family="sans-serif">CSV, and plain text. <tspan fill="#7c3aed" font-weight="600">[1]</tspan></text>
+    <rect x="96" y="136" width="168" height="40" rx="10" fill="#ede9fe"/>
+    <text x="108" y="152" fill="#4c1d95" font-size="10" font-family="sans-serif">Which formats does it</text>
+    <text x="108" y="166" fill="#4c1d95" font-size="10" font-family="sans-serif">support?</text>
+    <rect x="16" y="188" width="180" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="208" fill="#374151" font-size="10" font-family="sans-serif">You can install it on shared</text>
+    <text x="28" y="222" fill="#374151" font-size="10" font-family="sans-serif">hosting with PHP 8.2+ and</text>
+    <text x="28" y="236" fill="#374151" font-size="10" font-family="sans-serif">MySQL. No SSH needed. <tspan fill="#7c3aed" font-weight="600">[2]</tspan></text>
+    <line x1="16" y1="260" x2="264" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="12" y="272" width="222" height="36" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="24" y="294" fill="#9ca3af" font-size="10" font-family="sans-serif">Type your question…</text>
+    <rect x="244" y="272" width="24" height="36" rx="8" fill="#7c3aed"/>
+    <path d="M251 290 L262 290 M258 286 L262 290 L258 294" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12" y="316" width="256" height="32" rx="6" fill="#faf5ff"/>
+    <text x="20" y="330" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[1] Installation Guide p.3</text>
+    <text x="20" y="342" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[2] Deployment Guide p.7</text>
+  </svg></div>
+          </div>
+          <div class="order-1 lg:order-2 reveal reveal-delay-1">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">Using the Chat Widget</h2>
+            <p class="text-gray-500 mb-8">The widget is intuitive. Here's how it works in 3 steps.</p>
+            <div>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Open the Widget</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Click the chat icon in the bottom-right corner of the page.</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Type Your Question</h3>
-            <p class="text-muted text-sm leading-relaxed">Enter your question and press Send or hit Enter.</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Type and Send</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">Enter your question in natural language and press Send or hit Enter.</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">Get a Cited Answer</h3>
-            <p class="text-muted text-sm leading-relaxed">The AI searches the corpus and replies with source page numbers.</p>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">Get a Cited Answer</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">The AI searches the corpus and replies with source page numbers. Click a citation to jump to the source.</p>
             
           </div>
-        </div>
+        </div></div>
+            <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 leading-relaxed">
+              Note: AI-generated answers are for reference only. Always verify critical information against primary sources.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── FAQ ── -->
-    <section id="faq" class="py-16 sm:py-20 bg-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <h2 class="text-2xl sm:text-3xl font-bold text-fg text-center mb-10">FAQ</h2>
-        <div class="max-w-2xl mx-auto space-y-3">
+    <section id="faq" class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">FAQ</h2>
+        </div>
+        <div class="space-y-3 reveal">
           
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>Which AI model does it use?</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">Which AI model does it use?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          NeNe Corpus uses Anthropic’s Claude API (e.g. claude-3-5-haiku or claude-opus-4). An Anthropic account and API key are required.
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          NeNe Corpus uses Anthropic's Claude API (claude-3-5-haiku, claude-opus-4, etc.). The model can be changed in the admin panel. An Anthropic account and API key are required.
         </div>
       </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">What file formats are supported?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          PDF (with text layer), CSV, and plain text are supported. Scanned-image-only PDFs without a text layer are not supported.
+        </div>
+      </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">Is it free?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          NeNe Corpus itself is open source under the MIT License. Anthropic API usage costs apply separately. See Anthropic's pricing page for details.
+        </div>
+      </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">Where is my data stored?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          All corpus data and chat history are stored in your own MySQL database on your server. Chat queries are sent to the Anthropic API for AI inference.
+        </div>
+      </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">Does it work on shared hosting?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          Yes. Any server with PHP 8.2+ and MySQL works. Deploy via FTP without SSH.
+        </div>
+      </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">How can I improve answer accuracy?</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          Adding high-quality source documents is the most effective approach. You can also customize the system prompt and manage costs via usage limits.
+        </div>
+      </details>
+        </div>
+      </div>
+    </section>
 
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>What file formats are supported?</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
-        </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          PDF, CSV, and plain text are supported.
+    <!-- ── Disclaimer ── -->
+    <section id="disclaimer" class="py-20 sm:py-24 bg-white border-t border-gray-200">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="mb-8 reveal">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Disclaimer & Terms of Use</h2>
+          </div>
         </div>
-      </details>
+        <div class="reveal bg-gray-50 rounded-2xl border border-gray-200 p-6 sm:p-8">
+          
+<div class="space-y-6 text-sm text-gray-700 leading-relaxed">
+  <p class="text-base font-medium text-gray-900">Please read this Disclaimer and Terms of Use ("Terms") before using the software. By using NeNe Corpus, you agree to be bound by these Terms.</p>
 
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>Is it free?</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
-        </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          NeNe Corpus itself is open source under the MIT License. Anthropic API usage costs apply separately.
-        </div>
-      </details>
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">1. No Warranty (MIT License)</h3>
+    <p>NeNe Corpus ("the Software") is open source software provided under the <strong>MIT License</strong>. THE SOFTWARE IS PROVIDED <strong>"AS IS"</strong>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+  </section>
 
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>Where is my data stored?</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
-        </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          All data is stored in your own MySQL database. Nothing is sent externally except LLM inference requests.
-        </div>
-      </details>
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">2. Limitation of Liability</h3>
+    <p>To the maximum extent permitted by applicable law, in no event shall the copyright holders or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">3. Accuracy of AI-Generated Responses</h3>
+    <p>The chat feature of this Software returns responses generated automatically by a large language model (LLM). AI-generated responses may contain factual errors, incomplete information, or outdated content (commonly referred to as "hallucinations"). <strong>Do not rely solely on the Software's responses for medical, legal, financial, investment, safety, or other professional decisions.</strong> Always verify critical information against primary sources or qualified professionals.</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">4. Third-Party Service Dependency (Anthropic Claude API)</h3>
+    <p>This Software relies on the Claude API provided by Anthropic, Inc. ("Anthropic"). The copyright holders of this Software are not responsible for:</p>
+    <ul class="list-disc list-inside space-y-1 mt-2 ml-4">
+      <li>Availability, performance, or interruption of Anthropic services</li>
+      <li>Changes to Anthropic API pricing</li>
+      <li>Changes in Claude model response quality or content</li>
+      <li>Restrictions resulting from changes to Anthropic's usage policies</li>
+    </ul>
+    <p class="mt-2">Use of the Claude API is separately subject to Anthropic's <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="text-violet-700 underline">Usage Policy</a> and <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener" class="text-violet-700 underline">Terms of Service</a>.</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">5. Data Handling and Privacy</h3>
+    <p>This Software is self-hosted. Corpus data and chat history are stored in a <strong>MySQL database on the Operator's own server</strong>. However, chat query content is transmitted to Anthropic's API servers for AI inference.</p>
+    <p class="mt-2">Operators are solely responsible for:</p>
+    <ul class="list-disc list-inside space-y-1 mt-2 ml-4">
+      <li>Compliance with applicable data protection laws (including GDPR, CCPA, etc.)</li>
+      <li>Providing a Privacy Policy to end users and obtaining consent where required</li>
+      <li>Appropriate retention, management, and deletion of chat logs</li>
+      <li>Notifying users that their queries may be transmitted to third-party AI services</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">6. Operator Responsibilities</h3>
+    <p>The Operator (the person or entity installing and running the Software) is solely responsible for:</p>
+    <ul class="list-disc list-inside space-y-1 mt-2 ml-4">
+      <li>Establishing and communicating Terms of Use and Privacy Policy to end users</li>
+      <li>Compliance with all applicable laws and regulations in the Operator's jurisdiction</li>
+      <li>Payment of Anthropic API usage fees (pay-per-use)</li>
+      <li>Responding to security incidents (unauthorized access, data breaches, etc.)</li>
+      <li>Ensuring the legality of content displayed via the widget and non-infringement of third-party rights</li>
+      <li>Any required age verification or child protection measures</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">7. Prohibited Uses</h3>
+    <p>Use of this Software for the following purposes is strictly prohibited:</p>
+    <ul class="list-disc list-inside space-y-1 mt-2 ml-4">
+      <li>Generating, distributing, or facilitating illegal content</li>
+      <li>Fraud, impersonation, phishing, or malware distribution</li>
+      <li>Generating content that promotes discrimination, hate speech, or harassment</li>
+      <li>Infringing intellectual property rights, privacy rights, or reputational rights of others</li>
+      <li>Any activity prohibited by Anthropic's Usage Policy</li>
+      <li>Any activity in violation of applicable laws in the Operator's jurisdiction</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">8. Trademarks and Attribution</h3>
+    <p>"Claude" and related logos are trademarks or registered trademarks of Anthropic, Inc. "NENE2" refers to the internal framework upon which this Software depends. This Software is an independent project and is not endorsed, sponsored, or affiliated with Anthropic.</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">9. Changes to These Terms</h3>
+    <p>These Terms may be updated without prior notice. The latest version is always available in the <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="text-violet-700 underline">GitHub repository</a>. Continued use of the Software constitutes acceptance of the updated Terms.</p>
+  </section>
+</div>
         </div>
       </div>
     </section>
@@ -266,27 +627,40 @@
   </main>
 
   <!-- ── Footer ── -->
-  <footer class="bg-gray-900 text-gray-400 py-10">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-      <div class="flex items-center gap-3">
-        <span class="text-gray-200 font-semibold">Powered by NENE2</span>
-        <span class="text-gray-600">·</span>
-        <span>© AYANE All rights reserved.</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="https://github.com/hideyukiMORI/nene-corpus"
-           target="_blank" rel="noopener"
-           class="hover:text-gray-200 transition-colors flex items-center gap-1">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-          </svg>
-          GitHub
-        </a>
-        <span class="text-gray-600">·</span>
-        <span>MIT License</span>
+  <footer class="bg-violet-950 text-violet-300 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-violet-400">◆</span>
+            <span class="text-white font-bold">NeNe Corpus</span>
+          </div>
+          <p class="text-sm text-violet-400">Powered by NENE2 · © AYANE All rights reserved.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-sm">
+          <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener"
+             class="flex items-center gap-1.5 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            GitHub
+          </a>
+          <span class="text-violet-700">·</span>
+          <span>MIT License</span>
+          <span class="text-violet-700">·</span>
+          <a href="#" class="hover:text-white transition-colors">Back to top ↑</a>
+        </div>
       </div>
     </div>
   </footer>
 
+  <script>
+    // スクロールアニメーション
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>

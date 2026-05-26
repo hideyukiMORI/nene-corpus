@@ -5,8 +5,7 @@
   <title>NeNe Corpus — Guide</title>
   <script>
     (function () {
-      var locales = ['ja', 'en', 'de', 'fr', 'zh-hans', 'pt-br'];
-      var l = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+      var l = (navigator.language || 'en').toLowerCase();
       var locale = 'en';
       if (l.startsWith('ja')) locale = 'ja';
       else if (l.startsWith('de')) locale = 'de';

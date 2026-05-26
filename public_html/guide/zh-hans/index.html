@@ -4,261 +4,587 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeNe Corpus — 为您的网站提供知识问答</title>
-  <meta name="description" content="上传 PDF 和 CSV 构建语料库，然后在网站上嵌入带引用的 AI 聊天组件。开源，自托管。" />
+  <meta name="description" content="上传 PDF 和 CSV 构建语料库，然后在网站上嵌入带引用的 AI 聊天组件。开源，自托管，MIT 许可证。" />
   <meta property="og:title" content="NeNe Corpus — 为您的网站提供知识问答" />
-  <meta property="og:description" content="上传 PDF 和 CSV 构建语料库，然后在网站上嵌入带引用的 AI 聊天组件。开源，自托管。" />
+  <meta property="og:description" content="上传 PDF 和 CSV 构建语料库，然后在网站上嵌入带引用的 AI 聊天组件。开源，自托管，MIT 许可证。" />
   <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            brand:   { DEFAULT: '#7c3aed', light: '#ede9fe' },
-            fg:      { DEFAULT: '#111827' },
-            muted:   { DEFAULT: '#6b7280' },
-            border:  { DEFAULT: '#e5e7eb' },
-            surface: { DEFAULT: '#ffffff', hover: '#f9fafb' },
-            code:    { DEFAULT: '#1e1b4b', fg: '#c4b5fd' },
-          },
+          fontFamily: { sans: ['system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'] },
+          animation: { 'fade-up': 'fadeUp 0.6s ease-out forwards' },
+          keyframes: { fadeUp: { '0%':{ opacity:'0', transform:'translateY(20px)' }, '100%':{ opacity:'1', transform:'translateY(0)' } } },
         },
       },
     };
-    // dark mode
-    (function(){
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      }
-    })();
   </script>
   <style>
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --tw-text-opacity: 1;
-      }
-    }
-    html.dark {
-      --tw-bg-opacity: 1;
-      background-color: rgb(17 24 39 / var(--tw-bg-opacity));
-      color: rgb(243 244 246);
-    }
-    html.dark .text-fg   { color: #f3f4f6 !important; }
-    html.dark .text-muted { color: #9ca3af !important; }
-    html.dark .bg-surface { background: #111827 !important; }
-    html.dark .bg-surface-hover { background: #1f2937 !important; }
-    html.dark .border-border { border-color: #374151 !important; }
-    html.dark .bg-white { background: #1f2937 !important; }
-    html.dark .bg-gray-50 { background: #111827 !important; }
-    html.dark .text-gray-900 { color: #f3f4f6 !important; }
-    html.dark .text-gray-600 { color: #9ca3af !important; }
-    html.dark .bg-code { background: #0f0c2e !important; }
-    html.dark .text-border { color: #374151 !important; }
-    html, body { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    details summary::-webkit-details-marker { display: none; }
+    pre code { font-family: 'Menlo','Monaco','Consolas','Courier New',monospace; }
   </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
   <!-- ── ヘッダー ── -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-border">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-      <a href="#" class="font-bold text-fg text-lg tracking-tight">NeNe Corpus</a>
-      <nav class="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm text-muted justify-end">
-        <a href="../ja/" class="hover:text-brand transition-colors">日本語</a><span class="text-border mx-1">·</span><a href="../en/" class="hover:text-brand transition-colors">English</a><span class="text-border mx-1">·</span><a href="../de/" class="hover:text-brand transition-colors">Deutsch</a><span class="text-border mx-1">·</span><a href="../fr/" class="hover:text-brand transition-colors">Français</a><span class="text-border mx-1">·</span><span class="font-semibold text-brand">中文</span><span class="text-border mx-1">·</span><a href="../pt-br/" class="hover:text-brand transition-colors">Português</a>
+  <header class="sticky top-0 z-50 bg-violet-950/95 backdrop-blur-md border-b border-violet-800/50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <a href="#" class="font-bold text-white text-lg tracking-tight flex items-center gap-2">
+        <span class="text-violet-400">◆</span>NeNe Corpus
+      </a>
+      <nav class="hidden sm:flex items-center gap-5 text-sm text-violet-300">
+        <a href="#for-admin" class="hover:text-white transition-colors">管理员指南</a>
+        <a href="#for-user"  class="hover:text-white transition-colors">用户指南</a>
+        <a href="#faq"       class="hover:text-white transition-colors">常见问题</a>
+        <a href="#disclaimer" class="hover:text-white transition-colors">免责声明</a>
       </nav>
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs justify-end">
+        <a href="../ja/" class="hover:text-white transition-colors text-violet-300">日本語</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../en/" class="hover:text-white transition-colors text-violet-300">English</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../de/" class="hover:text-white transition-colors text-violet-300">Deutsch</a><span class="text-violet-600 mx-1 text-xs">|</span><a href="../fr/" class="hover:text-white transition-colors text-violet-300">Français</a><span class="text-violet-600 mx-1 text-xs">|</span><span class="font-semibold text-violet-200">中文</span><span class="text-violet-600 mx-1 text-xs">|</span><a href="../pt-br/" class="hover:text-white transition-colors text-violet-300">Português</a>
+      </div>
     </div>
   </header>
 
   <main>
 
     <!-- ── Hero ── -->
-    <section class="bg-gradient-to-br from-violet-600 to-indigo-700 text-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center">
-        <span class="inline-block mb-5 px-3 py-1 rounded-full bg-white/20 text-sm font-medium">
-          开源 · MIT 许可证
-        </span>
-        <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight mb-5 tracking-tight">
-          为您的网站提供 AI 知识问答
-        </h1>
-        <p class="text-base sm:text-lg text-violet-100 max-w-2xl mx-auto mb-8 leading-relaxed">
-          上传 PDF、CSV 或粘贴文本构建语料库。嵌入聊天组件，为访客提供带引用来源的智能回答。
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-          <a href="#for-admin"
-             class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-violet-700 font-semibold hover:bg-violet-50 transition-colors text-sm">
-            开始使用 →
-          </a>
-          <a href="../../admin/"
-             class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors text-sm border border-white/30">
-            打开管理后台
-          </a>
+    <section class="relative overflow-hidden bg-gradient-to-br from-violet-950 via-violet-900 to-indigo-900 text-white">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-violet-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-violet-600/5 blur-3xl"></div>
+      </div>
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 lg:py-36">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div>
+            <span class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-violet-400/20 border border-violet-400/30 text-violet-200 text-sm font-medium">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              开源 · MIT 许可证
+            </span>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-6 tracking-tight">
+              为您的网站提供 AI 知识问答
+            </h1>
+            <p class="text-base sm:text-lg text-violet-200 mb-8 leading-relaxed max-w-lg">
+              上传 PDF、CSV 或粘贴文本构建语料库。聊天组件为访客提供带引用来源的智能回答。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 mb-10">
+              <a href="#for-admin"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-violet-700 font-semibold hover:bg-violet-50 transition-all shadow-lg hover:shadow-xl text-sm">
+                开始使用
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+              <a href="../../admin/"
+                 class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-violet-800/50 text-white font-semibold hover:bg-violet-700/50 transition-all border border-violet-600/40 text-sm">
+                打开管理后台
+              </a>
+            </div>
+            <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-violet-300">
+              
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>自托管</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>无锁定</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>MIT 许可证</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-4 h-4 text-violet-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+      <span>6 种语言</span>
+    </div>
+            </div>
+          </div>
+          <div class="hidden lg:flex justify-center lg:justify-end">
+            <div class="w-72 drop-shadow-2xl"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" fill="none" aria-hidden="true">
+    <rect width="280" height="360" rx="16" fill="#1e1b4b"/>
+    <rect x="1" y="1" width="278" height="358" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="0" y="0" width="280" height="52" rx="16" fill="#7c3aed"/>
+    <rect x="0" y="38" width="280" height="14" fill="#7c3aed"/>
+    <circle cx="30" cy="26" r="14" fill="white" opacity="0.2"/>
+    <text x="52" y="22" fill="white" font-size="13" font-weight="600" font-family="sans-serif">NeNe Corpus</text>
+    <text x="52" y="36" fill="white" font-size="10" font-family="sans-serif" opacity="0.8">How can we help?</text>
+    <rect x="16" y="68" width="168" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="88"  fill="#374151" font-size="10" font-family="sans-serif">Based on the documentation,</text>
+    <text x="28" y="102" fill="#374151" font-size="10" font-family="sans-serif">NeNe Corpus supports PDF,</text>
+    <text x="28" y="116" fill="#374151" font-size="10" font-family="sans-serif">CSV, and plain text. <tspan fill="#7c3aed" font-weight="600">[1]</tspan></text>
+    <rect x="96" y="136" width="168" height="40" rx="10" fill="#ede9fe"/>
+    <text x="108" y="152" fill="#4c1d95" font-size="10" font-family="sans-serif">Which formats does it</text>
+    <text x="108" y="166" fill="#4c1d95" font-size="10" font-family="sans-serif">support?</text>
+    <rect x="16" y="188" width="180" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="208" fill="#374151" font-size="10" font-family="sans-serif">You can install it on shared</text>
+    <text x="28" y="222" fill="#374151" font-size="10" font-family="sans-serif">hosting with PHP 8.2+ and</text>
+    <text x="28" y="236" fill="#374151" font-size="10" font-family="sans-serif">MySQL. No SSH needed. <tspan fill="#7c3aed" font-weight="600">[2]</tspan></text>
+    <line x1="16" y1="260" x2="264" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="12" y="272" width="222" height="36" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="24" y="294" fill="#9ca3af" font-size="10" font-family="sans-serif">Type your question…</text>
+    <rect x="244" y="272" width="24" height="36" rx="8" fill="#7c3aed"/>
+    <path d="M251 290 L262 290 M258 286 L262 290 L258 294" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12" y="316" width="256" height="32" rx="6" fill="#faf5ff"/>
+    <text x="20" y="330" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[1] Installation Guide p.3</text>
+    <text x="20" y="342" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[2] Deployment Guide p.7</text>
+  </svg></div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ── Features ── -->
-    <section id="features" class="py-16 sm:py-20 bg-gray-50">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <h2 class="text-2xl sm:text-3xl font-bold text-fg text-center mb-10">
-          功能介绍
-        </h2>
-        <div class="grid sm:grid-cols-3 gap-6">
+    <section id="features" class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">功能介绍</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">三步为您的网站添加知识 AI。</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 lg:gap-8">
           
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">📁</div>
-            <h3 class="font-semibold text-fg mb-2">构建语料库</h3>
-            <p class="text-sm text-muted leading-relaxed">上传 PDF、CSV 或直接粘贴文本。在一处管理多个数据源。</p>
+          <div class="reveal reveal-delay-1 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="28" y="42" width="72" height="88" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="38" y="30" width="72" height="88" rx="6" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="48" y="18" width="72" height="88" rx="6" fill="white" stroke="#7c3aed" stroke-width="2.5"/>
+    <line x1="62" y1="40" x2="106" y2="40" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="52" x2="106" y2="52" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="64" x2="94"  y2="64" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="76" x2="106" y2="76" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="88" x2="88"  y2="88" stroke="#c4b5fd" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="112" cy="108" r="22" fill="#7c3aed"/>
+    <circle cx="109" cy="105" r="10" fill="none" stroke="white" stroke-width="2.5"/>
+    <line x1="116" y1="112" x2="124" y2="120" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">构建语料库</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">上传 PDF、CSV 或直接粘贴文本。自动分块、索引并存储。在一处管理多个数据源。</p>
           </div>
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">💬</div>
-            <h3 class="font-semibold text-fg mb-2">带引用的 AI 问答</h3>
-            <p class="text-sm text-muted leading-relaxed">Claude AI 搜索语料库，并附带页码引用进行回答。</p>
+          <div class="reveal reveal-delay-2 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="12" y="18" width="100" height="52" rx="16" fill="#7c3aed"/>
+    <path d="M28 70 L16 88 L40 70Z" fill="#7c3aed"/>
+    <line x1="28" y1="38" x2="96" y2="38" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <line x1="28" y1="52" x2="80" y2="52" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <rect x="110" y="14" width="38" height="38" rx="19" fill="#f59e0b"/>
+    <text x="129" y="39" text-anchor="middle" fill="white" font-size="18" font-weight="700" font-family="sans-serif">[1]</text>
+    <rect x="50" y="96" width="100" height="46" rx="16" fill="#e5e7eb"/>
+    <path d="M134 142 L148 158 L120 142Z" fill="#e5e7eb"/>
+    <line x1="66" y1="114" x2="134" y2="114" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"/>
+    <line x1="66" y1="128" x2="110" y2="128" stroke="#9ca3af" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">带引用的 AI 问答</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">Claude AI 搜索语料库并附带页码引用进行回答，最大程度减少幻觉。</p>
           </div>
-          <div class="bg-white rounded-2xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div class="text-3xl mb-3">🔗</div>
-            <h3 class="font-semibold text-fg mb-2">一行代码嵌入</h3>
-            <p class="text-sm text-muted leading-relaxed">只需在任何现有网站添加一行 script 标签，聊天组件即可显示。</p>
+          <div class="reveal reveal-delay-3 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="w-28 h-28 mx-auto mb-5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+    <rect x="8"  y="14" width="144" height="108" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="2"/>
+    <rect x="8"  y="14" width="144" height="28"  rx="8" fill="#e5e7eb"/>
+    <rect x="8"  y="34" width="144" height="8"   fill="#e5e7eb"/>
+    <circle cx="26" cy="28" r="4" fill="#ef4444" opacity="0.7"/>
+    <circle cx="40" cy="28" r="4" fill="#f59e0b" opacity="0.7"/>
+    <circle cx="54" cy="28" r="4" fill="#22c55e" opacity="0.7"/>
+    <line x1="24" y1="60"  x2="92"  y2="60"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="74"  x2="76"  y2="74"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="88"  x2="88"  y2="88"  stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="102" x2="64"  y2="102" stroke="#d1d5db" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="92" y="62" width="52" height="58" rx="10" fill="#7c3aed" filter="url(#shadow)"/>
+    <defs><filter id="shadow"><feDropShadow dx="-2" dy="2" stdDeviation="3" flood-color="#7c3aed" flood-opacity="0.4"/></filter></defs>
+    <rect x="98" y="96" width="40" height="16" rx="5" fill="white" opacity="0.25"/>
+    <line x1="100" y1="76" x2="136" y2="76" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="100" y1="87" x2="126" y2="87" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+    <circle cx="118" cy="57" r="11" fill="#7c3aed" stroke="white" stroke-width="2.5"/>
+    <path d="M113 57 Q118 52 123 57 Q118 62 113 57Z" fill="white"/>
+  </svg></div>
+            <h3 class="font-bold text-gray-900 text-lg mb-3 text-center">一行代码嵌入</h3>
+            <p class="text-gray-500 text-sm leading-relaxed text-center">只需在任何现有网站添加一行 `<script>` 标签——WordPress、静态 HTML 或其他任何网站。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How It Works ── -->
+    <section id="how-it-works" class="py-20 sm:py-24 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">工作原理</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">从上传文件到带引用的回答——全程自动化。</p>
+        </div>
+        <div class="relative">
+          <div class="hidden sm:flex items-start justify-between gap-2">
+            
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-violet-100 text-violet-700 flex items-center justify-center text-2xl mb-3 shadow-sm">📄</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">1</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">上传文档</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">通过管理面板上传 PDF、CSV 或文本。</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center text-2xl mb-3 shadow-sm">⚙️</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">2</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">分块与索引</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">文本自动提取、分块并存储到数据库。</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-3 shadow-sm">💬</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">3</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">访客提问</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">用户在嵌入的聊天组件中输入问题。</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl mb-3 shadow-sm">🔍</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">4</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">AI 搜索语料库</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">Claude 通过全文搜索检索相关块并生成回答。</p>
+      </div><svg class="w-5 h-5 text-gray-300 self-center hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <div class="flex flex-col items-center text-center px-2">
+        <div class="w-14 h-14 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center text-2xl mb-3 shadow-sm">✅</div>
+        <div class="w-6 h-6 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs font-bold mb-2 shadow">5</div>
+        <h3 class="font-semibold text-gray-900 text-sm mb-1">附引用的回答</h3>
+        <p class="text-gray-500 text-xs leading-relaxed">回答在组件中显示，附带来源页码。</p>
+      </div>
+          </div>
+          <div class="sm:hidden space-y-6">
+            <div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">📄</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 1</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">上传文档</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">通过管理面板上传 PDF、CSV 或文本。</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">⚙️</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 2</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">分块与索引</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">文本自动提取、分块并存储到数据库。</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">💬</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 3</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">访客提问</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">用户在嵌入的聊天组件中输入问题。</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">🔍</div>
+                  <div class="w-0.5 h-6 bg-violet-100 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 4</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">AI 搜索语料库</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">Claude 通过全文搜索检索相关块并生成回答。</p>
+                </div>
+              </div><div class="flex gap-4 items-start">
+                <div class="flex flex-col items-center shrink-0">
+                  <div class="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-xl">✅</div>
+                  
+                </div>
+                <div class="pt-2">
+                  <div class="text-xs font-bold text-violet-600 mb-0.5">STEP 5</div>
+                  <h3 class="font-semibold text-gray-900 text-sm mb-1">附引用的回答</h3>
+                  <p class="text-gray-500 text-xs leading-relaxed">回答在组件中显示，附带来源页码。</p>
+                </div>
+              </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── For Admin ── -->
-    <section id="for-admin" class="py-16 sm:py-20 bg-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <div class="max-w-2xl">
-          <h2 class="text-2xl sm:text-3xl font-bold text-fg mb-2">快速开始（管理员）</h2>
-          <p class="text-muted mb-8">从安装到上线 Widget，只需 4 步。</p>
-          <div class="space-y-6">
-            
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">安装</h3>
-            <p class="text-muted text-sm leading-relaxed">下载 ZIP 并上传到 public_html。打开网页安装向导，输入数据库配置。</p>
-            
-          </div>
-        </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">配置 LLM API 密钥</h3>
-            <p class="text-muted text-sm leading-relaxed">打开设置 → LLM，输入 Anthropic API 密钥。使用连接测试进行验证。</p>
+    <section id="for-admin" class="py-20 sm:py-24 bg-gradient-to-b from-violet-50 to-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div class="reveal">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">快速开始（管理员）</h2>
+            <p class="text-gray-500 mb-8">从安装到上线 Widget，只需 4 步——适用于共享主机和 Docker。</p>
+            <div>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">安装</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">下载发布版 ZIP 并上传到 public_html。打开网页安装向导，输入数据库凭据。设置完成。</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">添加数据源</h3>
-            <p class="text-muted text-sm leading-relaxed">在"数据源"面板上传 PDF、CSV 或文本。处理完成后，聊天机器人即可从中回答问题。</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">配置 LLM API 密钥</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">打开设置 → LLM，输入 Anthropic API 密钥。保存前使用连接测试进行验证。</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">4</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">嵌入组件</h3>
-            <p class="text-muted text-sm leading-relaxed">从设置 → 设计选项卡复制嵌入代码，粘贴到页面 &lt;/body&gt; 标签之前。</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">添加数据源</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">在数据源面板上传 PDF、CSV 或文本。处理完成后，聊天机器人即可从中回答问题。</p>
             
-    <pre class="mt-3 rounded-lg bg-code text-code-fg text-xs p-3 overflow-x-auto leading-relaxed"><code>&lt;script
+          </div>
+        </div>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">4</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">嵌入组件</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">从设置 → 设计选项卡复制嵌入代码，粘贴到页面 &lt;/body&gt; 之前。完成。</p>
+            
+            <div class="mt-4">
+              <p class="text-xs text-gray-500 mb-2 font-medium">嵌入代码（从设置 → 设计选项卡复制）</p>
+              <pre class="rounded-xl bg-gray-900 text-violet-300 text-xs p-4 overflow-x-auto leading-relaxed font-mono shadow-inner"><code>&lt;script
   src="https://your-domain.com/widget.js"
   data-nene-corpus
 &gt;&lt;/script&gt;</code></pre>
+            </div>
           </div>
-        </div>
+        </div></div>
+          </div>
+          <div class="reveal reveal-delay-1 hidden lg:block">
+            <div class="sticky top-24 bg-white rounded-3xl border border-gray-100 shadow-xl p-8">
+              <div class="text-center text-gray-400 text-5xl mb-4">🗂️</div>
+              <div class="space-y-3">
+                
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🔑</span>
+                  <span class="text-gray-700 font-mono text-xs">Anthropic API Key</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">📁</span>
+                  <span class="text-gray-700 font-mono text-xs">sources/</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🤖</span>
+                  <span class="text-gray-700 font-mono text-xs">claude-3-5-haiku</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-sm">
+                  <span class="text-base">🌐</span>
+                  <span class="text-gray-700 font-mono text-xs">widget.js</span>
+                  <svg class="w-4 h-4 text-green-500 ml-auto shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── For Users ── -->
-    <section id="for-user" class="py-16 sm:py-20 bg-gray-50">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <div class="max-w-2xl">
-          <h2 class="text-2xl sm:text-3xl font-bold text-fg mb-2">使用聊天组件</h2>
-          <p class="text-muted mb-8">3 个简单步骤即可使用聊天组件。</p>
-          <div class="space-y-6">
-            
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">打开组件</h3>
-            <p class="text-muted text-sm leading-relaxed">点击页面右下角的聊天图标，即可打开聊天组件。</p>
+    <section id="for-user" class="py-20 sm:py-24 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="order-2 lg:order-1 flex justify-center">
+            <div class="w-64 sm:w-72 drop-shadow-xl reveal"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 360" fill="none" aria-hidden="true">
+    <rect width="280" height="360" rx="16" fill="#1e1b4b"/>
+    <rect x="1" y="1" width="278" height="358" rx="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="0" y="0" width="280" height="52" rx="16" fill="#7c3aed"/>
+    <rect x="0" y="38" width="280" height="14" fill="#7c3aed"/>
+    <circle cx="30" cy="26" r="14" fill="white" opacity="0.2"/>
+    <text x="52" y="22" fill="white" font-size="13" font-weight="600" font-family="sans-serif">NeNe Corpus</text>
+    <text x="52" y="36" fill="white" font-size="10" font-family="sans-serif" opacity="0.8">How can we help?</text>
+    <rect x="16" y="68" width="168" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="88"  fill="#374151" font-size="10" font-family="sans-serif">Based on the documentation,</text>
+    <text x="28" y="102" fill="#374151" font-size="10" font-family="sans-serif">NeNe Corpus supports PDF,</text>
+    <text x="28" y="116" fill="#374151" font-size="10" font-family="sans-serif">CSV, and plain text. <tspan fill="#7c3aed" font-weight="600">[1]</tspan></text>
+    <rect x="96" y="136" width="168" height="40" rx="10" fill="#ede9fe"/>
+    <text x="108" y="152" fill="#4c1d95" font-size="10" font-family="sans-serif">Which formats does it</text>
+    <text x="108" y="166" fill="#4c1d95" font-size="10" font-family="sans-serif">support?</text>
+    <rect x="16" y="188" width="180" height="56" rx="10" fill="#f3f4f6"/>
+    <text x="28" y="208" fill="#374151" font-size="10" font-family="sans-serif">You can install it on shared</text>
+    <text x="28" y="222" fill="#374151" font-size="10" font-family="sans-serif">hosting with PHP 8.2+ and</text>
+    <text x="28" y="236" fill="#374151" font-size="10" font-family="sans-serif">MySQL. No SSH needed. <tspan fill="#7c3aed" font-weight="600">[2]</tspan></text>
+    <line x1="16" y1="260" x2="264" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="12" y="272" width="222" height="36" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="24" y="294" fill="#9ca3af" font-size="10" font-family="sans-serif">Type your question…</text>
+    <rect x="244" y="272" width="24" height="36" rx="8" fill="#7c3aed"/>
+    <path d="M251 290 L262 290 M258 286 L262 290 L258 294" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12" y="316" width="256" height="32" rx="6" fill="#faf5ff"/>
+    <text x="20" y="330" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[1] Installation Guide p.3</text>
+    <text x="20" y="342" fill="#7c3aed" font-size="8" font-family="sans-serif" font-weight="600">[2] Deployment Guide p.7</text>
+  </svg></div>
+          </div>
+          <div class="order-1 lg:order-2 reveal reveal-delay-1">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">使用聊天组件</h2>
+            <p class="text-gray-500 mb-8">聊天组件操作直观，3 步即可上手。</p>
+            <div>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">1</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">打开组件</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">点击页面右下角的聊天图标。</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">输入问题</h3>
-            <p class="text-muted text-sm leading-relaxed">输入您的问题，然后按发送按钮或回车键。</p>
+        <div class="relative flex gap-5 pb-8">
+          <div class="absolute left-5 top-10 bottom-0 w-0.5 bg-violet-100" aria-hidden="true"></div>
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">2</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">输入并发送</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">用自然语言输入问题，按发送或回车键。</p>
             
           </div>
         </div>
-
-        <div class="flex gap-4">
-          <div class="flex-none w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
-          <div>
-            <h3 class="font-semibold text-fg mb-1">获得带引用的回答</h3>
-            <p class="text-muted text-sm leading-relaxed">AI 搜索语料库，并附带来源页码进行回答。</p>
+        <div class="relative flex gap-5">
+          
+          <div class="flex-none w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">3</div>
+          <div class="pt-1.5 min-w-0">
+            <h3 class="font-semibold text-gray-900 mb-1 text-base">获得带引用的回答</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">AI 搜索语料库并附带来源页码进行回答。点击引用可跳转到来源。</p>
             
           </div>
-        </div>
+        </div></div>
+            <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 leading-relaxed">
+              注意：AI 生成的回答仅供参考。重要信息请务必查阅原始资料进行核实。
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── FAQ ── -->
-    <section id="faq" class="py-16 sm:py-20 bg-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6">
-        <h2 class="text-2xl sm:text-3xl font-bold text-fg text-center mb-10">常见问题</h2>
-        <div class="max-w-2xl mx-auto space-y-3">
+    <section id="faq" class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 reveal">
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">常见问题</h2>
+        </div>
+        <div class="space-y-3 reveal">
           
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>使用哪个 AI 模型？</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">使用哪个 AI 模型？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          NeNe Corpus 使用 Anthropic 的 Claude API（如 claude-3-5-haiku 或 claude-opus-4）。需要 Anthropic 账户和 API 密钥。
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          NeNe Corpus 使用 Anthropic 的 Claude API（claude-3-5-haiku、claude-opus-4 等）。模型可在管理面板更改。需要 Anthropic 账户和 API 密钥。
         </div>
       </details>
-
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>支持哪些文件格式？</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">支持哪些文件格式？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          支持 PDF、CSV 和纯文本格式。
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          支持 PDF（含文本层）、CSV 和纯文本。仅由扫描图像组成且不含文本层的 PDF 不受支持。
         </div>
       </details>
-
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>是否免费？</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">是否免费？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
           NeNe Corpus 本身是 MIT 许可证下的开源软件。Anthropic API 使用费用单独计算。
         </div>
       </details>
-
-      <details class="group border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer font-medium text-fg select-none list-none hover:bg-surface-hover transition-colors">
-          <span>数据存储在哪里？</span>
-          <span class="text-muted text-xl leading-none transition-transform group-open:rotate-45 shrink-0">+</span>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">数据存储在哪里？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-5 pb-4 pt-1 text-sm text-muted leading-relaxed border-t border-border">
-          所有数据存储在您自己的 MySQL 数据库中。除 LLM 推理请求外，不向外部发送任何内容。
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          所有语料库数据和聊天历史存储在您自己的 MySQL 数据库中。聊天查询会发送到 Anthropic API 进行 AI 推理。
         </div>
       </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">能在共享主机上运行吗？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          可以。任何支持 PHP 8.2+ 和 MySQL 的服务器均可运行。通过 FTP 部署，无需 SSH。
+        </div>
+      </details>
+      <details class="group border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+          <span class="text-sm">如何提高回答准确性？</span>
+          <span class="text-gray-400 text-2xl leading-none font-light transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
+        </summary>
+        <div class="px-6 pb-5 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
+          添加高质量源文档最为有效。您还可以自定义系统提示词，并通过使用限制管理费用。
+        </div>
+      </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Disclaimer ── -->
+    <section id="disclaimer" class="py-20 sm:py-24 bg-white border-t border-gray-200">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="mb-8 reveal">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">免责声明与使用条款</h2>
+          </div>
+        </div>
+        <div class="reveal bg-gray-50 rounded-2xl border border-gray-200 p-6 sm:p-8">
+          
+<div class="space-y-6 text-sm text-gray-700 leading-relaxed">
+  <p class="text-base font-medium text-gray-900">在使用本软件之前，请阅读本免责声明和使用条款（"条款"）。使用 NeNe Corpus 即表示您同意受本条款约束。</p>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">1. 无保证声明（MIT 许可证）</h3>
+    <p>NeNe Corpus 是根据 <strong>MIT 许可证</strong>提供的开源软件。本软件<strong>按"原样"</strong>提供，不提供任何明示或暗示的保证，包括但不限于适销性、特定用途适用性和不侵权的保证。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">2. 责任限制</h3>
+    <p>在任何情况下，版权持有人或贡献者均不对因使用或无法使用本软件而产生的任何直接、间接、偶然、特殊、惩罚性或后果性损害承担责任，即使已被告知此类损害的可能性。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">3. AI 生成回答的准确性</h3>
+    <p>本软件的聊天功能通过大型语言模型自动生成回答，可能包含事实错误或过时信息（即"幻觉"）。<strong>请勿将本软件的回答单独用作医疗、法律、财务、投资或安全等专业决策的依据。</strong></p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">4. 对第三方服务的依赖（Anthropic Claude API）</h3>
+    <p>本软件使用 Anthropic, Inc. 提供的 Claude API。版权持有人不对 Anthropic 服务的可用性、价格变化或质量变化负责。Claude API 的使用须单独遵守 Anthropic 的<a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="text-violet-700 underline">使用政策</a>。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">5. 数据处理与隐私保护</h3>
+    <p>本软件为自托管型。语料库数据和聊天历史存储在运营者自己的 MySQL 数据库中。聊天查询内容将发送至 Anthropic API 服务器进行 AI 推理。运营者单独负责遵守适用的数据保护法律（包括 GDPR、个人信息保护相关法律等）。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">6. 运营者责任</h3>
+    <p>运营者单独负责遵守所有适用法律、支付 Anthropic API 使用费用、应对安全事件以及确保通过 Widget 显示的内容的合法性。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">7. 禁止用途</h3>
+    <p>严禁将本软件用于非法内容、欺诈、仇恨言论、侵犯他人权利或违反 Anthropic 使用政策或适用法律的活动。</p>
+  </section>
+
+  <section>
+    <h3 class="font-semibold text-gray-900 mb-2">8. 条款变更</h3>
+    <p>本条款可能在不事先通知的情况下更新。最新版本始终可在 <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="text-violet-700 underline">GitHub 仓库</a>中查阅。</p>
+  </section>
+</div>
         </div>
       </div>
     </section>
@@ -266,27 +592,40 @@
   </main>
 
   <!-- ── Footer ── -->
-  <footer class="bg-gray-900 text-gray-400 py-10">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-      <div class="flex items-center gap-3">
-        <span class="text-gray-200 font-semibold">Powered by NENE2</span>
-        <span class="text-gray-600">·</span>
-        <span>© AYANE 保留所有权利。</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="https://github.com/hideyukiMORI/nene-corpus"
-           target="_blank" rel="noopener"
-           class="hover:text-gray-200 transition-colors flex items-center gap-1">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-          </svg>
-          GitHub
-        </a>
-        <span class="text-gray-600">·</span>
-        <span>MIT 许可证</span>
+  <footer class="bg-violet-950 text-violet-300 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-violet-400">◆</span>
+            <span class="text-white font-bold">NeNe Corpus</span>
+          </div>
+          <p class="text-sm text-violet-400">Powered by NENE2 · © AYANE 保留所有权利。</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-4 text-sm">
+          <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener"
+             class="flex items-center gap-1.5 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            GitHub
+          </a>
+          <span class="text-violet-700">·</span>
+          <span>MIT 许可证</span>
+          <span class="text-violet-700">·</span>
+          <a href="#" class="hover:text-white transition-colors">返回顶部 ↑</a>
+        </div>
       </div>
     </div>
   </footer>
 
+  <script>
+    // スクロールアニメーション
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
