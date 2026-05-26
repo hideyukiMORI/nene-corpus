@@ -46,6 +46,13 @@
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
     .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
     html.dark .bento-card { border-color:#1e293b; background:#1e293b; }
+    /* features セクション ダークモードカード */
+    html.dark #features .bento-card { background:#0f172a; border-color:#1e2d3d; }
+    .bento-card.card-brand { background:#e6f2ef40; }
+    html.dark #features .bento-card.card-brand { background:#071912; border-color:rgba(77,143,127,.3); }
+    /* ブランドラベル（カード番号） */
+    .brand-label { color:#4d8f7f; }
+    html.dark .brand-label { color:#5eb8a4; }
     /* sect-alt: stats / how-it-works / for-user の薄背景セクション */
     .sect-alt { background:#fafcfb; }
     html.dark .sect-alt { background:#0f172a; }
@@ -299,7 +306,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
 
           <!-- カード 01: コーパス構築 -->
-          <div class="bento-card p-8 flex flex-col" style="background:#e6f2ef60">
+          <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="30" y="54" width="88" height="108" rx="8" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="2.5"/>
     <rect x="44" y="38" width="88" height="108" rx="8" fill="#f5fcfa" stroke="#4d8f7f" stroke-width="2"/>
@@ -313,13 +320,13 @@
     <circle cx="142" cy="144" r="20" fill="none" stroke="#4d8f7f" stroke-width="3.5"/>
     <line x1="156" y1="158" x2="170" y2="172" stroke="#4d8f7f" stroke-width="4" stroke-linecap="round"/>
   </svg></div>
-            <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:#4d8f7f">01</span>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">01</span>
             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Construir um Corpus</h3>
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Envie PDFs, CSVs ou cole textos. Automaticamente dividido em partes, indexado e armazenado. Gerencie múltiplas fontes em um só lugar.</p>
           </div>
 
           <!-- 縦カード: 引用チャット -->
-          <div class="bento-card p-8 flex flex-col" style="background:#e6f2ef60">
+          <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="14" y="22" width="128" height="64" rx="20" fill="#4d8f7f"/>
     <path d="M34 86 L20 108 L54 86Z" fill="#4d8f7f"/>
@@ -332,8 +339,8 @@
     <line x1="84"  y1="138" x2="172" y2="138" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
     <line x1="84"  y1="154" x2="148" y2="154" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
   </svg></div>
-            <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:#4d8f7f">02</span>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Chat IA com Citações</h3>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">02</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Chat IA com Citações</h3>
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Claude AI pesquisa seu corpus e responde com números de página das citações, minimizando alucinações.</p>
           </div>
 
@@ -357,9 +364,9 @@
     <circle cx="150" cy="66" r="14" fill="#4d8f7f" stroke="white" stroke-width="2.5"/>
     <path d="M145 66 Q150 60 155 66 Q150 72 145 66Z" fill="white"/>
   </svg></div>
-            <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:#4d8f7f">03</span>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Incorporar com Uma Linha</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Adicione uma única tag <code class="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-[0.85em] font-mono">&lt;script&gt;</code> a qualquer site existente — WordPress, HTML estático ou qualquer outro.</p>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">03</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Incorporar com Uma Linha</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Adicione uma única tag <code class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-1.5 py-0.5 rounded text-[0.85em] font-mono">&lt;script&gt;</code> a qualquer site existente — WordPress, HTML estático ou qualquer outro.</p>
           </div>
 
         </div>
