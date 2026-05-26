@@ -48,6 +48,13 @@ export async function listSources(
   });
 }
 
+export async function deleteSource(token: string, sourceId: number, apiBase = ''): Promise<void> {
+  await fetchJson<void>(`${apiBase}/admin/sources/${sourceId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function listChatSessions(
   token: string,
   apiBase = '',

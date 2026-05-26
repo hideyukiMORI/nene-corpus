@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { listSources, type SourceListItem } from '@nene-corpus/api-client';
+import { deleteSource, listSources, type SourceListItem } from '@nene-corpus/api-client';
 import { adminApiBase } from './config';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
@@ -23,6 +23,8 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
   const [offset, setOffset] = useState(0);
   const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(DEFAULT_PAGE_SIZE);
   const [managingSource, setManagingSource] = useState<{ id: number; name: string } | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,6 +85,30 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
       controller.abort();
     };
   }, [load, offset, pageSize, reloadKey]);
+
+  async function handleDelete(source: SourceListItem): Promise<void> {
+    if (!window.confirm(t(Msg.admin.sources.deleteConfirm, { name: source.name }))) {
+      return;
+    }
+
+    setDeletingId(source.source_id);
+    setDeleteError(null);
+
+    try {
+      await deleteSource(token, source.source_id, adminApiBase);
+      onDocumentsChanged?.();
+      // 現在ページの件数が 1 件だった場合は前のページに戻る
+      if (sources.length === 1 && offset > 0) {
+        setOffset(Math.max(0, offset - pageSize));
+      } else {
+        void load(offset, pageSize);
+      }
+    } catch (cause: unknown) {
+      setDeleteError(cause instanceof Error ? cause.message : t(Msg.admin.sources.deleteFailed));
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   function handlePageSizeChange(newSize: (typeof PAGE_SIZE_OPTIONS)[number]): void {
     setPageSize(newSize);
@@ -154,6 +180,7 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
                   </th>
                   <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.columnUpdated)}</th>
                   <th className="px-4 py-2 font-medium">{t(Msg.admin.documents.manage)}</th>
+                  <th className="px-4 py-2 font-medium">{t(Msg.admin.sources.delete)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -182,11 +209,28 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
                         {t(Msg.admin.documents.manage)}
                       </button>
                     </td>
+                    <td className="px-4 py-2">
+                      <button
+                        className="nc-btn text-xs text-red-600 hover:bg-red-50 disabled:opacity-40 dark:hover:bg-red-950/30"
+                        type="button"
+                        disabled={deletingId === source.source_id}
+                        onClick={() => void handleDelete(source)}
+                      >
+                        {deletingId === source.source_id
+                          ? t(Msg.admin.sources.deleting)
+                          : t(Msg.admin.sources.delete)}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* 削除エラー */}
+          {deleteError !== null && (
+            <p className="border-t border-border px-4 py-2 text-sm text-red-600">{deleteError}</p>
+          )}
 
           {/* ページャフッター */}
           {total > 0 && (
