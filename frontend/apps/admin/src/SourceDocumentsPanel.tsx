@@ -355,7 +355,7 @@ export function SourceDocumentsPanel({
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel */}
       <dialog
         ref={dialogRef}
-        className="w-full max-w-2xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
+        className="m-auto w-full max-w-2xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
         onCancel={handleDialogCancel}
         onClick={handleDialogClick}
       >
