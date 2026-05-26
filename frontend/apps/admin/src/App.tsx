@@ -63,13 +63,18 @@ export function App() {
           </>
         ) : (
           <>
+            {/* ── AI 設定（LLM 未設定だとチャット不可のため最優先） ── */}
+            <LlmSettingsPanel token={token} />
+            <ChatSettingsPanel token={token} />
+            <ChatLimitsPanel token={token} />
+            {/* ── コンテンツ管理 ── */}
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
             <SourcesPanel
               token={token}
               reloadKey={sourcesReloadKey}
               onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
             />
-            {/* 会話ログ：サマリーテーブル + モーダルトリガー */}
+            {/* ── 運用監視 ── */}
             <ConversationLogsSummary
               token={token}
               onOpenLogs={() => setLogsOpen(true)}
@@ -77,9 +82,7 @@ export function App() {
             {logsOpen && (
               <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
             )}
-            <LlmSettingsPanel token={token} />
-            <ChatSettingsPanel token={token} />
-            <ChatLimitsPanel token={token} />
+            {/* ── デザイン ── */}
             <AppearancePanel token={token} />
             <HelpPanel />
           </>
