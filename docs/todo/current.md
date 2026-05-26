@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-27 (PR #223)
+Last updated: 2026-05-27 (PR #227)
 
 ## 最近の docs 更新
 
@@ -117,6 +117,8 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ガイド LP UI 改善** | ✅ #215 — ダークモード修正・ヘッダーナビ右寄せ・できることセクション再レイアウト・透明感カード・h2 折り返し修正 |
 | P2 | **Admin UI フッター・ガイドリンク** | ✅ #217 — HelpPanel ガイドリンクカード・App フッター（NENE2/AYANE）・Vite proxy /guide |
 | P2 | **ペルソナ HOWTO セットアップガイド** | ✅ #222 — /guide/howto/{locale}/、さくら（カフェオーナー）吹き出し×4ステップ + デモチャット、6ロケール |
+| 🔴 | **ログインブルートフォース対策** | ✅ #224 (PR #225) — AdminLoginRateLimitMiddleware（IP 別 10 回/15 分、rate_limit_buckets 再利用） |
+| 🔴 | **パスワードリセット** | ✅ #226 (PR #227) — メール経由リセットフロー（SHA-256 ハッシュ保存・列挙防止・1時間 TTL・使い捨てトークン） + Admin UI（忘れた場合リンク・リクエスト/確認フォーム）、6 ロケール |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
