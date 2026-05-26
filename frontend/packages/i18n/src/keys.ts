@@ -64,6 +64,12 @@ export const Msg = {
       columnStatusHelp: 'admin.sources.columnStatusHelp',
       columnDocumentsHelp: 'admin.sources.columnDocumentsHelp',
       columnChunksHelp: 'admin.sources.columnChunksHelp',
+      pageInfo: 'admin.sources.pageInfo',
+      pageFirst: 'admin.sources.pageFirst',
+      pagePrev: 'admin.sources.pagePrev',
+      pageNext: 'admin.sources.pageNext',
+      pageLast: 'admin.sources.pageLast',
+      perPageLabel: 'admin.sources.perPageLabel',
     },
     documents: {
       title: 'admin.documents.title',
@@ -178,6 +184,7 @@ export const Msg = {
       pageLast: 'admin.conversationLogs.pageLast',
       perPageLabel: 'admin.conversationLogs.perPageLabel',
       openLogs: 'admin.conversationLogs.openLogs',
+      openAllLogs: 'admin.conversationLogs.openAllLogs',
       close: 'admin.conversationLogs.close',
     },
     llm: {

@@ -13,11 +13,14 @@ final readonly class ListSourcesUseCase implements ListSourcesUseCaseInterface
     ) {
     }
 
-    public function execute(ListSourcesInput $input): array
+    public function execute(ListSourcesInput $input): ListSourcesOutput
     {
         $limit = max(1, min(self::MAX_LIMIT, $input->limit));
         $offset = max(0, $input->offset);
 
-        return $this->sources->findAllSummaries($limit, $offset);
+        return new ListSourcesOutput(
+            sources: $this->sources->findAllSummaries($limit, $offset),
+            total: $this->sources->countAll(),
+        );
     }
 }

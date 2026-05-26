@@ -22,7 +22,7 @@ final readonly class ListSourcesHandler
         $limit = isset($query['limit']) ? (int) $query['limit'] : 50;
         $offset = isset($query['offset']) ? (int) $query['offset'] : 0;
 
-        $summaries = $this->useCase->execute(new ListSourcesInput(limit: $limit, offset: $offset));
+        $output = $this->useCase->execute(new ListSourcesInput(limit: $limit, offset: $offset));
 
         return $this->response->create([
             'sources' => array_map(
@@ -36,8 +36,9 @@ final readonly class ListSourcesHandler
                     'created_at' => $summary->source->createdAt,
                     'updated_at' => $summary->source->updatedAt,
                 ],
-                $summaries,
+                $output->sources,
             ),
+            'total' => $output->total,
         ]);
     }
 }

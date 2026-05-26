@@ -6,6 +6,5 @@ namespace NeneCorpus\Source;
 
 interface ListSourcesUseCaseInterface
 {
-    /** @return list<SourceSummary> */
-    public function execute(ListSourcesInput $input): array;
+    public function execute(ListSourcesInput $input): ListSourcesOutput;
 }

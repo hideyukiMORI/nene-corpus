@@ -52,6 +52,7 @@ export interface SourceListItem {
 
 export interface ListSourcesResponse {
   sources: SourceListItem[];
+  total: number;
 }
 
 export interface DocumentListItem {

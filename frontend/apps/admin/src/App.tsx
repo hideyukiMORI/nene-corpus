@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
-import { ConversationLogsPanel } from './ConversationLogsPanel';
+import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
 import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { ChatSettingsPanel } from './ChatSettingsPanel';
@@ -68,22 +68,11 @@ export function App() {
               reloadKey={sourcesReloadKey}
               onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
             />
-            {/* 会話ログ：モーダルトリガーセクション */}
-            <section className="nc-panel">
-              <div className="nc-panel-head flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <h2 className="font-medium">{t(Msg.admin.conversationLogs.title)}</h2>
-                  <p>{t(Msg.admin.conversationLogs.subtitle)}</p>
-                </div>
-                <button
-                  className="nc-btn shrink-0 text-sm"
-                  type="button"
-                  onClick={() => setLogsOpen(true)}
-                >
-                  {t(Msg.admin.conversationLogs.openLogs)}
-                </button>
-              </div>
-            </section>
+            {/* 会話ログ：サマリーテーブル + モーダルトリガー */}
+            <ConversationLogsSummary
+              token={token}
+              onOpenLogs={() => setLogsOpen(true)}
+            />
             {logsOpen && (
               <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
             )}
