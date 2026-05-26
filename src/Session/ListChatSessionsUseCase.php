@@ -13,11 +13,14 @@ final readonly class ListChatSessionsUseCase implements ListChatSessionsUseCaseI
     ) {
     }
 
-    public function execute(ListChatSessionsInput $input): array
+    public function execute(ListChatSessionsInput $input): ListChatSessionsOutput
     {
         $limit = max(1, min(self::MAX_LIMIT, $input->limit));
         $offset = max(0, $input->offset);
 
-        return $this->sessions->findAllSummaries($limit, $offset);
+        return new ListChatSessionsOutput(
+            sessions: $this->sessions->findAllSummaries($limit, $offset),
+            total: $this->sessions->countAll(),
+        );
     }
 }

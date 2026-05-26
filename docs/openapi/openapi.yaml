@@ -1916,11 +1916,16 @@ components:
       type: object
       required:
         - sessions
+        - total
       properties:
         sessions:
           type: array
           items:
             $ref: '#/components/schemas/ChatSessionSummary'
+        total:
+          type: integer
+          format: int64
+          description: Total number of sessions (regardless of limit/offset).
     ChatSessionSummary:
       type: object
       required:

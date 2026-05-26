@@ -186,6 +186,30 @@
   .nc-file-selected {
     @apply flex items-center gap-3 rounded-admin-lg border border-border bg-surface-muted px-4 py-3;
   }
+
+  /* スクロールコンテナ共通スタイル — Firefox + WebKit 両対応 */
+  .nc-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--nc-admin-border-strong) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--nc-admin-border-strong);
+      border-radius: 9999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--nc-admin-fg-subtle);
+    }
+  }
 }
 
 .dark .nc-panel {
