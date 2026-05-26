@@ -233,11 +233,11 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                         {formatTimestamp(message.created_at, locale)}
                       </time>
                     </div>
-                    <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                    <p className="whitespace-pre-wrap break-words text-sm">{message.content}</p>
                     {message.citations.length > 0 && (
                       <ul className="mt-2 space-y-1 border-t border-border pt-2 nc-text-muted">
                         {message.citations.map((citation) => (
-                          <li key={citation.chunk_id}>
+                          <li key={citation.chunk_id} className="min-w-0">
                             <span className="font-medium">
                               {t(Msg.admin.conversationLogs.citationChunk, { id: citation.chunk_id })}
                             </span>
@@ -248,9 +248,9 @@ export function ConversationLogsPanel({ token }: ConversationLogsPanelProps) {
                               </span>
                             )}
                             {citation.section_label !== undefined && (
-                              <span> · {citation.section_label}</span>
+                              <span className="break-words"> · {citation.section_label}</span>
                             )}
-                            <p className="mt-0.5 nc-text-subtle">{citation.excerpt}</p>
+                            <p className="mt-0.5 break-words nc-text-subtle">{citation.excerpt}</p>
                           </li>
                         ))}
                       </ul>
