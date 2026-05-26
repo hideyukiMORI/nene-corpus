@@ -31,6 +31,7 @@ export const de = defineMessages({
   'admin.app.settingsClose': 'Schließen',
   'admin.app.settingsNavLlm': 'LLM',
   'admin.app.settingsNavChat': 'Chat-Einstellungen',
+  'admin.app.settingsNavAppearance': 'Darstellung',
   'admin.app.settingsNavLimits': 'Nutzungslimits',
   'admin.app.settingsNavAccount': 'Konto',
   'admin.auth.title': 'Admin-Anmeldung',

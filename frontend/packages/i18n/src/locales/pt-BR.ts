@@ -31,6 +31,7 @@ export const ptBr = defineMessages({
   'admin.app.settingsClose': 'Fechar',
   'admin.app.settingsNavLlm': 'LLM',
   'admin.app.settingsNavChat': 'Config. do chat',
+  'admin.app.settingsNavAppearance': 'Aparência',
   'admin.app.settingsNavLimits': 'Limites de uso',
   'admin.app.settingsNavAccount': 'Conta',
   'admin.auth.title': 'Login admin',

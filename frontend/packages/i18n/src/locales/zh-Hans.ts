@@ -31,6 +31,7 @@ export const zhHans = defineMessages({
   'admin.app.settingsClose': '关闭',
   'admin.app.settingsNavLlm': 'LLM',
   'admin.app.settingsNavChat': '聊天设置',
+  'admin.app.settingsNavAppearance': '外観',
   'admin.app.settingsNavLimits': '使用限制',
   'admin.app.settingsNavAccount': '账户',
   'admin.auth.title': '管理员登录',

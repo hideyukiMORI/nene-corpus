@@ -4,7 +4,6 @@ import { getLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLogsPanel';
-import { AppearancePanel } from './AppearancePanel';
 import { LlmUnconfiguredBanner } from './LlmUnconfiguredBanner';
 import { SettingsModal } from './SettingsModal';
 import type { SettingsSection } from './SettingsModal';
@@ -116,8 +115,6 @@ export function App() {
             {logsOpen && (
               <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
             )}
-            {/* ── デザイン（Phase 2 で設定モーダルへ移動予定 #205） ── */}
-            <AppearancePanel token={token} />
             <HelpPanel />
           </>
         )}

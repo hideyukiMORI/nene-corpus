@@ -31,6 +31,7 @@ export const fr = defineMessages({
   'admin.app.settingsClose': 'Fermer',
   'admin.app.settingsNavLlm': 'LLM',
   'admin.app.settingsNavChat': 'Paramètres du chat',
+  'admin.app.settingsNavAppearance': 'Apparence',
   'admin.app.settingsNavLimits': "Limites d\'utilisation",
   'admin.app.settingsNavAccount': 'Compte',
   'admin.auth.title': 'Connexion admin',

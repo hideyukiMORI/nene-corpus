@@ -31,6 +31,7 @@ export const ja = defineMessages({
   'admin.app.settingsClose': '閉じる',
   'admin.app.settingsNavLlm': 'LLM',
   'admin.app.settingsNavChat': 'チャット設定',
+  'admin.app.settingsNavAppearance': 'デザイン',
   'admin.app.settingsNavLimits': '利用制限',
   'admin.app.settingsNavAccount': 'アカウント',
   'admin.auth.title': '管理者ログイン',
