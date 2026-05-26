@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { ChatSettingsPanel } from './ChatSettingsPanel';
+import { AppearancePanel } from './AppearancePanel';
 import { ChatLimitsPanel } from './ChatLimitsPanel';
 import { AccountPanel } from './AccountPanel';
 
-export type SettingsSection = 'llm' | 'chat' | 'limits' | 'account';
+export type SettingsSection = 'llm' | 'chat' | 'appearance' | 'limits' | 'account';
 
 interface SettingsModalProps {
   token: string;
@@ -19,15 +20,17 @@ interface NavItem {
   msgKey:
     | typeof Msg.admin.app.settingsNavLlm
     | typeof Msg.admin.app.settingsNavChat
+    | typeof Msg.admin.app.settingsNavAppearance
     | typeof Msg.admin.app.settingsNavLimits
     | typeof Msg.admin.app.settingsNavAccount;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'llm',     msgKey: Msg.admin.app.settingsNavLlm },
-  { id: 'chat',    msgKey: Msg.admin.app.settingsNavChat },
-  { id: 'limits',  msgKey: Msg.admin.app.settingsNavLimits },
-  { id: 'account', msgKey: Msg.admin.app.settingsNavAccount },
+  { id: 'llm',        msgKey: Msg.admin.app.settingsNavLlm },
+  { id: 'chat',       msgKey: Msg.admin.app.settingsNavChat },
+  { id: 'appearance', msgKey: Msg.admin.app.settingsNavAppearance },
+  { id: 'limits',     msgKey: Msg.admin.app.settingsNavLimits },
+  { id: 'account',    msgKey: Msg.admin.app.settingsNavAccount },
 ];
 
 export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmConfiguredChange }: SettingsModalProps) {
@@ -125,6 +128,9 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
             )}
             {activeSection === 'chat' && (
               <ChatSettingsPanel token={token} />
+            )}
+            {activeSection === 'appearance' && (
+              <AppearancePanel token={token} />
             )}
             {activeSection === 'limits' && (
               <ChatLimitsPanel

@@ -44,6 +44,7 @@ export const Msg = {
       settingsClose: 'admin.app.settingsClose',
       settingsNavLlm: 'admin.app.settingsNavLlm',
       settingsNavChat: 'admin.app.settingsNavChat',
+      settingsNavAppearance: 'admin.app.settingsNavAppearance',
       settingsNavLimits: 'admin.app.settingsNavLimits',
       settingsNavAccount: 'admin.app.settingsNavAccount',
     },
