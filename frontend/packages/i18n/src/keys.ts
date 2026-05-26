@@ -70,6 +70,11 @@ export const Msg = {
       pageNext: 'admin.sources.pageNext',
       pageLast: 'admin.sources.pageLast',
       perPageLabel: 'admin.sources.perPageLabel',
+      delete: 'admin.sources.delete',
+      deleting: 'admin.sources.deleting',
+      deleteConfirm: 'admin.sources.deleteConfirm',
+      deleteSuccess: 'admin.sources.deleteSuccess',
+      deleteFailed: 'admin.sources.deleteFailed',
     },
     documents: {
       title: 'admin.documents.title',
