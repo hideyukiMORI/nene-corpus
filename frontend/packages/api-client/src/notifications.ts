@@ -1,3 +1,5 @@
+import { fetchJson } from './fetch-json';
+
 export interface NotificationSettings {
   smtp_host: string;
   smtp_port: number;
@@ -33,11 +35,9 @@ export async function getNotificationSettings(
   token: string,
   base = '',
 ): Promise<NotificationSettings> {
-  const res = await fetch(`${base}/admin/notifications/settings`, {
+  return fetchJson<NotificationSettings>(`${base}/admin/notifications/settings`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json() as Promise<NotificationSettings>;
 }
 
 export async function updateNotificationSettings(
@@ -45,7 +45,7 @@ export async function updateNotificationSettings(
   body: UpdateNotificationSettingsBody,
   base = '',
 ): Promise<NotificationSettings> {
-  const res = await fetch(`${base}/admin/notifications/settings`, {
+  return fetchJson<NotificationSettings>(`${base}/admin/notifications/settings`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -53,8 +53,6 @@ export async function updateNotificationSettings(
     },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json() as Promise<NotificationSettings>;
 }
 
 export async function sendTestMail(
@@ -62,7 +60,7 @@ export async function sendTestMail(
   email: string,
   base = '',
 ): Promise<void> {
-  const res = await fetch(`${base}/admin/notifications/test-mail`, {
+  await fetchJson<unknown>(`${base}/admin/notifications/test-mail`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -70,8 +68,4 @@ export async function sendTestMail(
     },
     body: JSON.stringify({ email }),
   });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({})) as Record<string, unknown>;
-    throw new Error((data['detail'] as string | undefined) ?? `HTTP ${res.status}`);
-  }
 }

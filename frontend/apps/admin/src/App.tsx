@@ -188,16 +188,8 @@ function AdminFooter({ locale, t }: { locale: string; t: (key: MsgKey) => string
         >
           NeNe Corpus
         </a>
-        {' · © '}
-        <a
-          href="https://ayane.co.jp"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline"
-        >
-          AYANE
-        </a>
-        {' All rights reserved.'}
+        {' · '}
+        {t(resolveMsgKey(Msg.admin.footer?.copyright, 'admin.footer.copyright'))}
       </p>
     </footer>
   );
