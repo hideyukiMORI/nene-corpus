@@ -623,7 +623,12 @@ function buildPage(locale, msgs, allLocales) {
           <div>
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For Operators</span>
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forAdmin.title')}</h2>
-            <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">${t('forAdmin.subtitle')}</p>
+            <p class="text-gray-400 dark:text-gray-500 mb-6 text-lg">${t('forAdmin.subtitle')}</p>
+            <a href="../howto/${locale.id}/"
+               class="inline-flex items-center gap-2 mb-8 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-opacity hover:opacity-90"
+               style="background:${BRAND}">
+              ${t('forAdmin.howtoLink')}
+            </a>
             ${stepTimeline('forAdmin', 4)}
           </div>
           <div class="hidden lg:block sticky top-24">

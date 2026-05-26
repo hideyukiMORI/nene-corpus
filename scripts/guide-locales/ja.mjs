@@ -53,6 +53,7 @@ export default {
   'forAdmin.step4.title': 'ウィジェットを埋め込む',
   'forAdmin.step4.desc': '設定 → デザインタブの埋め込みコードをコピーして、既存ページの &lt;/body&gt; 直前に貼り付けてください。それだけで公開完了です。',
   'forAdmin.embedCaption': '埋め込みコード（設定 → デザインタブからコピーできます）',
+  'forAdmin.howtoLink': 'ステップごとのチュートリアルはこちら →',
 
   'forUser.title': 'はじめかた（利用者向け）',
   'forUser.subtitle': 'ウィジェットは直感的に使えます。3 ステップで使い方がわかります。',
