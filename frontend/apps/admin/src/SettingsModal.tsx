@@ -6,8 +6,9 @@ import { AppearancePanel } from './AppearancePanel';
 import { ChatLimitsPanel } from './ChatLimitsPanel';
 import { NotificationsPanel } from './NotificationsPanel';
 import { AccountPanel } from './AccountPanel';
+import { SettingsOverviewPanel } from './SettingsOverviewPanel';
 
-export type SettingsSection = 'llm' | 'chat' | 'appearance' | 'limits' | 'notifications' | 'account';
+export type SettingsSection = 'overview' | 'llm' | 'chat' | 'appearance' | 'limits' | 'notifications' | 'account';
 
 interface SettingsModalProps {
   token: string;
@@ -19,6 +20,7 @@ interface SettingsModalProps {
 interface NavItem {
   id: SettingsSection;
   msgKey:
+    | typeof Msg.admin.app.settingsNavOverview
     | typeof Msg.admin.app.settingsNavLlm
     | typeof Msg.admin.app.settingsNavChat
     | typeof Msg.admin.app.settingsNavAppearance
@@ -28,6 +30,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { id: 'overview',      msgKey: Msg.admin.app.settingsNavOverview },
   { id: 'llm',           msgKey: Msg.admin.app.settingsNavLlm },
   { id: 'chat',          msgKey: Msg.admin.app.settingsNavChat },
   { id: 'appearance',    msgKey: Msg.admin.app.settingsNavAppearance },
@@ -36,7 +39,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'account',       msgKey: Msg.admin.app.settingsNavAccount },
 ];
 
-export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmConfiguredChange }: SettingsModalProps) {
+export function SettingsModal({ token, initialSection = 'overview', onClose, onLlmConfiguredChange }: SettingsModalProps) {
   const t = useMsg();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeSection, setActiveSection] = useState<SettingsSection>(initialSection);
@@ -118,8 +121,11 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
             </button>
           </div>
 
-          {/* パネル本体（各パネルの nc-panel スタイルをそのまま使う） */}
+          {/* パネル本体 */}
           <div className="mx-auto max-w-3xl px-4 py-6">
+            {activeSection === 'overview' && (
+              <SettingsOverviewPanel onNavigate={setActiveSection} />
+            )}
             {activeSection === 'llm' && (
               <LlmSettingsPanel
                 token={token}

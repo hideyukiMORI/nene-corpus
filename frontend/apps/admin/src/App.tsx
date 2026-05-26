@@ -26,7 +26,7 @@ export function App() {
 
   // 設定モーダル
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsSection, setSettingsSection] = useState<SettingsSection>('llm');
+  const [settingsSection, setSettingsSection] = useState<SettingsSection>('overview');
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
@@ -48,7 +48,7 @@ export function App() {
     return () => { cancelled = true; };
   }, [token]);
 
-  function openSettings(section: SettingsSection = 'llm'): void {
+  function openSettings(section: SettingsSection = 'overview'): void {
     setSettingsSection(section);
     setSettingsOpen(true);
   }
@@ -73,7 +73,7 @@ export function App() {
             <ThemeToggle />
             <LocaleSelector />
             {token !== null && (
-              <button className="nc-btn nc-header-btn" type="button" onClick={() => openSettings('llm')}>
+              <button className="nc-btn nc-header-btn" type="button" onClick={() => openSettings('overview')}>
                 {t(Msg.admin.app.settings)}
               </button>
             )}

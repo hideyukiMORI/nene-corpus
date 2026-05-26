@@ -33,6 +33,7 @@ export const ptBr = defineMessages({
   'admin.app.settingsNavChat': 'Config. do chat',
   'admin.app.settingsNavAppearance': 'Aparência',
   'admin.app.settingsNavLimits': 'Limites de uso',
+  'admin.app.settingsNavOverview': 'Visão geral',
   'admin.app.settingsNavNotifications': 'Notificacoes',
   'admin.app.settingsNavAccount': 'Conta',
   'admin.auth.title': 'Login admin',
@@ -304,6 +305,14 @@ export const ptBr = defineMessages({
   'admin.notifications.saveSuccess': 'Configuracoes de notificacao salvas',
   'admin.notifications.saveFailed': 'Falha ao salvar',
   'admin.notifications.loadFailed': 'Falha ao carregar configuracoes',
+  'admin.settingsOverview.title': 'Configurações',
+  'admin.settingsOverview.subtitle': 'Selecione uma seção abaixo para alterar suas configurações.',
+  'admin.settingsOverview.llmDesc': 'Configurar modelo de IA, chave de API e máximo de tokens.',
+  'admin.settingsOverview.chatDesc': 'Definir prompt do sistema, escopo e mensagem de fallback.',
+  'admin.settingsOverview.appearanceDesc': 'Personalizar cores do tema, layout e idioma do widget.',
+  'admin.settingsOverview.limitsDesc': 'Definir limites de requisições, tokens e intervalos.',
+  'admin.settingsOverview.notificationsDesc': 'Configurar alertas por e-mail e relatório diário.',
+  'admin.settingsOverview.accountDesc': 'Alterar sua senha e endereço de e-mail.',
 
   'admin.widgetPreview.title': 'Prévia do tema do widget',
   'admin.widgetPreview.body':

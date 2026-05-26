@@ -33,6 +33,7 @@ export const de = defineMessages({
   'admin.app.settingsNavChat': 'Chat-Einstellungen',
   'admin.app.settingsNavAppearance': 'Darstellung',
   'admin.app.settingsNavLimits': 'Nutzungslimits',
+  'admin.app.settingsNavOverview': 'Übersicht',
   'admin.app.settingsNavNotifications': 'Benachrichtigungen',
   'admin.app.settingsNavAccount': 'Konto',
   'admin.auth.title': 'Admin-Anmeldung',
@@ -304,6 +305,14 @@ export const de = defineMessages({
   'admin.notifications.saveSuccess': 'Benachrichtigungseinstellungen gespeichert',
   'admin.notifications.saveFailed': 'Speichern fehlgeschlagen',
   'admin.notifications.loadFailed': 'Einstellungen konnten nicht geladen werden',
+  'admin.settingsOverview.title': 'Einstellungen',
+  'admin.settingsOverview.subtitle': 'Wählen Sie einen Bereich aus, um Ihre Einstellungen zu ändern.',
+  'admin.settingsOverview.llmDesc': 'KI-Modell, API-Schlüssel und maximale Token konfigurieren.',
+  'admin.settingsOverview.chatDesc': 'Systemprompt, Themenbeschränkung und Fallback-Nachricht festlegen.',
+  'admin.settingsOverview.appearanceDesc': 'Widget-Themafarben, Layout und Sprache anpassen.',
+  'admin.settingsOverview.limitsDesc': 'Anfrage-, Token- und Intervallbeschränkungen festlegen.',
+  'admin.settingsOverview.notificationsDesc': 'E-Mail-Alarme und täglichen Chat-Bericht konfigurieren.',
+  'admin.settingsOverview.accountDesc': 'Passwort und E-Mail-Adresse ändern.',
 
   'admin.widgetPreview.title': 'Widget-Themenvorschau',
   'admin.widgetPreview.body':
