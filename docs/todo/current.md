@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-27 (PR #216)
+Last updated: 2026-05-27 (PR #223)
 
 ## 最近の docs 更新
 
@@ -115,6 +115,8 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **メール通知** | ✅ #211 — 利用制限超過アラート・日次チャットレポート（PHPMailer SMTP、cron エンドポイント、Admin UI 通知タブ、6ロケール） |
 | P2 | **設定モーダル 概要ページ** | ✅ #213 — 初回表示を概要カードナビに変更（API キーが即露出しない） |
 | P2 | **ガイド LP UI 改善** | ✅ #215 — ダークモード修正・ヘッダーナビ右寄せ・できることセクション再レイアウト・透明感カード・h2 折り返し修正 |
+| P2 | **Admin UI フッター・ガイドリンク** | ✅ #217 — HelpPanel ガイドリンクカード・App フッター（NENE2/AYANE）・Vite proxy /guide |
+| P2 | **ペルソナ HOWTO セットアップガイド** | ✅ #222 — /guide/howto/{locale}/、さくら（カフェオーナー）吹き出し×4ステップ + デモチャット、6ロケール |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
