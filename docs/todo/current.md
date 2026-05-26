@@ -74,7 +74,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | --- | --- | --- |
 | P1 | **HERO / ウェルカム** | ✅ #146 ほか — Appearance HERO 設定 |
 | P1 | **吹き出し UI** | ✅ #133 — tail・レイアウト、`user_avatar_mode` |
-| P2 | **CSS アニメーション UX** | 応答待ちインジケータ、吹き出し fade/slide-in、スムーズスクロール。**文字の逐次表示は不要** |
+| P2 | **CSS アニメーション UX** | ✅ #165 — prefers-reduced-motion 対応追加・scrollTo 改善（typing indicator・bubble-in・smooth scroll はすでに実装済みだった） |
 | P2 | **アバター登録** | ✅ #134 — アシスタント画像アップロード |
 | P2 | **カスタム CSS** | WordPress 系向け。widget スコープ限定・サニタイズ必須 |
 
@@ -89,7 +89,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | 優先 | 項目 | メモ |
 | --- | --- | --- |
 | P1 | **LLM API キー管理 UI** | ✅ #130 — マスク表示・接続テスト・`.env` 更新（ADR 0004） |
-| P2 | **プロンプト / スコープ / フォールバック設定** | roadmap Phase 3 記載の operator 設定 UI。LLM 挙動の調整 |
+| P2 | **プロンプト / スコープ / フォールバック設定** | ✅ #163 — カスタムシステムプロンプト・フォールバックメッセージ UI（ChatSettingsPanel） |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 

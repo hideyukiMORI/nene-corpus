@@ -52,12 +52,14 @@ export function SourceDocumentsPanel({
   onClose,
 }: SourceDocumentsPanelProps) {
   const t = useMsg();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [draftQuery, setDraftQuery] = useState('');
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
@@ -69,6 +71,8 @@ export function SourceDocumentsPanel({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [modalSuccess, setModalSuccess] = useState<string | null>(null);
 
   const loadDocuments = useCallback(
     async (currentOffset: number, currentQuery: string, signal?: AbortSignal): Promise<void> => {
@@ -110,6 +114,38 @@ export function SourceDocumentsPanel({
     };
   }, [loadDocuments, offset, searchQuery]);
 
+  // モーダルの開閉制御
+  useEffect(() => {
+    const dialog = dialogRef.current;
+
+    if (dialog === null) {
+      return;
+    }
+
+    if (selectedId !== null) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [selectedId]);
+
+  // ESC キーまたは backdrop クリックで閉じたとき
+  function handleDialogCancel(): void {
+    setSelectedId(null);
+    setTitle('');
+    setContent('');
+    setChunks([]);
+    setModalError(null);
+    setModalSuccess(null);
+  }
+
+  function handleDialogClick(event: React.MouseEvent<HTMLDialogElement>): void {
+    // backdrop 領域（dialog 要素そのもの）をクリックしたときだけ閉じる
+    if (event.target === event.currentTarget) {
+      handleDialogCancel();
+    }
+  }
+
   function handleSearch(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     setSelectedId(null);
@@ -133,8 +169,8 @@ export function SourceDocumentsPanel({
 
   async function loadDocumentDetail(documentId: number): Promise<void> {
     setSelectedId(documentId);
-    setError(null);
-    setSuccess(null);
+    setModalError(null);
+    setModalSuccess(null);
     setIsLoadingChunks(true);
 
     try {
@@ -146,7 +182,7 @@ export function SourceDocumentsPanel({
       setContent(detail.content);
       setChunks(chunkResponse.chunks);
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
+      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
       setChunks([]);
     } finally {
       setIsLoadingChunks(false);
@@ -161,8 +197,8 @@ export function SourceDocumentsPanel({
     }
 
     setIsSaving(true);
-    setError(null);
-    setSuccess(null);
+    setModalError(null);
+    setModalSuccess(null);
 
     try {
       await updateDocument(
@@ -171,7 +207,7 @@ export function SourceDocumentsPanel({
         { title: title.trim(), content: content.trim() },
         adminApiBase,
       );
-      setSuccess(t(Msg.admin.documents.saveSuccess));
+      setModalSuccess(t(Msg.admin.documents.saveSuccess));
       onChanged();
       const [response, chunkResponse] = await Promise.all([
         listDocuments(token, sourceId, adminApiBase, {
@@ -185,7 +221,7 @@ export function SourceDocumentsPanel({
       setTotal(response.total);
       setChunks(chunkResponse.chunks);
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : t(Msg.admin.documents.saveFailed));
+      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.saveFailed));
     } finally {
       setIsSaving(false);
     }
@@ -201,16 +237,12 @@ export function SourceDocumentsPanel({
     }
 
     setIsDeleting(true);
-    setError(null);
-    setSuccess(null);
+    setModalError(null);
+    setModalSuccess(null);
 
     try {
       await deleteDocument(token, selectedId, adminApiBase);
-      setSuccess(t(Msg.admin.documents.deleteSuccess));
-      setSelectedId(null);
-      setTitle('');
-      setContent('');
-      setChunks([]);
+      handleDialogCancel();
       onChanged();
       const response = await listDocuments(token, sourceId, adminApiBase, {
         limit: PAGE_SIZE,
@@ -219,8 +251,9 @@ export function SourceDocumentsPanel({
       });
       setDocuments(response.documents);
       setTotal(response.total);
+      setSuccess(t(Msg.admin.documents.deleteSuccess));
     } catch (cause: unknown) {
-      setError(cause instanceof Error ? cause.message : t(Msg.admin.documents.deleteFailed));
+      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.deleteFailed));
     } finally {
       setIsDeleting(false);
     }
@@ -233,6 +266,7 @@ export function SourceDocumentsPanel({
 
   return (
     <section className="border-t border-accent-border bg-accent px-4 py-4">
+      {/* パネルヘッダー */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="font-medium text-fg">{t(Msg.admin.documents.title)}</h3>
@@ -263,121 +297,150 @@ export function SourceDocumentsPanel({
         )}
       </form>
 
+      {/* ドキュメント一覧 */}
       {isLoading ? (
         <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
       ) : documents.length === 0 ? (
         <p className="text-sm nc-text-muted">{t(Msg.admin.documents.empty)}</p>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div className="flex flex-col gap-2">
-            <ul className="space-y-2">
-              {documents.map((document) => (
-                <li key={document.document_id}>
-                  <button
-                    className={`w-full rounded-admin border px-3 py-2 text-left text-sm ${
-                      selectedId === document.document_id
-                        ? 'border-focus bg-surface text-fg'
-                        : 'border-accent-border bg-surface/70 text-fg-muted hover:bg-surface'
-                    }`}
-                    type="button"
-                    onClick={() => void loadDocumentDetail(document.document_id)}
-                  >
-                    <div className="font-medium text-fg break-words">{document.title}</div>
-                    <div className="mt-1 line-clamp-2 text-xs nc-text-muted">{document.content_preview}</div>
-                  </button>
-                </li>
-              ))}
-            </ul>
+        <div className="flex flex-col gap-2">
+          <ul className="space-y-2">
+            {documents.map((document) => (
+              <li key={document.document_id}>
+                <button
+                  className="w-full rounded-admin border border-accent-border bg-surface/70 px-3 py-2 text-left text-sm hover:bg-surface"
+                  type="button"
+                  onClick={() => void loadDocumentDetail(document.document_id)}
+                >
+                  <div className="font-medium text-fg break-words">{document.title}</div>
+                  <div className="mt-1 line-clamp-2 text-xs nc-text-muted">{document.content_preview}</div>
+                </button>
+              </li>
+            ))}
+          </ul>
 
-            {/* ページネーション */}
-            {total > PAGE_SIZE && (
-              <div className="flex items-center justify-between gap-2 pt-1 text-xs nc-text-muted">
-                <span>
-                  {t(Msg.admin.documents.pageInfo, { from, to, total })}
-                </span>
-                <div className="flex gap-1">
-                  <button
-                    className="nc-btn text-xs disabled:opacity-40"
-                    type="button"
-                    disabled={!hasPrev}
-                    onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                  >
-                    {t(Msg.admin.documents.pagePrev)}
-                  </button>
-                  <button
-                    className="nc-btn text-xs disabled:opacity-40"
-                    type="button"
-                    disabled={!hasNext}
-                    onClick={() => setOffset(offset + PAGE_SIZE)}
-                  >
-                    {t(Msg.admin.documents.pageNext)}
-                  </button>
-                </div>
+          {/* ページネーション */}
+          {total > PAGE_SIZE && (
+            <div className="flex items-center justify-between gap-2 pt-1 text-xs nc-text-muted">
+              <span>
+                {t(Msg.admin.documents.pageInfo, { from, to, total })}
+              </span>
+              <div className="flex gap-1">
+                <button
+                  className="nc-btn text-xs disabled:opacity-40"
+                  type="button"
+                  disabled={!hasPrev}
+                  onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+                >
+                  {t(Msg.admin.documents.pagePrev)}
+                </button>
+                <button
+                  className="nc-btn text-xs disabled:opacity-40"
+                  type="button"
+                  disabled={!hasNext}
+                  onClick={() => setOffset(offset + PAGE_SIZE)}
+                >
+                  {t(Msg.admin.documents.pageNext)}
+                </button>
               </div>
-            )}
-          </div>
-
-          {selectedId !== null ? (
-            <div className="space-y-4">
-              <form className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
-                <label className="block text-sm">
-                  <span className="font-medium text-fg">{t(Msg.admin.documents.fieldTitle)}</span>
-                  <input
-                    className="nc-input mt-1"
-                    type="text"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                    required
-                  />
-                </label>
-                <label className="block text-sm">
-                  <span className="font-medium text-fg">{t(Msg.admin.documents.fieldContent)}</span>
-                  <textarea
-                    className="nc-input mt-1 min-h-48 font-mono text-xs"
-                    value={content}
-                    onChange={(event) => setContent(event.target.value)}
-                    required
-                  />
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  <button className="nc-btn-primary" type="submit" disabled={isSaving}>
-                    {isSaving ? t(Msg.admin.documents.saving) : t(Msg.admin.documents.save)}
-                  </button>
-                  <button className="nc-btn" type="button" disabled={isDeleting} onClick={() => void handleDelete()}>
-                    {isDeleting ? t(Msg.admin.documents.deleting) : t(Msg.admin.documents.delete)}
-                  </button>
-                </div>
-              </form>
-
-              <section className="border-t border-accent-border pt-4">
-                <h4 className="text-sm font-medium text-fg">{t(Msg.admin.documents.chunksTitle)}</h4>
-                {isLoadingChunks ? (
-                  <p className="mt-2 text-sm nc-text-muted">{t(Msg.common.loading)}</p>
-                ) : chunks.length === 0 ? (
-                  <p className="mt-2 text-sm nc-text-muted">{t(Msg.admin.documents.chunksEmpty)}</p>
-                ) : (
-                  <ol className="mt-2 max-h-64 space-y-2 overflow-y-auto">
-                    {chunks.map((chunk) => (
-                      <li
-                        key={chunk.chunk_id}
-                        className="rounded-admin border border-accent-border bg-surface/70 px-3 py-2"
-                      >
-                        <div className="text-xs nc-text-muted">{formatChunkMeta(chunk, t)}</div>
-                        <pre className="mt-1 whitespace-pre-wrap font-mono text-xs text-fg">{chunk.content}</pre>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-              </section>
             </div>
-          ) : (
-            <p className="text-sm nc-text-muted">{t(Msg.admin.documents.selectPrompt)}</p>
           )}
         </div>
       )}
 
       {error !== null && <p className="mt-3 text-sm text-red-600">{error}</p>}
       {success !== null && <p className="mt-3 text-sm text-emerald-700">{success}</p>}
+
+      {/* 編集モーダル */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel */}
+      <dialog
+        ref={dialogRef}
+        className="w-full max-w-2xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
+        onCancel={handleDialogCancel}
+        onClick={handleDialogClick}
+      >
+        <div className="flex max-h-[90vh] flex-col overflow-hidden">
+          {/* モーダルヘッダー */}
+          <div className="flex items-center justify-between border-b border-accent-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-fg">{t(Msg.admin.documents.fieldTitle)}</h2>
+            <button
+              className="nc-btn text-xs"
+              type="button"
+              onClick={handleDialogCancel}
+              aria-label={t(Msg.admin.documents.close)}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* モーダルボディ */}
+          <div className="overflow-y-auto px-5 py-4">
+            {isLoadingChunks ? (
+              <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
+            ) : (
+              <>
+                <form className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
+                  <label className="block text-sm">
+                    <span className="font-medium text-fg">{t(Msg.admin.documents.fieldTitle)}</span>
+                    <input
+                      className="nc-input mt-1"
+                      type="text"
+                      value={title}
+                      onChange={(event) => setTitle(event.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="font-medium text-fg">{t(Msg.admin.documents.fieldContent)}</span>
+                    <textarea
+                      className="nc-input mt-1 min-h-48 font-mono text-xs"
+                      value={content}
+                      onChange={(event) => setContent(event.target.value)}
+                      required
+                    />
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    <button className="nc-btn-primary" type="submit" disabled={isSaving}>
+                      {isSaving ? t(Msg.admin.documents.saving) : t(Msg.admin.documents.save)}
+                    </button>
+                    <button
+                      className="nc-btn"
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={() => void handleDelete()}
+                    >
+                      {isDeleting ? t(Msg.admin.documents.deleting) : t(Msg.admin.documents.delete)}
+                    </button>
+                  </div>
+                </form>
+
+                {/* チャンクプレビュー */}
+                <section className="mt-5 border-t border-accent-border pt-4">
+                  <h4 className="text-sm font-medium text-fg">{t(Msg.admin.documents.chunksTitle)}</h4>
+                  {chunks.length === 0 ? (
+                    <p className="mt-2 text-sm nc-text-muted">{t(Msg.admin.documents.chunksEmpty)}</p>
+                  ) : (
+                    <ol className="mt-2 space-y-2">
+                      {chunks.map((chunk) => (
+                        <li
+                          key={chunk.chunk_id}
+                          className="rounded-admin border border-accent-border bg-surface/70 px-3 py-2"
+                        >
+                          <div className="text-xs nc-text-muted">{formatChunkMeta(chunk, t)}</div>
+                          <pre className="mt-1 whitespace-pre-wrap font-mono text-xs text-fg">{chunk.content}</pre>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </section>
+
+                {modalError !== null && <p className="mt-3 text-sm text-red-600">{modalError}</p>}
+                {modalSuccess !== null && <p className="mt-3 text-sm text-emerald-700">{modalSuccess}</p>}
+              </>
+            )}
+          </div>
+        </div>
+      </dialog>
     </section>
   );
 }
