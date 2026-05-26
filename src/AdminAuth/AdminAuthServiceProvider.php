@@ -14,6 +14,7 @@ use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
+use Nene2\Middleware\RateLimitStorageInterface;
 use Psr\Container\ContainerInterface;
 
 final readonly class AdminAuthServiceProvider implements ServiceProviderInterface
@@ -21,6 +22,8 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
     public const ROUTE_REGISTRAR = 'nene-corpus.route_registrar.admin_auth';
 
     public const AUTH_MIDDLEWARE = 'nene-corpus.middleware.admin_auth';
+
+    public const LOGIN_RATE_LIMIT_MIDDLEWARE = 'nene-corpus.middleware.admin_login_rate_limit';
 
     public const TOKEN_ISSUER = 'nene-corpus.admin_auth.token_issuer';
 
@@ -184,6 +187,23 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     }
 
                     return new ChangeAdminEmailHandler($useCase, $response);
+                },
+            )
+            ->set(
+                self::LOGIN_RATE_LIMIT_MIDDLEWARE,
+                static function (ContainerInterface $container): AdminLoginRateLimitMiddleware {
+                    $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
+                    $storage        = $container->get(RateLimitStorageInterface::class);
+
+                    if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
+                        throw new LogicException('Problem details response factory service is invalid.');
+                    }
+
+                    if (!$storage instanceof RateLimitStorageInterface) {
+                        throw new LogicException('Rate limit storage service is invalid.');
+                    }
+
+                    return new AdminLoginRateLimitMiddleware($problemDetails, $storage);
                 },
             )
             ->set(

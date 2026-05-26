@@ -11,6 +11,7 @@ final class AdminHttpTestSupport
     public static function seedCorpusSchema(PdoDatabaseQueryExecutor $executor): void
     {
         CorpusSchemaSetup::create($executor);
+        RateLimitSchemaSetup::create($executor);
         self::seedAdminUser($executor);
     }
 

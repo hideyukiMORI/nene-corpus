@@ -8,6 +8,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -50,6 +51,7 @@ final class ChatSettingsHttpTest extends TestCase
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
         CorpusSchemaSetup::createAdminUsers($executor);
+        RateLimitSchemaSetup::create($executor);
         CorpusSchemaSetup::createChatSettings($executor);
 
         $hash = password_hash('secret-password', PASSWORD_ARGON2ID);
