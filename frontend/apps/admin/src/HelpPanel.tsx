@@ -1,14 +1,14 @@
 import { Msg, resolveMsgKey, useLocale, useMsg } from '@nene-corpus/i18n';
 import { ADMIN_HELP_SECTIONS } from './helpSections';
 
-/** ロケール → ガイド URL のマッピング */
+/** ロケール → HOWTO セットアップガイド URL のマッピング */
 const GUIDE_URL_MAP: Record<string, string> = {
-  ja: '/guide/ja/',
-  en: '/guide/en/',
-  de: '/guide/de/',
-  fr: '/guide/fr/',
-  'pt-BR': '/guide/pt-br/',
-  'zh-Hans': '/guide/zh-hans/',
+  ja: '/guide/howto/ja/',
+  en: '/guide/howto/en/',
+  de: '/guide/howto/de/',
+  fr: '/guide/howto/fr/',
+  'pt-BR': '/guide/howto/pt-br/',
+  'zh-Hans': '/guide/howto/zh-hans/',
 };
 
 function guideUrl(locale: string): string {
