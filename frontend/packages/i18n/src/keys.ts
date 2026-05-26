@@ -211,6 +211,8 @@ export const Msg = {
       saveSuccess: 'admin.llm.saveSuccess',
       saveFailed: 'admin.llm.saveFailed',
       loadFailed: 'admin.llm.loadFailed',
+      alertBody: 'admin.llm.alertBody',
+      alertCta: 'admin.llm.alertCta',
     },
     chatLimits: {
       title: 'admin.chatLimits.title',

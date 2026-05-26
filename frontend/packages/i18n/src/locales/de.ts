@@ -206,6 +206,8 @@ export const de = defineMessages({
   'admin.llm.saveSuccess': 'LLM-Einstellungen gespeichert.',
   'admin.llm.saveFailed': 'LLM-Einstellungen konnten nicht gespeichert werden.',
   'admin.llm.loadFailed': 'LLM-Einstellungen konnten nicht geladen werden.',
+  'admin.llm.alertBody': 'Chat ist nicht verfügbar, da der Anthropic-API-Schlüssel nicht konfiguriert ist.',
+  'admin.llm.alertCta': 'LLM konfigurieren',
   'admin.chatLimits.title': 'Nutzungslimits',
   'admin.chatLimits.subtitle': 'Ratenlimits zur Missbrauchsverhinderung und Kostenkontrolle. 0 bedeutet kein Limit.',
   'admin.chatLimits.maxMessageChars': 'Max. Nachrichtenlänge (Zeichen)',

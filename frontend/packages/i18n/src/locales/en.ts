@@ -207,6 +207,8 @@ export const en = defineMessages({
   'admin.llm.saveSuccess': 'LLM settings saved.',
   'admin.llm.saveFailed': 'Failed to save LLM settings.',
   'admin.llm.loadFailed': 'Failed to load LLM settings.',
+  'admin.llm.alertBody': 'Chat is unavailable because the Anthropic API key has not been configured.',
+  'admin.llm.alertCta': 'Configure LLM',
   'admin.chatLimits.title': 'Usage limits',
   'admin.chatLimits.subtitle': 'Configure rate limits to prevent abuse and control costs. Set 0 for no limit.',
   'admin.chatLimits.maxMessageChars': 'Max message length (characters)',

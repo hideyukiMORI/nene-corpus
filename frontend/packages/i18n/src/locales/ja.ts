@@ -206,6 +206,8 @@ export const ja = defineMessages({
   'admin.llm.saveSuccess': 'LLM 設定を保存しました。',
   'admin.llm.saveFailed': 'LLM 設定の保存に失敗しました。',
   'admin.llm.loadFailed': 'LLM 設定の読み込みに失敗しました。',
+  'admin.llm.alertBody': 'Anthropic API キーが未設定のため、チャットは利用できません。',
+  'admin.llm.alertCta': 'LLM を設定する',
   'admin.chatLimits.title': '利用制限',
   'admin.chatLimits.subtitle': 'チャットの悪用防止とコスト管理のための制限を設定します。0 は無制限です。',
   'admin.chatLimits.maxMessageChars': '最大入力文字数',
