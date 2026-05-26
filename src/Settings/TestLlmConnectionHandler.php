@@ -17,15 +17,17 @@ final readonly class TestLlmConnectionHandler
     public function __construct(
         private TestLlmConnectionUseCaseInterface $useCase,
         private JsonResponseFactory $response,
+        private LlmSettingsValidator $validator,
     ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $body = JsonRequestBodyParser::parse($request);
+        $input = $this->validator->validateTest($body);
 
         try {
-            $this->useCase->executeFromBody($body);
+            $this->useCase->execute($input);
         } catch (RuntimeException $exception) {
             throw new ValidationException([
                 new ValidationError('api_key', $exception->getMessage(), 'invalid'),

@@ -49,7 +49,6 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): UpdateLlmSettingsUseCaseInterface {
                     $envWriter = $container->get(EnvFileWriter::class);
                     $environmentUpdater = $container->get(EnvironmentVariableUpdater::class);
-                    $validator = $container->get(LlmSettingsValidator::class);
                     $tester = $container->get(AnthropicConnectionTesterInterface::class);
 
                     if (!$envWriter instanceof EnvFileWriter) {
@@ -60,32 +59,23 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Environment variable updater service is invalid.');
                     }
 
-                    if (!$validator instanceof LlmSettingsValidator) {
-                        throw new LogicException('LLM settings validator service is invalid.');
-                    }
-
                     if (!$tester instanceof AnthropicConnectionTesterInterface) {
                         throw new LogicException('Anthropic connection tester service is invalid.');
                     }
 
-                    return new UpdateLlmSettingsUseCase($envWriter, $environmentUpdater, $validator, $tester);
+                    return new UpdateLlmSettingsUseCase($envWriter, $environmentUpdater, $tester);
                 },
             )
             ->set(
                 TestLlmConnectionUseCaseInterface::class,
                 static function (ContainerInterface $container): TestLlmConnectionUseCaseInterface {
-                    $validator = $container->get(LlmSettingsValidator::class);
                     $tester = $container->get(AnthropicConnectionTesterInterface::class);
-
-                    if (!$validator instanceof LlmSettingsValidator) {
-                        throw new LogicException('LLM settings validator service is invalid.');
-                    }
 
                     if (!$tester instanceof AnthropicConnectionTesterInterface) {
                         throw new LogicException('Anthropic connection tester service is invalid.');
                     }
 
-                    return new TestLlmConnectionUseCase($validator, $tester);
+                    return new TestLlmConnectionUseCase($tester);
                 },
             )
             ->set(
@@ -110,6 +100,7 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): UpdateLlmSettingsHandler {
                     $useCase = $container->get(UpdateLlmSettingsUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
+                    $validator = $container->get(LlmSettingsValidator::class);
 
                     if (!$useCase instanceof UpdateLlmSettingsUseCaseInterface) {
                         throw new LogicException('Update LLM settings use case service is invalid.');
@@ -119,7 +110,11 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                         throw new LogicException('JSON response factory service is invalid.');
                     }
 
-                    return new UpdateLlmSettingsHandler($useCase, $response);
+                    if (!$validator instanceof LlmSettingsValidator) {
+                        throw new LogicException('LLM settings validator service is invalid.');
+                    }
+
+                    return new UpdateLlmSettingsHandler($useCase, $response, $validator);
                 },
             )
             ->set(
@@ -127,6 +122,7 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): TestLlmConnectionHandler {
                     $useCase = $container->get(TestLlmConnectionUseCaseInterface::class);
                     $response = $container->get(JsonResponseFactory::class);
+                    $validator = $container->get(LlmSettingsValidator::class);
 
                     if (!$useCase instanceof TestLlmConnectionUseCaseInterface) {
                         throw new LogicException('Test LLM connection use case service is invalid.');
@@ -136,7 +132,11 @@ final readonly class SettingsServiceProvider implements ServiceProviderInterface
                         throw new LogicException('JSON response factory service is invalid.');
                     }
 
-                    return new TestLlmConnectionHandler($useCase, $response);
+                    if (!$validator instanceof LlmSettingsValidator) {
+                        throw new LogicException('LLM settings validator service is invalid.');
+                    }
+
+                    return new TestLlmConnectionHandler($useCase, $response, $validator);
                 },
             )
             ->set(

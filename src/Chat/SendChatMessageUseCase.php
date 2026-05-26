@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Chat;
 
+use Nene2\Validation\ValidationError;
+use Nene2\Validation\ValidationException;
+use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Llm\ConversationTurn;
 use NeneCorpus\Llm\GenerateChatReplyInput;
 use NeneCorpus\Llm\GenerateChatReplyUseCaseInterface;
@@ -20,6 +24,8 @@ final readonly class SendChatMessageUseCase implements SendChatMessageUseCaseInt
         private ChatSessionRepositoryInterface $sessions,
         private ChatMessageRepositoryInterface $messages,
         private GenerateChatReplyUseCaseInterface $generateReply,
+        private ChatLimitsRepositoryInterface $limitsRepository,
+        private ChatTokenTrackerInterface $tokenTracker,
     ) {
     }
 
@@ -35,6 +41,19 @@ final readonly class SendChatMessageUseCase implements SendChatMessageUseCaseInt
 
         if ($content === '') {
             throw new \InvalidArgumentException('Message content is required.');
+        }
+
+        // Character limit enforcement
+        $limits = $this->limitsRepository->get();
+
+        if ($limits->maxMessageChars > 0 && mb_strlen($content) > $limits->maxMessageChars) {
+            throw new ValidationException([
+                new ValidationError(
+                    'content',
+                    sprintf('Message must not exceed %d characters.', $limits->maxMessageChars),
+                    'too_long',
+                ),
+            ]);
         }
 
         $this->messages->save(new ChatMessage(
@@ -62,6 +81,11 @@ final readonly class SendChatMessageUseCase implements SendChatMessageUseCaseInt
             inputTokens: $reply->inputTokens > 0 ? $reply->inputTokens : null,
             outputTokens: $reply->outputTokens > 0 ? $reply->outputTokens : null,
         ));
+
+        // Track token usage for daily budget enforcement
+        if ($reply->inputTokens > 0 || $reply->outputTokens > 0) {
+            $this->tokenTracker->track($input->clientIp, $reply->inputTokens, $reply->outputTokens);
+        }
 
         return new SendChatMessageOutput(
             messageId: $assistantMessageId,

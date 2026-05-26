@@ -14,13 +14,15 @@ final readonly class UpdateLlmSettingsHandler
     public function __construct(
         private UpdateLlmSettingsUseCaseInterface $useCase,
         private JsonResponseFactory $response,
+        private LlmSettingsValidator $validator,
     ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $body = JsonRequestBodyParser::parse($request);
+        $input = $this->validator->validateUpdate($body);
 
-        return $this->response->create($this->useCase->executeFromBody($body)->toArray());
+        return $this->response->create($this->useCase->execute($input)->toArray());
     }
 }

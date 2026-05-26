@@ -13,6 +13,7 @@ final readonly class UpdateNotificationSettingsUseCase
     public function __construct(
         private EnvFileWriter $envFileWriter,
         private EnvironmentVariableUpdater $environmentUpdater,
+        private GetNotificationSettingsUseCase $getUseCase,
     ) {
     }
 
@@ -60,8 +61,6 @@ final readonly class UpdateNotificationSettingsUseCase
             'NOTIFY_DAILY_REPORT_TOKEN'             => $token,
         ]);
 
-        $getUseCase = new GetNotificationSettingsUseCase();
-
-        return $getUseCase->execute();
+        return $this->getUseCase->execute();
     }
 }

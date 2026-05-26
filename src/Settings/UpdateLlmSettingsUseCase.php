@@ -16,7 +16,6 @@ final readonly class UpdateLlmSettingsUseCase implements UpdateLlmSettingsUseCas
     public function __construct(
         private EnvFileWriter $envFileWriter,
         private EnvironmentVariableUpdater $environmentUpdater,
-        private LlmSettingsValidator $validator,
         private AnthropicConnectionTesterInterface $connectionTester,
     ) {
     }
@@ -60,11 +59,4 @@ final readonly class UpdateLlmSettingsUseCase implements UpdateLlmSettingsUseCas
         );
     }
 
-    /**
-     * @param array<string, mixed> $body
-     */
-    public function executeFromBody(array $body): LlmSettingsView
-    {
-        return $this->execute($this->validator->validateUpdate($body));
-    }
 }

@@ -8,7 +8,6 @@ final readonly class UpdateChatSettingsUseCase implements UpdateChatSettingsUseC
 {
     public function __construct(
         private ChatSettingsRepositoryInterface $repository,
-        private ChatSettingsValidator $validator,
     ) {
     }
 
@@ -24,11 +23,4 @@ final readonly class UpdateChatSettingsUseCase implements UpdateChatSettingsUseC
         return ChatSettingsView::fromSettings($settings);
     }
 
-    /**
-     * @param array<string, mixed> $body
-     */
-    public function executeFromBody(array $body): ChatSettingsView
-    {
-        return $this->execute($this->validator->validateUpdate($body));
-    }
 }

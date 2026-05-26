@@ -21,15 +21,15 @@ final readonly class LlmServiceProvider implements ServiceProviderInterface
                 static fn (ContainerInterface $container): AnthropicConfig => AnthropicConfig::fromEnvironment(),
             )
             ->set(
-                CorpusSearchToolHandler::class,
-                static function (ContainerInterface $container): CorpusSearchToolHandler {
+                CorpusSearchTool::class,
+                static function (ContainerInterface $container): CorpusSearchTool {
                     $search = $container->get(SearchChunksUseCaseInterface::class);
 
                     if (!$search instanceof SearchChunksUseCaseInterface) {
                         throw new LogicException('Search chunks use case service is invalid.');
                     }
 
-                    return new CorpusSearchToolHandler($search);
+                    return new CorpusSearchTool($search);
                 },
             )
             ->set(
@@ -52,14 +52,14 @@ final readonly class LlmServiceProvider implements ServiceProviderInterface
                 GenerateChatReplyUseCaseInterface::class,
                 static function (ContainerInterface $container): GenerateChatReplyUseCaseInterface {
                     $client = $container->get(ClaudeMessagesClientInterface::class);
-                    $searchTool = $container->get(CorpusSearchToolHandler::class);
+                    $searchTool = $container->get(CorpusSearchTool::class);
                     $chatSettings = $container->get(ChatSettingsRepositoryInterface::class);
 
                     if (!$client instanceof ClaudeMessagesClientInterface) {
                         throw new LogicException('Claude messages client service is invalid.');
                     }
 
-                    if (!$searchTool instanceof CorpusSearchToolHandler) {
+                    if (!$searchTool instanceof CorpusSearchTool) {
                         throw new LogicException('Corpus search tool handler service is invalid.');
                     }
 

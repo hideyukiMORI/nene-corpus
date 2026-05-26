@@ -11,17 +11,12 @@ use RuntimeException;
 final readonly class TestLlmConnectionUseCase implements TestLlmConnectionUseCaseInterface
 {
     public function __construct(
-        private LlmSettingsValidator $validator,
         private AnthropicConnectionTesterInterface $connectionTester,
     ) {
     }
 
-    /**
-     * @param array<string, mixed> $body
-     */
-    public function executeFromBody(array $body): void
+    public function execute(TestLlmConnectionInput $input): void
     {
-        $input = $this->validator->validateTest($body);
         $apiKey = $input->apiKey ?? AnthropicConfig::fromEnvironment()->apiKey ?? '';
 
         if ($apiKey === '') {
