@@ -281,7 +281,7 @@ const DISCLAIMER = {
 function renderText(str) {
   return String(str).replace(/`([^`]*)`/g, (_, code) => {
     const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `<code class="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-[0.85em] font-mono">${escaped}</code>`;
+    return `<code class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-1.5 py-0.5 rounded text-[0.85em] font-mono">${escaped}</code>`;
   });
 }
 
@@ -382,9 +382,11 @@ function buildPage(locale, msgs, allLocales) {
       }
     })();
   </script>
+  <!-- Tailwind Play CDN v3: CDN を先に読み込み、その後 tailwind.config を設定する -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    /* Tailwind Play CDN: config must be set BEFORE the CDN script loads */
-    tailwind = { config: {
+    /* Tailwind Play CDN v3: tailwind.config は CDN 読み込み後に設定する */
+    tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
@@ -392,13 +394,12 @@ function buildPage(locale, msgs, allLocales) {
             brand: { DEFAULT:'${BRAND}', dark:'${BRAND_DARK}', light:'${BRAND_LIGHT}' },
           },
           fontFamily: {
-            sans: [${locale.fontFamily.split(',').map(f => `'${f.trim().replace(/"/g,"")}'`).join(',')},'system-ui','sans-serif'],
+            sans: [${locale.fontFamily.split(',').map(f => `'${f.trim().replace(/"/g,"")}'`).join(',')}],
           },
         },
       },
-    }};
+    };
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html { scroll-behavior:smooth; }
     body { font-family: ${locale.fontFamily}, sans-serif; }
@@ -408,6 +409,13 @@ function buildPage(locale, msgs, allLocales) {
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
     .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
     html.dark .bento-card { border-color:#1e293b; background:#1e293b; }
+    /* features セクション ダークモードカード */
+    html.dark #features .bento-card { background:linear-gradient(160deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 100%); border-color:rgba(255,255,255,.14); }
+    .bento-card.card-brand { background:${BRAND_LIGHT}40; }
+    html.dark #features .bento-card.card-brand { background:linear-gradient(160deg,rgba(77,143,127,.22) 0%,rgba(77,143,127,.05) 100%); border-color:rgba(77,143,127,.5); box-shadow:0 0 50px rgba(77,143,127,.2), inset 0 1px 0 rgba(77,143,127,.35); }
+    /* ブランドラベル（カード番号） */
+    .brand-label { color:${BRAND}; }
+    html.dark .brand-label { color:#5eb8a4; }
     /* sect-alt: stats / how-it-works / for-user の薄背景セクション */
     .sect-alt { background:#fafcfb; }
     html.dark .sect-alt { background:#0f172a; }
@@ -420,11 +428,12 @@ function buildPage(locale, msgs, allLocales) {
 
   <!-- ── Nav ── -->
   <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
       <a href="#" class="flex items-center gap-2 font-bold text-gray-900 dark:text-white text-lg shrink-0">
         <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black" style="background:${BRAND}">N</span>
         NeNe Corpus
       </a>
+      <div class="flex items-center gap-4 ml-auto">
       <nav class="hidden md:flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
         <a href="#for-admin"  class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.forAdmin')}</a>
         <a href="#for-user"   class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.forUser')}</a>
@@ -463,6 +472,7 @@ function buildPage(locale, msgs, allLocales) {
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
           GitHub
         </a>
+      </div>
       </div>
     </div>
   </header>
@@ -540,49 +550,52 @@ function buildPage(locale, msgs, allLocales) {
         </div>
 
         <!-- ベントーグリッド -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+        <div class="flex flex-col gap-4 lg:gap-5">
+        <!-- 上段: 3等分 -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
 
-          <!-- 大カード: コーパス構築 (col-span-2 on lg) -->
-          <div class="bento-card lg:col-span-2 p-8 flex flex-col sm:flex-row items-center gap-8"
-               style="background:linear-gradient(135deg,white 60%,${BRAND_LIGHT}40)">
-            <div class="shrink-0 w-44 h-44">${SVG.corpus}</div>
-            <div>
-              <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">01</span>
-              <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">${t('features.1.title')}</h3>
-              <p class="text-gray-500 leading-relaxed">${t('features.1.desc')}</p>
-            </div>
+          <!-- カード 01: コーパス構築 -->
+          <div class="bento-card card-brand p-8 flex flex-col">
+            <div class="w-32 h-32 mx-auto mb-4">${SVG.corpus}</div>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">01</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">${t('features.1.title')}</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('features.1.desc')}</p>
           </div>
 
-          <!-- 縦カード: 引用チャット -->
-          <div class="bento-card p-8 flex flex-col" style="background:${BRAND_LIGHT}60">
+          <!-- カード 02: 引用チャット -->
+          <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4">${SVG.chat}</div>
-            <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">02</span>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.2.title')}</h3>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">02</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">${t('features.2.title')}</h3>
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('features.2.desc')}</p>
           </div>
 
-          <!-- 縦カード: 1行埋め込み -->
-          <div class="bento-card p-8 flex flex-col">
+          <!-- カード 03: 1行埋め込み -->
+          <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4">${SVG.embed}</div>
-            <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">03</span>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.3.title')}</h3>
+            <span class="text-xs font-bold uppercase tracking-widest mb-2 block brand-label">03</span>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">${t('features.3.title')}</h3>
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('features.3.desc')}</p>
           </div>
 
-          <!-- 横長カード: 追加特徴 2 列 -->
-          <div class="bento-card sm:col-span-2 lg:col-span-2 p-8 grid sm:grid-cols-2 gap-8">
+        </div>
+        <!-- 下段: 2等分コンパクトカード -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+          <div class="bento-card p-5 sm:p-6 flex items-center gap-4">
+            <div class="text-3xl shrink-0">🌐</div>
             <div>
-              <div class="text-3xl mb-3">🌐</div>
-              <h3 class="font-bold text-gray-900 mb-2">${t('trust.4')}</h3>
-              <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">ja / en / de / fr / zh-Hans / pt-BR</p>
-            </div>
-            <div>
-              <div class="text-3xl mb-3">🏠</div>
-              <h3 class="font-bold text-gray-900 mb-2">${t('trust.1')}</h3>
-              <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('trust.2')} · ${t('trust.3')}</p>
+              <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-1">${t('trust.4')}</h3>
+              <p class="text-gray-500 dark:text-gray-400 text-sm">ja / en / de / fr / zh-Hans / pt-BR</p>
             </div>
           </div>
-
+          <div class="bento-card p-5 sm:p-6 flex items-center gap-4">
+            <div class="text-3xl shrink-0">🏠</div>
+            <div>
+              <h3 class="font-bold text-gray-900 dark:text-gray-100 mb-1">${t('trust.1')}</h3>
+              <p class="text-gray-500 dark:text-gray-400 text-sm">${t('trust.2')} · ${t('trust.3')}</p>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </section>
@@ -609,7 +622,7 @@ function buildPage(locale, msgs, allLocales) {
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           <div>
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For Operators</span>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forAdmin.title')}</h2>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forAdmin.title')}</h2>
             <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">${t('forAdmin.subtitle')}</p>
             ${stepTimeline('forAdmin', 4)}
           </div>
@@ -646,7 +659,7 @@ function buildPage(locale, msgs, allLocales) {
           </div>
           <div class="order-1 lg:order-2">
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For End Users</span>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forUser.title')}</h2>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forUser.title')}</h2>
             <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">${t('forUser.subtitle')}</p>
             ${stepTimeline('forUser', 3)}
             <div class="mt-6 p-4 rounded-2xl border text-xs leading-relaxed"
@@ -717,7 +730,7 @@ function buildPage(locale, msgs, allLocales) {
           <span class="w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-black" style="background:${BRAND}">N</span>
           <span class="text-white font-bold">NeNe Corpus</span>
         </div>
-        <p class="text-gray-500">${t('footer.poweredBy')} · ${t('footer.copyright')} ${t('footer.rights')}</p>
+        <p class="text-gray-500">Powered by <a href="https://nene2.dev" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">NENE2</a> · © <a href="https://ayane.co.jp" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">AYANE</a> All rights reserved.</p>
       </div>
       <div class="flex flex-wrap items-center gap-4">
         <a href="${GH_URL}" target="_blank" rel="noopener" class="flex items-center gap-1.5 hover:text-white transition-colors">
