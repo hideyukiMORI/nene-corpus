@@ -289,16 +289,19 @@ function buildPage(locale, msgs, allLocales) {
   // t() はバッククォートを <code> に変換してHTMLエスケープ済みの文字列を返す
   const t = (key) => renderText(msgs[key] ?? key);
 
-  const langLinks = allLocales
-    .map(({ id, label }) =>
-      id === locale.id
-        ? `<span class="font-semibold" style="color:${BRAND}">${label}</span>`
-        : `<a href="../${id}/" class="text-gray-500 hover:text-gray-900 transition-colors">${label}</a>`
-    )
-    .join('<span class="text-gray-300 mx-1.5 text-xs">|</span>');
+  // 言語プルダウンのメニューアイテム
+  const langMenuItems = allLocales.map(({ id, label }) =>
+    id === locale.id
+      ? `<span class="flex items-center gap-2 px-4 py-2 text-sm font-semibold" style="color:${BRAND}">
+           <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>${label}
+         </span>`
+      : `<a href="../${id}/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+           <span class="w-3.5 h-3.5 shrink-0"></span>${label}
+         </a>`
+  ).join('');
 
   const trustBadges = [1,2,3,4].map(n => `
-    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500">
+    <span class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
       <svg class="w-4 h-4 shrink-0" fill="none" stroke="${BRAND}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
       ${t(`trust.${n}`)}
     </span>`).join('');
@@ -313,8 +316,8 @@ function buildPage(locale, msgs, allLocales) {
           ${icons[i]}
           <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md" style="background:${BRAND}">${n}</span>
         </div>
-        <h3 class="font-semibold text-gray-900 text-sm mb-1.5">${t(`howItWorks.step${n}.title`)}</h3>
-        <p class="text-gray-500 text-xs leading-relaxed">${t(`howItWorks.step${n}.desc`)}</p>
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1.5">${t(`howItWorks.step${n}.title`)}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">${t(`howItWorks.step${n}.desc`)}</p>
       </div>`;
   });
 
@@ -329,8 +332,8 @@ function buildPage(locale, msgs, allLocales) {
           ${last ? '' : `<span class="absolute left-5 top-11 bottom-0 border-l-2 border-dashed border-gray-200" aria-hidden="true"></span>`}
           <div class="flex-none w-10 h-10 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-md shrink-0" style="background:${BRAND}">${n}</div>
           <div class="pt-1.5 min-w-0">
-            <h3 class="font-semibold text-gray-900 text-base mb-1.5">${t(`${prefix}.step${n}.title`)}</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">${t(`${prefix}.step${n}.desc`)}</p>
+            <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1.5">${t(`${prefix}.step${n}.title`)}</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t(`${prefix}.step${n}.desc`)}</p>
             ${prefix==='forAdmin'&&n===4 ? `
             <div class="mt-4">
               <p class="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">${t('forAdmin.embedCaption')}</p>
@@ -346,12 +349,12 @@ function buildPage(locale, msgs, allLocales) {
   const faqItems = Array.from({length:6},(_,i)=>{
     const n = i+1;
     return `
-      <details class="group border border-gray-100 rounded-2xl overflow-hidden bg-white hover:border-gray-200 transition-colors shadow-sm">
-        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
+      <details class="group border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 hover:border-gray-200 dark:hover:border-gray-700 transition-colors shadow-sm">
+        <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 dark:text-gray-100 select-none list-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
           <span class="text-sm">${t(`faq.${n}.q`)}</span>
           <span class="text-2xl font-light text-gray-300 transition-transform duration-200 group-open:rotate-45 shrink-0">+</span>
         </summary>
-        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 leading-relaxed border-t border-gray-50">
+        <div class="px-6 pb-5 pt-1 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-800">
           ${t(`faq.${n}.a`)}
         </div>
       </details>`;
@@ -370,9 +373,19 @@ function buildPage(locale, msgs, allLocales) {
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=${locale.googleFont}&display=swap" rel="stylesheet"/>
+  <!-- ダークモード初期化: flash を防ぐため CDN より先に実行 -->
+  <script>
+    (function(){
+      var s = localStorage.getItem('guide-theme');
+      if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   <script>
     /* Tailwind Play CDN: config must be set BEFORE the CDN script loads */
     tailwind = { config: {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
@@ -391,46 +404,73 @@ function buildPage(locale, msgs, allLocales) {
     body { font-family: ${locale.fontFamily}, sans-serif; }
     details summary::-webkit-details-marker { display:none; }
     pre code { font-family:'Menlo','Monaco','Consolas',monospace; }
+    /* bento card */
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
     .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
+    html.dark .bento-card { border-color:#1e293b; background:#1e293b; }
+    /* sect-alt: stats / how-it-works / for-user の薄背景セクション */
+    .sect-alt { background:#fafcfb; }
+    html.dark .sect-alt { background:#0f172a; }
+    /* lang dropdown */
+    #lang-menu { display:none; }
+    #lang-menu.open { display:block; }
   </style>
 </head>
-<body class="bg-white text-gray-900 antialiased">
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
 
   <!-- ── Nav ── -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-      <a href="#" class="flex items-center gap-2 font-bold text-gray-900 text-lg">
+      <a href="#" class="flex items-center gap-2 font-bold text-gray-900 dark:text-white text-lg shrink-0">
         <span class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black" style="background:${BRAND}">N</span>
         NeNe Corpus
       </a>
-      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-500">
-        <a href="#for-admin" class="hover:text-gray-900 transition-colors">${t('nav.forAdmin')}</a>
-        <a href="#for-user"  class="hover:text-gray-900 transition-colors">${t('nav.forUser')}</a>
-        <a href="#faq"       class="hover:text-gray-900 transition-colors">${t('nav.faq')}</a>
-        <a href="#disclaimer" class="hover:text-gray-900 transition-colors">${t('nav.disclaimer')}</a>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <a href="#for-admin"  class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.forAdmin')}</a>
+        <a href="#for-user"   class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.forUser')}</a>
+        <a href="#faq"        class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.faq')}</a>
+        <a href="#disclaimer" class="hover:text-gray-900 dark:hover:text-white transition-colors">${t('nav.disclaimer')}</a>
       </nav>
-      <div class="flex items-center gap-2 sm:gap-3">
-        <div class="hidden sm:flex items-center gap-x-2 text-xs">
-          ${langLinks}
+      <div class="flex items-center gap-1.5 sm:gap-2">
+
+        <!-- 言語プルダウン -->
+        <div class="relative" id="lang-dropdown">
+          <button onclick="toggleLangMenu(event)"
+                  class="flex items-center gap-1 px-2.5 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+            <span class="hidden sm:inline font-medium">${allLocales.find(l=>l.id===locale.id).label}</span>
+            <svg class="w-3 h-3 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="lang-menu"
+               class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg py-1 min-w-36 z-50">
+            ${langMenuItems}
+          </div>
         </div>
+
+        <!-- ダークモードトグル -->
+        <button onclick="toggleTheme()"
+                class="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle dark mode">
+          <!-- moon: light mode で表示 -->
+          <svg id="icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <!-- sun: dark mode で表示 -->
+          <svg id="icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+
+        <!-- GitHub -->
         <a href="${GH_URL}" target="_blank" rel="noopener"
-           class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors font-medium">
+           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
           GitHub
         </a>
       </div>
-    </div>
-    <!-- モバイル言語切り替え -->
-    <div class="sm:hidden flex items-center gap-x-2 text-xs px-4 pb-2">
-      ${langLinks}
     </div>
   </header>
 
   <main>
 
     <!-- ── Hero ── -->
-    <section class="pt-16 pb-12 sm:pt-24 sm:pb-16 bg-white overflow-hidden">
+    <section class="pt-16 pb-12 sm:pt-24 sm:pb-16 bg-white dark:bg-gray-950 overflow-hidden">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <!-- テキスト (hero is above the fold — no needed) -->
@@ -440,10 +480,10 @@ function buildPage(locale, msgs, allLocales) {
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
               ${t('hero.badge')}
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 leading-[1.1] tracking-tight mb-6">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-950 dark:text-white leading-[1.1] tracking-tight mb-6">
               ${t('hero.title')}
             </h1>
-            <p class="text-lg sm:text-xl text-gray-500 leading-relaxed mb-8 max-w-lg">
+            <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
               ${t('hero.subtitle')}
             </p>
             <div class="flex flex-col sm:flex-row gap-3 mb-10">
@@ -454,7 +494,7 @@ function buildPage(locale, msgs, allLocales) {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
               </a>
               <a href="../../admin/"
-                 class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-gray-700 text-base font-semibold bg-gray-100 hover:bg-gray-200 transition-all">
+                 class="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl text-gray-700 dark:text-gray-200 text-base font-semibold bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
                 ${t('hero.ctaAdmin')}
               </a>
             </div>
@@ -474,7 +514,7 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── Stats strip ── -->
-    <section class="py-10 border-y border-gray-100" style="background:#fafcfb">
+    <section class="py-10 border-y border-gray-100 dark:border-gray-800 sect-alt">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           ${[
@@ -492,10 +532,10 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── Bento Features ── -->
-    <section id="features" class="py-20 sm:py-28 bg-white">
+    <section id="features" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-14">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('features.title')}</h2>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('features.title')}</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">${t('features.subtitle')}</p>
         </div>
 
@@ -518,7 +558,7 @@ function buildPage(locale, msgs, allLocales) {
             <div class="w-32 h-32 mx-auto mb-4">${SVG.chat}</div>
             <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">02</span>
             <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.2.title')}</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">${t('features.2.desc')}</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('features.2.desc')}</p>
           </div>
 
           <!-- 縦カード: 1行埋め込み -->
@@ -526,7 +566,7 @@ function buildPage(locale, msgs, allLocales) {
             <div class="w-32 h-32 mx-auto mb-4">${SVG.embed}</div>
             <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">03</span>
             <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.3.title')}</h3>
-            <p class="text-gray-500 text-sm leading-relaxed">${t('features.3.desc')}</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('features.3.desc')}</p>
           </div>
 
           <!-- 横長カード: 追加特徴 2 列 -->
@@ -534,12 +574,12 @@ function buildPage(locale, msgs, allLocales) {
             <div>
               <div class="text-3xl mb-3">🌐</div>
               <h3 class="font-bold text-gray-900 mb-2">${t('trust.4')}</h3>
-              <p class="text-gray-500 text-sm leading-relaxed">ja / en / de / fr / zh-Hans / pt-BR</p>
+              <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">ja / en / de / fr / zh-Hans / pt-BR</p>
             </div>
             <div>
               <div class="text-3xl mb-3">🏠</div>
               <h3 class="font-bold text-gray-900 mb-2">${t('trust.1')}</h3>
-              <p class="text-gray-500 text-sm leading-relaxed">${t('trust.2')} · ${t('trust.3')}</p>
+              <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">${t('trust.2')} · ${t('trust.3')}</p>
             </div>
           </div>
 
@@ -548,10 +588,10 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── How It Works ── -->
-    <section id="how-it-works" class="py-20 sm:py-28" style="background:#fafcfb">
+    <section id="how-it-works" class="py-20 sm:py-28 sect-alt">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-14">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('howItWorks.title')}</h2>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('howItWorks.title')}</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">${t('howItWorks.subtitle')}</p>
         </div>
         <div class="hidden sm:flex items-start justify-between gap-3">
@@ -564,13 +604,13 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── For Admin ── -->
-    <section id="for-admin" class="py-20 sm:py-28 bg-white">
+    <section id="for-admin" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           <div>
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For Operators</span>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('forAdmin.title')}</h2>
-            <p class="text-gray-400 mb-10 text-lg">${t('forAdmin.subtitle')}</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forAdmin.title')}</h2>
+            <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">${t('forAdmin.subtitle')}</p>
             ${stepTimeline('forAdmin', 4)}
           </div>
           <div class="hidden lg:block sticky top-24">
@@ -598,7 +638,7 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── For Users ── -->
-    <section id="for-user" class="py-20 sm:py-28" style="background:#fafcfb">
+    <section id="for-user" class="py-20 sm:py-28 sect-alt">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div class="order-2 lg:order-1 flex justify-center">
@@ -606,8 +646,8 @@ function buildPage(locale, msgs, allLocales) {
           </div>
           <div class="order-1 lg:order-2">
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For End Users</span>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('forUser.title')}</h2>
-            <p class="text-gray-400 mb-10 text-lg">${t('forUser.subtitle')}</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('forUser.title')}</h2>
+            <p class="text-gray-400 dark:text-gray-500 mb-10 text-lg">${t('forUser.subtitle')}</p>
             ${stepTimeline('forUser', 3)}
             <div class="mt-6 p-4 rounded-2xl border text-xs leading-relaxed"
                  style="background:#fffbeb;border-color:#fef3c7;color:#92400e">
@@ -619,10 +659,10 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── FAQ ── -->
-    <section id="faq" class="py-20 sm:py-28 bg-white">
+    <section id="faq" class="py-20 sm:py-28 bg-white dark:bg-gray-950">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-10">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('faq.title')}</h2>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 dark:text-white mb-4">${t('faq.title')}</h2>
         </div>
         <div class="space-y-2.5">
           ${faqItems}
@@ -652,9 +692,9 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
+    <section id="disclaimer" class="py-10 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
       <div class="px-6 sm:px-10">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">${t('disclaimer.title')}</p>
+        <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">${t('disclaimer.title')}</p>
         <div class="text-xs text-gray-400 leading-relaxed
           [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
           [&_p]:inline [&_p]:after:content-['_']
@@ -692,6 +732,34 @@ function buildPage(locale, msgs, allLocales) {
     </div>
   </footer>
 
+  <script>
+    // ── ダークモードトグル ──────────────────────────────────
+    function toggleTheme() {
+      var isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('guide-theme', isDark ? 'dark' : 'light');
+      document.getElementById('icon-moon').classList.toggle('hidden', isDark);
+      document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+    }
+    // 初期アイコン状態を合わせる
+    (function(){
+      if (document.documentElement.classList.contains('dark')) {
+        document.getElementById('icon-moon').classList.add('hidden');
+        document.getElementById('icon-sun').classList.remove('hidden');
+      }
+    })();
+
+    // ── 言語プルダウン ──────────────────────────────────────
+    function toggleLangMenu(e) {
+      e.stopPropagation();
+      document.getElementById('lang-menu').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      var dd = document.getElementById('lang-dropdown');
+      if (dd && !dd.contains(e.target)) {
+        document.getElementById('lang-menu').classList.remove('open');
+      }
+    });
+  </script>
 </body>
 </html>`;
 }
