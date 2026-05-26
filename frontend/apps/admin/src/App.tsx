@@ -6,6 +6,7 @@ import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLo
 import { AppearancePanel } from './AppearancePanel';
 import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { ChatSettingsPanel } from './ChatSettingsPanel';
+import { ChatLimitsPanel } from './ChatLimitsPanel';
 import { HelpPanel } from './HelpPanel';
 import { LocaleSelector } from './LocaleSelector';
 import { ThemeToggle } from './ThemeToggle';
@@ -78,6 +79,7 @@ export function App() {
             )}
             <LlmSettingsPanel token={token} />
             <ChatSettingsPanel token={token} />
+            <ChatLimitsPanel token={token} />
             <AppearancePanel token={token} />
             <HelpPanel />
           </>
