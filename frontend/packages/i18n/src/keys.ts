@@ -460,6 +460,14 @@ export const Msg = {
         title: 'admin.help.faq.title',
         body: 'admin.help.faq.body',
       },
+      guideLink: {
+        label: 'admin.help.guideLink.label',
+        description: 'admin.help.guideLink.description',
+      },
+    },
+    footer: {
+      poweredBy: 'admin.footer.poweredBy',
+      copyright: 'admin.footer.copyright',
     },
   },
   widget: {

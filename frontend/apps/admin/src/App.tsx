@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg, type MsgKey } from '@nene-corpus/i18n';
 import { getLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
@@ -129,6 +129,39 @@ export function App() {
           onLlmConfiguredChange={setIsLlmConfigured}
         />
       )}
+
+      {/* ── フッター ── */}
+      <AdminFooter locale={locale} t={t} />
     </div>
+  );
+}
+
+const GUIDE_URL_MAP: Record<string, string> = {
+  ja: '/guide/ja/',
+  en: '/guide/en/',
+  de: '/guide/de/',
+  fr: '/guide/fr/',
+  'pt-BR': '/guide/pt-br/',
+  'zh-Hans': '/guide/zh-hans/',
+};
+
+function AdminFooter({ locale, t }: { locale: string; t: (key: MsgKey) => string }) {
+  const guideUrl = GUIDE_URL_MAP[locale] ?? '/guide/en/';
+  return (
+    <footer className="mt-12 border-t border-border px-6 py-6 text-center text-xs nc-text-muted">
+      <p>
+        {t(resolveMsgKey(Msg.admin.footer?.poweredBy, 'admin.footer.poweredBy'))}{' '}
+        <a
+          href={guideUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-brand hover:underline"
+        >
+          NeNe Corpus
+        </a>
+        {' · '}
+        {t(resolveMsgKey(Msg.admin.footer?.copyright, 'admin.footer.copyright'))}
+      </p>
+    </footer>
   );
 }

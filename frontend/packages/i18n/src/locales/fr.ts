@@ -435,6 +435,10 @@ export const fr = defineMessages({
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Les données quittent-elles mon serveur ? — Le corpus reste dans votre base. Seuls les extraits pertinents partent vers l\'API Claude.\n\nSous-domaine ? — Oui, pointez la racine documentaire vers public_html.\n\nStreaming ? — Chat JSON synchrone uniquement, pas de streaming SSE.\n\nPlus de détails — docs hébergement mutualisé fournis avec le ZIP de release.',
+  'admin.help.guideLink.label': 'Voir le guide de configuration',
+  'admin.help.guideLink.description': "Instructions étape par étape, de l'installation à l'intégration",
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'Chat NeNe Corpus',
   'widget.chat.emptyPrompt': 'Posez une question sur nos produits.',
   'widget.chat.loading': 'Recherche dans le corpus…',

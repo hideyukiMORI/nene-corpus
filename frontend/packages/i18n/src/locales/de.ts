@@ -435,6 +435,10 @@ export const de = defineMessages({
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Verlassen Daten meinen Server? — Korpus bleibt in Ihrer DB. Nur relevante Textausschnitte gehen an die Claude-API.\n\nSubdomain? — Ja, Document Root auf public_html zeigen.\n\nStreaming? — Nur synchroner JSON-Chat, kein SSE-Streaming.\n\nMehr — Shared-Hosting-Docs im Release-ZIP.',
+  'admin.help.guideLink.label': 'Setup-Leitfaden ansehen',
+  'admin.help.guideLink.description': 'Schritt-für-Schritt-Anleitung von der Installation bis zur Einbettung',
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'NeNe Corpus Chat',
   'widget.chat.emptyPrompt': 'Stellen Sie eine Frage zu unseren Produkten.',
   'widget.chat.loading': 'Korpus wird durchsucht…',
