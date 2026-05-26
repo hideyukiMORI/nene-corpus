@@ -23,7 +23,7 @@ Ops / MCP         ────────────────────�
 
 ## 現在の開発状況
 
-> **最終更新: 2026-05-26**（`docs/todo/current.md` が正本）
+> **最終更新: 2026-05-28**（`docs/todo/current.md` が正本）
 
 | フェーズ | 状態 |
 | --- | --- |
@@ -31,42 +31,29 @@ Ops / MCP         ────────────────────�
 | Phase 1 コーパス取り込み | ✅ 完了 |
 | Phase 2 チャット・引用 | ✅ 完了 |
 | Phase 3 Admin UI・Widget・Tier A | ✅ 完了 |
-| **Phase 3+ オペレーター UX 改善** | 🔲 バックログ（Issue 化してから着手） |
-| Phase 4 外部連携（NeNe Records） | 📋 計画中 |
+| **Phase 3+ オペレーター UX 改善** | ✅ 完了 |
+| **Phase 4 外部連携（NeNe Records）** | 🔲 バックログ（Issue 化してから着手） |
 
 **最近の主なマージ:**
 
 | PR | Issue | 内容 |
 | --- | --- | --- |
-| #156 | #155 | チャンクプレビュー（`GET /admin/documents/{id}/chunks`） |
-| #154 | #153 | ドキュメント CRUD（一覧・詳細・更新・削除 + Admin UI） |
-| #148 | #130 | LLM 設定 UI（API キー管理・接続テスト） |
+| #200 | #199 | チャット日次トークン制限 Phase B（input/output トークン記録・日次予算） |
+| #198 | #197 | チャット利用制限 Phase A（文字数・インターバル・時間別/日次リクエスト制限） |
+| #196 | #195 | LLM 設定アコーディオン化 |
 
 ---
 
-## Phase 3+ 次優先バックログ（Issue 化してから実装）
+## Phase 4 バックログ（Issue 化してから実装）
 
-### ドキュメント Admin UX（#153/#155 フォローアップ）
+### NeNe Records 外部連携
 
 | 優先 | 項目 | 概要 |
 | --- | --- | --- |
-| P2 | ソース表の折り返し | 長いソース名で横スクロール必須になる問題。`break-words` 等で「ドキュメント」列を常に表示 |
-| P2 | ドキュメント一覧ページング | API は `limit`/`offset` のみ（デフォルト 100、`total` なし）。大量件数で必須 |
-| P2 | ドキュメント検索（ソース内） | ページングとセット。まずタイトル `LIKE` |
-| P2 | 編集 UI モーダル/ドロワー化 | 行展開 + 右ペインだと大量行のとき編集フォームが画面外に出る |
-
-### Widget / チャット UX
-
-| 優先 | 項目 |
-| --- | --- |
-| P2 | CSS アニメーション UX（応答待ちインジケータ・吹き出し fade/slide-in・スムーズスクロール） |
-| P2 | カスタム CSS（WordPress 系向け、widget スコープ限定・サニタイズ必須） |
-
-### オペレーター設定
-
-| 優先 | 項目 |
-| --- | --- |
-| P2 | プロンプト / スコープ / フォールバック設定 UI |
+| P1 | NeNe Records 読み取りクライアント | `src/Upstream/` に `NeneRecordsClientInterface` + `HttpNeneRecordsClient` 実装 |
+| P1 | Admin 設定 UI | `NENE_RECORDS_API_BASE_URL` / `NENE_RECORDS_BEARER_TOKEN` を `.env` 経由で設定 |
+| P2 | ローカル corpus + upstream 統合検索 | `search_corpus` ツール拡張：ローカル chunks + NeNe Records API 結果をマージ |
+| P3 | Webhook / ポーリング再インデックス | NeNe Records 更新時にローカル chunks を自動更新 |
 
 ---
 
