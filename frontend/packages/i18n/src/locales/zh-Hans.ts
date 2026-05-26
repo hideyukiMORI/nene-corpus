@@ -170,6 +170,8 @@ export const zhHans = defineMessages({
   'admin.conversationLogs.pageNext': '下一页',
   'admin.conversationLogs.pageLast': '末页',
   'admin.conversationLogs.perPageLabel': '每页会话数',
+  'admin.conversationLogs.openLogs': '打开会话记录',
+  'admin.conversationLogs.close': '关闭',
   'admin.llm.title': 'LLM 设置',
   'admin.llm.subtitle': '更新 Anthropic API 密钥与模型。保存前可先测试连接。',
   'admin.llm.currentKey': '当前密钥',

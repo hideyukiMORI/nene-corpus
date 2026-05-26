@@ -17,6 +17,7 @@ export function App() {
   const { locale } = useLocale();
   const { token, profile, isReady, error, login, logout } = useAdminAuth();
   const [sourcesReloadKey, setSourcesReloadKey] = useState(0);
+  const [logsOpen, setLogsOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
@@ -67,7 +68,25 @@ export function App() {
               reloadKey={sourcesReloadKey}
               onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
             />
-            <ConversationLogsPanel token={token} />
+            {/* 会話ログ：モーダルトリガーセクション */}
+            <section className="nc-panel">
+              <div className="nc-panel-head flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="font-medium">{t(Msg.admin.conversationLogs.title)}</h2>
+                  <p>{t(Msg.admin.conversationLogs.subtitle)}</p>
+                </div>
+                <button
+                  className="nc-btn shrink-0 text-sm"
+                  type="button"
+                  onClick={() => setLogsOpen(true)}
+                >
+                  {t(Msg.admin.conversationLogs.openLogs)}
+                </button>
+              </div>
+            </section>
+            {logsOpen && (
+              <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
+            )}
             <LlmSettingsPanel token={token} />
             <ChatSettingsPanel token={token} />
             <AppearancePanel token={token} />
