@@ -9,6 +9,7 @@
     "./appearance": "./src/appearance.ts",
     "./llm-settings": "./src/llm-settings.ts",
     "./chat-settings": "./src/chat-settings.ts",
+    "./notifications": "./src/notifications.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {

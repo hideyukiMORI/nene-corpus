@@ -4,9 +4,10 @@ import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { ChatSettingsPanel } from './ChatSettingsPanel';
 import { AppearancePanel } from './AppearancePanel';
 import { ChatLimitsPanel } from './ChatLimitsPanel';
+import { NotificationsPanel } from './NotificationsPanel';
 import { AccountPanel } from './AccountPanel';
 
-export type SettingsSection = 'llm' | 'chat' | 'appearance' | 'limits' | 'account';
+export type SettingsSection = 'llm' | 'chat' | 'appearance' | 'limits' | 'notifications' | 'account';
 
 interface SettingsModalProps {
   token: string;
@@ -22,15 +23,17 @@ interface NavItem {
     | typeof Msg.admin.app.settingsNavChat
     | typeof Msg.admin.app.settingsNavAppearance
     | typeof Msg.admin.app.settingsNavLimits
+    | typeof Msg.admin.app.settingsNavNotifications
     | typeof Msg.admin.app.settingsNavAccount;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'llm',        msgKey: Msg.admin.app.settingsNavLlm },
-  { id: 'chat',       msgKey: Msg.admin.app.settingsNavChat },
-  { id: 'appearance', msgKey: Msg.admin.app.settingsNavAppearance },
-  { id: 'limits',     msgKey: Msg.admin.app.settingsNavLimits },
-  { id: 'account',    msgKey: Msg.admin.app.settingsNavAccount },
+  { id: 'llm',           msgKey: Msg.admin.app.settingsNavLlm },
+  { id: 'chat',          msgKey: Msg.admin.app.settingsNavChat },
+  { id: 'appearance',    msgKey: Msg.admin.app.settingsNavAppearance },
+  { id: 'limits',        msgKey: Msg.admin.app.settingsNavLimits },
+  { id: 'notifications', msgKey: Msg.admin.app.settingsNavNotifications },
+  { id: 'account',       msgKey: Msg.admin.app.settingsNavAccount },
 ];
 
 export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmConfiguredChange }: SettingsModalProps) {
@@ -139,6 +142,9 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
                 hideHeader={true}
                 onOpenChange={() => { /* モーダル内では常に展開 */ }}
               />
+            )}
+            {activeSection === 'notifications' && (
+              <NotificationsPanel token={token} />
             )}
             {activeSection === 'account' && (
               <AccountPanel token={token} />
