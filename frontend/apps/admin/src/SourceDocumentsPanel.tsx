@@ -418,6 +418,15 @@ export function SourceDocumentsPanel({
                     <button
                       className="nc-btn text-xs disabled:opacity-40"
                       type="button"
+                      aria-label={t(Msg.admin.documents.pageFirst)}
+                      disabled={!hasPrev}
+                      onClick={() => setOffset(0)}
+                    >
+                      {t(Msg.admin.documents.pageFirst)}
+                    </button>
+                    <button
+                      className="nc-btn text-xs disabled:opacity-40"
+                      type="button"
                       disabled={!hasPrev}
                       onClick={() => setOffset(Math.max(0, offset - pageSize))}
                     >
@@ -441,6 +450,15 @@ export function SourceDocumentsPanel({
                       onClick={() => setOffset(offset + pageSize)}
                     >
                       {t(Msg.admin.documents.pageNext)}
+                    </button>
+                    <button
+                      className="nc-btn text-xs disabled:opacity-40"
+                      type="button"
+                      aria-label={t(Msg.admin.documents.pageLast)}
+                      disabled={!hasNext}
+                      onClick={() => setOffset((totalPages - 1) * pageSize)}
+                    >
+                      {t(Msg.admin.documents.pageLast)}
                     </button>
                   </div>
                 )}
