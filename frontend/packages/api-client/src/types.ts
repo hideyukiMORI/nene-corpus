@@ -67,6 +67,9 @@ export interface DocumentListItem {
 
 export interface ListDocumentsResponse {
   documents: DocumentListItem[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 export interface DocumentDetailResponse {

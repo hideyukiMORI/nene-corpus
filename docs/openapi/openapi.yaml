@@ -627,6 +627,13 @@ paths:
             format: int32
             minimum: 0
             default: 0
+        - name: q
+          in: query
+          required: false
+          description: Title keyword filter (case-insensitive LIKE search).
+          schema:
+            type: string
+            maxLength: 200
       responses:
         '200':
           description: Document list.
@@ -1674,11 +1681,26 @@ components:
       type: object
       required:
         - documents
+        - total
+        - limit
+        - offset
       properties:
         documents:
           type: array
           items:
             $ref: '#/components/schemas/DocumentListItem'
+        total:
+          type: integer
+          format: int64
+          description: Total number of documents matching the current filter (for pagination).
+        limit:
+          type: integer
+          format: int32
+          description: Page size used for this response.
+        offset:
+          type: integer
+          format: int32
+          description: Offset used for this response.
     DocumentListItem:
       type: object
       required:

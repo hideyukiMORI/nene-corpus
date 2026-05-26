@@ -87,6 +87,11 @@ export const Msg = {
       chunksTitle: 'admin.documents.chunksTitle',
       chunksEmpty: 'admin.documents.chunksEmpty',
       chunksLoadFailed: 'admin.documents.chunksLoadFailed',
+      searchPlaceholder: 'admin.documents.searchPlaceholder',
+      searchClear: 'admin.documents.searchClear',
+      pageInfo: 'admin.documents.pageInfo',
+      pagePrev: 'admin.documents.pagePrev',
+      pageNext: 'admin.documents.pageNext',
     },
     ingestion: {
       title: 'admin.ingestion.title',

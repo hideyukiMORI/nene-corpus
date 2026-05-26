@@ -23,13 +23,15 @@ final readonly class ListDocumentsHandler
         $sourceId = (int) ($parameters['sourceId'] ?? 0);
 
         $query = $request->getQueryParams();
-        $limit = isset($query['limit']) ? (int) $query['limit'] : 100;
-        $offset = isset($query['offset']) ? (int) $query['offset'] : 0;
+        $limit = max(1, min(200, isset($query['limit']) ? (int) $query['limit'] : 100));
+        $offset = max(0, isset($query['offset']) ? (int) $query['offset'] : 0);
+        $q = isset($query['q']) ? (string) $query['q'] : '';
 
-        $summaries = $this->useCase->execute(new ListDocumentsInput(
+        $result = $this->useCase->execute(new ListDocumentsInput(
             sourceId: $sourceId,
             limit: $limit,
             offset: $offset,
+            query: $q,
         ));
 
         return $this->response->create([
@@ -44,8 +46,11 @@ final readonly class ListDocumentsHandler
                     'created_at' => $summary->document->createdAt,
                     'updated_at' => $summary->document->updatedAt,
                 ],
-                $summaries,
+                $result['documents'],
             ),
+            'total' => $result['total'],
+            'limit' => $limit,
+            'offset' => $offset,
         ]);
     }
 }

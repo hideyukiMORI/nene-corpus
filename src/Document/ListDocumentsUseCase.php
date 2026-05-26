@@ -15,12 +15,24 @@ final readonly class ListDocumentsUseCase implements ListDocumentsUseCaseInterfa
     ) {
     }
 
+    /**
+     * @return array{documents: list<DocumentSummary>, total: int}
+     */
     public function execute(ListDocumentsInput $input): array
     {
         if ($this->sources->findById($input->sourceId) === null) {
             throw new SourceNotFoundException($input->sourceId);
         }
 
-        return $this->documents->findSummariesBySourceId($input->sourceId, $input->limit, $input->offset);
+        $documents = $this->documents->findSummariesBySourceId(
+            $input->sourceId,
+            $input->limit,
+            $input->offset,
+            $input->query,
+        );
+
+        $total = $this->documents->countBySourceId($input->sourceId, $input->query);
+
+        return ['documents' => $documents, 'total' => $total];
     }
 }

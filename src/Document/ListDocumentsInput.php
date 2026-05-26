@@ -10,6 +10,7 @@ final readonly class ListDocumentsInput
         public int $sourceId,
         public int $limit = 100,
         public int $offset = 0,
+        public string $query = '',
     ) {
     }
 }
