@@ -41,6 +41,7 @@ export default defineConfig({
       '/admin': 'http://localhost:8080',
       '/widget': 'http://localhost:8080',
       '/media': 'http://localhost:8080',
+      '/guide': 'http://localhost:8080',
     },
   },
   build: {
