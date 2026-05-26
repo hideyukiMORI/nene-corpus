@@ -3,8 +3,9 @@ import { Msg, useMsg } from '@nene-corpus/i18n';
 import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { ChatSettingsPanel } from './ChatSettingsPanel';
 import { ChatLimitsPanel } from './ChatLimitsPanel';
+import { AccountPanel } from './AccountPanel';
 
-export type SettingsSection = 'llm' | 'chat' | 'limits';
+export type SettingsSection = 'llm' | 'chat' | 'limits' | 'account';
 
 interface SettingsModalProps {
   token: string;
@@ -15,13 +16,18 @@ interface SettingsModalProps {
 
 interface NavItem {
   id: SettingsSection;
-  msgKey: typeof Msg.admin.app.settingsNavLlm | typeof Msg.admin.app.settingsNavChat | typeof Msg.admin.app.settingsNavLimits;
+  msgKey:
+    | typeof Msg.admin.app.settingsNavLlm
+    | typeof Msg.admin.app.settingsNavChat
+    | typeof Msg.admin.app.settingsNavLimits
+    | typeof Msg.admin.app.settingsNavAccount;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'llm',    msgKey: Msg.admin.app.settingsNavLlm },
-  { id: 'chat',   msgKey: Msg.admin.app.settingsNavChat },
-  { id: 'limits', msgKey: Msg.admin.app.settingsNavLimits },
+  { id: 'llm',     msgKey: Msg.admin.app.settingsNavLlm },
+  { id: 'chat',    msgKey: Msg.admin.app.settingsNavChat },
+  { id: 'limits',  msgKey: Msg.admin.app.settingsNavLimits },
+  { id: 'account', msgKey: Msg.admin.app.settingsNavAccount },
 ];
 
 export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmConfiguredChange }: SettingsModalProps) {
@@ -96,7 +102,7 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
         {/* ── コンテンツエリア ── */}
         <div className="min-h-0 flex-1 overflow-y-auto">
           {/* ヘッダー（閉じるボタン） */}
-          <div className="sticky top-0 z-10 hidden items-center justify-end border-b border-border bg-bg/80 px-4 py-3 backdrop-blur-md sm:flex">
+          <div className="sticky top-0 z-10 hidden items-center justify-end border-b border-border bg-surface/80 px-4 py-3 backdrop-blur-md sm:flex">
             <button
               type="button"
               className="nc-btn nc-header-btn"
@@ -127,6 +133,9 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
                 hideHeader={true}
                 onOpenChange={() => { /* モーダル内では常に展開 */ }}
               />
+            )}
+            {activeSection === 'account' && (
+              <AccountPanel token={token} />
             )}
           </div>
         </div>
