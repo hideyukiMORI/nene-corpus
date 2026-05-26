@@ -33,6 +33,7 @@ export const fr = defineMessages({
   'admin.app.settingsNavChat': 'Paramètres du chat',
   'admin.app.settingsNavAppearance': 'Apparence',
   'admin.app.settingsNavLimits': "Limites d\'utilisation",
+  'admin.app.settingsNavOverview': 'Aperçu',
   'admin.app.settingsNavNotifications': 'Notifications',
   'admin.app.settingsNavAccount': 'Compte',
   'admin.auth.title': 'Connexion admin',
@@ -304,6 +305,14 @@ export const fr = defineMessages({
   'admin.notifications.saveSuccess': 'Notifications enregistrees',
   'admin.notifications.saveFailed': "Echec de l'enregistrement",
   'admin.notifications.loadFailed': 'Impossible de charger les parametres',
+  'admin.settingsOverview.title': 'Paramètres',
+  'admin.settingsOverview.subtitle': 'Sélectionnez une section pour modifier vos paramètres.',
+  'admin.settingsOverview.llmDesc': 'Configurer le modèle IA, la clé API et les tokens maximum.',
+  'admin.settingsOverview.chatDesc': 'Définir le prompt système, la portée et le message de secours.',
+  'admin.settingsOverview.appearanceDesc': 'Personnaliser les couleurs du widget, la mise en page et la langue.',
+  'admin.settingsOverview.limitsDesc': 'Définir les limites de requêtes, tokens et intervalles.',
+  'admin.settingsOverview.notificationsDesc': 'Configurer les alertes e-mail et le rapport quotidien.',
+  'admin.settingsOverview.accountDesc': 'Modifier votre mot de passe et votre adresse e-mail.',
 
   'admin.widgetPreview.title': 'Aperçu du thème widget',
   'admin.widgetPreview.body':
