@@ -5,6 +5,7 @@ import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
 import { LlmSettingsPanel } from './LlmSettingsPanel';
+import { ChatSettingsPanel } from './ChatSettingsPanel';
 import { HelpPanel } from './HelpPanel';
 import { LocaleSelector } from './LocaleSelector';
 import { ThemeToggle } from './ThemeToggle';
@@ -68,6 +69,7 @@ export function App() {
             />
             <ConversationLogsPanel token={token} />
             <LlmSettingsPanel token={token} />
+            <ChatSettingsPanel token={token} />
             <AppearancePanel token={token} />
             <HelpPanel />
           </>

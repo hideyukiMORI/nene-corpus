@@ -7,6 +7,7 @@ namespace NeneCorpus\Llm;
 use LogicException;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use NeneCorpus\ChatSettings\ChatSettingsRepositoryInterface;
 use NeneCorpus\Search\SearchChunksUseCaseInterface;
 use Psr\Container\ContainerInterface;
 
@@ -52,6 +53,7 @@ final readonly class LlmServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): GenerateChatReplyUseCaseInterface {
                     $client = $container->get(ClaudeMessagesClientInterface::class);
                     $searchTool = $container->get(CorpusSearchToolHandler::class);
+                    $chatSettings = $container->get(ChatSettingsRepositoryInterface::class);
 
                     if (!$client instanceof ClaudeMessagesClientInterface) {
                         throw new LogicException('Claude messages client service is invalid.');
@@ -61,7 +63,11 @@ final readonly class LlmServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Corpus search tool handler service is invalid.');
                     }
 
-                    return new GenerateChatReplyUseCase($client, $searchTool);
+                    if (!$chatSettings instanceof ChatSettingsRepositoryInterface) {
+                        throw new LogicException('Chat settings repository service is invalid.');
+                    }
+
+                    return new GenerateChatReplyUseCase($client, $searchTool, $chatSettings);
                 },
             );
     }

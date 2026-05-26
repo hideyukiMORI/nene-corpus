@@ -7,6 +7,7 @@ namespace NeneCorpus\Tests\Llm;
 use Nene2\Config\DatabaseConfig;
 use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
+use NeneCorpus\ChatSettings\ChatSettings;
 use NeneCorpus\Chunk\Chunk;
 use NeneCorpus\Chunk\PdoChunkRepository;
 use NeneCorpus\Document\Document;
@@ -22,6 +23,7 @@ use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\InMemoryChatSettingsRepository;
 use PHPUnit\Framework\TestCase;
 
 final class GenerateChatReplyUseCaseTest extends TestCase
@@ -68,6 +70,7 @@ final class GenerateChatReplyUseCaseTest extends TestCase
         $useCase = new GenerateChatReplyUseCase(
             new StubClaudeMessagesClient(),
             new CorpusSearchToolHandler($search),
+            new InMemoryChatSettingsRepository(ChatSettings::defaults()),
         );
 
         $output = $useCase->execute(new GenerateChatReplyInput(
