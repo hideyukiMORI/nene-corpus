@@ -10,6 +10,8 @@ import {
 } from '@nene-corpus/api-client';
 import { Msg, useMsg, type MessageParams, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
+import { Modal } from './Modal';
+import { ConfirmDialog } from './ConfirmDialog';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
 const DEFAULT_PAGE_SIZE = 50;
@@ -53,7 +55,6 @@ export function SourceDocumentsPanel({
   onClose,
 }: SourceDocumentsPanelProps) {
   const t = useMsg();
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // --- 一覧ステート ---
@@ -75,6 +76,7 @@ export function SourceDocumentsPanel({
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [editSuccess, setEditSuccess] = useState<string | null>(null);
 
@@ -93,11 +95,6 @@ export function SourceDocumentsPanel({
   const to = Math.min(offset + pageSize, total);
   const hasPrev = offset > 0;
   const hasNext = offset + pageSize < total;
-
-  // モーダルをマウント時に開く
-  useEffect(() => {
-    dialogRef.current?.showModal();
-  }, []);
 
   const loadDocuments = useCallback(
     async (
@@ -265,15 +262,12 @@ export function SourceDocumentsPanel({
     }
   }
 
-  async function handleDelete(): Promise<void> {
+  async function handleDeleteConfirmed(): Promise<void> {
     if (selectedId === null) {
       return;
     }
 
-    if (!window.confirm(t(Msg.admin.documents.deleteConfirm))) {
-      return;
-    }
-
+    setDeleteConfirmOpen(false);
     setIsDeleting(true);
     setEditError(null);
     setEditSuccess(null);
@@ -300,17 +294,19 @@ export function SourceDocumentsPanel({
   }
 
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel
-    <dialog
-      ref={dialogRef}
-      className="m-auto w-full max-w-5xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
-      onCancel={onClose}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
+    <>
+      {deleteConfirmOpen && (
+        <ConfirmDialog
+          title={t(Msg.admin.documents.delete)}
+          description={t(Msg.admin.documents.deleteConfirm)}
+          confirmLabel={t(Msg.admin.documents.delete)}
+          variant="danger"
+          isConfirming={isDeleting}
+          onConfirm={() => void handleDeleteConfirmed()}
+          onClose={() => setDeleteConfirmOpen(false)}
+        />
+      )}
+      <Modal size="lg" onClose={onClose}>
       {/* 内側コンテナ：デスクトップでは max-h で高さ制限し列ごとにスクロール */}
       <div className="flex flex-col md:max-h-[90vh] md:overflow-hidden">
 
@@ -509,7 +505,7 @@ export function SourceDocumentsPanel({
                       className="nc-btn"
                       type="button"
                       disabled={isDeleting}
-                      onClick={() => void handleDelete()}
+                      onClick={() => setDeleteConfirmOpen(true)}
                     >
                       {isDeleting ? t(Msg.admin.documents.deleting) : t(Msg.admin.documents.delete)}
                     </button>
@@ -554,6 +550,7 @@ export function SourceDocumentsPanel({
           </div>
         </div>
       </div>
-    </dialog>
+      </Modal>
+    </>
   );
 }

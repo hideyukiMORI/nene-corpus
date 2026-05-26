@@ -5,6 +5,7 @@ export const zhHans = defineMessages({
   'common.signOut': '退出登录',
   'common.genericError': '出现问题。',
   'common.showHelp': '帮助',
+  'common.cancel': '取消',
   'locale.en': '英语',
   'locale.ja': '日语',
   'locale.fr': '法语',

@@ -5,6 +5,7 @@ export const ptBr = defineMessages({
   'common.signOut': 'Sair',
   'common.genericError': 'Algo deu errado.',
   'common.showHelp': 'Ajuda',
+  'common.cancel': 'Cancelar',
   'locale.en': 'Inglês',
   'locale.ja': 'Japonês',
   'locale.fr': 'Francês',
