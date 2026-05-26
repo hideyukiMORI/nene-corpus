@@ -18,6 +18,7 @@ final readonly class AdminBearerTokenMiddleware implements MiddlewareInterface
     /** @var list<string> */
     private const PUBLIC_PATHS = [
         '/admin/auth/login',
+        '/admin/notifications/daily-report',
     ];
 
     public function __construct(
