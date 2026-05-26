@@ -72,7 +72,7 @@ export default {
   'faq.3.q': 'Is it free?',
   'faq.3.a': "NeNe Corpus itself is open source under the MIT License. Anthropic API usage costs apply separately. See Anthropic's pricing page for details.",
   'faq.4.q': 'Where is my data stored?',
-  'faq.4.a': 'All corpus data and chat history are stored in your own MySQL database on your server. Chat queries are sent to the Anthropic API for AI inference.',
+  'faq.4.a': 'All corpus data and chat history are stored in your own database on your server. Chat queries are sent to the Anthropic API for AI inference.',
   'faq.5.q': 'Does it work on shared hosting?',
   'faq.5.a': 'Yes. Any server with PHP 8.2+ and MySQL works. Deploy via FTP without SSH.',
   'faq.6.q': 'How can I improve answer accuracy?',

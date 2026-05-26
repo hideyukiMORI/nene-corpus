@@ -72,7 +72,7 @@ export default {
   'faq.3.q': '是否免费？',
   'faq.3.a': 'NeNe Corpus 本身是 MIT 许可证下的开源软件。Anthropic API 使用费用单独计算。',
   'faq.4.q': '数据存储在哪里？',
-  'faq.4.a': '所有语料库数据和聊天历史存储在您自己的 MySQL 数据库中。聊天查询会发送到 Anthropic API 进行 AI 推理。',
+  'faq.4.a': '所有语料库数据和聊天历史存储在您服务器上的数据库中。聊天查询会发送到 Anthropic API 进行 AI 推理。',
   'faq.5.q': '能在共享主机上运行吗？',
   'faq.5.a': '可以。任何支持 PHP 8.2+ 和 MySQL 的服务器均可运行。通过 FTP 部署，无需 SSH。',
   'faq.6.q': '如何提高回答准确性？',

@@ -72,7 +72,7 @@ export default {
   'faq.3.q': "Est-ce gratuit ?",
   'faq.3.a': "NeNe Corpus est open source sous licence MIT. Les coûts d'utilisation de l'API Anthropic s'appliquent séparément.",
   'faq.4.q': 'Où sont stockées mes données ?',
-  'faq.4.a': "Toutes les données du corpus et l'historique des chats sont stockés dans votre propre base de données MySQL. Les requêtes de chat sont envoyées à l'API Anthropic pour l'inférence IA.",
+  'faq.4.a': "Toutes les données du corpus et l'historique des chats sont stockés dans la base de données sur votre serveur. Les requêtes de chat sont envoyées à l'API Anthropic pour l'inférence IA.",
   'faq.5.q': "Fonctionne-t-il sur hébergement mutualisé ?",
   'faq.5.a': "Oui. Tout serveur avec PHP 8.2+ et MySQL fonctionne. Déployez par FTP sans SSH.",
   'faq.6.q': "Comment améliorer la précision des réponses ?",

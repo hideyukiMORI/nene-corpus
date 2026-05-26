@@ -72,7 +72,7 @@ export default {
   'faq.3.q': 'Ist es kostenlos?',
   'faq.3.a': 'NeNe Corpus selbst ist Open Source unter der MIT-Lizenz. Anthropic-API-Nutzungskosten fallen separat an.',
   'faq.4.q': 'Wo werden meine Daten gespeichert?',
-  'faq.4.a': 'Alle Corpus-Daten und der Chatverlauf werden in Ihrer eigenen MySQL-Datenbank gespeichert. Chat-Anfragen werden für die KI-Inferenz an die Anthropic-API gesendet.',
+  'faq.4.a': 'Alle Corpus-Daten und der Chatverlauf werden in der Datenbank auf Ihrem Server gespeichert. Chat-Anfragen werden für die KI-Inferenz an die Anthropic-API gesendet.',
   'faq.5.q': 'Funktioniert es auf Shared Hosting?',
   'faq.5.a': 'Ja. Jeder Server mit PHP 8.2+ und MySQL funktioniert. Deployment per FTP ohne SSH.',
   'faq.6.q': 'Wie kann ich die Antwortgenauigkeit verbessern?',
