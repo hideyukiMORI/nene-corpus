@@ -49,7 +49,7 @@ export function EmbedWidget({
     const container = messagesRef.current;
 
     if (container !== null) {
-      container.scrollTop = container.scrollHeight;
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
   }, [turns, isLoading]);
 
