@@ -18,6 +18,8 @@ final readonly class AdminBearerTokenMiddleware implements MiddlewareInterface
     /** @var list<string> */
     private const PUBLIC_PATHS = [
         '/admin/auth/login',
+        '/admin/auth/password-reset/request',
+        '/admin/auth/password-reset/confirm',
         '/admin/notifications/daily-report',
     ];
 

@@ -12,6 +12,7 @@ use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\AdminJwtNotConfiguredExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
+use NeneCorpus\AdminAuth\InvalidPasswordResetTokenExceptionHandler;
 use NeneCorpus\Appearance\AppearanceRouteRegistrar;
 use NeneCorpus\Appearance\AppearanceServiceProvider;
 use NeneCorpus\Chat\ChatRouteRegistrar;
@@ -146,6 +147,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                 static function (ContainerInterface $container): array {
                     $invalidCredentials = $container->get(InvalidAdminCredentialsExceptionHandler::class);
                     $adminJwtNotConfigured = $container->get(AdminJwtNotConfiguredExceptionHandler::class);
+                    $invalidPasswordResetToken = $container->get(InvalidPasswordResetTokenExceptionHandler::class);
                     $chatSessionNotFound = $container->get(ChatSessionNotFoundExceptionHandler::class);
                     $csvIngestion = $container->get(CsvIngestionExceptionHandler::class);
                     $sourceNotFound = $container->get(SourceNotFoundExceptionHandler::class);
@@ -160,6 +162,10 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
 
                     if (!$adminJwtNotConfigured instanceof DomainExceptionHandlerInterface) {
                         throw new LogicException('Admin JWT not configured exception handler service is invalid.');
+                    }
+
+                    if (!$invalidPasswordResetToken instanceof DomainExceptionHandlerInterface) {
+                        throw new LogicException('Invalid password reset token exception handler service is invalid.');
                     }
 
                     if (!$chatSessionNotFound instanceof DomainExceptionHandlerInterface) {
@@ -193,6 +199,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     return [
                         $invalidCredentials,
                         $adminJwtNotConfigured,
+                        $invalidPasswordResetToken,
                         $chatSessionNotFound,
                         $csvIngestion,
                         $sourceNotFound,

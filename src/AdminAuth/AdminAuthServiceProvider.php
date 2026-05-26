@@ -15,6 +15,7 @@ use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
+use NeneCorpus\Mail\MailerInterface;
 use Psr\Container\ContainerInterface;
 
 final readonly class AdminAuthServiceProvider implements ServiceProviderInterface
@@ -190,6 +191,103 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                AdminPasswordResetRepositoryInterface::class,
+                static function (ContainerInterface $container): AdminPasswordResetRepositoryInterface {
+                    $query = $container->get(DatabaseQueryExecutorInterface::class);
+
+                    if (!$query instanceof DatabaseQueryExecutorInterface) {
+                        throw new LogicException('Database query executor service is invalid.');
+                    }
+
+                    return new PdoAdminPasswordResetRepository($query);
+                },
+            )
+            ->set(
+                RequestPasswordResetUseCaseInterface::class,
+                static function (ContainerInterface $container): RequestPasswordResetUseCaseInterface {
+                    $users  = $container->get(AdminUserRepositoryInterface::class);
+                    $resets = $container->get(AdminPasswordResetRepositoryInterface::class);
+                    $mailer = $container->get(MailerInterface::class);
+
+                    if (!$users instanceof AdminUserRepositoryInterface) {
+                        throw new LogicException('Admin user repository service is invalid.');
+                    }
+
+                    if (!$resets instanceof AdminPasswordResetRepositoryInterface) {
+                        throw new LogicException('Admin password reset repository service is invalid.');
+                    }
+
+                    if (!$mailer instanceof MailerInterface) {
+                        throw new LogicException('Mailer service is invalid.');
+                    }
+
+                    return new RequestPasswordResetUseCase($users, $resets, $mailer);
+                },
+            )
+            ->set(
+                ConfirmPasswordResetUseCaseInterface::class,
+                static function (ContainerInterface $container): ConfirmPasswordResetUseCaseInterface {
+                    $resets = $container->get(AdminPasswordResetRepositoryInterface::class);
+                    $users  = $container->get(AdminUserRepositoryInterface::class);
+
+                    if (!$resets instanceof AdminPasswordResetRepositoryInterface) {
+                        throw new LogicException('Admin password reset repository service is invalid.');
+                    }
+
+                    if (!$users instanceof AdminUserRepositoryInterface) {
+                        throw new LogicException('Admin user repository service is invalid.');
+                    }
+
+                    return new ConfirmPasswordResetUseCase($resets, $users);
+                },
+            )
+            ->set(
+                RequestPasswordResetHandler::class,
+                static function (ContainerInterface $container): RequestPasswordResetHandler {
+                    $useCase  = $container->get(RequestPasswordResetUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof RequestPasswordResetUseCaseInterface) {
+                        throw new LogicException('Request password reset use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new RequestPasswordResetHandler($useCase, $response);
+                },
+            )
+            ->set(
+                ConfirmPasswordResetHandler::class,
+                static function (ContainerInterface $container): ConfirmPasswordResetHandler {
+                    $useCase  = $container->get(ConfirmPasswordResetUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof ConfirmPasswordResetUseCaseInterface) {
+                        throw new LogicException('Confirm password reset use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new ConfirmPasswordResetHandler($useCase, $response);
+                },
+            )
+            ->set(
+                InvalidPasswordResetTokenExceptionHandler::class,
+                static function (ContainerInterface $container): InvalidPasswordResetTokenExceptionHandler {
+                    $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
+
+                    if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
+                        throw new LogicException('Problem details response factory service is invalid.');
+                    }
+
+                    return new InvalidPasswordResetTokenExceptionHandler($problemDetails);
+                },
+            )
+            ->set(
                 self::LOGIN_RATE_LIMIT_MIDDLEWARE,
                 static function (ContainerInterface $container): AdminLoginRateLimitMiddleware {
                     $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
@@ -213,6 +311,8 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     $me             = $container->get(GetAdminMeHandler::class);
                     $changePassword = $container->get(ChangeAdminPasswordHandler::class);
                     $changeEmail    = $container->get(ChangeAdminEmailHandler::class);
+                    $requestReset   = $container->get(RequestPasswordResetHandler::class);
+                    $confirmReset   = $container->get(ConfirmPasswordResetHandler::class);
 
                     if (!$login instanceof LoginAdminHandler) {
                         throw new LogicException('Login admin handler service is invalid.');
@@ -230,7 +330,15 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Change admin email handler service is invalid.');
                     }
 
-                    return new AdminAuthRouteRegistrar($login, $me, $changePassword, $changeEmail);
+                    if (!$requestReset instanceof RequestPasswordResetHandler) {
+                        throw new LogicException('Request password reset handler service is invalid.');
+                    }
+
+                    if (!$confirmReset instanceof ConfirmPasswordResetHandler) {
+                        throw new LogicException('Confirm password reset handler service is invalid.');
+                    }
+
+                    return new AdminAuthRouteRegistrar($login, $me, $changePassword, $changeEmail, $requestReset, $confirmReset);
                 },
             )
             ->set(

@@ -359,9 +359,10 @@ function StatusBadge({ status }: { status: SourceListItem['status'] }) {
 interface LoginFormProps {
   error: string | null;
   onLogin: (email: string, password: string) => Promise<void>;
+  onForgotPassword: () => void;
 }
 
-export function LoginForm({ error, onLogin }: LoginFormProps) {
+export function LoginForm({ error, onLogin, onForgotPassword }: LoginFormProps) {
   const t = useMsg();
   const [email, setEmail] = useState('admin@example.com');
   const [password, setPassword] = useState('');
@@ -408,6 +409,13 @@ export function LoginForm({ error, onLogin }: LoginFormProps) {
         {error !== null && <p className="text-sm text-red-600">{error}</p>}
         <button className="nc-btn-primary w-full" type="submit" disabled={isSubmitting}>
           {isSubmitting ? t(Msg.admin.auth.submitting) : t(Msg.admin.auth.submit)}
+        </button>
+        <button
+          className="nc-btn w-full"
+          type="button"
+          onClick={onForgotPassword}
+        >
+          {t(Msg.admin.auth.forgotPassword)}
         </button>
       </form>
     </section>

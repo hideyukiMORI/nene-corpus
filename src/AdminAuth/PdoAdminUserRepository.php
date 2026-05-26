@@ -56,16 +56,16 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
     public function updatePassword(int $id, string $newPasswordHash): void
     {
         $this->query->execute(
-            'UPDATE admin_users SET password_hash = ?, updated_at = NOW() WHERE id = ?',
-            [$newPasswordHash, $id],
+            'UPDATE admin_users SET password_hash = ?, updated_at = ? WHERE id = ?',
+            [$newPasswordHash, gmdate('Y-m-d H:i:s'), $id],
         );
     }
 
     public function updateEmail(int $id, string $newEmail): void
     {
         $this->query->execute(
-            'UPDATE admin_users SET email = ?, updated_at = NOW() WHERE id = ?',
-            [$newEmail, $id],
+            'UPDATE admin_users SET email = ?, updated_at = ? WHERE id = ?',
+            [$newEmail, gmdate('Y-m-d H:i:s'), $id],
         );
     }
 }
