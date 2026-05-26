@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>NeNe Corpus — Guide</title>
+  <script>
+    (function () {
+      var locales = ['ja', 'en', 'de', 'fr', 'zh-hans', 'pt-br'];
+      var l = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+      var locale = 'en';
+      if (l.startsWith('ja')) locale = 'ja';
+      else if (l.startsWith('de')) locale = 'de';
+      else if (l.startsWith('fr')) locale = 'fr';
+      else if (l.startsWith('zh')) locale = 'zh-hans';
+      else if (l.startsWith('pt')) locale = 'pt-br';
+      window.location.replace(locale + '/');
+    })();
+  </script>
+</head>
+<body></body>
+</html>
