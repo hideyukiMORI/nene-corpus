@@ -46,3 +46,6 @@ jobs:
           unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/vendor/autoload.php'
           unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/public_html/admin/index.html'
           unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/public_html/widget.js'
+          unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/public_html/guide/en/index.html'
+          unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/public_html/guide/howto/en/index.html'
+          unzip -l build/release/nene-corpus-*.zip | grep -E 'nene-corpus/public_html/guide/og-image.svg'
