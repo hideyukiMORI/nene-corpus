@@ -12,7 +12,9 @@ interface DocumentRepositoryInterface
     public function findBySourceId(int $sourceId, int $limit, int $offset): array;
 
     /** @return list<DocumentSummary> */
-    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset): array;
+    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset, string $query = ''): array;
+
+    public function countBySourceId(int $sourceId, string $query = ''): int;
 
     public function save(Document $document): int;
 

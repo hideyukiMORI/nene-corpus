@@ -39,10 +39,12 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
     }
 
     /** @return list<DocumentSummary> */
-    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset): array
+    public function findSummariesBySourceId(int $sourceId, int $limit, int $offset, string $query = ''): array
     {
+        [$whereExtra, $params] = $this->buildQueryCondition($sourceId, $query);
+
         $rows = $this->query->fetchAll(
-            <<<'SQL'
+            <<<SQL
                 SELECT
                     d.id, d.source_id, d.title, d.position, d.metadata_json,
                     d.created_at, d.updated_at, d.is_deleted, d.deleted_at,
@@ -59,11 +61,11 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
                         LIMIT 1
                     ) AS first_chunk_content
                 FROM documents d
-                WHERE d.source_id = ? AND d.is_deleted = 0
+                WHERE d.source_id = ? AND d.is_deleted = 0{$whereExtra}
                 ORDER BY d.position ASC, d.id ASC
                 LIMIT ? OFFSET ?
                 SQL,
-            [$sourceId, $limit, $offset],
+            [...$params, $limit, $offset],
         );
 
         return array_map(function (array $row): DocumentSummary {
@@ -80,6 +82,18 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
                 contentPreview: $preview,
             );
         }, $rows);
+    }
+
+    public function countBySourceId(int $sourceId, string $query = ''): int
+    {
+        [$whereExtra, $params] = $this->buildQueryCondition($sourceId, $query);
+
+        $row = $this->query->fetchOne(
+            "SELECT COUNT(*) AS cnt FROM documents d WHERE d.source_id = ? AND d.is_deleted = 0{$whereExtra}",
+            $params,
+        );
+
+        return $row === null ? 0 : (int) $row['cnt'];
     }
 
     public function save(Document $document): int
@@ -152,5 +166,26 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
     private function now(): string
     {
         return gmdate('Y-m-d H:i:s');
+    }
+
+    /**
+     * Returns [whereExtra, params] for optional title LIKE filter.
+     * $params already contains $sourceId as the first element.
+     *
+     * @return array{string, list<mixed>}
+     */
+    private function buildQueryCondition(int $sourceId, string $query): array
+    {
+        $params = [$sourceId];
+        $whereExtra = '';
+
+        $q = trim($query);
+
+        if ($q !== '') {
+            $whereExtra = ' AND d.title LIKE ? ESCAPE \'!\'';
+            $params[] = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $q) . '%';
+        }
+
+        return [$whereExtra, $params];
     }
 }

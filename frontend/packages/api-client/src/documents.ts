@@ -10,8 +10,26 @@ export async function listDocuments(
   token: string,
   sourceId: number,
   apiBase = '',
+  options: { limit?: number; offset?: number; q?: string } = {},
 ): Promise<ListDocumentsResponse> {
-  return fetchJson<ListDocumentsResponse>(`${apiBase}/admin/sources/${sourceId}/documents`, {
+  const params = new URLSearchParams();
+
+  if (options.limit !== undefined) {
+    params.set('limit', String(options.limit));
+  }
+
+  if (options.offset !== undefined && options.offset > 0) {
+    params.set('offset', String(options.offset));
+  }
+
+  if (options.q !== undefined && options.q.trim() !== '') {
+    params.set('q', options.q.trim());
+  }
+
+  const qs = params.toString();
+  const url = `${apiBase}/admin/sources/${sourceId}/documents${qs ? `?${qs}` : ''}`;
+
+  return fetchJson<ListDocumentsResponse>(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
