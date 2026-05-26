@@ -5,6 +5,7 @@ export const en = defineMessages({
   'common.signOut': 'Sign out',
   'common.genericError': 'Something went wrong.',
   'common.showHelp': 'Help',
+  'common.cancel': 'Cancel',
   'locale.en': 'English',
   'locale.ja': 'Japanese',
   'locale.fr': 'French',

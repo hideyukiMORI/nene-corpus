@@ -5,6 +5,7 @@ import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { SOURCE_STATUS_MSG, SOURCE_TYPE_MSG } from './i18nLabels';
 import { SourceDocumentsPanel } from './SourceDocumentsPanel';
+import { ConfirmDialog } from './ConfirmDialog';
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
 const DEFAULT_PAGE_SIZE = 25;
@@ -23,6 +24,7 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
   const [offset, setOffset] = useState(0);
   const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(DEFAULT_PAGE_SIZE);
   const [managingSource, setManagingSource] = useState<{ id: number; name: string } | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<SourceListItem | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,16 +88,18 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
     };
   }, [load, offset, pageSize, reloadKey]);
 
-  async function handleDelete(source: SourceListItem): Promise<void> {
-    if (!window.confirm(t(Msg.admin.sources.deleteConfirm, { name: source.name }))) {
+  async function handleDeleteConfirmed(): Promise<void> {
+    if (confirmTarget === null) {
       return;
     }
 
-    setDeletingId(source.source_id);
+    const target = confirmTarget;
+    setDeletingId(target.source_id);
+    setConfirmTarget(null);
     setDeleteError(null);
 
     try {
-      await deleteSource(token, source.source_id, adminApiBase);
+      await deleteSource(token, target.source_id, adminApiBase);
       onDocumentsChanged?.();
       // 現在ページの件数が 1 件だった場合は前のページに戻る
       if (sources.length === 1 && offset > 0) {
@@ -214,7 +218,7 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
                         className="nc-btn text-xs text-red-600 hover:bg-red-50 disabled:opacity-40 dark:hover:bg-red-950/30"
                         type="button"
                         disabled={deletingId === source.source_id}
-                        onClick={() => void handleDelete(source)}
+                        onClick={() => setConfirmTarget(source)}
                       >
                         {deletingId === source.source_id
                           ? t(Msg.admin.sources.deleting)
@@ -311,6 +315,17 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
             </div>
           )}
         </>
+      )}
+      {confirmTarget !== null && (
+        <ConfirmDialog
+          title={t(Msg.admin.sources.delete)}
+          description={t(Msg.admin.sources.deleteConfirm, { name: confirmTarget.name })}
+          confirmLabel={t(Msg.admin.sources.delete)}
+          variant="danger"
+          isConfirming={deletingId === confirmTarget.source_id}
+          onConfirm={() => void handleDeleteConfirmed()}
+          onClose={() => setConfirmTarget(null)}
+        />
       )}
       {managingSource !== null && (
         <SourceDocumentsPanel

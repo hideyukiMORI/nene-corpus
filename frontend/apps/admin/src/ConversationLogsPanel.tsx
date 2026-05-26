@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   listChatSessionMessages,
   listChatSessions,
@@ -10,6 +10,7 @@ import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
 import { HelpLabel } from './HelpLabel';
 import { ROLE_MSG } from './i18nLabels';
 import { formatClientIp, hasSessionMetadata } from './conversationLogsFormat';
+import { Modal } from './Modal';
 
 // ───────────────────────────────────────────────
 // サマリーコンポーネント（ページ埋め込み用・最新 8 件）
@@ -163,8 +164,6 @@ interface ConversationLogsPanelProps {
 export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelProps) {
   const t = useMsg();
   const { locale } = useLocale();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
   // --- セッション一覧ステート ---
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
   const [total, setTotal] = useState(0);
@@ -192,11 +191,6 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
   useEffect(() => {
     setPageInput(String(currentPage));
   }, [currentPage]);
-
-  // モーダルをマウント時に開く
-  useEffect(() => {
-    dialogRef.current?.showModal();
-  }, []);
 
   const loadSessions = useCallback(
     async (currentOffset: number, currentPageSize: number, signal?: AbortSignal): Promise<void> => {
@@ -309,17 +303,7 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
   }
 
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel
-    <dialog
-      ref={dialogRef}
-      className="m-auto w-full max-w-6xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
-      onCancel={onClose}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
+    <Modal size="xl" onClose={onClose}>
       {/* 内側コンテナ：デスクトップでは max-h で高さ制限し列ごとにスクロール */}
       <div className="flex flex-col md:max-h-[90vh] md:overflow-hidden">
 
@@ -586,6 +570,6 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
           </div>
         </div>
       </div>
-    </dialog>
+    </Modal>
   );
 }

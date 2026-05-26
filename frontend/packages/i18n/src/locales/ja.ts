@@ -5,6 +5,7 @@ export const ja = defineMessages({
   'common.signOut': 'サインアウト',
   'common.genericError': '問題が発生しました。',
   'common.showHelp': 'ヘルプ',
+  'common.cancel': 'キャンセル',
   'locale.en': '英語',
   'locale.ja': '日本語',
   'locale.fr': 'フランス語',

@@ -7,6 +7,7 @@ export const Msg = {
     signOut: 'common.signOut',
     genericError: 'common.genericError',
     showHelp: 'common.showHelp',
+    cancel: 'common.cancel',
   },
   locale: {
     en: 'locale.en',
