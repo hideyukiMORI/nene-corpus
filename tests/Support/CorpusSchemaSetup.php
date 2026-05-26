@@ -85,6 +85,24 @@ final class CorpusSchemaSetup
         $executor->execute('CREATE UNIQUE INDEX uniq_admin_users_email ON admin_users (email)');
     }
 
+    public static function createAdminPasswordResets(PdoDatabaseQueryExecutor $executor): void
+    {
+        $executor->execute(
+            <<<'SQL'
+                CREATE TABLE admin_password_resets (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    token_hash TEXT NOT NULL,
+                    admin_user_id INTEGER NOT NULL,
+                    expires_at TEXT NOT NULL,
+                    used_at TEXT NULL,
+                    created_at TEXT NOT NULL
+                )
+                SQL,
+        );
+
+        $executor->execute('CREATE UNIQUE INDEX uniq_admin_password_resets_token_hash ON admin_password_resets (token_hash)');
+    }
+
     public static function createChatSettings(PdoDatabaseQueryExecutor $executor): void
     {
         $executor->execute(

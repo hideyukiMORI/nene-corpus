@@ -13,6 +13,9 @@ import { ThemeToggle } from './ThemeToggle';
 import { scrollToHelp } from './scrollToHelp';
 import { useAdminAuth } from './useAdminAuth';
 import { adminApiBase } from './config';
+import { PasswordResetRequestForm, PasswordResetConfirmForm } from './PasswordResetForms';
+
+type AuthView = 'login' | 'reset-request' | 'reset-confirm';
 
 export function App() {
   const t = useMsg();
@@ -20,6 +23,12 @@ export function App() {
   const { token, profile, isReady, error, login, logout } = useAdminAuth();
   const [sourcesReloadKey, setSourcesReloadKey] = useState(0);
   const [logsOpen, setLogsOpen] = useState(false);
+
+  const [authView, setAuthView] = useState<AuthView>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.has('reset_token') ? 'reset-confirm' : 'login';
+  });
+  const resetToken = new URLSearchParams(window.location.search).get('reset_token') ?? '';
 
   // LLM 設定済みフラグ（null = ロード中 / 未チェック）
   const [isLlmConfigured, setIsLlmConfigured] = useState<boolean | null>(null);
@@ -91,7 +100,27 @@ export function App() {
       <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">
         {token === null ? (
           <>
-            <LoginForm error={error} onLogin={login} />
+            {authView === 'reset-request' && (
+              <PasswordResetRequestForm onBack={() => setAuthView('login')} />
+            )}
+            {authView === 'reset-confirm' && (
+              <PasswordResetConfirmForm
+                rawToken={resetToken}
+                onBack={() => {
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete('reset_token');
+                  window.history.replaceState({}, '', url.toString());
+                  setAuthView('login');
+                }}
+              />
+            )}
+            {authView === 'login' && (
+              <LoginForm
+                error={error}
+                onLogin={login}
+                onForgotPassword={() => setAuthView('reset-request')}
+              />
+            )}
             <HelpPanel />
           </>
         ) : (

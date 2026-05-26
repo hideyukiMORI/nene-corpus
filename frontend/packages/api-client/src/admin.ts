@@ -19,6 +19,26 @@ export async function loginAdmin(
   });
 }
 
+export async function requestPasswordReset(email: string, apiBase = ''): Promise<void> {
+  await fetchJson<void>(`${apiBase}/admin/auth/password-reset/request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function confirmPasswordReset(
+  token: string,
+  password: string,
+  apiBase = '',
+): Promise<void> {
+  await fetchJson<void>(`${apiBase}/admin/auth/password-reset/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password }),
+  });
+}
+
 export async function getAdminMe(token: string, apiBase = ''): Promise<AdminMeResponse> {
   return fetchJson<AdminMeResponse>(`${apiBase}/admin/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
