@@ -76,6 +76,7 @@ export const ja = defineMessages({
   'admin.documents.pageInfo': '{total} 件中 {from}–{to}',
   'admin.documents.pagePrev': '前へ',
   'admin.documents.pageNext': '次へ',
+  'admin.documents.selectDocument': 'リストからドキュメントを選択して編集します。',
   'admin.ingestion.title': 'ソースをアップロード',
   'admin.ingestion.subtitle': 'CSV・PDF・テキストをコーパスに追加します。',
   'admin.ingestion.sourceName': 'ソース名',

@@ -76,6 +76,7 @@ export const fr = defineMessages({
   'admin.documents.pageInfo': '{from}–{to} sur {total}',
   'admin.documents.pagePrev': 'Précédent',
   'admin.documents.pageNext': 'Suivant',
+  'admin.documents.selectDocument': 'Sélectionnez un document dans la liste pour le modifier.',
   'admin.ingestion.title': 'Téléverser une source',
   'admin.ingestion.subtitle': 'Ajoutez des fichiers CSV, PDF ou du texte collé au corpus.',
   'admin.ingestion.sourceName': 'Nom de la source',
