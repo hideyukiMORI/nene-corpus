@@ -60,6 +60,8 @@ interface ChatLimitsPanelProps {
   token: string;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** モーダル内など、アコーディオンヘッダーが不要な場合に true を渡す */
+  hideHeader?: boolean;
 }
 
 type DraftFields = {
@@ -86,7 +88,7 @@ function toDraft(v: LimitsFields): DraftFields {
   };
 }
 
-export function ChatLimitsPanel({ token, isOpen: isOpenProp, onOpenChange }: ChatLimitsPanelProps) {
+export function ChatLimitsPanel({ token, isOpen: isOpenProp, onOpenChange, hideHeader = false }: ChatLimitsPanelProps) {
   const t = useMsg();
   const [isOpenInternal, setIsOpenInternal] = useState(false);
   const isOpen = isOpenProp !== undefined ? isOpenProp : isOpenInternal;
@@ -180,25 +182,27 @@ export function ChatLimitsPanel({ token, isOpen: isOpenProp, onOpenChange }: Cha
 
   return (
     <section className="nc-panel">
-      {/* Accordion header */}
-      <button
-        type="button"
-        className={`flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left ${isOpen ? 'border-b border-border' : ''}`}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        <div className="min-w-0">
-          <h2 className="font-medium">{t(Msg.admin.chatLimits.title)}</h2>
-          <p className="text-xs leading-normal nc-text-muted">{t(Msg.admin.chatLimits.subtitle)}</p>
-        </div>
-        <span
-          className="shrink-0 text-fg-muted transition-transform duration-200"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          aria-hidden="true"
+      {/* Accordion header（hideHeader 時は非表示） */}
+      {!hideHeader && (
+        <button
+          type="button"
+          className={`flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left ${isOpen ? 'border-b border-border' : ''}`}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen((prev) => !prev)}
         >
-          ▾
-        </span>
-      </button>
+          <div className="min-w-0">
+            <h2 className="font-medium">{t(Msg.admin.chatLimits.title)}</h2>
+            <p className="text-xs leading-normal nc-text-muted">{t(Msg.admin.chatLimits.subtitle)}</p>
+          </div>
+          <span
+            className="shrink-0 text-fg-muted transition-transform duration-200"
+            style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            aria-hidden="true"
+          >
+            ▾
+          </span>
+        </button>
+      )}
 
       {/* Accordion body */}
       {isOpen && (

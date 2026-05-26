@@ -56,11 +56,11 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
   return (
     <dialog
       ref={dialogRef}
-      className="m-0 h-screen max-h-none w-screen max-w-none overflow-hidden bg-transparent p-0 backdrop:bg-black/50"
+      className="m-0 h-screen max-h-none w-screen max-w-none overflow-hidden border-0 bg-surface p-0 text-fg backdrop:bg-black/70"
       onClick={handleDialogClick}
     >
       {/* モーダル本体 */}
-      <div className="flex h-full flex-col bg-bg text-fg sm:flex-row">
+      <div className="flex h-full flex-col sm:flex-row">
         {/* ── サイドナビ ── */}
         <nav className="shrink-0 border-b border-border sm:w-48 sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:border-b-0 sm:pb-2 sm:pt-6">
@@ -112,6 +112,7 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
               <LlmSettingsPanel
                 token={token}
                 isOpen={true}
+                hideHeader={true}
                 onOpenChange={() => { /* モーダル内では常に展開 */ }}
                 onConfiguredChange={onLlmConfiguredChange}
               />
@@ -123,6 +124,7 @@ export function SettingsModal({ token, initialSection = 'llm', onClose, onLlmCon
               <ChatLimitsPanel
                 token={token}
                 isOpen={true}
+                hideHeader={true}
                 onOpenChange={() => { /* モーダル内では常に展開 */ }}
               />
             )}

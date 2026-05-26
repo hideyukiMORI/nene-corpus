@@ -11,9 +11,11 @@ interface LlmSettingsPanelProps {
   onOpenChange?: (open: boolean) => void;
   /** API キー設定済み状態が変化したときに通知する */
   onConfiguredChange?: (configured: boolean) => void;
+  /** モーダル内など、アコーディオンヘッダーが不要な場合に true を渡す */
+  hideHeader?: boolean;
 }
 
-export function LlmSettingsPanel({ token, isOpen: isOpenProp, onOpenChange, onConfiguredChange }: LlmSettingsPanelProps) {
+export function LlmSettingsPanel({ token, isOpen: isOpenProp, onOpenChange, onConfiguredChange, hideHeader = false }: LlmSettingsPanelProps) {
   const t = useMsg();
   const [isOpenInternal, setIsOpenInternal] = useState(false);
   const isOpen = isOpenProp !== undefined ? isOpenProp : isOpenInternal;
@@ -138,25 +140,27 @@ export function LlmSettingsPanel({ token, isOpen: isOpenProp, onOpenChange, onCo
 
   return (
     <section className="nc-panel">
-      {/* アコーディオンヘッダー */}
-      <button
-        type="button"
-        className={`flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left ${isOpen ? 'border-b border-border' : ''}`}
-        aria-expanded={isOpen}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        <div className="min-w-0">
-          <h2 className="font-medium">{t(Msg.admin.llm.title)}</h2>
-          <p>{t(Msg.admin.llm.subtitle)}</p>
-        </div>
-        <span
-          className="shrink-0 text-fg-muted transition-transform duration-200"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          aria-hidden="true"
+      {/* アコーディオンヘッダー（hideHeader 時は非表示） */}
+      {!hideHeader && (
+        <button
+          type="button"
+          className={`flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left ${isOpen ? 'border-b border-border' : ''}`}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen((prev) => !prev)}
         >
-          ▾
-        </span>
-      </button>
+          <div className="min-w-0">
+            <h2 className="font-medium">{t(Msg.admin.llm.title)}</h2>
+            <p>{t(Msg.admin.llm.subtitle)}</p>
+          </div>
+          <span
+            className="shrink-0 text-fg-muted transition-transform duration-200"
+            style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            aria-hidden="true"
+          >
+            ▾
+          </span>
+        </button>
+      )}
 
       {/* アコーディオンボディ */}
       {isOpen && (
