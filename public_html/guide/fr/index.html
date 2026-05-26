@@ -20,6 +20,7 @@
       }
     })();
   </script>
+  <!-- Tailwind Play CDN v3: CDN を先に読み込み、その後 tailwind.config を設定する -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     /* Tailwind Play CDN v3: tailwind.config は CDN 読み込み後に設定する */
@@ -303,6 +304,7 @@
 
         <!-- ベントーグリッド -->
         <div class="flex flex-col gap-4 lg:gap-5">
+        <!-- 上段: 3等分 -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-5">
 
           <!-- カード 01: コーパス構築 -->
@@ -325,7 +327,7 @@
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Téléchargez des PDF, CSV ou collez du texte. Découpé en morceaux, indexé et stocké automatiquement. Gérez plusieurs sources en un seul endroit.</p>
           </div>
 
-          <!-- 縦カード: 引用チャット -->
+          <!-- カード 02: 引用チャット -->
           <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="14" y="22" width="128" height="64" rx="20" fill="#4d8f7f"/>
@@ -344,7 +346,7 @@
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Claude AI recherche dans votre corpus et répond avec les numéros de page, minimisant les hallucinations.</p>
           </div>
 
-          <!-- 縦カード: 1行埋め込み -->
+          <!-- カード 03: 1行埋め込み -->
           <div class="bento-card card-brand p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="10" y="18" width="180" height="138" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
@@ -370,7 +372,7 @@
           </div>
 
         </div>
-        <!-- 下段: 2 等分コンパクトカード -->
+        <!-- 下段: 2等分コンパクトカード -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
           <div class="bento-card p-5 sm:p-6 flex items-center gap-4">
             <div class="text-3xl shrink-0">🌐</div>
@@ -786,7 +788,7 @@
           <span class="w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-black" style="background:#4d8f7f">N</span>
           <span class="text-white font-bold">NeNe Corpus</span>
         </div>
-        <p class="text-gray-500">Powered by <a href="https://nene2.dev" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">NENE2</a> · © <a href="https://ayane.co.jp" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">AYANE</a> Tous droits réservés.</p>
+        <p class="text-gray-500">Powered by <a href="https://nene2.dev" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">NENE2</a> · © <a href="https://ayane.co.jp" target="_blank" rel="noopener" class="hover:text-gray-300 transition-colors">AYANE</a> All rights reserved.</p>
       </div>
       <div class="flex flex-wrap items-center gap-4">
         <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="flex items-center gap-1.5 hover:text-white transition-colors">
