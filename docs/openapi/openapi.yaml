@@ -198,6 +198,53 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/settings/chat:
+    get:
+      tags:
+        - Admin
+      summary: Get chat settings
+      description: Returns the current custom system prompt and fallback message, plus the built-in defaults.
+      operationId: getChatSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current chat settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Admin
+      summary: Update chat settings
+      description: Saves a custom system prompt and/or fallback message. Pass null to reset to the built-in default.
+      operationId: updateChatSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatSettingsRequest'
+      responses:
+        '200':
+          description: Updated chat settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/settings/llm/test:
     post:
       tags:
@@ -1479,6 +1526,45 @@ components:
           type: integer
           minimum: 1
           maximum: 8192
+    ChatSettingsResponse:
+      type: object
+      required:
+        - system_prompt
+        - fallback_message
+        - default_system_prompt
+        - default_fallback_message
+      properties:
+        system_prompt:
+          type:
+            - string
+            - 'null'
+          description: Custom system prompt, or null if using the default.
+        fallback_message:
+          type:
+            - string
+            - 'null'
+          description: Custom fallback message instruction, or null if using the default.
+        default_system_prompt:
+          type: string
+          description: The built-in default system prompt used when system_prompt is null.
+        default_fallback_message:
+          type: string
+          description: The built-in default fallback message used when fallback_message is null.
+    UpdateChatSettingsRequest:
+      type: object
+      properties:
+        system_prompt:
+          type:
+            - string
+            - 'null'
+          maxLength: 4000
+          description: Custom system prompt. Pass null or empty string to reset to default.
+        fallback_message:
+          type:
+            - string
+            - 'null'
+          maxLength: 500
+          description: Fallback message instruction. Pass null or empty string to reset to default.
     UpdateLlmSettingsRequest:
       type: object
       properties:

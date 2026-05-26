@@ -267,3 +267,16 @@ export interface TestLlmConnectionRequest {
   api_key?: string | null;
   model?: string;
 }
+
+export interface ChatSettingsResponse {
+  system_prompt: string | null;
+  fallback_message: string | null;
+  default_system_prompt: string;
+  default_fallback_message: string;
+}
+
+export interface UpdateChatSettingsRequest {
+  system_prompt?: string | null;
+  fallback_message?: string | null;
+}
+

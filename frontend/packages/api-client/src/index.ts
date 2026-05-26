@@ -9,6 +9,7 @@ export {
   buildWidgetPreviewSearchParams,
 } from './appearance';
 export { getLlmSettings, updateLlmSettings, testLlmConnection } from './llm-settings';
+export { getChatSettings, updateChatSettings } from './chat-settings';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
@@ -52,4 +53,6 @@ export type {
   LlmSettingsResponse,
   UpdateLlmSettingsRequest,
   TestLlmConnectionRequest,
+  ChatSettingsResponse,
+  UpdateChatSettingsRequest,
 } from './types';

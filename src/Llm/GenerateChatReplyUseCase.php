@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Llm;
 
+use NeneCorpus\ChatSettings\ChatSettingsRepositoryInterface;
 use RuntimeException;
 
 final readonly class GenerateChatReplyUseCase implements GenerateChatReplyUseCaseInterface
 {
     private const MAX_TOOL_ROUNDS = 3;
 
-    private const SYSTEM_PROMPT = <<<'PROMPT'
-        You are a helpful assistant for a company website knowledge chat.
-        Use the search_corpus tool to find relevant passages before answering.
-        Ground every answer in retrieved corpus chunks. If search returns no relevant results, say you do not know.
-        Do not invent product facts or policies that are not supported by search results.
-        PROMPT;
+    public const DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant for a company website knowledge chat.\nUse the search_corpus tool to find relevant passages before answering.\nGround every answer in retrieved corpus chunks.\nDo not invent product facts or policies that are not supported by search results.";
+
+    public const DEFAULT_FALLBACK_MESSAGE = 'I do not have information about that in my knowledge base.';
 
     public function __construct(
         private ClaudeMessagesClientInterface $client,
         private CorpusSearchToolHandler $searchTool,
+        private ChatSettingsRepositoryInterface $chatSettings,
     ) {
     }
 
     public function execute(GenerateChatReplyInput $input): GenerateChatReplyOutput
     {
+        $settings = $this->chatSettings->get();
+        $systemPrompt = $this->buildSystemPrompt($settings->systemPrompt, $settings->fallbackMessage);
         $messages = $this->toAnthropicMessages($input->history, $input->userMessage);
         $tools = [CorpusSearchToolDefinition::schema()];
         $citations = [];
 
         for ($round = 0; $round < self::MAX_TOOL_ROUNDS; ++$round) {
-            $response = $this->client->createMessage(self::SYSTEM_PROMPT, $messages, $tools);
+            $response = $this->client->createMessage($systemPrompt, $messages, $tools);
 
             if ($response->stopReason !== 'tool_use') {
                 $text = $response->text();
@@ -107,6 +108,20 @@ final readonly class GenerateChatReplyUseCase implements GenerateChatReplyUseCas
         ];
 
         return $messages;
+    }
+
+    private function buildSystemPrompt(?string $customPrompt, ?string $fallbackMessage): string
+    {
+        $prompt = $customPrompt !== null && trim($customPrompt) !== ''
+            ? trim($customPrompt)
+            : self::DEFAULT_SYSTEM_PROMPT;
+
+        if ($fallbackMessage !== null && trim($fallbackMessage) !== '') {
+            $prompt .= "\nWhen you cannot find relevant information in the corpus, respond with exactly: "
+                . json_encode(trim($fallbackMessage), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
+        return $prompt;
     }
 
     /**

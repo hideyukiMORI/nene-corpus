@@ -42,5 +42,17 @@ final class ChatSchemaSetup
         );
 
         $executor->execute('CREATE INDEX idx_chat_messages_session_id ON chat_messages (session_id)');
+
+        $executor->execute(
+            <<<'SQL'
+                CREATE TABLE corpus_chat_settings (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    system_prompt TEXT NULL,
+                    fallback_message TEXT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                SQL,
+        );
     }
 }
