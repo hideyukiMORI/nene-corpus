@@ -29,7 +29,7 @@ export default defineConfig({
     exclude: ['@nene-corpus/api-client', '@nene-corpus/i18n', '@nene-corpus/tokens'],
   },
   server: {
-    port: 5173,
+    port: 5273,
     strictPort: true,
     watch: {
       ignored: ['**/node_modules/**', '!**/packages/**'],
