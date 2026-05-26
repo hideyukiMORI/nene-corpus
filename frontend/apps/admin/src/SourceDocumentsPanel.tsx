@@ -211,7 +211,7 @@ export function SourceDocumentsPanel({
                   type="button"
                   onClick={() => void loadDocumentDetail(document.document_id)}
                 >
-                  <div className="font-medium text-fg">{document.title}</div>
+                  <div className="font-medium text-fg break-words">{document.title}</div>
                   <div className="mt-1 line-clamp-2 text-xs nc-text-muted">{document.content_preview}</div>
                 </button>
               </li>
