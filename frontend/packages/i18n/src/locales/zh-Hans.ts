@@ -429,6 +429,10 @@ export const zhHans = defineMessages({
   'admin.help.faq.title': '常见问题',
   'admin.help.faq.body':
     '数据会离开服务器吗？ — 语料库保存在您的数据库；仅将检索到的文本片段发送至 Claude API。\n\n可用子域名吗？ — 可以，将 document root 指向 public_html。\n\n流式响应？ — 仅同步 JSON 聊天，不支持 SSE 逐字流。\n\n更多说明 — 见发布 ZIP 中的共享主机运营文档。',
+  'admin.help.guideLink.label': '查看设置指南',
+  'admin.help.guideLink.description': '从安装到嵌入的分步说明',
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'NeNe Corpus 聊天',
   'widget.chat.emptyPrompt': '请提问有关我们产品的问题。',
   'widget.chat.loading': '正在搜索语料库…',

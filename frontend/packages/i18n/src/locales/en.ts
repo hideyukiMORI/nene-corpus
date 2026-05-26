@@ -435,6 +435,10 @@ export const en = defineMessages({
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Does data leave my server? — Your corpus stays in your database. Only retrieved text chunks are sent to the Claude API when visitors ask questions.\n\nCan I use a subdomain? — Yes. Point the subdomain document root at public_html and set the embed base path accordingly.\n\nStreaming responses? — NeNe Corpus uses sync JSON chat (loading indicator in the widget), not SSE token streaming.\n\nMore detail — see shared-hosting operator docs shipped with the release ZIP.',
+  'admin.help.guideLink.label': 'View Setup Guide',
+  'admin.help.guideLink.description': 'Step-by-step instructions from installation to embedding',
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'NeNe Corpus chat',
   'widget.chat.emptyPrompt': 'Ask a question about our products.',
   'widget.chat.loading': 'Searching the corpus…',

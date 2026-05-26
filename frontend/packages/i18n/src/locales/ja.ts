@@ -434,6 +434,10 @@ export const ja = defineMessages({
   'admin.help.faq.title': 'よくある質問',
   'admin.help.faq.body':
     'データは外部に出る？ — コーパスは自社 DB に保存。質問時に検索でヒットしたテキスト断片のみ Claude API に送られます。\n\nサブドメインは使える？ — 可能です。サブドメインの document root を public_html に向け、embed のベースパスを合わせてください。\n\nストリーミング応答は？ — sync JSON チャット（ローディング表示）のみ。SSE の逐次表示は非対応です。\n\n詳細 — リリース ZIP 同梱の shared-hosting 運用ドキュメントを参照。',
+  'admin.help.guideLink.label': 'セットアップガイドを見る',
+  'admin.help.guideLink.description': 'インストールから埋め込みまでの手順を確認できます',
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'NeNe Corpus チャット',
   'widget.chat.emptyPrompt': '商品やサービスについて質問してみてください。',
   'widget.chat.loading': '資料を検索しています…',

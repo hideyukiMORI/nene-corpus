@@ -435,6 +435,10 @@ export const ptBr = defineMessages({
   'admin.help.faq.title': 'FAQ',
   'admin.help.faq.body':
     'Os dados saem do meu servidor? — O corpus fica no seu banco. Apenas trechos relevantes vão à API Claude.\n\nSubdomínio? — Sim, aponte o document root para public_html.\n\nStreaming? — Apenas chat JSON síncrono, sem SSE.\n\nMais detalhes — docs de shared hosting no ZIP de release.',
+  'admin.help.guideLink.label': 'Ver guia de configuração',
+  'admin.help.guideLink.description': 'Instruções passo a passo da instalação à incorporação',
+  'admin.footer.poweredBy': 'Powered by',
+  'admin.footer.copyright': '© AYANE All rights reserved.',
   'widget.chat.panelLabel': 'Chat NeNe Corpus',
   'widget.chat.emptyPrompt': 'Faça uma pergunta sobre nossos produtos.',
   'widget.chat.loading': 'Pesquisando no corpus…',

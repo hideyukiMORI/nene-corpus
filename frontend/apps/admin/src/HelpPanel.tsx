@@ -1,8 +1,23 @@
-import { Msg, resolveMsgKey, useMsg } from '@nene-corpus/i18n';
+import { Msg, resolveMsgKey, useLocale, useMsg } from '@nene-corpus/i18n';
 import { ADMIN_HELP_SECTIONS } from './helpSections';
+
+/** ロケール → ガイド URL のマッピング */
+const GUIDE_URL_MAP: Record<string, string> = {
+  ja: '/guide/ja/',
+  en: '/guide/en/',
+  de: '/guide/de/',
+  fr: '/guide/fr/',
+  'pt-BR': '/guide/pt-br/',
+  'zh-Hans': '/guide/zh-hans/',
+};
+
+function guideUrl(locale: string): string {
+  return GUIDE_URL_MAP[locale] ?? '/guide/en/';
+}
 
 export function HelpPanel() {
   const t = useMsg();
+  const { locale } = useLocale();
 
   return (
     <section id="admin-help" className="nc-panel scroll-mt-24">
@@ -11,6 +26,26 @@ export function HelpPanel() {
         <p>{t(resolveMsgKey(Msg.admin.help?.subtitle, 'admin.help.subtitle'))}</p>
       </div>
       <div className="space-y-3 px-4 py-4">
+        {/* ガイドリンクカード */}
+        <a
+          href={guideUrl(locale)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between rounded-admin border border-brand/40 bg-brand/10 px-4 py-3 text-sm font-medium text-brand transition-colors hover:bg-brand/20"
+        >
+          <span className="flex items-center gap-2">
+            <span aria-hidden>📖</span>
+            <span>
+              {t(resolveMsgKey(Msg.admin.help?.guideLink?.label, 'admin.help.guideLink.label'))}
+            </span>
+          </span>
+          <span aria-hidden className="text-xs opacity-70">→</span>
+        </a>
+        <p className="px-1 text-xs nc-text-muted">
+          {t(resolveMsgKey(Msg.admin.help?.guideLink?.description, 'admin.help.guideLink.description'))}
+        </p>
+
+        {/* アコーディオン */}
         {ADMIN_HELP_SECTIONS.map((section) => (
           <details
             key={section.titleKey}
