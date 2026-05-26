@@ -18,4 +18,11 @@ interface ChatSessionRepositoryInterface
     public function findAllSummaries(int $limit, int $offset): array;
 
     public function countAll(): int;
+
+    /**
+     * Deletes sessions (and their messages via CASCADE) created more than $days days ago.
+     *
+     * @return int Number of deleted sessions.
+     */
+    public function deleteOlderThan(int $days): int;
 }

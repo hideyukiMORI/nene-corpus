@@ -60,6 +60,12 @@ export const Msg = {
       loginFailed: 'admin.auth.loginFailed',
       forgotPassword: 'admin.auth.forgotPassword',
     },
+    sessionCleanup: {
+      button: 'admin.sessionCleanup.button',
+      running: 'admin.sessionCleanup.running',
+      success: 'admin.sessionCleanup.success',
+      error: 'admin.sessionCleanup.error',
+    },
     passwordReset: {
       requestTitle: 'admin.passwordReset.requestTitle',
       requestSubtitle: 'admin.passwordReset.requestSubtitle',
