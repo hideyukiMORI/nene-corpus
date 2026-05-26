@@ -11,7 +11,8 @@ import {
 import { Msg, useMsg, type MessageParams, type MsgKey } from '@nene-corpus/i18n';
 import { adminApiBase } from './config';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
+const DEFAULT_PAGE_SIZE = 50;
 
 interface SourceDocumentsPanelProps {
   token: string;
@@ -59,6 +60,7 @@ export function SourceDocumentsPanel({
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
+  const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(DEFAULT_PAGE_SIZE);
   const [searchQuery, setSearchQuery] = useState('');
   const [draftQuery, setDraftQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -76,19 +78,32 @@ export function SourceDocumentsPanel({
   const [editError, setEditError] = useState<string | null>(null);
   const [editSuccess, setEditSuccess] = useState<string | null>(null);
 
+  // ページネーション派生値
+  const currentPage = total === 0 ? 1 : Math.floor(offset / pageSize) + 1;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const from = total === 0 ? 0 : offset + 1;
+  const to = Math.min(offset + pageSize, total);
+  const hasPrev = offset > 0;
+  const hasNext = offset + pageSize < total;
+
   // モーダルをマウント時に開く
   useEffect(() => {
     dialogRef.current?.showModal();
   }, []);
 
   const loadDocuments = useCallback(
-    async (currentOffset: number, currentQuery: string, signal?: AbortSignal): Promise<void> => {
+    async (
+      currentOffset: number,
+      currentQuery: string,
+      currentPageSize: number,
+      signal?: AbortSignal,
+    ): Promise<void> => {
       setIsLoading(true);
       setListError(null);
 
       try {
         const response = await listDocuments(token, sourceId, adminApiBase, {
-          limit: PAGE_SIZE,
+          limit: currentPageSize,
           offset: currentOffset,
           q: currentQuery,
         });
@@ -114,12 +129,12 @@ export function SourceDocumentsPanel({
 
   useEffect(() => {
     const controller = new AbortController();
-    void loadDocuments(offset, searchQuery, controller.signal);
+    void loadDocuments(offset, searchQuery, pageSize, controller.signal);
 
     return () => {
       controller.abort();
     };
-  }, [loadDocuments, offset, searchQuery]);
+  }, [loadDocuments, offset, searchQuery, pageSize]);
 
   function clearSelection(): void {
     setSelectedId(null);
@@ -143,6 +158,27 @@ export function SourceDocumentsPanel({
     setOffset(0);
     setSearchQuery('');
     searchInputRef.current?.focus();
+  }
+
+  function handlePageSizeChange(newSize: (typeof PAGE_SIZE_OPTIONS)[number]): void {
+    setPageSize(newSize);
+    setOffset(0);
+    clearSelection();
+  }
+
+  function handlePageInputBlur(event: React.FocusEvent<HTMLInputElement>): void {
+    const parsed = parseInt(event.target.value, 10);
+
+    if (!isNaN(parsed)) {
+      const clamped = Math.max(1, Math.min(totalPages, parsed));
+      setOffset((clamped - 1) * pageSize);
+    }
+  }
+
+  function handlePageInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
+    if (event.key === 'Enter') {
+      event.currentTarget.blur();
+    }
   }
 
   async function loadDocumentDetail(documentId: number): Promise<void> {
@@ -191,7 +227,7 @@ export function SourceDocumentsPanel({
 
       const [response, chunkResponse] = await Promise.all([
         listDocuments(token, sourceId, adminApiBase, {
-          limit: PAGE_SIZE,
+          limit: pageSize,
           offset,
           q: searchQuery,
         }),
@@ -227,7 +263,7 @@ export function SourceDocumentsPanel({
       onChanged();
 
       const response = await listDocuments(token, sourceId, adminApiBase, {
-        limit: PAGE_SIZE,
+        limit: pageSize,
         offset,
         q: searchQuery,
       });
@@ -241,11 +277,6 @@ export function SourceDocumentsPanel({
       setIsDeleting(false);
     }
   }
-
-  const from = total === 0 ? 0 : offset + 1;
-  const to = Math.min(offset + PAGE_SIZE, total);
-  const hasPrev = offset > 0;
-  const hasNext = offset + PAGE_SIZE < total;
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel
@@ -334,25 +365,59 @@ export function SourceDocumentsPanel({
               )}
             </div>
 
-            {/* フッター：件数 + ページング */}
+            {/* フッター：件数 + 表示件数 + ページナビ */}
             {total > 0 && (
-              <div className="shrink-0 border-t border-border px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs nc-text-muted">
-                <span>{t(Msg.admin.documents.pageInfo, { from, to, total })}</span>
-                {total > PAGE_SIZE && (
-                  <div className="flex gap-1">
+              <div className="shrink-0 space-y-1.5 border-t border-border px-3 py-2">
+                {/* 行 1: 件数 + 表示件数セレクタ */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs nc-text-muted">
+                    {t(Msg.admin.documents.pageInfo, { from, to, total })}
+                  </span>
+                  <select
+                    aria-label={t(Msg.admin.documents.perPageLabel)}
+                    className="rounded-admin border border-border bg-surface py-0.5 pl-1.5 pr-6 text-xs text-fg"
+                    value={pageSize}
+                    onChange={(event) =>
+                      handlePageSizeChange(
+                        Number(event.target.value) as (typeof PAGE_SIZE_OPTIONS)[number],
+                      )
+                    }
+                  >
+                    {PAGE_SIZE_OPTIONS.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 行 2: ページナビ（複数ページの場合のみ） */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1">
                     <button
                       className="nc-btn text-xs disabled:opacity-40"
                       type="button"
                       disabled={!hasPrev}
-                      onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+                      onClick={() => setOffset(Math.max(0, offset - pageSize))}
                     >
                       {t(Msg.admin.documents.pagePrev)}
                     </button>
+                    <input
+                      key={currentPage}
+                      type="number"
+                      defaultValue={currentPage}
+                      min={1}
+                      max={totalPages}
+                      className="w-12 rounded-admin border border-border bg-surface px-1 py-0.5 text-center text-xs text-fg"
+                      onBlur={handlePageInputBlur}
+                      onKeyDown={handlePageInputKeyDown}
+                    />
+                    <span className="text-xs nc-text-muted">/ {totalPages}</span>
                     <button
                       className="nc-btn text-xs disabled:opacity-40"
                       type="button"
                       disabled={!hasNext}
-                      onClick={() => setOffset(offset + PAGE_SIZE)}
+                      onClick={() => setOffset(offset + pageSize)}
                     >
                       {t(Msg.admin.documents.pageNext)}
                     </button>
@@ -360,6 +425,7 @@ export function SourceDocumentsPanel({
                 )}
               </div>
             )}
+
             {listError !== null && (
               <p className="shrink-0 px-3 pb-3 text-sm text-red-600">{listError}</p>
             )}

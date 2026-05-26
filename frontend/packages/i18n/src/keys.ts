@@ -93,6 +93,7 @@ export const Msg = {
       pagePrev: 'admin.documents.pagePrev',
       pageNext: 'admin.documents.pageNext',
       selectDocument: 'admin.documents.selectDocument',
+      perPageLabel: 'admin.documents.perPageLabel',
     },
     ingestion: {
       title: 'admin.ingestion.title',

@@ -77,6 +77,7 @@ export const en = defineMessages({
   'admin.documents.pagePrev': 'Previous',
   'admin.documents.pageNext': 'Next',
   'admin.documents.selectDocument': 'Select a document from the list to edit.',
+  'admin.documents.perPageLabel': 'Items per page',
   'admin.ingestion.title': 'Upload source',
   'admin.ingestion.subtitle': 'Add CSV, PDF, or pasted text to the corpus.',
   'admin.ingestion.sourceName': 'Source name',

@@ -77,6 +77,7 @@ export const de = defineMessages({
   'admin.documents.pagePrev': 'Zurück',
   'admin.documents.pageNext': 'Weiter',
   'admin.documents.selectDocument': 'Wählen Sie ein Dokument aus der Liste aus, um es zu bearbeiten.',
+  'admin.documents.perPageLabel': 'Elemente pro Seite',
   'admin.ingestion.title': 'Quelle hochladen',
   'admin.ingestion.subtitle': 'CSV-, PDF-Dateien oder eingefügten Text zum Korpus hinzufügen.',
   'admin.ingestion.sourceName': 'Quellenname',
