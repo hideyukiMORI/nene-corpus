@@ -653,7 +653,7 @@ function buildPage(locale, msgs, allLocales) {
 
     <!-- ── Disclaimer ── -->
     <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="px-6 sm:px-10">
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">${t('disclaimer.title')}</p>
         <div class="text-xs text-gray-400 leading-relaxed
           [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
