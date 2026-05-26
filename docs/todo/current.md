@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26
+Last updated: 2026-05-26 (PR #207)
 
 ## 最近の docs 更新
 
@@ -15,6 +15,8 @@ Last updated: 2026-05-26
 - **チャット利用制限 Phase A (#197 / PR #198)** — LLM 設定アコーディオン化 (#195)、ConversationLogsPanel Modal 化 (#193)、chat_limits_settings テーブル・ChatLimits モジュール・Admin UI（6 設定 + 4 プリセット）を実装。
 - **チャット日次トークン制限 Phase B (#199 / PR #200)** — input/output トークン数の記録と日次トークン予算チェック（IP 別・グローバル）を実装。
 - **Admin UI レイアウト・UX 改善 (#201 / PR #202)** — パネル順序整理（AI 設定→コンテンツ→運用監視→デザイン）、AppearancePanel を bordered box 化し max_width を Layout > サイズに隣接移動（Proximity / Miller / Fitts）、6 ロケール対応。
+- **LLM 未設定アラート (#203 / PR #206)** — LlmUnconfiguredBanner コンポーネント追加、ログイン後に LLM 未設定時にアンバーアラート表示。
+- **設定モーダル Phase 1 (#204 / PR #207)** — 全画面 `<dialog>` SettingsModal 新規作成、LLM・チャット設定・利用制限をモーダルへ統合、メイン画面をログ・データ管理に特化。
 
 ## 状態サマリー
 
@@ -105,6 +107,8 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **チャット利用制限 Phase A** | ✅ #197 — 文字数・インターバル・時間別/日次リクエスト制限 + Admin UI（4 プリセット） |
 | P2 | **チャット日次トークン制限 Phase B** | ✅ #199 — input/output トークン記録・日次トークン予算（IP 別・グローバル） |
 | P2 | **Admin UI レイアウト・UX 改善** | ✅ #201 — パネル順序・AppearancePanel bordered box 化・max_width 隣接配置 |
+| P2 | **LLM 未設定アラート** | ✅ #203 — LlmUnconfiguredBanner（ログイン後 LLM 未設定時にアンバーアラート表示） |
+| P2 | **設定モーダル Phase 1** | ✅ #204 — 全画面 SettingsModal（LLM・チャット設定・利用制限を統合、メイン画面スリム化） |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
