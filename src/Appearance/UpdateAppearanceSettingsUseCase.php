@@ -35,12 +35,16 @@ final readonly class UpdateAppearanceSettingsUseCase implements UpdateAppearance
         /** @var array<string, mixed> $layoutData */
         $layoutData = is_array($body['layout'] ?? null) ? $body['layout'] : [];
 
+        $rawCustomCss = $body['custom_css'] ?? null;
+        $customCss = is_string($rawCustomCss) && trim($rawCustomCss) !== '' ? trim($rawCustomCss) : null;
+
         $settings = new AppearanceSettings(
             widgetLocale: $normalizedLocale,
             theme: WidgetTheme::fromArray($themeData),
             hero: WidgetHero::fromArray($heroData),
             chat: WidgetChat::fromArray($chatData),
             layout: WidgetLayout::fromArray($layoutData),
+            customCss: $customCss,
         );
 
         $this->repository->save($settings);

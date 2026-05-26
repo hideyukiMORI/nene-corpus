@@ -276,6 +276,8 @@ export const fr = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': 'Supprimer l\'image',
   'admin.appearance.assistantAvatarImageUploadFailed': 'Échec du téléversement de l\'image.',
   'admin.appearance.assistantAvatarImageTooLarge': 'L\'image doit faire 2 Mo ou moins.',
+  'admin.appearance.customCssTitle': 'CSS personnalisé',
+  'admin.appearance.customCssHelp': 'CSS opérateur appliqué à l\'intérieur du widget. Préfixez vos règles avec .nene-corpus-root. Interdit : url(), expression(), javascript:, balises HTML.',
   'admin.appearance.save': 'Enregistrer',
   'admin.appearance.saving': 'Enregistrement…',
   'admin.appearance.saveSuccess': 'Paramètres enregistrés.',

@@ -276,6 +276,8 @@ export const de = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': 'Bild entfernen',
   'admin.appearance.assistantAvatarImageUploadFailed': 'Bild konnte nicht hochgeladen werden.',
   'admin.appearance.assistantAvatarImageTooLarge': 'Das Bild darf höchstens 2 MB groß sein.',
+  'admin.appearance.customCssTitle': 'Benutzerdefiniertes CSS',
+  'admin.appearance.customCssHelp': 'Operator-CSS, das innerhalb des Widgets angewendet wird. Präfixieren Sie Regeln mit .nene-corpus-root. Verboten: url(), expression(), javascript:, HTML-Tags.',
   'admin.appearance.save': 'Speichern',
   'admin.appearance.saving': 'Speichern…',
   'admin.appearance.saveSuccess': 'Einstellungen gespeichert.',

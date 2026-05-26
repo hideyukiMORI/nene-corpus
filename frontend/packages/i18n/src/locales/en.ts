@@ -277,6 +277,8 @@ export const en = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': 'Remove image',
   'admin.appearance.assistantAvatarImageUploadFailed': 'Failed to upload image.',
   'admin.appearance.assistantAvatarImageTooLarge': 'Image must be 2 MB or smaller.',
+  'admin.appearance.customCssTitle': 'Custom CSS',
+  'admin.appearance.customCssHelp': 'Operator-injected CSS applied inside the widget. Scope your rules with .nene-corpus-root. Forbidden: url(), expression(), javascript:, HTML tags.',
   'admin.appearance.save': 'Save settings',
   'admin.appearance.saving': 'Saving…',
   'admin.appearance.saveSuccess': 'Appearance settings saved.',

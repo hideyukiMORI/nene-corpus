@@ -12,6 +12,7 @@ final readonly class AppearanceSettings
         public WidgetHero $hero,
         public WidgetChat $chat,
         public WidgetLayout $layout,
+        public ?string $customCss = null,
     ) {
     }
 
@@ -23,6 +24,7 @@ final readonly class AppearanceSettings
             hero: WidgetHero::defaults(),
             chat: WidgetChat::defaults(),
             layout: WidgetLayout::defaults(),
+            customCss: null,
         );
     }
 
@@ -56,7 +58,8 @@ final readonly class AppearanceSettings
      *         offset_x: int,
      *         offset_y: int,
      *         floating_launcher: bool
-     *     }
+     *     },
+     *     custom_css: string|null
      * }
      */
     public function toArray(): array
@@ -67,6 +70,7 @@ final readonly class AppearanceSettings
             'hero' => $this->hero->toArray(),
             'chat' => $this->chat->toArray(),
             'layout' => $this->layout->toArray(),
+            'custom_css' => $this->customCss,
         ];
     }
 }

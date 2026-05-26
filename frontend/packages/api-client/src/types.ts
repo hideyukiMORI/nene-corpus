@@ -246,6 +246,7 @@ export interface AppearanceSettingsResponse {
   hero: WidgetHero;
   chat: WidgetChat;
   layout: WidgetLayout;
+  custom_css: string | null;
 }
 
 export type UpdateAppearanceSettingsRequest = AppearanceSettingsResponse;

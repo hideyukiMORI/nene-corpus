@@ -89,6 +89,13 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
     chat = appearance.chat;
     layout = appearance.layout;
     configuredLocale = appearance.widget_locale;
+
+    if (appearance.custom_css !== null && appearance.custom_css !== '') {
+      const style = document.createElement('style');
+      style.setAttribute('data-nene-corpus-custom', '');
+      style.textContent = appearance.custom_css;
+      document.head.appendChild(style);
+    }
   } catch {
     // Keep defaults when appearance API is unavailable.
   }

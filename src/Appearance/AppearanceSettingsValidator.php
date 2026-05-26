@@ -85,8 +85,48 @@ final readonly class AppearanceSettingsValidator
         }
 
         $errors = [...$errors, ...$this->validateLayout($layout)];
+        $errors = [...$errors, ...$this->validateCustomCss($body)];
 
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     * @return list<ValidationError>
+     */
+    private function validateCustomCss(array $body): array
+    {
+        if (!array_key_exists('custom_css', $body)) {
+            return [];
+        }
+
+        $value = $body['custom_css'];
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (!is_string($value)) {
+            return [new ValidationError('custom_css', 'custom_css must be a string or null.', 'invalid_type')];
+        }
+
+        if (mb_strlen($value) > 4000) {
+            return [new ValidationError('custom_css', 'custom_css must not exceed 4000 characters.', 'too_long')];
+        }
+
+        $lower = strtolower($value);
+
+        foreach (['url(', 'expression(', 'javascript:', '<', '>'] as $forbidden) {
+            if (str_contains($lower, $forbidden)) {
+                return [new ValidationError(
+                    'custom_css',
+                    'custom_css must not contain forbidden patterns (url, expression, javascript:, HTML tags).',
+                    'forbidden_content',
+                )];
+            }
+        }
+
+        return [];
     }
 
     /**

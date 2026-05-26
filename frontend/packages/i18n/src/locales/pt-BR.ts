@@ -276,6 +276,8 @@ export const ptBr = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': 'Remover imagem',
   'admin.appearance.assistantAvatarImageUploadFailed': 'Falha ao enviar a imagem.',
   'admin.appearance.assistantAvatarImageTooLarge': 'A imagem deve ter no máximo 2 MB.',
+  'admin.appearance.customCssTitle': 'CSS personalizado',
+  'admin.appearance.customCssHelp': 'CSS do operador aplicado dentro do widget. Prefixe suas regras com .nene-corpus-root. Proibido: url(), expression(), javascript:, tags HTML.',
   'admin.appearance.save': 'Salvar',
   'admin.appearance.saving': 'Salvando…',
   'admin.appearance.saveSuccess': 'Configurações salvas.',

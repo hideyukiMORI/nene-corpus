@@ -276,6 +276,8 @@ export const ja = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': '画像を削除',
   'admin.appearance.assistantAvatarImageUploadFailed': '画像のアップロードに失敗しました。',
   'admin.appearance.assistantAvatarImageTooLarge': '画像は 2 MB 以下にしてください。',
+  'admin.appearance.customCssTitle': 'カスタム CSS',
+  'admin.appearance.customCssHelp': 'ウィジェット内に適用するオペレーター用 CSS です。ルールは .nene-corpus-root でスコープしてください。禁止: url()、expression()、javascript:、HTML タグ。',
   'admin.appearance.save': '保存',
   'admin.appearance.saving': '保存中…',
   'admin.appearance.saveSuccess': '設定を保存しました。',

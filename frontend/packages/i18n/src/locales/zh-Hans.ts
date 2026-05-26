@@ -270,6 +270,8 @@ export const zhHans = defineMessages({
   'admin.appearance.assistantAvatarImageRemove': '删除图片',
   'admin.appearance.assistantAvatarImageUploadFailed': '图片上传失败。',
   'admin.appearance.assistantAvatarImageTooLarge': '图片不得超过 2 MB。',
+  'admin.appearance.customCssTitle': '自定义 CSS',
+  'admin.appearance.customCssHelp': '运营商注入的 CSS，应用于 widget 内部。请使用 .nene-corpus-root 限定作用域。禁止：url()、expression()、javascript:、HTML 标签。',
   'admin.appearance.save': '保存设置',
   'admin.appearance.saving': '保存中…',
   'admin.appearance.saveSuccess': '外观设置已保存。',

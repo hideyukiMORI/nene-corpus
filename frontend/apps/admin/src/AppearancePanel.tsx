@@ -254,6 +254,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
   const [heroForm, setHeroForm] = useState<HeroFormState>(EMPTY_HERO_FORM);
   const [chatForm, setChatForm] = useState<ChatFormState>(EMPTY_CHAT_FORM);
   const [layoutForm, setLayoutForm] = useState<WidgetLayout>(DEFAULT_WIDGET_LAYOUT);
+  const [customCss, setCustomCss] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -316,6 +317,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
       assistant_avatar_alt: settings.chat.assistant_avatar_alt ?? '',
     });
     setLayoutForm(settings.layout);
+    setCustomCss(settings.custom_css ?? '');
   }
 
   function updateHeroField<K extends keyof HeroFormState>(field: K, value: HeroFormState[K]): void {
@@ -452,6 +454,7 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
         hero: heroPayload(),
         chat: chatPayload(),
         layout: layoutPayload(),
+        custom_css: customCss.trim() === '' ? null : customCss.trim(),
       }, adminApiBase);
       applySettings(saved);
       setSuccess(t(Msg.admin.appearance.saveSuccess));
@@ -932,6 +935,19 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                 value={theme.max_width}
                 onChange={(event) => updateThemeField('max_width', event.target.value)}
                 placeholder="480px"
+              />
+            </label>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm">
+              <span className="font-medium text-fg">{t(Msg.admin.appearance.customCssTitle)}</span>
+              <span className="mt-0.5 block text-xs nc-text-muted">{t(Msg.admin.appearance.customCssHelp)}</span>
+              <textarea
+                className="nc-input mt-1 min-h-32 resize-y font-mono text-xs"
+                value={customCss}
+                onChange={(event) => setCustomCss(event.target.value)}
+                placeholder=".nene-corpus-root .nene-corpus-chat__bubble--assistant { background: #f0f4ff; }"
+                spellCheck={false}
               />
             </label>
           </div>

@@ -1506,6 +1506,12 @@ components:
           $ref: '#/components/schemas/WidgetChat'
         layout:
           $ref: '#/components/schemas/WidgetLayout'
+        custom_css:
+          type:
+            - string
+            - 'null'
+          maxLength: 4000
+          description: Operator-injected CSS scoped to the widget. Forbidden patterns (url, expression, javascript:, HTML tags) are rejected.
     LlmSettingsResponse:
       type: object
       required:
@@ -1623,6 +1629,12 @@ components:
           $ref: '#/components/schemas/WidgetChat'
         layout:
           $ref: '#/components/schemas/WidgetLayout'
+        custom_css:
+          type:
+            - string
+            - 'null'
+          maxLength: 4000
+          description: Operator-injected CSS scoped to the widget. Pass null or empty string to clear.
     PreviewCsvIngestionRequest:
       type: object
       required:
