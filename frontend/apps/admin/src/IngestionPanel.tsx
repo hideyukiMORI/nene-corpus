@@ -326,7 +326,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
           <p className="nc-text-muted">
             {t(Msg.admin.ingestion.pdfPageCount, { count: pdfPreview.page_count })}
           </p>
-          <pre className="max-h-40 overflow-auto rounded-admin bg-surface-muted p-3 nc-text-muted whitespace-pre-wrap">
+          <pre className="max-h-40 overflow-auto rounded-admin bg-surface-muted p-3 nc-text-muted whitespace-pre-wrap break-words">
             {pdfPreview.sample_text.slice(0, 800)}
             {pdfPreview.sample_text.length > 800 ? '…' : ''}
           </pre>

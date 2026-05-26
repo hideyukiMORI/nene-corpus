@@ -426,8 +426,8 @@ export function SourceDocumentsPanel({
                           key={chunk.chunk_id}
                           className="rounded-admin border border-accent-border bg-surface/70 px-3 py-2"
                         >
-                          <div className="text-xs nc-text-muted">{formatChunkMeta(chunk, t)}</div>
-                          <pre className="mt-1 whitespace-pre-wrap font-mono text-xs text-fg">{chunk.content}</pre>
+                          <div className="break-words text-xs nc-text-muted">{formatChunkMeta(chunk, t)}</div>
+                          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-fg">{chunk.content}</pre>
                         </li>
                       ))}
                     </ol>
