@@ -385,18 +385,11 @@ function buildPage(locale, msgs, allLocales) {
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html { scroll-behavior:smooth; }
-    /* reveal: hidden by default, JS adds .visible; noscript fallback ensures content is always shown */
-    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
-    .reveal.visible { opacity:1; transform:none; }
-    .delay-1 { transition-delay:.1s; }
-    .delay-2 { transition-delay:.2s; }
-    .delay-3 { transition-delay:.3s; }
     details summary::-webkit-details-marker { display:none; }
     pre code { font-family:'Menlo','Monaco','Consolas',monospace; }
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
     .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
   </style>
-  <noscript><style>.reveal { opacity:1 !important; transform:none !important; }</style></noscript>
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
@@ -436,7 +429,7 @@ function buildPage(locale, msgs, allLocales) {
     <section class="pt-16 pb-12 sm:pt-24 sm:pb-16 bg-white overflow-hidden">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <!-- テキスト (hero is above the fold — no reveal needed) -->
+          <!-- テキスト (hero is above the fold — no needed) -->
           <div>
             <span class="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full text-sm font-medium border"
                   style="color:${BRAND};border-color:${BRAND_LIGHT};background:${BRAND_LIGHT}">
@@ -465,7 +458,7 @@ function buildPage(locale, msgs, allLocales) {
               ${trustBadges}
             </div>
           </div>
-          <!-- 製品モックアップ (hero is above the fold — no reveal needed) -->
+          <!-- 製品モックアップ (hero is above the fold — no needed) -->
           <div class="relative">
             <div class="absolute -inset-4 rounded-3xl opacity-20 blur-2xl" style="background:linear-gradient(135deg,${BRAND_LIGHT},${BRAND}30)"></div>
             <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
@@ -497,7 +490,7 @@ function buildPage(locale, msgs, allLocales) {
     <!-- ── Bento Features ── -->
     <section id="features" class="py-20 sm:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-14 reveal">
+        <div class="text-center mb-14">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('features.title')}</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">${t('features.subtitle')}</p>
         </div>
@@ -506,7 +499,7 @@ function buildPage(locale, msgs, allLocales) {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
 
           <!-- 大カード: コーパス構築 (col-span-2 on lg) -->
-          <div class="bento-card reveal lg:col-span-2 p-8 flex flex-col sm:flex-row items-center gap-8"
+          <div class="bento-card lg:col-span-2 p-8 flex flex-col sm:flex-row items-center gap-8"
                style="background:linear-gradient(135deg,white 60%,${BRAND_LIGHT}40)">
             <div class="shrink-0 w-44 h-44">${SVG.corpus}</div>
             <div>
@@ -517,7 +510,7 @@ function buildPage(locale, msgs, allLocales) {
           </div>
 
           <!-- 縦カード: 引用チャット -->
-          <div class="bento-card reveal delay-1 p-8 flex flex-col" style="background:${BRAND_LIGHT}60">
+          <div class="bento-card p-8 flex flex-col" style="background:${BRAND_LIGHT}60">
             <div class="w-32 h-32 mx-auto mb-4">${SVG.chat}</div>
             <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">02</span>
             <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.2.title')}</h3>
@@ -525,7 +518,7 @@ function buildPage(locale, msgs, allLocales) {
           </div>
 
           <!-- 縦カード: 1行埋め込み -->
-          <div class="bento-card reveal delay-2 p-8 flex flex-col">
+          <div class="bento-card p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4">${SVG.embed}</div>
             <span class="text-xs font-bold uppercase tracking-widest mb-2 block" style="color:${BRAND}">03</span>
             <h3 class="text-lg font-bold text-gray-900 mb-2">${t('features.3.title')}</h3>
@@ -533,7 +526,7 @@ function buildPage(locale, msgs, allLocales) {
           </div>
 
           <!-- 横長カード: 追加特徴 2 列 -->
-          <div class="bento-card reveal delay-3 sm:col-span-2 lg:col-span-2 p-8 grid sm:grid-cols-2 gap-8">
+          <div class="bento-card sm:col-span-2 lg:col-span-2 p-8 grid sm:grid-cols-2 gap-8">
             <div>
               <div class="text-3xl mb-3">🌐</div>
               <h3 class="font-bold text-gray-900 mb-2">${t('trust.4')}</h3>
@@ -553,14 +546,14 @@ function buildPage(locale, msgs, allLocales) {
     <!-- ── How It Works ── -->
     <section id="how-it-works" class="py-20 sm:py-28" style="background:#fafcfb">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-14 reveal">
+        <div class="text-center mb-14">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('howItWorks.title')}</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">${t('howItWorks.subtitle')}</p>
         </div>
-        <div class="hidden sm:flex items-start justify-between gap-3 reveal">
+        <div class="hidden sm:flex items-start justify-between gap-3">
           ${howItWorksItems.flatMap((s,i)=>i<4?[s,arrowBetween]:[s]).join('')}
         </div>
-        <div class="sm:hidden space-y-8 reveal">
+        <div class="sm:hidden space-y-8">
           ${howItWorksItems.join('')}
         </div>
       </div>
@@ -570,13 +563,13 @@ function buildPage(locale, msgs, allLocales) {
     <section id="for-admin" class="py-20 sm:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <div class="reveal">
+          <div>
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For Operators</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('forAdmin.title')}</h2>
             <p class="text-gray-400 mb-10 text-lg">${t('forAdmin.subtitle')}</p>
             ${stepTimeline('forAdmin', 4)}
           </div>
-          <div class="reveal delay-1 hidden lg:block sticky top-24">
+          <div class="hidden lg:block sticky top-24">
             <div class="rounded-3xl overflow-hidden shadow-xl border border-gray-100 p-8" style="background:${BRAND_LIGHT}30">
               <p class="text-xs font-bold uppercase tracking-widest mb-5 text-gray-400">Setup Checklist</p>
               <div class="space-y-3">
@@ -604,10 +597,10 @@ function buildPage(locale, msgs, allLocales) {
     <section id="for-user" class="py-20 sm:py-28" style="background:#fafcfb">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div class="order-2 lg:order-1 flex justify-center reveal">
+          <div class="order-2 lg:order-1 flex justify-center">
             <div class="w-64 sm:w-72 drop-shadow-2xl">${SVG.widgetMockup}</div>
           </div>
-          <div class="order-1 lg:order-2 reveal delay-1">
+          <div class="order-1 lg:order-2">
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:${BRAND}">For End Users</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('forUser.title')}</h2>
             <p class="text-gray-400 mb-10 text-lg">${t('forUser.subtitle')}</p>
@@ -624,10 +617,10 @@ function buildPage(locale, msgs, allLocales) {
     <!-- ── FAQ ── -->
     <section id="faq" class="py-20 sm:py-28 bg-white">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-10 reveal">
+        <div class="text-center mb-10">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">${t('faq.title')}</h2>
         </div>
-        <div class="space-y-2.5 reveal">
+        <div class="space-y-2.5">
           ${faqItems}
         </div>
       </div>
@@ -635,7 +628,7 @@ function buildPage(locale, msgs, allLocales) {
 
     <!-- ── CTA ── -->
     <section class="py-20 sm:py-28 text-white" style="background:${BRAND}">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center reveal">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-5 leading-tight">${t('hero.title')}</h2>
         <p class="text-lg mb-8 opacity-85">${t('hero.subtitle')}</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -657,13 +650,13 @@ function buildPage(locale, msgs, allLocales) {
     <!-- ── Disclaimer ── -->
     <section id="disclaimer" class="py-20 sm:py-24 bg-gray-50">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="mb-8 reveal">
+        <div class="mb-8">
           <div class="flex items-center gap-3 mb-1">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">${t('disclaimer.title')}</h2>
           </div>
         </div>
-        <div class="bg-white rounded-3xl border border-gray-100 p-7 sm:p-10 shadow-sm reveal">
+        <div class="bg-white rounded-3xl border border-gray-100 p-7 sm:p-10 shadow-sm">
           ${DISCLAIMER[locale.id]}
         </div>
       </div>
@@ -694,24 +687,6 @@ function buildPage(locale, msgs, allLocales) {
     </div>
   </footer>
 
-  <script>
-    (function () {
-      var els = document.querySelectorAll('.reveal');
-      if (!els.length) return;
-      if (!('IntersectionObserver' in window)) {
-        // Fallback: show all immediately
-        els.forEach(function(el){ el.classList.add('visible'); });
-        return;
-      }
-      var obs = new IntersectionObserver(
-        function(entries) {
-          entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
-        },
-        { threshold: 0.06, rootMargin: '0px 0px -16px 0px' }
-      );
-      els.forEach(function(el){ obs.observe(el); });
-    })();
-  </script>
 </body>
 </html>`;
 }

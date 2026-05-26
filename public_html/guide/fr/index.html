@@ -26,18 +26,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html { scroll-behavior:smooth; }
-    /* reveal: hidden by default, JS adds .visible; noscript fallback ensures content is always shown */
-    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
-    .reveal.visible { opacity:1; transform:none; }
-    .delay-1 { transition-delay:.1s; }
-    .delay-2 { transition-delay:.2s; }
-    .delay-3 { transition-delay:.3s; }
     details summary::-webkit-details-marker { display:none; }
     pre code { font-family:'Menlo','Monaco','Consolas',monospace; }
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
     .bento-card:hover { box-shadow:0 8px 32px -4px rgba(0,0,0,.10); transform:translateY(-2px); }
   </style>
-  <noscript><style>.reveal { opacity:1 !important; transform:none !important; }</style></noscript>
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
@@ -77,7 +70,7 @@
     <section class="pt-16 pb-12 sm:pt-24 sm:pb-16 bg-white overflow-hidden">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <!-- テキスト (hero is above the fold — no reveal needed) -->
+          <!-- テキスト (hero is above the fold — no needed) -->
           <div>
             <span class="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full text-sm font-medium border"
                   style="color:#4d8f7f;border-color:#e6f2ef;background:#e6f2ef">
@@ -122,7 +115,7 @@
     </span>
             </div>
           </div>
-          <!-- 製品モックアップ (hero is above the fold — no reveal needed) -->
+          <!-- 製品モックアップ (hero is above the fold — no needed) -->
           <div class="relative">
             <div class="absolute -inset-4 rounded-3xl opacity-20 blur-2xl" style="background:linear-gradient(135deg,#e6f2ef,#4d8f7f30)"></div>
             <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
@@ -241,7 +234,7 @@
     <!-- ── Bento Features ── -->
     <section id="features" class="py-20 sm:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-14 reveal">
+        <div class="text-center mb-14">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">Ce que vous pouvez faire</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">Trois étapes pour ajouter une IA de connaissances à votre site.</p>
         </div>
@@ -250,7 +243,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
 
           <!-- 大カード: コーパス構築 (col-span-2 on lg) -->
-          <div class="bento-card reveal lg:col-span-2 p-8 flex flex-col sm:flex-row items-center gap-8"
+          <div class="bento-card lg:col-span-2 p-8 flex flex-col sm:flex-row items-center gap-8"
                style="background:linear-gradient(135deg,white 60%,#e6f2ef40)">
             <div class="shrink-0 w-44 h-44"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="30" y="54" width="88" height="108" rx="8" fill="#e6f2ef" stroke="#4d8f7f" stroke-width="2.5"/>
@@ -273,7 +266,7 @@
           </div>
 
           <!-- 縦カード: 引用チャット -->
-          <div class="bento-card reveal delay-1 p-8 flex flex-col" style="background:#e6f2ef60">
+          <div class="bento-card p-8 flex flex-col" style="background:#e6f2ef60">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="14" y="22" width="128" height="64" rx="20" fill="#4d8f7f"/>
     <path d="M34 86 L20 108 L54 86Z" fill="#4d8f7f"/>
@@ -292,7 +285,7 @@
           </div>
 
           <!-- 縦カード: 1行埋め込み -->
-          <div class="bento-card reveal delay-2 p-8 flex flex-col">
+          <div class="bento-card p-8 flex flex-col">
             <div class="w-32 h-32 mx-auto mb-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" aria-hidden="true">
     <rect x="10" y="18" width="180" height="138" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
     <rect x="10" y="18" width="180" height="36" rx="10" fill="#e2e8f0"/>
@@ -317,7 +310,7 @@
           </div>
 
           <!-- 横長カード: 追加特徴 2 列 -->
-          <div class="bento-card reveal delay-3 sm:col-span-2 lg:col-span-2 p-8 grid sm:grid-cols-2 gap-8">
+          <div class="bento-card sm:col-span-2 lg:col-span-2 p-8 grid sm:grid-cols-2 gap-8">
             <div>
               <div class="text-3xl mb-3">🌐</div>
               <h3 class="font-bold text-gray-900 mb-2">6 langues</h3>
@@ -337,11 +330,11 @@
     <!-- ── How It Works ── -->
     <section id="how-it-works" class="py-20 sm:py-28" style="background:#fafcfb">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-14 reveal">
+        <div class="text-center mb-14">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">Comment ça marche</h2>
           <p class="text-gray-400 text-lg max-w-xl mx-auto">Du fichier à la réponse citée — entièrement automatique.</p>
         </div>
-        <div class="hidden sm:flex items-start justify-between gap-3 reveal">
+        <div class="hidden sm:flex items-start justify-between gap-3">
           
       <div class="flex flex-col items-center text-center group">
         <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0faf8">
@@ -384,7 +377,7 @@
         <p class="text-gray-500 text-xs leading-relaxed">La réponse est affichée dans le widget avec les numéros de page des sources.</p>
       </div>
         </div>
-        <div class="sm:hidden space-y-8 reveal">
+        <div class="sm:hidden space-y-8">
           
       <div class="flex flex-col items-center text-center group">
         <div class="relative w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-sm transition-transform group-hover:-translate-y-1" style="background:#f0faf8">
@@ -434,7 +427,7 @@
     <section id="for-admin" class="py-20 sm:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <div class="reveal">
+          <div>
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:#4d8f7f">For Operators</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">Démarrage (opérateurs)</h2>
             <p class="text-gray-400 mb-10 text-lg">De l'installation au widget en direct en 4 étapes — fonctionne sur hébergement mutualisé et Docker.</p>
@@ -483,7 +476,7 @@
           </div>
         </div>
           </div>
-          <div class="reveal delay-1 hidden lg:block sticky top-24">
+          <div class="hidden lg:block sticky top-24">
             <div class="rounded-3xl overflow-hidden shadow-xl border border-gray-100 p-8" style="background:#e6f2ef30">
               <p class="text-xs font-bold uppercase tracking-widest mb-5 text-gray-400">Setup Checklist</p>
               <div class="space-y-3">
@@ -519,7 +512,7 @@
     <section id="for-user" class="py-20 sm:py-28" style="background:#fafcfb">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div class="order-2 lg:order-1 flex justify-center reveal">
+          <div class="order-2 lg:order-1 flex justify-center">
             <div class="w-64 sm:w-72 drop-shadow-2xl"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 500" fill="none" aria-hidden="true">
     <!-- 外枠 -->
     <rect width="320" height="500" rx="24" fill="white" stroke="#e2e8f0" stroke-width="2"/>
@@ -570,7 +563,7 @@
     <text x="22" y="474" fill="#64748b" font-size="10" font-family="sans-serif">[3] FAQ — p.12</text>
   </svg></div>
           </div>
-          <div class="order-1 lg:order-2 reveal delay-1">
+          <div class="order-1 lg:order-2">
             <span class="text-xs font-bold uppercase tracking-widest mb-3 block" style="color:#4d8f7f">For End Users</span>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">Utiliser le widget de chat</h2>
             <p class="text-gray-400 mb-10 text-lg">Le widget est intuitif. Voici comment il fonctionne en 3 étapes.</p>
@@ -614,10 +607,10 @@
     <!-- ── FAQ ── -->
     <section id="faq" class="py-20 sm:py-28 bg-white">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-10 reveal">
+        <div class="text-center mb-10">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-950 mb-4">Questions fréquentes</h2>
         </div>
-        <div class="space-y-2.5 reveal">
+        <div class="space-y-2.5">
           
       <details class="group border border-gray-100 rounded-2xl overflow-hidden bg-white hover:border-gray-200 transition-colors shadow-sm">
         <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer font-medium text-gray-900 select-none list-none hover:bg-gray-50 transition-colors">
@@ -679,7 +672,7 @@
 
     <!-- ── CTA ── -->
     <section class="py-20 sm:py-28 text-white" style="background:#4d8f7f">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center reveal">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-5 leading-tight">Chat IA avec citations pour votre site web</h2>
         <p class="text-lg mb-8 opacity-85">Téléchargez des PDF, CSV ou du texte pour construire un corpus. Un widget de chat répond aux questions de vos visiteurs avec des références.</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -701,13 +694,13 @@
     <!-- ── Disclaimer ── -->
     <section id="disclaimer" class="py-20 sm:py-24 bg-gray-50">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="mb-8 reveal">
+        <div class="mb-8">
           <div class="flex items-center gap-3 mb-1">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Avertissement et conditions d'utilisation</h2>
           </div>
         </div>
-        <div class="bg-white rounded-3xl border border-gray-100 p-7 sm:p-10 shadow-sm reveal">
+        <div class="bg-white rounded-3xl border border-gray-100 p-7 sm:p-10 shadow-sm">
           <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
   <p class="text-base font-medium text-gray-900">Veuillez lire cet avertissement avant d'utiliser le logiciel. En l'utilisant, vous acceptez ces conditions.</p>
   <section><h3 class="font-semibold text-gray-900 mb-2">1. Absence de garantie (Licence MIT)</h3><p>NeNe Corpus est fourni sous <strong>licence MIT</strong>. LE LOGICIEL EST FOURNI <strong>« EN L'ÉTAT »</strong>, SANS GARANTIE D'AUCUNE SORTE.</p></section>
@@ -745,23 +738,5 @@
     </div>
   </footer>
 
-  <script>
-    (function () {
-      var els = document.querySelectorAll('.reveal');
-      if (!els.length) return;
-      if (!('IntersectionObserver' in window)) {
-        // Fallback: show all immediately
-        els.forEach(function(el){ el.classList.add('visible'); });
-        return;
-      }
-      var obs = new IntersectionObserver(
-        function(entries) {
-          entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
-        },
-        { threshold: 0.06, rootMargin: '0px 0px -16px 0px' }
-      );
-      els.forEach(function(el){ obs.observe(el); });
-    })();
-  </script>
 </body>
 </html>
