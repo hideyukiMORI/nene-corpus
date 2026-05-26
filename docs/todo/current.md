@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (session 2)
+Last updated: 2026-05-26 (session 3)
 
 ## 最近の docs 更新
 
@@ -10,6 +10,7 @@ Last updated: 2026-05-26 (session 2)
 - Phase 3+ バックログ追記 — オペレーター docs、テキスト取り込み、Widget UX 拡張
 - Tier A 完了 — web installer (#101)、release ZIP (#103)、shared-hosting docs (#105)
 - **CLAUDE.md 拡充 (#157)** — Cursor ルール統合・現在状態・バックログ・アーキテクチャ規約を追記（Claude Code 単独起動対応）
+- **Phase 3+ バックログ完了** — #160 #163 #165 #167 #169 をすべてマージ。未着手 Issue ゼロ。
 
 ## 状態サマリー
 
@@ -66,7 +67,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ソース表・一覧の折り返し** | ✅ #159 — `break-all min-w-0 max-w-xs` / `break-words` でソース名・ドキュメントタイトルの折り返し対応 |
 | P2 | **ドキュメント一覧ページング** | ✅ #160 — PAGE_SIZE=50 / offset 制御 / prev・next ボタン |
 | P2 | **ドキュメント検索（ソース内）** | ✅ #160 — タイトル LIKE 検索フォーム（AbortController パターン） |
-| P2 | **編集 UI をモーダル/ドロワー化** | 行展開 + 右ペインだと行数が多いとき編集フォームが画面下に出て DX が悪い。モーダルまたはサイドドロワーで一覧位置を維持 |
+| P2 | **編集 UI をモーダル/ドロワー化** | ✅ #167 — \`<dialog>\` モーダル化（backdrop/ESC 閉じ・一覧位置維持） |
 
 ### Widget / チャット UX
 
@@ -76,7 +77,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P1 | **吹き出し UI** | ✅ #133 — tail・レイアウト、`user_avatar_mode` |
 | P2 | **CSS アニメーション UX** | ✅ #165 — prefers-reduced-motion 対応追加・scrollTo 改善（typing indicator・bubble-in・smooth scroll はすでに実装済みだった） |
 | P2 | **アバター登録** | ✅ #134 — アシスタント画像アップロード |
-| P2 | **カスタム CSS** | WordPress 系向け。widget スコープ限定・サニタイズ必須 |
+| P2 | **カスタム CSS** | ✅ #169 — `custom_css` フィールド、禁止パターン検証、widget へ `<style>` 注入 |
 
 ### 会話ログ・監査
 
