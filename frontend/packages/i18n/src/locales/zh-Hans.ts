@@ -77,6 +77,7 @@ export const zhHans = defineMessages({
   'admin.documents.pagePrev': '上一页',
   'admin.documents.pageNext': '下一页',
   'admin.documents.selectDocument': '从列表中选择文档进行编辑。',
+  'admin.documents.perPageLabel': '每页条数',
   'admin.ingestion.title': '上传数据源',
   'admin.ingestion.subtitle': '将 CSV、PDF 或粘贴文本添加到语料库。',
   'admin.ingestion.sourceName': '数据源名称',
