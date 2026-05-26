@@ -6,6 +6,5 @@ namespace NeneCorpus\Session;
 
 interface ListChatSessionsUseCaseInterface
 {
-    /** @return list<ChatSessionSummary> */
-    public function execute(ListChatSessionsInput $input): array;
+    public function execute(ListChatSessionsInput $input): ListChatSessionsOutput;
 }

@@ -22,7 +22,7 @@ final readonly class ListChatSessionsHandler
         $limit = isset($query['limit']) ? (int) $query['limit'] : 50;
         $offset = isset($query['offset']) ? (int) $query['offset'] : 0;
 
-        $summaries = $this->useCase->execute(new ListChatSessionsInput(limit: $limit, offset: $offset));
+        $output = $this->useCase->execute(new ListChatSessionsInput(limit: $limit, offset: $offset));
 
         return $this->response->create([
             'sessions' => array_map(
@@ -36,8 +36,9 @@ final readonly class ListChatSessionsHandler
                     'user_agent' => $summary->session->userAgent,
                     'referer' => $summary->session->referer,
                 ],
-                $summaries,
+                $output->sessions,
             ),
+            'total' => $output->total,
         ]);
     }
 }

@@ -360,7 +360,7 @@ export function SourceDocumentsPanel({
             </form>
 
             {/* リスト */}
-            <div className="flex-1 space-y-1.5 overflow-y-auto px-3 py-2">
+            <div className="nc-scroll flex-1 space-y-1.5 overflow-y-auto px-3 py-2">
               {isLoading ? (
                 <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
               ) : documents.length === 0 ? (
@@ -474,7 +474,7 @@ export function SourceDocumentsPanel({
           </div>
 
           {/* 右カラム：編集パネル */}
-          <div className="overflow-y-auto px-5 py-4">
+          <div className="nc-scroll overflow-y-auto px-5 py-4">
             {selectedId === null ? (
               <p className="nc-text-muted text-sm">{t(Msg.admin.documents.selectDocument)}</p>
             ) : isLoadingDetail ? (

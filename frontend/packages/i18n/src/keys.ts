@@ -171,6 +171,12 @@ export const Msg = {
       emptyMessages: 'admin.conversationLogs.emptyMessages',
       citationChunk: 'admin.conversationLogs.citationChunk',
       citationPage: 'admin.conversationLogs.citationPage',
+      pageInfo: 'admin.conversationLogs.pageInfo',
+      pageFirst: 'admin.conversationLogs.pageFirst',
+      pagePrev: 'admin.conversationLogs.pagePrev',
+      pageNext: 'admin.conversationLogs.pageNext',
+      pageLast: 'admin.conversationLogs.pageLast',
+      perPageLabel: 'admin.conversationLogs.perPageLabel',
     },
     llm: {
       title: 'admin.llm.title',

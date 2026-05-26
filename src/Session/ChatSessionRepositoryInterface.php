@@ -16,4 +16,6 @@ interface ChatSessionRepositoryInterface
 
     /** @return list<ChatSessionSummary> */
     public function findAllSummaries(int $limit, int $offset): array;
+
+    public function countAll(): int;
 }

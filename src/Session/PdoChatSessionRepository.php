@@ -96,6 +96,13 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         );
     }
 
+    public function countAll(): int
+    {
+        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM chat_sessions', []);
+
+        return (int) ($rows[0]['cnt'] ?? 0);
+    }
+
     /**
      * @param array<string, mixed> $row
      */

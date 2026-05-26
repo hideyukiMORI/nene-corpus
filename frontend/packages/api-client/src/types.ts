@@ -140,6 +140,7 @@ export interface ChatSessionSummary {
 
 export interface ListChatSessionsResponse {
   sessions: ChatSessionSummary[];
+  total: number;
 }
 
 export interface ChatMessageListItem {
