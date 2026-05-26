@@ -1,14 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg } from '@nene-corpus/i18n';
 import { getLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLogsPanel';
 import { AppearancePanel } from './AppearancePanel';
-import { LlmSettingsPanel } from './LlmSettingsPanel';
 import { LlmUnconfiguredBanner } from './LlmUnconfiguredBanner';
-import { ChatSettingsPanel } from './ChatSettingsPanel';
-import { ChatLimitsPanel } from './ChatLimitsPanel';
+import { SettingsModal } from './SettingsModal';
+import type { SettingsSection } from './SettingsModal';
 import { HelpPanel } from './HelpPanel';
 import { LocaleSelector } from './LocaleSelector';
 import { ThemeToggle } from './ThemeToggle';
@@ -25,9 +24,10 @@ export function App() {
 
   // LLM 設定済みフラグ（null = ロード中 / 未チェック）
   const [isLlmConfigured, setIsLlmConfigured] = useState<boolean | null>(null);
-  // LLM アコーディオン外部制御用
-  const [llmPanelOpen, setLlmPanelOpen] = useState(false);
-  const llmPanelRef = useRef<HTMLElement | null>(null);
+
+  // 設定モーダル
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsSection, setSettingsSection] = useState<SettingsSection>('llm');
 
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
@@ -49,12 +49,9 @@ export function App() {
     return () => { cancelled = true; };
   }, [token]);
 
-  function openLlmPanel(): void {
-    setLlmPanelOpen(true);
-    // DOM レンダリング後にスクロール
-    requestAnimationFrame(() => {
-      llmPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+  function openSettings(section: SettingsSection = 'llm'): void {
+    setSettingsSection(section);
+    setSettingsOpen(true);
   }
 
   if (!isReady) {
@@ -76,6 +73,11 @@ export function App() {
           <div className="flex flex-wrap items-center justify-end gap-2">
             <ThemeToggle />
             <LocaleSelector />
+            {token !== null && (
+              <button className="nc-btn nc-header-btn" type="button" onClick={() => openSettings('llm')}>
+                {t(Msg.admin.app.settings)}
+              </button>
+            )}
             <button className="nc-btn nc-header-btn" type="button" onClick={scrollToHelp}>
               {t(resolveMsgKey(Msg.admin.help?.open, 'admin.help.open'))}
             </button>
@@ -97,19 +99,8 @@ export function App() {
           <>
             {/* ── LLM 未設定アラート ── */}
             {isLlmConfigured === false && (
-              <LlmUnconfiguredBanner onConfigureLlm={openLlmPanel} />
+              <LlmUnconfiguredBanner onConfigureLlm={() => openSettings('llm')} />
             )}
-            {/* ── AI 設定（LLM 未設定だとチャット不可のため最優先） ── */}
-            <section ref={llmPanelRef}>
-              <LlmSettingsPanel
-                token={token}
-                isOpen={llmPanelOpen}
-                onOpenChange={setLlmPanelOpen}
-                onConfiguredChange={setIsLlmConfigured}
-              />
-            </section>
-            <ChatSettingsPanel token={token} />
-            <ChatLimitsPanel token={token} />
             {/* ── コンテンツ管理 ── */}
             <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
             <SourcesPanel
@@ -125,12 +116,22 @@ export function App() {
             {logsOpen && (
               <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
             )}
-            {/* ── デザイン ── */}
+            {/* ── デザイン（Phase 2 で設定モーダルへ移動予定 #205） ── */}
             <AppearancePanel token={token} />
             <HelpPanel />
           </>
         )}
       </main>
+
+      {/* ── 設定モーダル ── */}
+      {settingsOpen && token !== null && (
+        <SettingsModal
+          token={token}
+          initialSection={settingsSection}
+          onClose={() => setSettingsOpen(false)}
+          onLlmConfiguredChange={setIsLlmConfigured}
+        />
+      )}
     </div>
   );
 }

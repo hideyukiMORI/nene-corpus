@@ -40,6 +40,11 @@ export const Msg = {
       themeDark: 'admin.app.themeDark',
       healthUnavailable: 'admin.app.healthUnavailable',
       healthStatus: 'admin.app.healthStatus',
+      settings: 'admin.app.settings',
+      settingsClose: 'admin.app.settingsClose',
+      settingsNavLlm: 'admin.app.settingsNavLlm',
+      settingsNavChat: 'admin.app.settingsNavChat',
+      settingsNavLimits: 'admin.app.settingsNavLimits',
     },
     auth: {
       title: 'admin.auth.title',

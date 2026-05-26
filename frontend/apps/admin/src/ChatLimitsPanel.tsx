@@ -58,6 +58,8 @@ const PRESETS: Record<PresetKey, LimitsFields> = {
 
 interface ChatLimitsPanelProps {
   token: string;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 type DraftFields = {
@@ -84,9 +86,15 @@ function toDraft(v: LimitsFields): DraftFields {
   };
 }
 
-export function ChatLimitsPanel({ token }: ChatLimitsPanelProps) {
+export function ChatLimitsPanel({ token, isOpen: isOpenProp, onOpenChange }: ChatLimitsPanelProps) {
   const t = useMsg();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
+  const isOpen = isOpenProp !== undefined ? isOpenProp : isOpenInternal;
+  function setIsOpen(next: boolean | ((prev: boolean) => boolean)): void {
+    const value = typeof next === 'function' ? next(isOpen) : next;
+    setIsOpenInternal(value);
+    onOpenChange?.(value);
+  }
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
