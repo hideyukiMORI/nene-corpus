@@ -10,6 +10,8 @@ use NeneCorpus\Chat\SendChatMessageHandler;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
 use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Http\RequestMetadataExtractor;
+use NeneCorpus\Notification\NotificationConfig;
+use NeneCorpus\Notification\RateLimitNotifier;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -40,6 +42,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         private RateLimitStorageInterface $storage,
         private ChatLimitsRepositoryInterface $limitsRepository,
         private ChatTokenTrackerInterface $tokenTracker,
+        private ?RateLimitNotifier $notifier = null,
     ) {
     }
 
@@ -212,6 +215,16 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         string $scope,
     ): ResponseInterface {
         $retryAfter = max(0, $resetAt - time());
+
+        // Fire notification email (best-effort, never blocks response)
+        if ($this->notifier !== null) {
+            $notifyConfig = NotificationConfig::fromEnvironment();
+            $toEmail = $notifyConfig->notifyEmail;
+            if ($toEmail !== '') {
+                $ip = RequestMetadataExtractor::clientIp($request) ?? 'unknown';
+                $this->notifier->notifyIfNeeded($notifyConfig, $toEmail, $ip, $scope);
+            }
+        }
 
         return $this->problemDetails->create(
             $request,

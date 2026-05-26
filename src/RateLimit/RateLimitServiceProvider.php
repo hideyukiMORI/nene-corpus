@@ -12,6 +12,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
 use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
+use NeneCorpus\Notification\RateLimitNotifier;
 use Psr\Container\ContainerInterface;
 
 final readonly class RateLimitServiceProvider implements ServiceProviderInterface
@@ -57,7 +58,10 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Chat token tracker service is invalid.');
                     }
 
-                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository, $tokenTracker);
+                    /** @var RateLimitNotifier|null $notifier */
+                    $notifier = $container->has(RateLimitNotifier::class) ? $container->get(RateLimitNotifier::class) : null;
+
+                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository, $tokenTracker, $notifier instanceof RateLimitNotifier ? $notifier : null);
                 },
             );
     }

@@ -386,6 +386,123 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/notifications/settings:
+    get:
+      tags:
+        - Admin
+      summary: Get notification settings
+      operationId: getNotificationSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current notification settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Admin
+      summary: Update notification settings
+      operationId: updateNotificationSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNotificationSettingsRequest'
+      responses:
+        '200':
+          description: Updated notification settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/notifications/test-mail:
+    post:
+      tags:
+        - Admin
+      summary: Send a test email
+      operationId: sendTestMail
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Test email sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '502':
+          description: Mail send failed.
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/notifications/daily-report:
+    get:
+      tags:
+        - Admin
+      summary: Send daily chat report email (cron endpoint)
+      description: Public endpoint protected by a secret token. Intended to be called by an external cron service or server cron job.
+      operationId: sendDailyReport
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: false
+          description: Target date in Y-m-d format. Defaults to today.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+      responses:
+        '200':
+          description: Daily report sent successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReportResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Report disabled or misconfigured.
+        '502':
+          description: Mail send failed.
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/appearance:
     get:
       tags:
@@ -1404,6 +1521,80 @@ components:
         new_email:
           type: string
           format: email
+    NotificationSettingsResponse:
+      type: object
+      properties:
+        smtp_host:
+          type: string
+        smtp_port:
+          type: integer
+        smtp_username:
+          type: string
+        smtp_password_set:
+          type: boolean
+        smtp_encryption:
+          type: string
+          enum: [tls, ssl, none]
+        smtp_from_address:
+          type: string
+        smtp_from_name:
+          type: string
+        smtp_configured:
+          type: boolean
+        notify_email:
+          type: string
+        rate_limit_notify_enabled:
+          type: boolean
+        rate_limit_cooldown_minutes:
+          type: integer
+        daily_report_enabled:
+          type: boolean
+        daily_report_token:
+          type: string
+    UpdateNotificationSettingsRequest:
+      type: object
+      properties:
+        smtp_host:
+          type: string
+        smtp_port:
+          type: integer
+        smtp_username:
+          type: string
+        smtp_password:
+          type: string
+          nullable: true
+        smtp_encryption:
+          type: string
+          enum: [tls, ssl, none]
+        smtp_from_address:
+          type: string
+        smtp_from_name:
+          type: string
+        notify_email:
+          type: string
+        rate_limit_notify_enabled:
+          type: boolean
+        rate_limit_cooldown_minutes:
+          type: integer
+        daily_report_enabled:
+          type: boolean
+        regenerate_daily_report_token:
+          type: boolean
+    DailyReportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        report_date:
+          type: string
+        total_sessions:
+          type: integer
+        total_messages:
+          type: integer
+        unique_ips:
+          type: integer
+        rate_limit_hits:
+          type: integer
     WidgetTheme:
       type: object
       required:
