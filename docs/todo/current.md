@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (PR #209)
+Last updated: 2026-05-26 (PR #210)
 
 ## 最近の docs 更新
 
@@ -17,6 +17,7 @@ Last updated: 2026-05-26 (PR #209)
 - **Admin UI レイアウト・UX 改善 (#201 / PR #202)** — パネル順序整理（AI 設定→コンテンツ→運用監視→デザイン）、AppearancePanel を bordered box 化し max_width を Layout > サイズに隣接移動（Proximity / Miller / Fitts）、6 ロケール対応。
 - **LLM 未設定アラート (#203 / PR #206)** — LlmUnconfiguredBanner コンポーネント追加、ログイン後に LLM 未設定時にアンバーアラート表示。
 - **設定モーダル Phase 1 (#204 / PR #207)** — 全画面 `<dialog>` SettingsModal 新規作成、LLM・チャット設定・利用制限をモーダルへ統合、メイン画面をログ・データ管理に特化。
+- **設定モーダル Phase 2 (#205 / PR #210)** — AppearancePanel を設定モーダルの「デザイン」タブへ移動、メイン画面をさらにスリム化（ログ・データ管理に特化）。
 
 ## 状態サマリー
 
@@ -110,6 +111,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **LLM 未設定アラート** | ✅ #203 — LlmUnconfiguredBanner（ログイン後 LLM 未設定時にアンバーアラート表示） |
 | P2 | **設定モーダル Phase 1** | ✅ #204 — 全画面 SettingsModal（LLM・チャット設定・利用制限を統合、メイン画面スリム化） |
 | P2 | **パスワード・メールアドレス変更** | ✅ #208 — AccountPanel（設定モーダル「アカウント」タブ）、PUT /admin/auth/password・/email |
+| P2 | **設定モーダル Phase 2** | ✅ #205 — AppearancePanel を「デザイン」タブへ移動、メイン画面をログ・データ管理に特化 |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
