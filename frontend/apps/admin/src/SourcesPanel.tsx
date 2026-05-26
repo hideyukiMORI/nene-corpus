@@ -95,7 +95,7 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
               {sources.map((source) => (
                 <Fragment key={source.source_id}>
                   <tr className="nc-table-row">
-                    <td className="px-4 py-2 font-medium">{source.name}</td>
+                    <td className="px-4 py-2 font-medium break-all min-w-0 max-w-xs">{source.name}</td>
                     <td className="px-4 py-2 uppercase nc-text-subtle tracking-wide">
                       {t(SOURCE_TYPE_MSG[source.source_type])}
                     </td>
