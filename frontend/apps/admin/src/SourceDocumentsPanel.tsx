@@ -55,29 +55,36 @@ export function SourceDocumentsPanel({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // --- 一覧ステート ---
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [draftQuery, setDraftQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [listError, setListError] = useState<string | null>(null);
+  const [listSuccess, setListSuccess] = useState<string | null>(null);
 
+  // --- 編集パネルステート ---
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [chunks, setChunks] = useState<DocumentChunkItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingChunks, setIsLoadingChunks] = useState(false);
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [modalError, setModalError] = useState<string | null>(null);
-  const [modalSuccess, setModalSuccess] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editSuccess, setEditSuccess] = useState<string | null>(null);
+
+  // モーダルをマウント時に開く
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
 
   const loadDocuments = useCallback(
     async (currentOffset: number, currentQuery: string, signal?: AbortSignal): Promise<void> => {
       setIsLoading(true);
-      setError(null);
+      setListError(null);
 
       try {
         const response = await listDocuments(token, sourceId, adminApiBase, {
@@ -94,7 +101,7 @@ export function SourceDocumentsPanel({
         setTotal(response.total);
       } catch (cause: unknown) {
         if (!signal?.aborted) {
-          setError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
+          setListError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
         }
       } finally {
         if (!signal?.aborted) {
@@ -114,54 +121,25 @@ export function SourceDocumentsPanel({
     };
   }, [loadDocuments, offset, searchQuery]);
 
-  // モーダルの開閉制御
-  useEffect(() => {
-    const dialog = dialogRef.current;
-
-    if (dialog === null) {
-      return;
-    }
-
-    if (selectedId !== null) {
-      dialog.showModal();
-    } else {
-      dialog.close();
-    }
-  }, [selectedId]);
-
-  // ESC キーまたは backdrop クリックで閉じたとき
-  function handleDialogCancel(): void {
+  function clearSelection(): void {
     setSelectedId(null);
     setTitle('');
     setContent('');
     setChunks([]);
-    setModalError(null);
-    setModalSuccess(null);
-  }
-
-  function handleDialogClick(event: React.MouseEvent<HTMLDialogElement>): void {
-    // backdrop 領域（dialog 要素そのもの）をクリックしたときだけ閉じる
-    if (event.target === event.currentTarget) {
-      handleDialogCancel();
-    }
+    setEditError(null);
+    setEditSuccess(null);
   }
 
   function handleSearch(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    setSelectedId(null);
-    setTitle('');
-    setContent('');
-    setChunks([]);
+    clearSelection();
     setOffset(0);
     setSearchQuery(draftQuery);
   }
 
   function handleClearSearch(): void {
     setDraftQuery('');
-    setSelectedId(null);
-    setTitle('');
-    setContent('');
-    setChunks([]);
+    clearSelection();
     setOffset(0);
     setSearchQuery('');
     searchInputRef.current?.focus();
@@ -169,9 +147,10 @@ export function SourceDocumentsPanel({
 
   async function loadDocumentDetail(documentId: number): Promise<void> {
     setSelectedId(documentId);
-    setModalError(null);
-    setModalSuccess(null);
-    setIsLoadingChunks(true);
+    setEditError(null);
+    setEditSuccess(null);
+    setListSuccess(null);
+    setIsLoadingDetail(true);
 
     try {
       const [detail, chunkResponse] = await Promise.all([
@@ -182,10 +161,10 @@ export function SourceDocumentsPanel({
       setContent(detail.content);
       setChunks(chunkResponse.chunks);
     } catch (cause: unknown) {
-      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
+      setEditError(cause instanceof Error ? cause.message : t(Msg.admin.documents.loadFailed));
       setChunks([]);
     } finally {
-      setIsLoadingChunks(false);
+      setIsLoadingDetail(false);
     }
   }
 
@@ -197,8 +176,8 @@ export function SourceDocumentsPanel({
     }
 
     setIsSaving(true);
-    setModalError(null);
-    setModalSuccess(null);
+    setEditError(null);
+    setEditSuccess(null);
 
     try {
       await updateDocument(
@@ -207,8 +186,9 @@ export function SourceDocumentsPanel({
         { title: title.trim(), content: content.trim() },
         adminApiBase,
       );
-      setModalSuccess(t(Msg.admin.documents.saveSuccess));
+      setEditSuccess(t(Msg.admin.documents.saveSuccess));
       onChanged();
+
       const [response, chunkResponse] = await Promise.all([
         listDocuments(token, sourceId, adminApiBase, {
           limit: PAGE_SIZE,
@@ -217,11 +197,12 @@ export function SourceDocumentsPanel({
         }),
         listDocumentChunks(token, selectedId, adminApiBase),
       ]);
+
       setDocuments(response.documents);
       setTotal(response.total);
       setChunks(chunkResponse.chunks);
     } catch (cause: unknown) {
-      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.saveFailed));
+      setEditError(cause instanceof Error ? cause.message : t(Msg.admin.documents.saveFailed));
     } finally {
       setIsSaving(false);
     }
@@ -237,23 +218,25 @@ export function SourceDocumentsPanel({
     }
 
     setIsDeleting(true);
-    setModalError(null);
-    setModalSuccess(null);
+    setEditError(null);
+    setEditSuccess(null);
 
     try {
       await deleteDocument(token, selectedId, adminApiBase);
-      handleDialogCancel();
+      clearSelection();
       onChanged();
+
       const response = await listDocuments(token, sourceId, adminApiBase, {
         limit: PAGE_SIZE,
         offset,
         q: searchQuery,
       });
+
       setDocuments(response.documents);
       setTotal(response.total);
-      setSuccess(t(Msg.admin.documents.deleteSuccess));
+      setListSuccess(t(Msg.admin.documents.deleteSuccess));
     } catch (cause: unknown) {
-      setModalError(cause instanceof Error ? cause.message : t(Msg.admin.documents.deleteFailed));
+      setEditError(cause instanceof Error ? cause.message : t(Msg.admin.documents.deleteFailed));
     } finally {
       setIsDeleting(false);
     }
@@ -265,118 +248,132 @@ export function SourceDocumentsPanel({
   const hasNext = offset + PAGE_SIZE < total;
 
   return (
-    <section className="border-t border-accent-border bg-accent px-4 py-4">
-      {/* パネルヘッダー */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h3 className="font-medium text-fg">{t(Msg.admin.documents.title)}</h3>
-          <p className="text-xs nc-text-muted">{sourceName}</p>
-        </div>
-        <button className="nc-btn" type="button" onClick={onClose}>
-          {t(Msg.admin.documents.close)}
-        </button>
-      </div>
+    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel
+    <dialog
+      ref={dialogRef}
+      className="m-auto w-full max-w-5xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
+      onCancel={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      {/* 内側コンテナ：デスクトップでは max-h で高さ制限し列ごとにスクロール */}
+      <div className="flex flex-col md:max-h-[90vh] md:overflow-hidden">
 
-      {/* 検索バー */}
-      <form className="mb-3 flex gap-2" onSubmit={handleSearch}>
-        <input
-          ref={searchInputRef}
-          className="nc-input flex-1 py-1 text-sm"
-          type="search"
-          placeholder={t(Msg.admin.documents.searchPlaceholder)}
-          value={draftQuery}
-          onChange={(event) => setDraftQuery(event.target.value)}
-        />
-        <button className="nc-btn text-xs" type="submit">
-          {t(Msg.admin.documents.searchPlaceholder).replace('…', '')}
-        </button>
-        {searchQuery !== '' && (
-          <button className="nc-btn text-xs" type="button" onClick={handleClearSearch}>
-            {t(Msg.admin.documents.searchClear)}
+        {/* ヘッダー */}
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-3">
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold text-fg">{t(Msg.admin.documents.title)}</h2>
+            <p className="truncate text-xs nc-text-muted">{sourceName}</p>
+          </div>
+          <button
+            className="nc-btn ml-4 shrink-0 text-xs"
+            type="button"
+            onClick={onClose}
+            aria-label={t(Msg.admin.documents.close)}
+          >
+            ✕
           </button>
-        )}
-      </form>
-
-      {/* ドキュメント一覧 */}
-      {isLoading ? (
-        <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
-      ) : documents.length === 0 ? (
-        <p className="text-sm nc-text-muted">{t(Msg.admin.documents.empty)}</p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <ul className="space-y-2">
-            {documents.map((document) => (
-              <li key={document.document_id}>
-                <button
-                  className="w-full rounded-admin border border-accent-border bg-surface/70 px-3 py-2 text-left text-sm hover:bg-surface"
-                  type="button"
-                  onClick={() => void loadDocumentDetail(document.document_id)}
-                >
-                  <div className="font-medium text-fg break-words">{document.title}</div>
-                  <div className="mt-1 line-clamp-2 text-xs nc-text-muted">{document.content_preview}</div>
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* ページネーション */}
-          {total > PAGE_SIZE && (
-            <div className="flex items-center justify-between gap-2 pt-1 text-xs nc-text-muted">
-              <span>
-                {t(Msg.admin.documents.pageInfo, { from, to, total })}
-              </span>
-              <div className="flex gap-1">
-                <button
-                  className="nc-btn text-xs disabled:opacity-40"
-                  type="button"
-                  disabled={!hasPrev}
-                  onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                >
-                  {t(Msg.admin.documents.pagePrev)}
-                </button>
-                <button
-                  className="nc-btn text-xs disabled:opacity-40"
-                  type="button"
-                  disabled={!hasNext}
-                  onClick={() => setOffset(offset + PAGE_SIZE)}
-                >
-                  {t(Msg.admin.documents.pageNext)}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
-      )}
 
-      {error !== null && <p className="mt-3 text-sm text-red-600">{error}</p>}
-      {success !== null && <p className="mt-3 text-sm text-emerald-700">{success}</p>}
+        {/* ボディ：2 カラム */}
+        <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
 
-      {/* 編集モーダル */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click handled by dialog cancel */}
-      <dialog
-        ref={dialogRef}
-        className="m-auto w-full max-w-2xl rounded-admin bg-surface p-0 shadow-xl backdrop:bg-black/40"
-        onCancel={handleDialogCancel}
-        onClick={handleDialogClick}
-      >
-        <div className="flex max-h-[90vh] flex-col overflow-hidden">
-          {/* モーダルヘッダー */}
-          <div className="flex items-center justify-between border-b border-accent-border px-5 py-3">
-            <h2 className="text-sm font-semibold text-fg">{t(Msg.admin.documents.fieldTitle)}</h2>
-            <button
-              className="nc-btn text-xs"
-              type="button"
-              onClick={handleDialogCancel}
-              aria-label={t(Msg.admin.documents.close)}
+          {/* 左カラム：ドキュメント一覧 */}
+          <div className="flex flex-col overflow-hidden border-b border-border md:border-b-0 md:border-r">
+
+            {/* 検索フォーム */}
+            <form
+              className="shrink-0 flex gap-2 border-b border-border px-3 py-2"
+              onSubmit={handleSearch}
             >
-              ✕
-            </button>
+              <input
+                ref={searchInputRef}
+                className="nc-input flex-1 py-1 text-sm"
+                type="search"
+                placeholder={t(Msg.admin.documents.searchPlaceholder)}
+                value={draftQuery}
+                onChange={(event) => setDraftQuery(event.target.value)}
+              />
+              <button className="nc-btn text-xs" type="submit">
+                {t(Msg.admin.documents.searchPlaceholder).replace('…', '').trim()}
+              </button>
+              {searchQuery !== '' && (
+                <button className="nc-btn text-xs" type="button" onClick={handleClearSearch}>
+                  {t(Msg.admin.documents.searchClear)}
+                </button>
+              )}
+            </form>
+
+            {/* リスト */}
+            <div className="flex-1 space-y-1.5 overflow-y-auto px-3 py-2">
+              {isLoading ? (
+                <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
+              ) : documents.length === 0 ? (
+                <p className="text-sm nc-text-muted">{t(Msg.admin.documents.empty)}</p>
+              ) : (
+                documents.map((document) => (
+                  <button
+                    key={document.document_id}
+                    className={`w-full rounded-admin border px-3 py-2 text-left text-sm transition-colors ${
+                      selectedId === document.document_id
+                        ? 'border-accent-border bg-accent'
+                        : 'border-border bg-surface hover:bg-surface-muted'
+                    }`}
+                    type="button"
+                    onClick={() => void loadDocumentDetail(document.document_id)}
+                  >
+                    <div className="break-words font-medium text-fg">{document.title}</div>
+                    <div className="mt-0.5 line-clamp-1 text-xs nc-text-muted">
+                      {document.content_preview}
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* フッター：件数 + ページング */}
+            {total > 0 && (
+              <div className="shrink-0 border-t border-border px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs nc-text-muted">
+                <span>{t(Msg.admin.documents.pageInfo, { from, to, total })}</span>
+                {total > PAGE_SIZE && (
+                  <div className="flex gap-1">
+                    <button
+                      className="nc-btn text-xs disabled:opacity-40"
+                      type="button"
+                      disabled={!hasPrev}
+                      onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+                    >
+                      {t(Msg.admin.documents.pagePrev)}
+                    </button>
+                    <button
+                      className="nc-btn text-xs disabled:opacity-40"
+                      type="button"
+                      disabled={!hasNext}
+                      onClick={() => setOffset(offset + PAGE_SIZE)}
+                    >
+                      {t(Msg.admin.documents.pageNext)}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {listError !== null && (
+              <p className="shrink-0 px-3 pb-3 text-sm text-red-600">{listError}</p>
+            )}
+            {listSuccess !== null && (
+              <p className="shrink-0 px-3 pb-3 text-sm text-emerald-700">{listSuccess}</p>
+            )}
           </div>
 
-          {/* モーダルボディ */}
+          {/* 右カラム：編集パネル */}
           <div className="overflow-y-auto px-5 py-4">
-            {isLoadingChunks ? (
-              <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
+            {selectedId === null ? (
+              <p className="nc-text-muted text-sm">{t(Msg.admin.documents.selectDocument)}</p>
+            ) : isLoadingDetail ? (
+              <p className="nc-text-muted text-sm">{t(Msg.common.loading)}</p>
             ) : (
               <>
                 <form className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
@@ -412,13 +409,23 @@ export function SourceDocumentsPanel({
                       {isDeleting ? t(Msg.admin.documents.deleting) : t(Msg.admin.documents.delete)}
                     </button>
                   </div>
+                  {editError !== null && (
+                    <p className="text-sm text-red-600">{editError}</p>
+                  )}
+                  {editSuccess !== null && (
+                    <p className="text-sm text-emerald-700">{editSuccess}</p>
+                  )}
                 </form>
 
                 {/* チャンクプレビュー */}
-                <section className="mt-5 border-t border-accent-border pt-4">
-                  <h4 className="text-sm font-medium text-fg">{t(Msg.admin.documents.chunksTitle)}</h4>
+                <section className="mt-5 border-t border-border pt-4">
+                  <h4 className="text-sm font-medium text-fg">
+                    {t(Msg.admin.documents.chunksTitle)}
+                  </h4>
                   {chunks.length === 0 ? (
-                    <p className="mt-2 text-sm nc-text-muted">{t(Msg.admin.documents.chunksEmpty)}</p>
+                    <p className="mt-2 text-sm nc-text-muted">
+                      {t(Msg.admin.documents.chunksEmpty)}
+                    </p>
                   ) : (
                     <ol className="mt-2 space-y-2">
                       {chunks.map((chunk) => (
@@ -426,21 +433,22 @@ export function SourceDocumentsPanel({
                           key={chunk.chunk_id}
                           className="rounded-admin border border-accent-border bg-surface/70 px-3 py-2"
                         >
-                          <div className="break-words text-xs nc-text-muted">{formatChunkMeta(chunk, t)}</div>
-                          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-fg">{chunk.content}</pre>
+                          <div className="break-words text-xs nc-text-muted">
+                            {formatChunkMeta(chunk, t)}
+                          </div>
+                          <pre className="mt-1 whitespace-pre-wrap break-words font-mono text-xs text-fg">
+                            {chunk.content}
+                          </pre>
                         </li>
                       ))}
                     </ol>
                   )}
                 </section>
-
-                {modalError !== null && <p className="mt-3 text-sm text-red-600">{modalError}</p>}
-                {modalSuccess !== null && <p className="mt-3 text-sm text-emerald-700">{modalSuccess}</p>}
               </>
             )}
           </div>
         </div>
-      </dialog>
-    </section>
+      </div>
+    </dialog>
   );
 }

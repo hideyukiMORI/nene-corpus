@@ -76,6 +76,7 @@ export const ptBr = defineMessages({
   'admin.documents.pageInfo': '{from}–{to} de {total}',
   'admin.documents.pagePrev': 'Anterior',
   'admin.documents.pageNext': 'Próximo',
+  'admin.documents.selectDocument': 'Selecione um documento da lista para editar.',
   'admin.ingestion.title': 'Enviar fonte',
   'admin.ingestion.subtitle': 'Adicione arquivos CSV, PDF ou texto colado ao corpus.',
   'admin.ingestion.sourceName': 'Nome da fonte',

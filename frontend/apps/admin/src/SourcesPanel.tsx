@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { listSources, type SourceListItem } from '@nene-corpus/api-client';
 import { adminApiBase } from './config';
 import { Msg, formatTimestamp, useLocale, useMsg } from '@nene-corpus/i18n';
@@ -16,7 +16,7 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
   const t = useMsg();
   const { locale } = useLocale();
   const [sources, setSources] = useState<SourceListItem[]>([]);
-  const [expandedSourceId, setExpandedSourceId] = useState<number | null>(null);
+  const [managingSource, setManagingSource] = useState<{ id: number; name: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,54 +93,44 @@ export function SourcesPanel({ token, reloadKey = 0, onDocumentsChanged }: Sourc
             </thead>
             <tbody>
               {sources.map((source) => (
-                <Fragment key={source.source_id}>
-                  <tr className="nc-table-row">
-                    <td className="px-4 py-2 font-medium break-all min-w-0 max-w-xs">{source.name}</td>
-                    <td className="px-4 py-2 uppercase nc-text-subtle tracking-wide">
-                      {t(SOURCE_TYPE_MSG[source.source_type])}
-                    </td>
-                    <td className="px-4 py-2">
-                      <StatusBadge status={source.status} />
-                    </td>
-                    <td className="px-4 py-2 tabular-nums">{source.document_count}</td>
-                    <td className="px-4 py-2 tabular-nums">{source.chunk_count}</td>
-                    <td className="px-4 py-2 nc-text-timestamp">
-                      {formatTimestamp(source.updated_at, locale)}
-                    </td>
-                    <td className="px-4 py-2">
-                      <button
-                        className="nc-btn text-xs"
-                        type="button"
-                        onClick={() =>
-                          setExpandedSourceId((current) =>
-                            current === source.source_id ? null : source.source_id,
-                          )
-                        }
-                      >
-                        {expandedSourceId === source.source_id
-                          ? t(Msg.admin.documents.hide)
-                          : t(Msg.admin.documents.manage)}
-                      </button>
-                    </td>
-                  </tr>
-                  {expandedSourceId === source.source_id && (
-                    <tr key={`${source.source_id}-documents`}>
-                      <td colSpan={7} className="p-0">
-                        <SourceDocumentsPanel
-                          token={token}
-                          sourceId={source.source_id}
-                          sourceName={source.name}
-                          onChanged={() => onDocumentsChanged?.()}
-                          onClose={() => setExpandedSourceId(null)}
-                        />
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
+                <tr key={source.source_id} className="nc-table-row">
+                  <td className="break-all min-w-0 max-w-xs px-4 py-2 font-medium">{source.name}</td>
+                  <td className="px-4 py-2 uppercase nc-text-subtle tracking-wide">
+                    {t(SOURCE_TYPE_MSG[source.source_type])}
+                  </td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={source.status} />
+                  </td>
+                  <td className="px-4 py-2 tabular-nums">{source.document_count}</td>
+                  <td className="px-4 py-2 tabular-nums">{source.chunk_count}</td>
+                  <td className="px-4 py-2 nc-text-timestamp">
+                    {formatTimestamp(source.updated_at, locale)}
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      className="nc-btn text-xs"
+                      type="button"
+                      onClick={() =>
+                        setManagingSource({ id: source.source_id, name: source.name })
+                      }
+                    >
+                      {t(Msg.admin.documents.manage)}
+                    </button>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+      {managingSource !== null && (
+        <SourceDocumentsPanel
+          token={token}
+          sourceId={managingSource.id}
+          sourceName={managingSource.name}
+          onChanged={() => onDocumentsChanged?.()}
+          onClose={() => setManagingSource(null)}
+        />
       )}
     </section>
   );
