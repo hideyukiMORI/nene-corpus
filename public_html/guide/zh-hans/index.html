@@ -696,25 +696,23 @@
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-12 sm:py-16 border-t border-gray-100">
+    <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <details class="group">
-          <summary class="flex items-center gap-2 cursor-pointer list-none select-none mb-0 group-open:mb-6">
-            <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span class="text-xs font-medium text-gray-400 hover:text-gray-500 transition-colors">免责声明与使用条款</span>
-            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <div class="text-xs text-gray-400 leading-relaxed [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:mb-1 [&_h3]:mt-4 [&_strong]:font-semibold [&_a]:underline [&_a:hover]:text-gray-600 [&_section]:mt-3">
-            <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">在使用本软件之前，请阅读本免责声明。使用 NeNe Corpus 即表示您同意本条款。</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. 无保证声明（MIT 许可证）</h3><p>NeNe Corpus 根据 <strong>MIT 许可证</strong>提供。本软件<strong>按"原样"</strong>提供，不提供任何明示或暗示的保证。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. 责任限制</h3><p>版权持有人不对因使用本软件而产生的任何直接、间接或后果性损害承担责任。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. AI 生成回答的准确性</h3><p>AI 回答可能包含错误。<strong>请勿将其单独用作医疗、法律或财务决策的依据。</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. 第三方服务依赖（Anthropic Claude API）</h3><p>本软件使用 Anthropic 的 Claude API。使用须遵守 Anthropic 的<a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">使用政策</a>。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5–9. 数据处理、运营者责任、禁止用途、商标、条款变更</h3><p>运营者单独负责 GDPR/个人信息保护合规、API 费用及安全事件。严禁非法用途。"Claude"是 Anthropic 的商标。最新条款请查阅<a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">GitHub 仓库</a>。</p></section>
-</div>
-          </div>
-        </details>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">免责声明与使用条款</p>
+        <div class="text-xs text-gray-400 leading-relaxed
+          [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
+          [&_p]:inline [&_p]:after:content-['_']
+          [&_section]:block [&_section]:mb-2
+          [&_strong]:font-semibold
+          [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-gray-600
+          [&_.space-y-6]:space-y-0 [&_div]:block">
+          <p>使用 NeNe Corpus 即表示您同意以下免责声明和使用条款。</p>
+<section><h3>1. 无保证声明（MIT 许可证）</h3><p>本软件根据 <strong>MIT 许可证</strong><strong>按"原样"</strong>提供，不提供任何明示或暗示的保证。</p></section>
+<section><h3>2. 责任限制</h3><p>版权持有人不对因使用本软件而产生的任何直接、间接或后果性损害承担责任。</p></section>
+<section><h3>3. AI 回答准确性</h3><p>AI 回答可能包含错误。<strong>请勿将其单独用作医疗、法律或财务决策的依据。</strong></p></section>
+<section><h3>4. 第三方服务（Anthropic Claude API）</h3><p>使用须遵守 Anthropic 的<a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">使用政策</a>。</p></section>
+<section><h3>5–10. 数据、运营者责任、禁止用途、商标、条款变更、适用法律</h3><p>数据存储在运营者服务器上；聊天查询发送至 Anthropic API。运营者单独负责合规、API 费用和安全。严禁非法用途。"Claude"是 Anthropic 的商标。最新条款见<a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener">GitHub 仓库</a>。</p></section>
+        </div>
       </div>
     </section>
 

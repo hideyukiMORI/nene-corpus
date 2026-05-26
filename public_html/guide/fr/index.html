@@ -696,25 +696,23 @@
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-12 sm:py-16 border-t border-gray-100">
+    <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <details class="group">
-          <summary class="flex items-center gap-2 cursor-pointer list-none select-none mb-0 group-open:mb-6">
-            <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span class="text-xs font-medium text-gray-400 hover:text-gray-500 transition-colors">Avertissement et conditions d'utilisation</span>
-            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <div class="text-xs text-gray-400 leading-relaxed [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:mb-1 [&_h3]:mt-4 [&_strong]:font-semibold [&_a]:underline [&_a:hover]:text-gray-600 [&_section]:mt-3">
-            <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">Veuillez lire cet avertissement avant d'utiliser le logiciel. En l'utilisant, vous acceptez ces conditions.</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. Absence de garantie (Licence MIT)</h3><p>NeNe Corpus est fourni sous <strong>licence MIT</strong>. LE LOGICIEL EST FOURNI <strong>« EN L'ÉTAT »</strong>, SANS GARANTIE D'AUCUNE SORTE.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. Limitation de responsabilité</h3><p>Les auteurs ne sauraient être tenus responsables de tout dommage résultant de l'utilisation de ce logiciel.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. Exactitude des réponses IA</h3><p>Les réponses peuvent contenir des erreurs. <strong>Ne les utilisez pas comme seule base pour des décisions médicales, juridiques ou financières.</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. Services tiers (API Claude)</h3><p>Ce logiciel utilise l'API Claude d'Anthropic. Son utilisation est soumise à la <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">politique d'utilisation</a> d'Anthropic.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5–9. Données, responsabilités, interdictions, marques, modifications</h3><p>L'opérateur est seul responsable de la conformité RGPD, des frais API et de la sécurité. L'utilisation illégale est interdite. « Claude » est une marque d'Anthropic. Dernière version dans le <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">dépôt GitHub</a>.</p></section>
-</div>
-          </div>
-        </details>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Avertissement et conditions d'utilisation</p>
+        <div class="text-xs text-gray-400 leading-relaxed
+          [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
+          [&_p]:inline [&_p]:after:content-['_']
+          [&_section]:block [&_section]:mb-2
+          [&_strong]:font-semibold
+          [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-gray-600
+          [&_.space-y-6]:space-y-0 [&_div]:block">
+          <p>En utilisant NeNe Corpus, vous acceptez les conditions suivantes.</p>
+<section><h3>1. Absence de garantie (Licence MIT)</h3><p>Le logiciel est fourni sous <strong>licence MIT</strong> <strong>« en l'état »</strong>, sans garantie d'aucune sorte.</p></section>
+<section><h3>2. Limitation de responsabilité</h3><p>Les auteurs ne sauraient être tenus responsables de tout dommage résultant de l'utilisation de ce logiciel.</p></section>
+<section><h3>3. Exactitude des réponses IA</h3><p>Les réponses peuvent contenir des erreurs. <strong>Ne pas utiliser comme seule base pour des décisions médicales, juridiques ou financières.</strong></p></section>
+<section><h3>4. Services tiers (API Claude)</h3><p>L'utilisation est soumise à la <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">politique d'utilisation</a> d'Anthropic.</p></section>
+<section><h3>5–10. Données, responsabilités, interdictions, marques, modifications, droit applicable</h3><p>L'opérateur est seul responsable de la conformité RGPD, des frais API et de la sécurité. L'utilisation illégale est interdite. « Claude » est une marque d'Anthropic. Dernière version dans le <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener">dépôt GitHub</a>.</p></section>
+        </div>
       </div>
     </section>
 

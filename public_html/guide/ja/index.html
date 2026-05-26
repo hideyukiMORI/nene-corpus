@@ -696,30 +696,28 @@
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-12 sm:py-16 border-t border-gray-100">
+    <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <details class="group">
-          <summary class="flex items-center gap-2 cursor-pointer list-none select-none mb-0 group-open:mb-6">
-            <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span class="text-xs font-medium text-gray-400 hover:text-gray-500 transition-colors">免責事項・利用規約</span>
-            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <div class="text-xs text-gray-400 leading-relaxed [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:mb-1 [&_h3]:mt-4 [&_strong]:font-semibold [&_a]:underline [&_a:hover]:text-gray-600 [&_section]:mt-3">
-            <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">本ページをお読みになる前に、以下の免責事項および利用規約（以下「本規約」）をご確認ください。本ソフトウェアを利用した場合、本規約に同意したものとみなします。</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. ソフトウェアの無保証（MIT ライセンス条項）</h3><p>本ソフトウェア「NeNe Corpus」（以下「本ソフトウェア」）は <strong>MIT ライセンス</strong> のもとで提供されるオープンソースソフトウェアです。本ソフトウェアは <strong>「現状有姿（AS IS）」</strong> で提供され、明示的または黙示的な一切の保証を行いません。商品性・特定目的への適合性・権利不侵害の保証を含む、あらゆる明示的・黙示的保証を明示的に否認します。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. 責任の制限</h3><p>著作権者および貢献者は、本ソフトウェアの使用または使用不能に起因するいかなる直接的・間接的・偶発的・特別・懲罰的・結果的損害（代替品またはサービスの調達コスト、利用機会の喪失、データの喪失または破損、利益の喪失、業務の中断などを含むがこれに限らない）に対しても、損害発生の可能性を事前に告知されていた場合であっても、一切責任を負いません。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. AI による回答の正確性に関する免責</h3><p>本ソフトウェアのチャット機能は大規模言語モデル（LLM）による自動生成回答を返します。AI が生成する回答は事実誤認・不完全情報・古い情報を含む可能性があります（いわゆる「ハルシネーション」）。本ソフトウェアの回答を、<strong>医療・法律・財務・投資・安全保障その他の専門的意思決定の根拠</strong>として単独で使用しないでください。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. 第三者サービス（Anthropic Claude API）への依存</h3><p>本ソフトウェアは Anthropic, Inc. が提供する Claude API を使用します。Anthropic サービスの可用性・応答速度・価格改定・モデル品質の変動、および Anthropic 利用規約変更による制限について、本ソフトウェアの著作権者は一切責任を負いません。Claude API の利用には Anthropic の <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">利用ポリシー</a> および <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">利用規約</a> が別途適用されます。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5. データの取り扱いと個人情報保護</h3><p>本ソフトウェアはセルフホスト型であり、コーパスデータおよびチャット履歴は <strong>オペレーターのサーバー上の MySQL データベース</strong> に保存されます。ただし、チャットの問い合わせ内容は AI 推論のため Anthropic の API サーバーに送信されます。オペレーターは、個人情報の保護に関する法律（個人情報保護法）・EU 一般データ保護規則（GDPR）等の適用されるデータ保護法令への準拠、エンドユーザーへのプライバシーポリシーの提示・同意取得、チャットログの適切な保管・管理・削除対応の義務を単独で負います。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">6. オペレーターの責任</h3><p>本ソフトウェアを設置・運用するオペレーターは以下に対して単独で責任を負います：エンドユーザーに対する利用規約・プライバシーポリシーの整備と周知 / 特定商取引法・景品表示法・不正競争防止法等の適用法令の遵守 / Anthropic API の利用料金（従量課金）の負担 / セキュリティインシデント（不正アクセス・情報漏洩等）への対応 / ウィジェットに表示するコンテンツの適法性・著作権侵害の不存在の確保 / 未成年者保護等の措置。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">7. 禁止事項</h3><p>本ソフトウェアを以下の目的または用途に使用することを厳に禁じます：違法なコンテンツの生成・配布・助長 / 詐欺・なりすまし・フィッシング・マルウェア配布 / 差別・ヘイトスピーチ・ハラスメントを助長するコンテンツの生成 / 他者の知的財産権・プライバシー権・名誉を侵害する行為 / Anthropic 利用ポリシーが禁止するあらゆる行為 / 日本法またはオペレーターが所在する国・地域の法令に違反する行為。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">8. 商標・帰属表示</h3><p>「Claude」および関連ロゴは Anthropic, Inc. の商標または登録商標です。「NENE2」は本ソフトウェアが依存する内部フレームワークの名称です。本ソフトウェアは Anthropic とは独立したプロジェクトであり、Anthropic による推薦・保証・承認を受けていません。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">9. 本規約の変更</h3><p>本免責事項および利用規約は予告なく変更される場合があります。最新版は <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener" class="underline" style="color:#4d8f7f">GitHub リポジトリ</a> でご確認ください。継続的な利用をもって最新版の規約への同意とみなします。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">10. 準拠法・管轄</h3><p>本規約の解釈および適用は日本法に準拠します。本ソフトウェアの利用に起因する紛争については当事者間で誠実に協議するものとし、協議によって解決しない場合は適切な管轄裁判所に持ち込むものとします。なお、利用者は個別の法域の強行法規の適用を受ける場合があります。</p></section>
-</div>
-          </div>
-        </details>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">免責事項・利用規約</p>
+        <div class="text-xs text-gray-400 leading-relaxed
+          [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
+          [&_p]:inline [&_p]:after:content-['_']
+          [&_section]:block [&_section]:mb-2
+          [&_strong]:font-semibold
+          [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-gray-600
+          [&_.space-y-6]:space-y-0 [&_div]:block">
+          <p>本ソフトウェアを利用した場合、以下の免責事項および利用規約に同意したものとみなします。</p>
+<section><h3>1. 無保証（MIT ライセンス）</h3><p>本ソフトウェアは <strong>MIT ライセンス</strong> のもとで <strong>「現状有姿（AS IS）」</strong> で提供され、明示的または黙示的な一切の保証を行いません。商品性・特定目的への適合性・権利不侵害の保証を含む、あらゆる明示的・黙示的保証を否認します。</p></section>
+<section><h3>2. 責任の制限</h3><p>著作権者および貢献者は、本ソフトウェアの使用または使用不能に起因するいかなる直接的・間接的・偶発的・特別・懲罰的・結果的損害に対しても、損害発生の可能性を事前に告知されていた場合であっても、一切責任を負いません。</p></section>
+<section><h3>3. AI 回答の正確性</h3><p>チャット機能は LLM による自動生成回答を返します。回答は事実誤認・不完全情報・古い情報を含む可能性があります。<strong>医療・法律・財務・投資・安全保障その他の専門的意思決定の根拠として単独で使用しないでください。</strong></p></section>
+<section><h3>4. 第三者サービス（Anthropic Claude API）</h3><p>本ソフトウェアは Anthropic, Inc. の Claude API を使用します。サービスの可用性・価格改定・モデル品質変動・利用規約変更による制限について著作権者は責任を負いません。Claude API の利用には Anthropic の <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">利用ポリシー</a> および <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener">利用規約</a> が別途適用されます。</p></section>
+<section><h3>5. データの取り扱いと個人情報保護</h3><p>コーパスデータ・チャット履歴はオペレーターのサーバー上のデータベースに保存されます。チャット問い合わせ内容は AI 推論のため Anthropic API に送信されます。オペレーターは個人情報保護法・GDPR 等のデータ保護法令への準拠、プライバシーポリシーの提示・同意取得、チャットログの適切な管理・削除対応の義務を単独で負います。</p></section>
+<section><h3>6. オペレーターの責任</h3><p>オペレーターは以下に対して単独で責任を負います：利用規約・プライバシーポリシーの整備 / 適用法令の遵守 / Anthropic API 利用料金の負担 / セキュリティインシデント対応 / ウィジェットコンテンツの適法性確保 / 未成年者保護等の措置。</p></section>
+<section><h3>7. 禁止事項</h3><p>違法コンテンツの生成・配布 / 詐欺・なりすまし・フィッシング・マルウェア配布 / 差別・ヘイトスピーチ・ハラスメントを助長するコンテンツの生成 / 他者の知的財産権・プライバシー権・名誉を侵害する行為 / Anthropic 利用ポリシーが禁止するあらゆる行為 / 適用法令に違反する行為を厳に禁じます。</p></section>
+<section><h3>8. 商標・帰属表示</h3><p>「Claude」は Anthropic, Inc. の商標または登録商標です。本ソフトウェアは Anthropic とは独立したプロジェクトであり、Anthropic による推薦・保証・承認を受けていません。</p></section>
+<section><h3>9. 本規約の変更</h3><p>本規約は予告なく変更される場合があります。最新版は <a href="https://github.com/hideyukiMORI/nene-corpus" target="_blank" rel="noopener">GitHub リポジトリ</a> でご確認ください。</p></section>
+<section><h3>10. 準拠法・管轄</h3><p>本規約は日本法に準拠します。紛争については当事者間で誠実に協議し、解決しない場合は適切な管轄裁判所に持ち込むものとします。</p></section>
+        </div>
       </div>
     </section>
 

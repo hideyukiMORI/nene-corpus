@@ -219,69 +219,56 @@ const SVG = {
 // ※ 長文のため require 相当で分離できるが、ここでは inline で管理する
 
 const DISCLAIMER = {
-  ja: `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">本ページをお読みになる前に、以下の免責事項および利用規約（以下「本規約」）をご確認ください。本ソフトウェアを利用した場合、本規約に同意したものとみなします。</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. ソフトウェアの無保証（MIT ライセンス条項）</h3><p>本ソフトウェア「NeNe Corpus」（以下「本ソフトウェア」）は <strong>MIT ライセンス</strong> のもとで提供されるオープンソースソフトウェアです。本ソフトウェアは <strong>「現状有姿（AS IS）」</strong> で提供され、明示的または黙示的な一切の保証を行いません。商品性・特定目的への適合性・権利不侵害の保証を含む、あらゆる明示的・黙示的保証を明示的に否認します。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. 責任の制限</h3><p>著作権者および貢献者は、本ソフトウェアの使用または使用不能に起因するいかなる直接的・間接的・偶発的・特別・懲罰的・結果的損害（代替品またはサービスの調達コスト、利用機会の喪失、データの喪失または破損、利益の喪失、業務の中断などを含むがこれに限らない）に対しても、損害発生の可能性を事前に告知されていた場合であっても、一切責任を負いません。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. AI による回答の正確性に関する免責</h3><p>本ソフトウェアのチャット機能は大規模言語モデル（LLM）による自動生成回答を返します。AI が生成する回答は事実誤認・不完全情報・古い情報を含む可能性があります（いわゆる「ハルシネーション」）。本ソフトウェアの回答を、<strong>医療・法律・財務・投資・安全保障その他の専門的意思決定の根拠</strong>として単独で使用しないでください。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. 第三者サービス（Anthropic Claude API）への依存</h3><p>本ソフトウェアは Anthropic, Inc. が提供する Claude API を使用します。Anthropic サービスの可用性・応答速度・価格改定・モデル品質の変動、および Anthropic 利用規約変更による制限について、本ソフトウェアの著作権者は一切責任を負いません。Claude API の利用には Anthropic の <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">利用ポリシー</a> および <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">利用規約</a> が別途適用されます。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5. データの取り扱いと個人情報保護</h3><p>本ソフトウェアはセルフホスト型であり、コーパスデータおよびチャット履歴は <strong>オペレーターのサーバー上の MySQL データベース</strong> に保存されます。ただし、チャットの問い合わせ内容は AI 推論のため Anthropic の API サーバーに送信されます。オペレーターは、個人情報の保護に関する法律（個人情報保護法）・EU 一般データ保護規則（GDPR）等の適用されるデータ保護法令への準拠、エンドユーザーへのプライバシーポリシーの提示・同意取得、チャットログの適切な保管・管理・削除対応の義務を単独で負います。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">6. オペレーターの責任</h3><p>本ソフトウェアを設置・運用するオペレーターは以下に対して単独で責任を負います：エンドユーザーに対する利用規約・プライバシーポリシーの整備と周知 / 特定商取引法・景品表示法・不正競争防止法等の適用法令の遵守 / Anthropic API の利用料金（従量課金）の負担 / セキュリティインシデント（不正アクセス・情報漏洩等）への対応 / ウィジェットに表示するコンテンツの適法性・著作権侵害の不存在の確保 / 未成年者保護等の措置。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">7. 禁止事項</h3><p>本ソフトウェアを以下の目的または用途に使用することを厳に禁じます：違法なコンテンツの生成・配布・助長 / 詐欺・なりすまし・フィッシング・マルウェア配布 / 差別・ヘイトスピーチ・ハラスメントを助長するコンテンツの生成 / 他者の知的財産権・プライバシー権・名誉を侵害する行為 / Anthropic 利用ポリシーが禁止するあらゆる行為 / 日本法またはオペレーターが所在する国・地域の法令に違反する行為。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">8. 商標・帰属表示</h3><p>「Claude」および関連ロゴは Anthropic, Inc. の商標または登録商標です。「NENE2」は本ソフトウェアが依存する内部フレームワークの名称です。本ソフトウェアは Anthropic とは独立したプロジェクトであり、Anthropic による推薦・保証・承認を受けていません。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">9. 本規約の変更</h3><p>本免責事項および利用規約は予告なく変更される場合があります。最新版は <a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">GitHub リポジトリ</a> でご確認ください。継続的な利用をもって最新版の規約への同意とみなします。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">10. 準拠法・管轄</h3><p>本規約の解釈および適用は日本法に準拠します。本ソフトウェアの利用に起因する紛争については当事者間で誠実に協議するものとし、協議によって解決しない場合は適切な管轄裁判所に持ち込むものとします。なお、利用者は個別の法域の強行法規の適用を受ける場合があります。</p></section>
-</div>`,
+  ja: `<p>本ソフトウェアを利用した場合、以下の免責事項および利用規約に同意したものとみなします。</p>
+<section><h3>1. 無保証（MIT ライセンス）</h3><p>本ソフトウェアは <strong>MIT ライセンス</strong> のもとで <strong>「現状有姿（AS IS）」</strong> で提供され、明示的または黙示的な一切の保証を行いません。商品性・特定目的への適合性・権利不侵害の保証を含む、あらゆる明示的・黙示的保証を否認します。</p></section>
+<section><h3>2. 責任の制限</h3><p>著作権者および貢献者は、本ソフトウェアの使用または使用不能に起因するいかなる直接的・間接的・偶発的・特別・懲罰的・結果的損害に対しても、損害発生の可能性を事前に告知されていた場合であっても、一切責任を負いません。</p></section>
+<section><h3>3. AI 回答の正確性</h3><p>チャット機能は LLM による自動生成回答を返します。回答は事実誤認・不完全情報・古い情報を含む可能性があります。<strong>医療・法律・財務・投資・安全保障その他の専門的意思決定の根拠として単独で使用しないでください。</strong></p></section>
+<section><h3>4. 第三者サービス（Anthropic Claude API）</h3><p>本ソフトウェアは Anthropic, Inc. の Claude API を使用します。サービスの可用性・価格改定・モデル品質変動・利用規約変更による制限について著作権者は責任を負いません。Claude API の利用には Anthropic の <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">利用ポリシー</a> および <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener">利用規約</a> が別途適用されます。</p></section>
+<section><h3>5. データの取り扱いと個人情報保護</h3><p>コーパスデータ・チャット履歴はオペレーターのサーバー上のデータベースに保存されます。チャット問い合わせ内容は AI 推論のため Anthropic API に送信されます。オペレーターは個人情報保護法・GDPR 等のデータ保護法令への準拠、プライバシーポリシーの提示・同意取得、チャットログの適切な管理・削除対応の義務を単独で負います。</p></section>
+<section><h3>6. オペレーターの責任</h3><p>オペレーターは以下に対して単独で責任を負います：利用規約・プライバシーポリシーの整備 / 適用法令の遵守 / Anthropic API 利用料金の負担 / セキュリティインシデント対応 / ウィジェットコンテンツの適法性確保 / 未成年者保護等の措置。</p></section>
+<section><h3>7. 禁止事項</h3><p>違法コンテンツの生成・配布 / 詐欺・なりすまし・フィッシング・マルウェア配布 / 差別・ヘイトスピーチ・ハラスメントを助長するコンテンツの生成 / 他者の知的財産権・プライバシー権・名誉を侵害する行為 / Anthropic 利用ポリシーが禁止するあらゆる行為 / 適用法令に違反する行為を厳に禁じます。</p></section>
+<section><h3>8. 商標・帰属表示</h3><p>「Claude」は Anthropic, Inc. の商標または登録商標です。本ソフトウェアは Anthropic とは独立したプロジェクトであり、Anthropic による推薦・保証・承認を受けていません。</p></section>
+<section><h3>9. 本規約の変更</h3><p>本規約は予告なく変更される場合があります。最新版は <a href="${GH_URL}" target="_blank" rel="noopener">GitHub リポジトリ</a> でご確認ください。</p></section>
+<section><h3>10. 準拠法・管轄</h3><p>本規約は日本法に準拠します。紛争については当事者間で誠実に協議し、解決しない場合は適切な管轄裁判所に持ち込むものとします。</p></section>`,
 
-  en: `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">Please read this Disclaimer and Terms of Use ("Terms") before using the software. By using NeNe Corpus, you agree to be bound by these Terms.</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. No Warranty (MIT License)</h3><p>NeNe Corpus ("the Software") is open source software provided under the <strong>MIT License</strong>. THE SOFTWARE IS PROVIDED <strong>"AS IS"</strong>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. Limitation of Liability</h3><p>To the maximum extent permitted by applicable law, in no event shall the copyright holders or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused, even if advised of the possibility of such damage.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. Accuracy of AI-Generated Responses</h3><p>The chat feature returns responses generated automatically by a large language model (LLM). AI-generated responses may contain factual errors, incomplete information, or outdated content ("hallucinations"). <strong>Do not rely solely on the Software's responses for medical, legal, financial, investment, safety, or other professional decisions.</strong> Always verify critical information against primary sources.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. Third-Party Service Dependency (Anthropic Claude API)</h3><p>This Software relies on the Claude API provided by Anthropic, Inc. The copyright holders are not responsible for Anthropic service availability, pricing changes, model quality changes, or policy restrictions. Use of the Claude API is separately subject to Anthropic's <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">Usage Policy</a> and <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">Terms of Service</a>.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5. Data Handling and Privacy</h3><p>This Software is self-hosted. Corpus data and chat history are stored in the <strong>Operator's own MySQL database</strong>. Chat query content is transmitted to Anthropic's API servers for AI inference. Operators are solely responsible for compliance with applicable data protection laws (GDPR, CCPA, etc.), providing a Privacy Policy to end users, and appropriate management of chat logs.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">6. Operator Responsibilities</h3><p>The Operator is solely responsible for: establishing Terms of Use and Privacy Policy for end users / compliance with all applicable laws in the Operator's jurisdiction / payment of Anthropic API usage fees / responding to security incidents / ensuring the legality of content displayed via the widget / any required age verification or child protection measures.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">7. Prohibited Uses</h3><p>Use of this Software for the following is strictly prohibited: generating or distributing illegal content / fraud, impersonation, phishing, or malware / content promoting discrimination, hate speech, or harassment / infringing intellectual property, privacy, or reputational rights of others / any activity prohibited by Anthropic's Usage Policy / any violation of applicable laws.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">8. Trademarks and Attribution</h3><p>"Claude" and related logos are trademarks or registered trademarks of Anthropic, Inc. "NENE2" refers to the internal framework upon which this Software depends. This Software is an independent project and is not endorsed, sponsored, or affiliated with Anthropic.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">9. Changes to These Terms</h3><p>These Terms may be updated without prior notice. The latest version is available in the <a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">GitHub repository</a>. Continued use constitutes acceptance of the updated Terms.</p></section>
-</div>`,
+  en: `<p>By using NeNe Corpus, you agree to be bound by the following Disclaimer and Terms of Use.</p>
+<section><h3>1. No Warranty (MIT License)</h3><p>The Software is provided under the <strong>MIT License</strong> on an <strong>"AS IS"</strong> basis, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p></section>
+<section><h3>2. Limitation of Liability</h3><p>In no event shall the copyright holders or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including loss of use, data, or profits; business interruption) however caused, even if advised of the possibility of such damage.</p></section>
+<section><h3>3. Accuracy of AI-Generated Responses</h3><p>AI-generated responses may contain factual errors, incomplete information, or hallucinations. <strong>Do not rely solely on the Software's responses for medical, legal, financial, investment, safety, or other professional decisions.</strong> Always verify critical information against primary sources.</p></section>
+<section><h3>4. Third-Party Service Dependency (Anthropic Claude API)</h3><p>This Software uses the Claude API by Anthropic, Inc. The copyright holders are not responsible for service availability, pricing changes, model quality changes, or policy restrictions. Use of the Claude API is subject to Anthropic's <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">Usage Policy</a> and <a href="https://www.anthropic.com/legal/consumer-terms" target="_blank" rel="noopener">Terms of Service</a>.</p></section>
+<section><h3>5. Data Handling and Privacy</h3><p>Corpus data and chat history are stored in the Operator's own database on their server. Chat queries are transmitted to Anthropic's API for AI inference. Operators are solely responsible for compliance with applicable data protection laws (GDPR, CCPA, etc.), providing a Privacy Policy to end users, and appropriate management of chat logs.</p></section>
+<section><h3>6. Operator Responsibilities</h3><p>The Operator is solely responsible for: Terms of Use and Privacy Policy for end users / compliance with all applicable laws / payment of Anthropic API usage fees / responding to security incidents / legality of widget content / any required age verification or child protection measures.</p></section>
+<section><h3>7. Prohibited Uses</h3><p>Strictly prohibited: generating or distributing illegal content / fraud, phishing, or malware / discrimination, hate speech, or harassment / infringing intellectual property or privacy rights / any activity prohibited by Anthropic's Usage Policy / any violation of applicable laws.</p></section>
+<section><h3>8. Trademarks and Attribution</h3><p>"Claude" is a trademark of Anthropic, Inc. This Software is an independent project not endorsed, sponsored, or affiliated with Anthropic.</p></section>
+<section><h3>9. Changes to These Terms</h3><p>These Terms may be updated without prior notice. The latest version is available in the <a href="${GH_URL}" target="_blank" rel="noopener">GitHub repository</a>. Continued use constitutes acceptance of the updated Terms.</p></section>`,
 
-  de: `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">Bitte lesen Sie diesen Haftungsausschluss und diese Nutzungsbedingungen, bevor Sie die Software verwenden.</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. Keine Gewährleistung (MIT-Lizenz)</h3><p>NeNe Corpus wird unter der <strong>MIT-Lizenz</strong> bereitgestellt. DIE SOFTWARE WIRD <strong>„WIE BESEHEN"</strong> OHNE JEGLICHE AUSDRÜCKLICHE ODER STILLSCHWEIGENDE GEWÄHRLEISTUNG BEREITGESTELLT.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. Haftungsbeschränkung</h3><p>In keinem Fall haften die Urheberrechtsinhaber für direkte, indirekte, zufällige, besondere oder Folgeschäden, die sich aus der Nutzung dieser Software ergeben.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. Genauigkeit KI-generierter Antworten</h3><p>KI-Antworten können Fehler enthalten. <strong>Verwenden Sie sie nicht als alleinige Grundlage für medizinische, rechtliche oder finanzielle Entscheidungen.</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. Abhängigkeit von Drittanbieterdiensten</h3><p>Diese Software nutzt die Claude API von Anthropic, Inc. Die Urheberrechtsinhaber haften nicht für Verfügbarkeit oder Preisänderungen. Die Nutzung unterliegt Anthropics <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">Nutzungsrichtlinie</a>.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5. Datenverarbeitung &amp; Datenschutz</h3><p>Corpus-Daten werden lokal gespeichert. Chat-Anfragen werden an Anthropic übertragen. Der Betreiber ist allein verantwortlich für DSGVO-Konformität und Datenschutz.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">6–9. Betreiberpflichten, Verbote, Marken, Änderungen</h3><p>Der Betreiber trägt die alleinige Verantwortung für Rechtmäßigkeit, API-Kosten und Sicherheit. Illegale Nutzung ist verboten. „Claude" ist eine Marke von Anthropic. Aktuelle Bedingungen im <a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">GitHub-Repository</a>.</p></section>
-</div>`,
+  de: `<p>Mit der Nutzung von NeNe Corpus stimmen Sie den folgenden Bedingungen zu.</p>
+<section><h3>1. Keine Gewährleistung (MIT-Lizenz)</h3><p>Die Software wird unter der <strong>MIT-Lizenz</strong> <strong>„wie besehen"</strong> bereitgestellt, ohne jegliche ausdrückliche oder stillschweigende Gewährleistung.</p></section>
+<section><h3>2. Haftungsbeschränkung</h3><p>Die Urheberrechtsinhaber haften nicht für direkte, indirekte oder Folgeschäden aus der Nutzung dieser Software.</p></section>
+<section><h3>3. KI-Antwortgenauigkeit</h3><p>KI-Antworten können Fehler enthalten. <strong>Nicht als alleinige Grundlage für medizinische, rechtliche oder finanzielle Entscheidungen verwenden.</strong></p></section>
+<section><h3>4. Drittanbieterdienste (Anthropic Claude API)</h3><p>Die Nutzung unterliegt Anthropics <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">Nutzungsrichtlinie</a>. Für Verfügbarkeit oder Preisänderungen wird keine Haftung übernommen.</p></section>
+<section><h3>5–10. Datenschutz, Betreiberpflichten, Verbote, Marken, Änderungen, Recht</h3><p>Daten werden lokal gespeichert; Chat-Anfragen gehen an Anthropic. Der Betreiber ist allein verantwortlich für DSGVO-Konformität, API-Kosten und Sicherheit. Illegale Nutzung ist verboten. „Claude" ist eine Marke von Anthropic. Aktuelle Bedingungen im <a href="${GH_URL}" target="_blank" rel="noopener">GitHub-Repository</a>.</p></section>`,
 
-  fr: `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">Veuillez lire cet avertissement avant d'utiliser le logiciel. En l'utilisant, vous acceptez ces conditions.</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. Absence de garantie (Licence MIT)</h3><p>NeNe Corpus est fourni sous <strong>licence MIT</strong>. LE LOGICIEL EST FOURNI <strong>« EN L'ÉTAT »</strong>, SANS GARANTIE D'AUCUNE SORTE.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. Limitation de responsabilité</h3><p>Les auteurs ne sauraient être tenus responsables de tout dommage résultant de l'utilisation de ce logiciel.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. Exactitude des réponses IA</h3><p>Les réponses peuvent contenir des erreurs. <strong>Ne les utilisez pas comme seule base pour des décisions médicales, juridiques ou financières.</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. Services tiers (API Claude)</h3><p>Ce logiciel utilise l'API Claude d'Anthropic. Son utilisation est soumise à la <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">politique d'utilisation</a> d'Anthropic.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5–9. Données, responsabilités, interdictions, marques, modifications</h3><p>L'opérateur est seul responsable de la conformité RGPD, des frais API et de la sécurité. L'utilisation illégale est interdite. « Claude » est une marque d'Anthropic. Dernière version dans le <a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">dépôt GitHub</a>.</p></section>
-</div>`,
+  fr: `<p>En utilisant NeNe Corpus, vous acceptez les conditions suivantes.</p>
+<section><h3>1. Absence de garantie (Licence MIT)</h3><p>Le logiciel est fourni sous <strong>licence MIT</strong> <strong>« en l'état »</strong>, sans garantie d'aucune sorte.</p></section>
+<section><h3>2. Limitation de responsabilité</h3><p>Les auteurs ne sauraient être tenus responsables de tout dommage résultant de l'utilisation de ce logiciel.</p></section>
+<section><h3>3. Exactitude des réponses IA</h3><p>Les réponses peuvent contenir des erreurs. <strong>Ne pas utiliser comme seule base pour des décisions médicales, juridiques ou financières.</strong></p></section>
+<section><h3>4. Services tiers (API Claude)</h3><p>L'utilisation est soumise à la <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">politique d'utilisation</a> d'Anthropic.</p></section>
+<section><h3>5–10. Données, responsabilités, interdictions, marques, modifications, droit applicable</h3><p>L'opérateur est seul responsable de la conformité RGPD, des frais API et de la sécurité. L'utilisation illégale est interdite. « Claude » est une marque d'Anthropic. Dernière version dans le <a href="${GH_URL}" target="_blank" rel="noopener">dépôt GitHub</a>.</p></section>`,
 
-  'zh-hans': `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">在使用本软件之前，请阅读本免责声明。使用 NeNe Corpus 即表示您同意本条款。</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. 无保证声明（MIT 许可证）</h3><p>NeNe Corpus 根据 <strong>MIT 许可证</strong>提供。本软件<strong>按"原样"</strong>提供，不提供任何明示或暗示的保证。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. 责任限制</h3><p>版权持有人不对因使用本软件而产生的任何直接、间接或后果性损害承担责任。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. AI 生成回答的准确性</h3><p>AI 回答可能包含错误。<strong>请勿将其单独用作医疗、法律或财务决策的依据。</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. 第三方服务依赖（Anthropic Claude API）</h3><p>本软件使用 Anthropic 的 Claude API。使用须遵守 Anthropic 的<a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">使用政策</a>。</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5–9. 数据处理、运营者责任、禁止用途、商标、条款变更</h3><p>运营者单独负责 GDPR/个人信息保护合规、API 费用及安全事件。严禁非法用途。"Claude"是 Anthropic 的商标。最新条款请查阅<a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">GitHub 仓库</a>。</p></section>
-</div>`,
+  'zh-hans': `<p>使用 NeNe Corpus 即表示您同意以下免责声明和使用条款。</p>
+<section><h3>1. 无保证声明（MIT 许可证）</h3><p>本软件根据 <strong>MIT 许可证</strong><strong>按"原样"</strong>提供，不提供任何明示或暗示的保证。</p></section>
+<section><h3>2. 责任限制</h3><p>版权持有人不对因使用本软件而产生的任何直接、间接或后果性损害承担责任。</p></section>
+<section><h3>3. AI 回答准确性</h3><p>AI 回答可能包含错误。<strong>请勿将其单独用作医疗、法律或财务决策的依据。</strong></p></section>
+<section><h3>4. 第三方服务（Anthropic Claude API）</h3><p>使用须遵守 Anthropic 的<a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">使用政策</a>。</p></section>
+<section><h3>5–10. 数据、运营者责任、禁止用途、商标、条款变更、适用法律</h3><p>数据存储在运营者服务器上；聊天查询发送至 Anthropic API。运营者单独负责合规、API 费用和安全。严禁非法用途。"Claude"是 Anthropic 的商标。最新条款见<a href="${GH_URL}" target="_blank" rel="noopener">GitHub 仓库</a>。</p></section>`,
 
-  'pt-br': `<div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-  <p class="text-base font-medium text-gray-900">Leia este Aviso Legal antes de usar o software. Ao usá-lo, você concorda com estes Termos.</p>
-  <section><h3 class="font-semibold text-gray-900 mb-2">1. Sem Garantia (Licença MIT)</h3><p>NeNe Corpus é fornecido sob a <strong>Licença MIT</strong>. O SOFTWARE É FORNECIDO <strong>"NO ESTADO EM QUE SE ENCONTRA"</strong>, SEM GARANTIA DE QUALQUER TIPO.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">2. Limitação de Responsabilidade</h3><p>Os detentores dos direitos autorais não serão responsáveis por quaisquer danos resultantes do uso deste software.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">3. Precisão das Respostas de IA</h3><p>As respostas podem conter erros. <strong>Não as use como base única para decisões médicas, jurídicas ou financeiras.</strong></p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">4. Dependência de Serviços de Terceiros</h3><p>Este Software usa a API Claude da Anthropic. O uso está sujeito à <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">Política de Uso</a> da Anthropic.</p></section>
-  <section><h3 class="font-semibold text-gray-900 mb-2">5–9. Dados, Responsabilidades, Proibições, Marcas, Alterações</h3><p>O Operador é exclusivamente responsável pela conformidade com LGPD, custos de API e segurança. Uso ilegal é proibido. "Claude" é marca da Anthropic. Versão atual no <a href="${GH_URL}" target="_blank" rel="noopener" class="underline" style="color:${BRAND}">repositório GitHub</a>.</p></section>
-</div>`,
+  'pt-br': `<p>Ao usar o NeNe Corpus, você concorda com os seguintes Termos.</p>
+<section><h3>1. Sem Garantia (Licença MIT)</h3><p>O software é fornecido sob a <strong>Licença MIT</strong> <strong>"no estado em que se encontra"</strong>, sem garantia de qualquer tipo.</p></section>
+<section><h3>2. Limitação de Responsabilidade</h3><p>Os detentores dos direitos autorais não serão responsáveis por quaisquer danos resultantes do uso deste software.</p></section>
+<section><h3>3. Precisão das Respostas de IA</h3><p>As respostas podem conter erros. <strong>Não as use como base única para decisões médicas, jurídicas ou financeiras.</strong></p></section>
+<section><h3>4. Dependência de Serviços de Terceiros</h3><p>O uso está sujeito à <a href="https://www.anthropic.com/legal/usage-policy" target="_blank" rel="noopener">Política de Uso</a> da Anthropic.</p></section>
+<section><h3>5–10. Dados, responsabilidades, proibições, marcas, alterações, lei aplicável</h3><p>O Operador é exclusivamente responsável por conformidade com LGPD, custos de API e segurança. Uso ilegal é proibido. "Claude" é marca da Anthropic. Versão atual no <a href="${GH_URL}" target="_blank" rel="noopener">repositório GitHub</a>.</p></section>`,
 };
 
 // ── HTML ページ生成 ──────────────────────────────────────────────────────────
@@ -665,18 +652,18 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-12 sm:py-16 border-t border-gray-100">
+    <section id="disclaimer" class="py-10 border-t border-gray-100 bg-gray-50">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <details class="group">
-          <summary class="flex items-center gap-2 cursor-pointer list-none select-none mb-0 group-open:mb-6">
-            <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <span class="text-xs font-medium text-gray-400 hover:text-gray-500 transition-colors">${t('disclaimer.title')}</span>
-            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <div class="text-xs text-gray-400 leading-relaxed [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:mb-1 [&_h3]:mt-4 [&_strong]:font-semibold [&_a]:underline [&_a:hover]:text-gray-600 [&_section]:mt-3">
-            ${DISCLAIMER[locale.id]}
-          </div>
-        </details>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">${t('disclaimer.title')}</p>
+        <div class="text-xs text-gray-400 leading-relaxed
+          [&_h3]:inline [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:after:content-['_']
+          [&_p]:inline [&_p]:after:content-['_']
+          [&_section]:block [&_section]:mb-2
+          [&_strong]:font-semibold
+          [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-gray-600
+          [&_.space-y-6]:space-y-0 [&_div]:block">
+          ${DISCLAIMER[locale.id]}
+        </div>
       </div>
     </section>
 
