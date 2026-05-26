@@ -665,17 +665,18 @@ function buildPage(locale, msgs, allLocales) {
     </section>
 
     <!-- ── Disclaimer ── -->
-    <section id="disclaimer" class="py-20 sm:py-24 bg-gray-50">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <div class="mb-8">
-          <div class="flex items-center gap-3 mb-1">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">${t('disclaimer.title')}</h2>
+    <section id="disclaimer" class="py-12 sm:py-16 border-t border-gray-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <details class="group">
+          <summary class="flex items-center gap-2 cursor-pointer list-none select-none mb-0 group-open:mb-6">
+            <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span class="text-xs font-medium text-gray-400 hover:text-gray-500 transition-colors">${t('disclaimer.title')}</span>
+            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="text-xs text-gray-400 leading-relaxed [&_h3]:font-semibold [&_h3]:text-gray-500 [&_h3]:mb-1 [&_h3]:mt-4 [&_strong]:font-semibold [&_a]:underline [&_a:hover]:text-gray-600 [&_section]:mt-3">
+            ${DISCLAIMER[locale.id]}
           </div>
-        </div>
-        <div class="bg-white rounded-3xl border border-gray-100 p-7 sm:p-10 shadow-sm">
-          ${DISCLAIMER[locale.id]}
-        </div>
+        </details>
       </div>
     </section>
 
