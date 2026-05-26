@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+  cleanupChatSessions,
   listChatSessionMessages,
   listChatSessions,
   type ChatMessageListItem,
@@ -172,6 +173,11 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
 
+  // --- クリーンアップステート ---
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
+  const [cleanupMessage, setCleanupMessage] = useState<string | null>(null);
+  const [cleanupError, setCleanupError] = useState<string | null>(null);
+
   // --- 選択セッションステート ---
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessageListItem[]>([]);
@@ -299,6 +305,27 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
   function handlePageInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
     if (event.key === 'Enter') {
       event.currentTarget.blur();
+    }
+  }
+
+  async function handleCleanup(): Promise<void> {
+    setIsCleaningUp(true);
+    setCleanupMessage(null);
+    setCleanupError(null);
+
+    try {
+      const result = await cleanupChatSessions(token, adminApiBase, 90);
+      setCleanupMessage(t(Msg.admin.sessionCleanup.success).replace('{count}', String(result.deleted_count)));
+
+      if (result.deleted_count > 0) {
+        // Reload the session list
+        setOffset(0);
+        void loadSessions(0, pageSize);
+      }
+    } catch {
+      setCleanupError(t(Msg.admin.sessionCleanup.error));
+    } finally {
+      setIsCleaningUp(false);
     }
   }
 
@@ -473,6 +500,24 @@ export function ConversationLogsPanel({ token, onClose }: ConversationLogsPanelP
                 )}
               </div>
             )}
+
+            {/* クリーンアップボタン */}
+            <div className="shrink-0 border-t border-border px-3 py-2">
+              <button
+                className="nc-btn w-full text-xs"
+                type="button"
+                disabled={isCleaningUp}
+                onClick={() => void handleCleanup()}
+              >
+                {isCleaningUp ? t(Msg.admin.sessionCleanup.running) : t(Msg.admin.sessionCleanup.button)}
+              </button>
+              {cleanupMessage !== null && (
+                <p className="mt-1 text-xs text-green-600">{cleanupMessage}</p>
+              )}
+              {cleanupError !== null && (
+                <p className="mt-1 text-xs text-red-600">{cleanupError}</p>
+              )}
+            </div>
           </div>
 
           {/* 右カラム：セッションメッセージ */}

@@ -1,4 +1,4 @@
-export { loginAdmin, requestPasswordReset, confirmPasswordReset, getAdminMe, listSources, deleteSource, listChatSessions, listChatSessionMessages } from './admin';
+export { loginAdmin, requestPasswordReset, confirmPasswordReset, getAdminMe, listSources, deleteSource, listChatSessions, listChatSessionMessages, cleanupChatSessions } from './admin';
 export { listDocuments, getDocument, listDocumentChunks, updateDocument, deleteDocument } from './documents';
 export {
   getAppearanceSettings,

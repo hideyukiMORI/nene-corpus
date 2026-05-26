@@ -103,6 +103,16 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         return (int) ($rows[0]['cnt'] ?? 0);
     }
 
+    public function deleteOlderThan(int $days): int
+    {
+        $cutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
+
+        $before = $this->countAll();
+        $this->query->execute('DELETE FROM chat_sessions WHERE created_at < ?', [$cutoff]);
+
+        return max(0, $before - $this->countAll());
+    }
+
     /**
      * @param array<string, mixed> $row
      */

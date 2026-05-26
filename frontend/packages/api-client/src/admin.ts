@@ -124,3 +124,17 @@ export async function listChatSessionMessages(
     headers: { Authorization: `Bearer ${token}` },
   });
 }
+
+export async function cleanupChatSessions(
+  token: string,
+  apiBase = '',
+  maxAgeDays = 90,
+): Promise<{ deleted_count: number }> {
+  return fetchJson<{ deleted_count: number }>(
+    `${apiBase}/admin/chat/sessions?max_age_days=${maxAgeDays}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+}

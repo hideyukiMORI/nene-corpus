@@ -98,10 +98,40 @@ final readonly class SessionServiceProvider implements ServiceProviderInterface
                 },
             )
             ->set(
+                CleanupChatSessionsUseCaseInterface::class,
+                static function (ContainerInterface $container): CleanupChatSessionsUseCaseInterface {
+                    $sessions = $container->get(ChatSessionRepositoryInterface::class);
+
+                    if (!$sessions instanceof ChatSessionRepositoryInterface) {
+                        throw new LogicException('Chat session repository service is invalid.');
+                    }
+
+                    return new CleanupChatSessionsUseCase($sessions);
+                },
+            )
+            ->set(
+                CleanupChatSessionsHandler::class,
+                static function (ContainerInterface $container): CleanupChatSessionsHandler {
+                    $useCase  = $container->get(CleanupChatSessionsUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof CleanupChatSessionsUseCaseInterface) {
+                        throw new LogicException('Cleanup chat sessions use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new CleanupChatSessionsHandler($useCase, $response);
+                },
+            )
+            ->set(
                 self::ROUTE_REGISTRAR,
                 static function (ContainerInterface $container): AdminChatRouteRegistrar {
-                    $listSessions = $container->get(ListChatSessionsHandler::class);
-                    $listMessages = $container->get(ListChatSessionMessagesHandler::class);
+                    $listSessions    = $container->get(ListChatSessionsHandler::class);
+                    $listMessages    = $container->get(ListChatSessionMessagesHandler::class);
+                    $cleanupSessions = $container->get(CleanupChatSessionsHandler::class);
 
                     if (!$listSessions instanceof ListChatSessionsHandler) {
                         throw new LogicException('List chat sessions handler service is invalid.');
@@ -111,7 +141,11 @@ final readonly class SessionServiceProvider implements ServiceProviderInterface
                         throw new LogicException('List chat session messages handler service is invalid.');
                     }
 
-                    return new AdminChatRouteRegistrar($listSessions, $listMessages);
+                    if (!$cleanupSessions instanceof CleanupChatSessionsHandler) {
+                        throw new LogicException('Cleanup chat sessions handler service is invalid.');
+                    }
+
+                    return new AdminChatRouteRegistrar($listSessions, $listMessages, $cleanupSessions);
                 },
             );
     }

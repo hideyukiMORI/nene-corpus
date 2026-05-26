@@ -1152,6 +1152,40 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - AdminChat
+      summary: Delete old chat sessions
+      description: Deletes chat sessions (and their messages via CASCADE) older than `max_age_days` days. Defaults to 90 days.
+      operationId: cleanupChatSessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: max_age_days
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 90
+      responses:
+        '200':
+          description: Number of deleted sessions.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [deleted_count]
+                properties:
+                  deleted_count:
+                    type: integer
+                    format: int32
+                    description: Number of sessions deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/chat/sessions/{id}/messages:
     get:
       tags:
