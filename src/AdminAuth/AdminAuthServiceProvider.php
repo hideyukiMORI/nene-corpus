@@ -129,10 +129,70 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                 },
             )
             ->set(
+                ChangeAdminPasswordUseCaseInterface::class,
+                static function (ContainerInterface $container): ChangeAdminPasswordUseCaseInterface {
+                    $users = $container->get(AdminUserRepositoryInterface::class);
+
+                    if (!$users instanceof AdminUserRepositoryInterface) {
+                        throw new LogicException('Admin user repository service is invalid.');
+                    }
+
+                    return new ChangeAdminPasswordUseCase($users);
+                },
+            )
+            ->set(
+                ChangeAdminPasswordHandler::class,
+                static function (ContainerInterface $container): ChangeAdminPasswordHandler {
+                    $useCase  = $container->get(ChangeAdminPasswordUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof ChangeAdminPasswordUseCaseInterface) {
+                        throw new LogicException('Change admin password use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new ChangeAdminPasswordHandler($useCase, $response);
+                },
+            )
+            ->set(
+                ChangeAdminEmailUseCaseInterface::class,
+                static function (ContainerInterface $container): ChangeAdminEmailUseCaseInterface {
+                    $users = $container->get(AdminUserRepositoryInterface::class);
+
+                    if (!$users instanceof AdminUserRepositoryInterface) {
+                        throw new LogicException('Admin user repository service is invalid.');
+                    }
+
+                    return new ChangeAdminEmailUseCase($users);
+                },
+            )
+            ->set(
+                ChangeAdminEmailHandler::class,
+                static function (ContainerInterface $container): ChangeAdminEmailHandler {
+                    $useCase  = $container->get(ChangeAdminEmailUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof ChangeAdminEmailUseCaseInterface) {
+                        throw new LogicException('Change admin email use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new ChangeAdminEmailHandler($useCase, $response);
+                },
+            )
+            ->set(
                 self::ROUTE_REGISTRAR,
                 static function (ContainerInterface $container): AdminAuthRouteRegistrar {
-                    $login = $container->get(LoginAdminHandler::class);
-                    $me = $container->get(GetAdminMeHandler::class);
+                    $login          = $container->get(LoginAdminHandler::class);
+                    $me             = $container->get(GetAdminMeHandler::class);
+                    $changePassword = $container->get(ChangeAdminPasswordHandler::class);
+                    $changeEmail    = $container->get(ChangeAdminEmailHandler::class);
 
                     if (!$login instanceof LoginAdminHandler) {
                         throw new LogicException('Login admin handler service is invalid.');
@@ -142,7 +202,15 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Get admin me handler service is invalid.');
                     }
 
-                    return new AdminAuthRouteRegistrar($login, $me);
+                    if (!$changePassword instanceof ChangeAdminPasswordHandler) {
+                        throw new LogicException('Change admin password handler service is invalid.');
+                    }
+
+                    if (!$changeEmail instanceof ChangeAdminEmailHandler) {
+                        throw new LogicException('Change admin email handler service is invalid.');
+                    }
+
+                    return new AdminAuthRouteRegistrar($login, $me, $changePassword, $changeEmail);
                 },
             )
             ->set(

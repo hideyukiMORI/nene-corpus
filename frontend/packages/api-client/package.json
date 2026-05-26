@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./account": "./src/account.ts",
     "./appearance": "./src/appearance.ts",
     "./llm-settings": "./src/llm-settings.ts",
     "./chat-settings": "./src/chat-settings.ts",

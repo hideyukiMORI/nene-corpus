@@ -151,6 +151,72 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/auth/password:
+    put:
+      tags:
+        - Admin
+      summary: Change admin password
+      description: Changes the authenticated admin's password. Requires current password verification.
+      operationId: changeAdminPassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAdminPasswordRequest'
+      responses:
+        '200':
+          description: Password changed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/auth/email:
+    put:
+      tags:
+        - Admin
+      summary: Change admin email
+      description: Changes the authenticated admin's email address. Requires current password verification.
+      operationId: changeAdminEmail
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAdminEmailRequest'
+      responses:
+        '200':
+          description: Email changed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/settings/llm:
     get:
       tags:
@@ -1313,6 +1379,31 @@ components:
           format: email
         role:
           type: string
+    ChangeAdminPasswordRequest:
+      type: object
+      required:
+        - current_password
+        - new_password
+      properties:
+        current_password:
+          type: string
+          format: password
+        new_password:
+          type: string
+          format: password
+          minLength: 8
+    ChangeAdminEmailRequest:
+      type: object
+      required:
+        - current_password
+        - new_email
+      properties:
+        current_password:
+          type: string
+          format: password
+        new_email:
+          type: string
+          format: email
     WidgetTheme:
       type: object
       required:

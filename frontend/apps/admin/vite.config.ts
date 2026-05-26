@@ -15,6 +15,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), workspacePackageFullReload(appRoot)],
   resolve: {
     alias: {
+      '@nene-corpus/api-client/account': resolve(appRoot, '../../packages/api-client/src/account.ts'),
       '@nene-corpus/api-client/appearance': resolve(appRoot, '../../packages/api-client/src/appearance.ts'),
       '@nene-corpus/api-client/llm-settings': resolve(appRoot, '../../packages/api-client/src/llm-settings.ts'),
       '@nene-corpus/api-client/chat-settings': resolve(appRoot, '../../packages/api-client/src/chat-settings.ts'),
