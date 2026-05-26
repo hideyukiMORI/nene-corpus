@@ -8,7 +8,9 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -35,6 +37,7 @@ final class AdminAuthHttpTest extends TestCase
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
         CorpusSchemaSetup::createAdminUsers($executor);
+        RateLimitSchemaSetup::create($executor);
 
         $hash = password_hash('secret-password', PASSWORD_ARGON2ID);
         $now = gmdate('Y-m-d H:i:s');
@@ -126,6 +129,66 @@ final class AdminAuthHttpTest extends TestCase
         );
 
         self::assertSame(401, $response->getStatusCode());
+    }
+
+    public function test_login_returns_429_after_exceeding_rate_limit(): void
+    {
+        $app  = $this->application();
+        $body = json_encode(['email' => 'admin@example.com', 'password' => 'wrong-password'], JSON_THROW_ON_ERROR);
+
+        $makeRequest = function () use ($app, $body): ResponseInterface {
+            return $app->handle(
+                new ServerRequest(
+                    'POST',
+                    'https://example.test/admin/auth/login',
+                    ['Content-Type' => ['application/json']],
+                    $this->factory()->createStream($body),
+                    '1.1',
+                    ['REMOTE_ADDR' => '192.0.2.1'],
+                ),
+            );
+        };
+
+        // Exhaust the rate limit (MAX_ATTEMPTS = 10)
+        for ($i = 0; $i < 10; $i++) {
+            $makeRequest();
+        }
+
+        // The 11th attempt must be rejected
+        $response = $makeRequest();
+
+        self::assertSame(429, $response->getStatusCode());
+        self::assertNotEmpty($response->getHeaderLine('Retry-After'));
+    }
+
+    public function test_login_rate_limit_is_per_ip(): void
+    {
+        $app  = $this->application();
+        $body = json_encode(['email' => 'admin@example.com', 'password' => 'wrong-password'], JSON_THROW_ON_ERROR);
+
+        $makeRequest = function (string $ip) use ($app, $body): ResponseInterface {
+            return $app->handle(
+                new ServerRequest(
+                    'POST',
+                    'https://example.test/admin/auth/login',
+                    ['Content-Type' => ['application/json']],
+                    $this->factory()->createStream($body),
+                    '1.1',
+                    ['REMOTE_ADDR' => $ip],
+                ),
+            );
+        };
+
+        // Exhaust the limit for IP A
+        for ($i = 0; $i < 10; $i++) {
+            $makeRequest('10.0.0.1');
+        }
+
+        // IP A is blocked
+        self::assertSame(429, $makeRequest('10.0.0.1')->getStatusCode());
+
+        // IP B is still allowed
+        self::assertSame(401, $makeRequest('10.0.0.2')->getStatusCode());
     }
 
     private function application(): RequestHandlerInterface

@@ -23,6 +23,7 @@ use Nene2\Log\MonologLoggerFactory;
 use Nene2\Log\RequestIdHolder;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\AdminBearerTokenMiddleware;
+use NeneCorpus\AdminAuth\AdminLoginRateLimitMiddleware;
 use NeneCorpus\ApplicationServiceProvider;
 use NeneCorpus\Install\InstallServiceProvider;
 use NeneCorpus\RateLimit\ConsumerChatRateLimitMiddleware;
@@ -217,12 +218,17 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         throw new LogicException('RequestIdHolder service is invalid.');
                     }
 
-                    $authMiddleware = $container->get(AdminAuthServiceProvider::AUTH_MIDDLEWARE);
-                    $chatRateLimit = $container->get(RateLimitServiceProvider::CHAT_RATE_LIMIT_MIDDLEWARE);
-                    $basePathMiddleware = $container->get(InstallServiceProvider::BASE_PATH_MIDDLEWARE);
+                    $authMiddleware      = $container->get(AdminAuthServiceProvider::AUTH_MIDDLEWARE);
+                    $loginRateLimit      = $container->get(AdminAuthServiceProvider::LOGIN_RATE_LIMIT_MIDDLEWARE);
+                    $chatRateLimit       = $container->get(RateLimitServiceProvider::CHAT_RATE_LIMIT_MIDDLEWARE);
+                    $basePathMiddleware  = $container->get(InstallServiceProvider::BASE_PATH_MIDDLEWARE);
 
                     if ($authMiddleware !== null && !$authMiddleware instanceof AdminBearerTokenMiddleware) {
                         throw new LogicException('Admin auth middleware service is invalid.');
+                    }
+
+                    if (!$loginRateLimit instanceof AdminLoginRateLimitMiddleware) {
+                        throw new LogicException('Admin login rate limit middleware service is invalid.');
                     }
 
                     if (!$chatRateLimit instanceof ConsumerChatRateLimitMiddleware) {
@@ -236,6 +242,7 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                     /** @var list<\Psr\Http\Server\MiddlewareInterface> $requestMiddleware */
                     $requestMiddleware = array_values(array_filter([
                         $basePathMiddleware,
+                        $loginRateLimit,
                         $authMiddleware,
                         $chatRateLimit,
                     ]));
