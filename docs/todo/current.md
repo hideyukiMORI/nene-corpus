@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (PR #207)
+Last updated: 2026-05-26 (PR #209)
 
 ## 最近の docs 更新
 
@@ -109,6 +109,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **Admin UI レイアウト・UX 改善** | ✅ #201 — パネル順序・AppearancePanel bordered box 化・max_width 隣接配置 |
 | P2 | **LLM 未設定アラート** | ✅ #203 — LlmUnconfiguredBanner（ログイン後 LLM 未設定時にアンバーアラート表示） |
 | P2 | **設定モーダル Phase 1** | ✅ #204 — 全画面 SettingsModal（LLM・チャット設定・利用制限を統合、メイン画面スリム化） |
+| P2 | **パスワード・メールアドレス変更** | ✅ #208 — AccountPanel（設定モーダル「アカウント」タブ）、PUT /admin/auth/password・/email |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
