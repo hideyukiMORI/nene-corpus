@@ -29,9 +29,13 @@ final readonly class GenerateChatReplyUseCase implements GenerateChatReplyUseCas
         $messages = $this->toAnthropicMessages($input->history, $input->userMessage);
         $tools = [CorpusSearchToolDefinition::schema()];
         $citations = [];
+        $totalInputTokens = 0;
+        $totalOutputTokens = 0;
 
         for ($round = 0; $round < self::MAX_TOOL_ROUNDS; ++$round) {
             $response = $this->client->createMessage($systemPrompt, $messages, $tools);
+            $totalInputTokens += $response->inputTokens;
+            $totalOutputTokens += $response->outputTokens;
 
             if ($response->stopReason !== 'tool_use') {
                 $text = $response->text();
@@ -43,6 +47,8 @@ final readonly class GenerateChatReplyUseCase implements GenerateChatReplyUseCas
                 return new GenerateChatReplyOutput(
                     content: trim($text),
                     citations: $this->uniqueCitations($citations),
+                    inputTokens: $totalInputTokens,
+                    outputTokens: $totalOutputTokens,
                 );
             }
 

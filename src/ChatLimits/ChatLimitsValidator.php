@@ -23,6 +23,8 @@ final readonly class ChatLimitsValidator
         $ipRequestsPerHour = $this->validateNonNegativeInt('ip_requests_per_hour', $body, $errors);
         $dailyRequestsPerIp = $this->validateNonNegativeInt('daily_requests_per_ip', $body, $errors);
         $dailyRequestsGlobal = $this->validateNonNegativeInt('daily_requests_global', $body, $errors);
+        $dailyTokensPerIp = $this->validateNonNegativeInt('daily_tokens_per_ip', $body, $errors);
+        $dailyTokensGlobal = $this->validateNonNegativeInt('daily_tokens_global', $body, $errors);
 
         if ($errors !== []) {
             throw new ValidationException($errors);
@@ -35,6 +37,8 @@ final readonly class ChatLimitsValidator
             ipRequestsPerHour: $ipRequestsPerHour,
             dailyRequestsPerIp: $dailyRequestsPerIp,
             dailyRequestsGlobal: $dailyRequestsGlobal,
+            dailyTokensPerIp: $dailyTokensPerIp,
+            dailyTokensGlobal: $dailyTokensGlobal,
         );
     }
 

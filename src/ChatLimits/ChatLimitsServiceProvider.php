@@ -31,6 +31,18 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                 },
             )
             ->set(
+                ChatTokenTrackerInterface::class,
+                static function (ContainerInterface $container): ChatTokenTrackerInterface {
+                    $query = $container->get(DatabaseQueryExecutorInterface::class);
+
+                    if (!$query instanceof DatabaseQueryExecutorInterface) {
+                        throw new LogicException('Database query executor service is invalid.');
+                    }
+
+                    return new PdoChatTokenTracker($query);
+                },
+            )
+            ->set(
                 ChatLimitsValidator::class,
                 static fn (): ChatLimitsValidator => new ChatLimitsValidator(),
             )

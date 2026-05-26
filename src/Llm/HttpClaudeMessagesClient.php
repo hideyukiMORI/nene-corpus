@@ -78,9 +78,15 @@ final readonly class HttpClaudeMessagesClient implements ClaudeMessagesClientInt
         /** @var list<array<string, mixed>> $contentBlocks */
         $contentBlocks = array_values(array_filter($content, is_array(...)));
 
+        $usage = $decoded['usage'] ?? [];
+        $inputTokens = is_array($usage) && is_int($usage['input_tokens'] ?? null) ? (int) $usage['input_tokens'] : 0;
+        $outputTokens = is_array($usage) && is_int($usage['output_tokens'] ?? null) ? (int) $usage['output_tokens'] : 0;
+
         return new ClaudeMessageResponse(
             stopReason: $stopReason,
             contentBlocks: $contentBlocks,
+            inputTokens: $inputTokens,
+            outputTokens: $outputTokens,
         );
     }
 }

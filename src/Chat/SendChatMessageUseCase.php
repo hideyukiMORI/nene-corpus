@@ -59,6 +59,8 @@ final readonly class SendChatMessageUseCase implements SendChatMessageUseCaseInt
             role: MessageRole::Assistant,
             content: $reply->content,
             citationsJson: $citationsJson,
+            inputTokens: $reply->inputTokens > 0 ? $reply->inputTokens : null,
+            outputTokens: $reply->outputTokens > 0 ? $reply->outputTokens : null,
         ));
 
         return new SendChatMessageOutput(
@@ -67,6 +69,8 @@ final readonly class SendChatMessageUseCase implements SendChatMessageUseCaseInt
             role: MessageRole::Assistant->value,
             content: $reply->content,
             citations: $reply->citations,
+            inputTokens: $reply->inputTokens,
+            outputTokens: $reply->outputTokens,
         );
     }
 

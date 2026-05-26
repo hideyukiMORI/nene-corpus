@@ -19,6 +19,8 @@ const PRESETS: Record<PresetKey, LimitsFields> = {
     ip_requests_per_hour: 30,
     daily_requests_per_ip: 50,
     daily_requests_global: 300,
+    daily_tokens_per_ip: 20000,
+    daily_tokens_global: 100000,
   },
   standard: {
     max_message_chars: 800,
@@ -27,6 +29,8 @@ const PRESETS: Record<PresetKey, LimitsFields> = {
     ip_requests_per_hour: 60,
     daily_requests_per_ip: 200,
     daily_requests_global: 2000,
+    daily_tokens_per_ip: 100000,
+    daily_tokens_global: 1000000,
   },
   open: {
     max_message_chars: 2000,
@@ -35,6 +39,8 @@ const PRESETS: Record<PresetKey, LimitsFields> = {
     ip_requests_per_hour: 200,
     daily_requests_per_ip: 500,
     daily_requests_global: 0,
+    daily_tokens_per_ip: 500000,
+    daily_tokens_global: 0,
   },
   unlimited: {
     max_message_chars: 0,
@@ -43,6 +49,8 @@ const PRESETS: Record<PresetKey, LimitsFields> = {
     ip_requests_per_hour: 0,
     daily_requests_per_ip: 0,
     daily_requests_global: 0,
+    daily_tokens_per_ip: 0,
+    daily_tokens_global: 0,
   },
 };
 
@@ -59,6 +67,8 @@ type DraftFields = {
   ip_requests_per_hour: string;
   daily_requests_per_ip: string;
   daily_requests_global: string;
+  daily_tokens_per_ip: string;
+  daily_tokens_global: string;
 };
 
 function toDraft(v: LimitsFields): DraftFields {
@@ -69,6 +79,8 @@ function toDraft(v: LimitsFields): DraftFields {
     ip_requests_per_hour: String(v.ip_requests_per_hour),
     daily_requests_per_ip: String(v.daily_requests_per_ip),
     daily_requests_global: String(v.daily_requests_global),
+    daily_tokens_per_ip: String(v.daily_tokens_per_ip),
+    daily_tokens_global: String(v.daily_tokens_global),
   };
 }
 
@@ -144,6 +156,8 @@ export function ChatLimitsPanel({ token }: ChatLimitsPanelProps) {
         ip_requests_per_hour: Number.parseInt(draft.ip_requests_per_hour, 10) || 0,
         daily_requests_per_ip: Number.parseInt(draft.daily_requests_per_ip, 10) || 0,
         daily_requests_global: Number.parseInt(draft.daily_requests_global, 10) || 0,
+        daily_tokens_per_ip: Number.parseInt(draft.daily_tokens_per_ip, 10) || 0,
+        daily_tokens_global: Number.parseInt(draft.daily_tokens_global, 10) || 0,
       };
 
       const saved = await updateChatLimitsSettings(token, body, adminApiBase);
@@ -251,6 +265,20 @@ export function ChatLimitsPanel({ token }: ChatLimitsPanelProps) {
                   value={draft.daily_requests_global}
                   hint={t(Msg.admin.chatLimits.zeroMeansUnlimited)}
                   onChange={(v) => updateField('daily_requests_global', v)}
+                />
+                <LimitField
+                  label={t(Msg.admin.chatLimits.dailyTokensPerIp)}
+                  help={t(Msg.admin.chatLimits.dailyTokensPerIpHelp)}
+                  value={draft.daily_tokens_per_ip}
+                  hint={t(Msg.admin.chatLimits.zeroMeansUnlimited)}
+                  onChange={(v) => updateField('daily_tokens_per_ip', v)}
+                />
+                <LimitField
+                  label={t(Msg.admin.chatLimits.dailyTokensGlobal)}
+                  help={t(Msg.admin.chatLimits.dailyTokensGlobalHelp)}
+                  value={draft.daily_tokens_global}
+                  hint={t(Msg.admin.chatLimits.zeroMeansUnlimited)}
+                  onChange={(v) => updateField('daily_tokens_global', v)}
                 />
 
                 <button className="nc-btn-primary" type="submit" disabled={isSaving}>

@@ -13,6 +13,8 @@ final readonly class ChatLimitsView
         public int $ipRequestsPerHour,
         public int $dailyRequestsPerIp,
         public int $dailyRequestsGlobal,
+        public int $dailyTokensPerIp,
+        public int $dailyTokensGlobal,
     ) {
     }
 
@@ -24,6 +26,8 @@ final readonly class ChatLimitsView
      *     ip_requests_per_hour: int,
      *     daily_requests_per_ip: int,
      *     daily_requests_global: int,
+     *     daily_tokens_per_ip: int,
+     *     daily_tokens_global: int,
      * }
      */
     public function toArray(): array
@@ -35,6 +39,8 @@ final readonly class ChatLimitsView
             'ip_requests_per_hour' => $this->ipRequestsPerHour,
             'daily_requests_per_ip' => $this->dailyRequestsPerIp,
             'daily_requests_global' => $this->dailyRequestsGlobal,
+            'daily_tokens_per_ip' => $this->dailyTokensPerIp,
+            'daily_tokens_global' => $this->dailyTokensGlobal,
         ];
     }
 
@@ -47,6 +53,8 @@ final readonly class ChatLimitsView
             ipRequestsPerHour: $settings->ipRequestsPerHour,
             dailyRequestsPerIp: $settings->dailyRequestsPerIp,
             dailyRequestsGlobal: $settings->dailyRequestsGlobal,
+            dailyTokensPerIp: $settings->dailyTokensPerIp,
+            dailyTokensGlobal: $settings->dailyTokensGlobal,
         );
     }
 }

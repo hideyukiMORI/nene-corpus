@@ -21,6 +21,8 @@ final readonly class UpdateChatLimitsUseCase implements UpdateChatLimitsUseCaseI
             ipRequestsPerHour: $input->ipRequestsPerHour,
             dailyRequestsPerIp: $input->dailyRequestsPerIp,
             dailyRequestsGlobal: $input->dailyRequestsGlobal,
+            dailyTokensPerIp: $input->dailyTokensPerIp,
+            dailyTokensGlobal: $input->dailyTokensGlobal,
         );
 
         $this->repository->save($settings);

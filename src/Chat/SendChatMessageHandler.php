@@ -9,6 +9,8 @@ use Nene2\Http\JsonResponseFactory;
 use Nene2\Validation\ValidationError;
 use Nene2\Validation\ValidationException;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
+use NeneCorpus\Http\RequestMetadataExtractor;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -20,6 +22,7 @@ final readonly class SendChatMessageHandler
         private SendChatMessageUseCaseInterface $useCase,
         private JsonResponseFactory $response,
         private ChatLimitsRepositoryInterface $limitsRepository,
+        private ChatTokenTrackerInterface $tokenTracker,
     ) {
     }
 
@@ -64,6 +67,12 @@ final readonly class SendChatMessageHandler
             sessionToken: $sessionToken,
             content: $content,
         ));
+
+        // Track token usage for daily budget enforcement
+        if ($output->inputTokens > 0 || $output->outputTokens > 0) {
+            $ip = RequestMetadataExtractor::clientIp($request) ?? 'unknown';
+            $this->tokenTracker->track($ip, $output->inputTokens, $output->outputTokens);
+        }
 
         return $this->response->create([
             'message_id' => $output->messageId,

@@ -17,6 +17,8 @@ final readonly class SendChatMessageOutput
         public string $role,
         public string $content,
         public array $citations,
+        public int $inputTokens = 0,
+        public int $outputTokens = 0,
     ) {
     }
 }

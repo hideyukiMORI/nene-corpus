@@ -11,6 +11,7 @@ use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
+use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use Psr\Container\ContainerInterface;
 
 final readonly class RateLimitServiceProvider implements ServiceProviderInterface
@@ -38,6 +39,7 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                     $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
                     $storage = $container->get(RateLimitStorageInterface::class);
                     $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
+                    $tokenTracker = $container->get(ChatTokenTrackerInterface::class);
 
                     if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
                         throw new LogicException('Problem details response factory service is invalid.');
@@ -51,7 +53,11 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Chat limits repository service is invalid.');
                     }
 
-                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository);
+                    if (!$tokenTracker instanceof ChatTokenTrackerInterface) {
+                        throw new LogicException('Chat token tracker service is invalid.');
+                    }
+
+                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository, $tokenTracker);
                 },
             );
     }

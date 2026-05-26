@@ -11,6 +11,8 @@ final readonly class ChatMessage
         public MessageRole $role,
         public string $content,
         public ?string $citationsJson = null,
+        public ?int $inputTokens = null,
+        public ?int $outputTokens = null,
         public ?int $id = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,

@@ -12,6 +12,8 @@ final readonly class GenerateChatReplyOutput
     public function __construct(
         public string $content,
         public array $citations,
+        public int $inputTokens = 0,
+        public int $outputTokens = 0,
     ) {
     }
 }

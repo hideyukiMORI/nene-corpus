@@ -1612,6 +1612,8 @@ components:
         - ip_requests_per_hour
         - daily_requests_per_ip
         - daily_requests_global
+        - daily_tokens_per_ip
+        - daily_tokens_global
       properties:
         max_message_chars:
           type: integer
@@ -1637,6 +1639,14 @@ components:
           type: integer
           minimum: 0
           description: Max requests across all IPs per rolling 24 h. 0 = no limit.
+        daily_tokens_per_ip:
+          type: integer
+          minimum: 0
+          description: Max combined input+output tokens per IP per rolling 24 h. 0 = no limit.
+        daily_tokens_global:
+          type: integer
+          minimum: 0
+          description: Max combined input+output tokens across all IPs per rolling 24 h. 0 = no limit.
     UpdateChatLimitsSettingsRequest:
       type: object
       required:
@@ -1646,6 +1656,8 @@ components:
         - ip_requests_per_hour
         - daily_requests_per_ip
         - daily_requests_global
+        - daily_tokens_per_ip
+        - daily_tokens_global
       properties:
         max_message_chars:
           type: integer
@@ -1663,6 +1675,12 @@ components:
           type: integer
           minimum: 0
         daily_requests_global:
+          type: integer
+          minimum: 0
+        daily_tokens_per_ip:
+          type: integer
+          minimum: 0
+        daily_tokens_global:
           type: integer
           minimum: 0
     UpdateChatSettingsRequest:

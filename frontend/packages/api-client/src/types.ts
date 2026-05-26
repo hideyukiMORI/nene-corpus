@@ -290,6 +290,8 @@ export interface ChatLimitsSettingsResponse {
   ip_requests_per_hour: number;
   daily_requests_per_ip: number;
   daily_requests_global: number;
+  daily_tokens_per_ip: number;
+  daily_tokens_global: number;
 }
 
 export interface UpdateChatLimitsSettingsRequest {
@@ -299,4 +301,6 @@ export interface UpdateChatLimitsSettingsRequest {
   ip_requests_per_hour: number;
   daily_requests_per_ip: number;
   daily_requests_global: number;
+  daily_tokens_per_ip: number;
+  daily_tokens_global: number;
 }

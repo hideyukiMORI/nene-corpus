@@ -20,6 +20,8 @@ final class ChatLimitsSchemaSetup
                     ip_requests_per_hour INTEGER NOT NULL DEFAULT 60,
                     daily_requests_per_ip INTEGER NOT NULL DEFAULT 200,
                     daily_requests_global INTEGER NOT NULL DEFAULT 2000,
+                    daily_tokens_per_ip INTEGER NOT NULL DEFAULT 0,
+                    daily_tokens_global INTEGER NOT NULL DEFAULT 0,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )

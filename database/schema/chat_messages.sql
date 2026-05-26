@@ -5,6 +5,8 @@ CREATE TABLE chat_messages (
     role VARCHAR(32) NOT NULL,
     content TEXT NOT NULL,
     citations_json TEXT NULL,
+    input_tokens INTEGER NULL,
+    output_tokens INTEGER NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     FOREIGN KEY (session_id) REFERENCES chat_sessions (id) ON DELETE CASCADE
