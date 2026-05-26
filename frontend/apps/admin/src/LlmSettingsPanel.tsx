@@ -10,7 +10,9 @@ interface LlmSettingsPanelProps {
 
 export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
   const t = useMsg();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,12 @@ export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
   const [model, setModel] = useState('');
   const [maxTokens, setMaxTokens] = useState('1024');
 
+  // 初展開時のみ設定をロード
   useEffect(() => {
+    if (!isOpen || hasLoaded) {
+      return;
+    }
+
     let cancelled = false;
 
     async function load(): Promise<void> {
@@ -32,6 +39,7 @@ export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
         const loaded = await getLlmSettings(token, adminApiBase);
         if (!cancelled) {
           applySettings(loaded);
+          setHasLoaded(true);
         }
       } catch (cause: unknown) {
         if (!cancelled) {
@@ -49,7 +57,7 @@ export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [token, t]);
+  }, [isOpen, hasLoaded, token, t]);
 
   function applySettings(loaded: LlmSettingsResponse): void {
     setSettings(loaded);
@@ -117,63 +125,85 @@ export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
   }
 
   return (
-    <section className="rounded-admin border border-border bg-surface p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-fg">{t(Msg.admin.llm.title)}</h2>
-      <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.llm.subtitle)}</p>
+    <section className="nc-panel">
+      {/* アコーディオンヘッダー */}
+      <button
+        type="button"
+        className={`flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-3 text-left ${isOpen ? 'border-b border-border' : ''}`}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <div className="min-w-0">
+          <h2 className="font-medium">{t(Msg.admin.llm.title)}</h2>
+          <p>{t(Msg.admin.llm.subtitle)}</p>
+        </div>
+        <span
+          className="shrink-0 text-fg-muted transition-transform duration-200"
+          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          aria-hidden="true"
+        >
+          ▾
+        </span>
+      </button>
 
-      {isLoading ? (
-        <p className="mt-4 text-sm nc-text-muted">{t(Msg.common.loading)}</p>
-      ) : (
-        <form className="mt-4 space-y-4" onSubmit={(event) => void handleSubmit(event)}>
-          {settings?.api_key_masked && (
-            <p className="text-sm nc-text-muted">
-              {t(Msg.admin.llm.currentKey)}: <code>{settings.api_key_masked}</code>
-            </p>
+      {/* アコーディオンボディ */}
+      {isOpen && (
+        <div className="px-4 pb-5 pt-2">
+          {isLoading ? (
+            <p className="text-sm nc-text-muted">{t(Msg.common.loading)}</p>
+          ) : (
+            <form className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+              {settings?.api_key_masked && (
+                <p className="text-sm nc-text-muted">
+                  {t(Msg.admin.llm.currentKey)}: <code>{settings.api_key_masked}</code>
+                </p>
+              )}
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.llm.apiKey)}</span>
+                <span className="mt-0.5 block text-xs nc-text-muted">{t(Msg.admin.llm.apiKeyHelp)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="password"
+                  value={apiKeyDraft}
+                  onChange={(event) => setApiKeyDraft(event.target.value)}
+                  placeholder={t(Msg.admin.llm.apiKeyPlaceholder)}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.llm.model)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="text"
+                  value={model}
+                  onChange={(event) => setModel(event.target.value)}
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium text-fg">{t(Msg.admin.llm.maxTokens)}</span>
+                <input
+                  className="nc-input mt-1"
+                  type="number"
+                  min={1}
+                  max={8192}
+                  value={maxTokens}
+                  onChange={(event) => setMaxTokens(event.target.value)}
+                />
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button className="nc-btn" type="button" disabled={isTesting} onClick={() => void handleTest()}>
+                  {isTesting ? t(Msg.admin.llm.testing) : t(Msg.admin.llm.test)}
+                </button>
+                <button className="nc-btn-primary" type="submit" disabled={isSaving}>
+                  {isSaving ? t(Msg.admin.llm.saving) : t(Msg.admin.llm.save)}
+                </button>
+              </div>
+              {testSuccess !== null && <p className="text-sm text-emerald-700">{testSuccess}</p>}
+              {error !== null && <p className="text-sm text-red-600">{error}</p>}
+              {success !== null && <p className="text-sm text-emerald-700">{success}</p>}
+            </form>
           )}
-          <label className="block text-sm">
-            <span className="font-medium text-fg">{t(Msg.admin.llm.apiKey)}</span>
-            <span className="mt-0.5 block text-xs nc-text-muted">{t(Msg.admin.llm.apiKeyHelp)}</span>
-            <input
-              className="nc-input mt-1"
-              type="password"
-              value={apiKeyDraft}
-              onChange={(event) => setApiKeyDraft(event.target.value)}
-              placeholder={t(Msg.admin.llm.apiKeyPlaceholder)}
-              autoComplete="off"
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="font-medium text-fg">{t(Msg.admin.llm.model)}</span>
-            <input
-              className="nc-input mt-1"
-              type="text"
-              value={model}
-              onChange={(event) => setModel(event.target.value)}
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="font-medium text-fg">{t(Msg.admin.llm.maxTokens)}</span>
-            <input
-              className="nc-input mt-1"
-              type="number"
-              min={1}
-              max={8192}
-              value={maxTokens}
-              onChange={(event) => setMaxTokens(event.target.value)}
-            />
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <button className="nc-btn" type="button" disabled={isTesting} onClick={() => void handleTest()}>
-              {isTesting ? t(Msg.admin.llm.testing) : t(Msg.admin.llm.test)}
-            </button>
-            <button className="nc-btn-primary" type="submit" disabled={isSaving}>
-              {isSaving ? t(Msg.admin.llm.saving) : t(Msg.admin.llm.save)}
-            </button>
-          </div>
-          {testSuccess !== null && <p className="text-sm text-emerald-700">{testSuccess}</p>}
-          {error !== null && <p className="text-sm text-red-600">{error}</p>}
-          {success !== null && <p className="text-sm text-emerald-700">{success}</p>}
-        </form>
+        </div>
       )}
     </section>
   );
