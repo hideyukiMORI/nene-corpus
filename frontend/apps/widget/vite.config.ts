@@ -21,6 +21,7 @@ export default defineConfig({
     exclude: ['@nene-corpus/api-client', '@nene-corpus/i18n', '@nene-corpus/tokens'],
   },
   server: {
+    host: true,
     port: 5274,
     strictPort: true,
     watch: {
