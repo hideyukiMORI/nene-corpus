@@ -818,22 +818,44 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
               </div>
             )}
           </div>
-          <div className="space-y-3 border-t border-border pt-4">
+          <div className="space-y-3 rounded-admin border border-border p-4">
             <div>
               <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.layoutTitle)}</h3>
               <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.layoutSubtitle)}</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <label className="block text-sm">
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutMaxHeight)}</span>
-                <input
-                  className="nc-input mt-1"
-                  type="text"
-                  value={layoutForm.max_height}
-                  onChange={(event) => updateLayoutField('max_height', event.target.value)}
-                  placeholder="32rem"
-                />
-              </label>
+            {/* ── サイズ ── */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wide nc-text-muted">
+                {t(Msg.admin.appearance.layoutSizeGroupTitle)}
+              </h4>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm">
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutMaxWidth)}</span>
+                  <input
+                    className="nc-input mt-1"
+                    type="text"
+                    value={theme.max_width}
+                    onChange={(event) => updateThemeField('max_width', event.target.value)}
+                    placeholder="480px"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutMaxHeight)}</span>
+                  <input
+                    className="nc-input mt-1"
+                    type="text"
+                    value={layoutForm.max_height}
+                    onChange={(event) => updateLayoutField('max_height', event.target.value)}
+                    placeholder="32rem"
+                  />
+                </label>
+              </div>
+            </div>
+            {/* ── 配置 ── */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wide nc-text-muted">
+                {t(Msg.admin.appearance.layoutPlacementGroupTitle)}
+              </h4>
               <label className="block text-sm">
                 <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutPosition)}</span>
                 <select
@@ -848,95 +870,93 @@ export function AppearancePanel({ token }: AppearancePanelProps) {
                   ))}
                 </select>
               </label>
-              <label className="block text-sm">
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetX)}</span>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm">
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetX)}</span>
+                  <input
+                    className="nc-input mt-1"
+                    type="number"
+                    min={0}
+                    max={256}
+                    value={layoutForm.offset_x}
+                    disabled={!layoutFixed}
+                    onChange={(event) => updateLayoutField('offset_x', Number(event.target.value))}
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetY)}</span>
+                  <input
+                    className="nc-input mt-1"
+                    type="number"
+                    min={0}
+                    max={256}
+                    value={layoutForm.offset_y}
+                    disabled={!layoutFixed}
+                    onChange={(event) => updateLayoutField('offset_y', Number(event.target.value))}
+                  />
+                </label>
+              </div>
+              <label className="flex items-start gap-2 text-sm">
                 <input
-                  className="nc-input mt-1"
-                  type="number"
-                  min={0}
-                  max={256}
-                  value={layoutForm.offset_x}
+                  className="mt-1"
+                  type="checkbox"
+                  checked={layoutForm.floating_launcher}
                   disabled={!layoutFixed}
-                  onChange={(event) => updateLayoutField('offset_x', Number(event.target.value))}
+                  onChange={(event) => updateLayoutField('floating_launcher', event.target.checked)}
+                />
+                <span>
+                  <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutFloatingLauncher)}</span>
+                  <span className="mt-0.5 block nc-text-muted">{t(Msg.admin.appearance.layoutFloatingLauncherHelp)}</span>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div className="space-y-3 rounded-admin border border-border p-4">
+            <div>
+              <h3 className="text-sm font-medium text-fg">{t(Msg.admin.appearance.themeTitle)}</h3>
+              <p className="mt-1 text-sm nc-text-muted">{t(Msg.admin.appearance.themeSubtitle)}</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <ColorField
+                label={t(Msg.admin.appearance.colorPrimary)}
+                value={theme.color_primary}
+                onChange={(value) => updateThemeField('color_primary', value)}
+              />
+              <ColorField
+                label={t(Msg.admin.appearance.colorSurface)}
+                value={theme.color_surface}
+                onChange={(value) => updateThemeField('color_surface', value)}
+              />
+              <ColorField
+                label={t(Msg.admin.appearance.colorText)}
+                value={theme.color_text}
+                onChange={(value) => updateThemeField('color_text', value)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm">
+                <span className="font-medium text-fg">
+                  {t(resolveMsgKey(Msg.admin.appearance.radiusPanel, 'admin.appearance.radiusPanel'))}
+                </span>
+                <input
+                  className="nc-input"
+                  type="text"
+                  value={theme.radius_panel}
+                  onChange={(event) => updateThemeField('radius_panel', event.target.value)}
                 />
               </label>
               <label className="block text-sm">
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutOffsetY)}</span>
+                <span className="font-medium text-fg">
+                  {t(resolveMsgKey(Msg.admin.appearance.radiusControl, 'admin.appearance.radiusControl'))}
+                </span>
                 <input
-                  className="nc-input mt-1"
-                  type="number"
-                  min={0}
-                  max={256}
-                  value={layoutForm.offset_y}
-                  disabled={!layoutFixed}
-                  onChange={(event) => updateLayoutField('offset_y', Number(event.target.value))}
+                  className="nc-input"
+                  type="text"
+                  value={theme.radius_control}
+                  onChange={(event) => updateThemeField('radius_control', event.target.value)}
                 />
               </label>
             </div>
-            <label className="flex items-start gap-2 text-sm">
-              <input
-                className="mt-1"
-                type="checkbox"
-                checked={layoutForm.floating_launcher}
-                disabled={!layoutFixed}
-                onChange={(event) => updateLayoutField('floating_launcher', event.target.checked)}
-              />
-              <span>
-                <span className="font-medium text-fg">{t(Msg.admin.appearance.layoutFloatingLauncher)}</span>
-                <span className="mt-0.5 block nc-text-muted">{t(Msg.admin.appearance.layoutFloatingLauncherHelp)}</span>
-              </span>
-            </label>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ColorField
-              label={t(Msg.admin.appearance.colorPrimary)}
-              value={theme.color_primary}
-              onChange={(value) => updateThemeField('color_primary', value)}
-            />
-            <ColorField
-              label={t(Msg.admin.appearance.colorSurface)}
-              value={theme.color_surface}
-              onChange={(value) => updateThemeField('color_surface', value)}
-            />
-            <ColorField
-              label={t(Msg.admin.appearance.colorText)}
-              value={theme.color_text}
-              onChange={(value) => updateThemeField('color_text', value)}
-            />
-            <label className="block text-sm">
-              <span className="font-medium text-fg">
-                {t(resolveMsgKey(Msg.admin.appearance.radiusPanel, 'admin.appearance.radiusPanel'))}
-              </span>
-              <input
-                className="nc-input"
-                type="text"
-                value={theme.radius_panel}
-                onChange={(event) => updateThemeField('radius_panel', event.target.value)}
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="font-medium text-fg">
-                {t(resolveMsgKey(Msg.admin.appearance.radiusControl, 'admin.appearance.radiusControl'))}
-              </span>
-              <input
-                className="nc-input"
-                type="text"
-                value={theme.radius_control}
-                onChange={(event) => updateThemeField('radius_control', event.target.value)}
-              />
-            </label>
-            <label className="block text-sm">
-              <span className="font-medium text-fg">
-                {t(resolveMsgKey(Msg.admin.appearance.maxWidth, 'admin.appearance.maxWidth'))}
-              </span>
-              <input
-                className="nc-input"
-                type="text"
-                value={theme.max_width}
-                onChange={(event) => updateThemeField('max_width', event.target.value)}
-                placeholder="480px"
-              />
-            </label>
           </div>
           <div className="space-y-2">
             <label className="block text-sm">
