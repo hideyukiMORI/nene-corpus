@@ -177,6 +177,8 @@ export const Msg = {
       pageNext: 'admin.conversationLogs.pageNext',
       pageLast: 'admin.conversationLogs.pageLast',
       perPageLabel: 'admin.conversationLogs.perPageLabel',
+      openLogs: 'admin.conversationLogs.openLogs',
+      close: 'admin.conversationLogs.close',
     },
     llm: {
       title: 'admin.llm.title',

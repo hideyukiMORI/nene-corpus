@@ -174,6 +174,8 @@ export const ja = defineMessages({
   'admin.conversationLogs.pageNext': '次へ',
   'admin.conversationLogs.pageLast': '最後へ',
   'admin.conversationLogs.perPageLabel': '表示件数',
+  'admin.conversationLogs.openLogs': '会話ログを開く',
+  'admin.conversationLogs.close': '閉じる',
   'admin.llm.title': 'LLM 設定',
   'admin.llm.subtitle': 'Anthropic API キーとモデルを更新します。保存前に接続テストできます。',
   'admin.llm.currentKey': '現在のキー',

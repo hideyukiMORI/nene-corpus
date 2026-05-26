@@ -174,6 +174,8 @@ export const ptBr = defineMessages({
   'admin.conversationLogs.pageNext': 'Próximo',
   'admin.conversationLogs.pageLast': 'Última',
   'admin.conversationLogs.perPageLabel': 'Sessões por página',
+  'admin.conversationLogs.openLogs': 'Abrir registros de conversa',
+  'admin.conversationLogs.close': 'Fechar',
   'admin.llm.title': 'Configurações de LLM',
   'admin.llm.subtitle': 'Atualize a chave da API Anthropic e o modelo. Teste a conexão antes de salvar.',
   'admin.llm.currentKey': 'Chave atual',

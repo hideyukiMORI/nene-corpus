@@ -175,6 +175,8 @@ export const en = defineMessages({
   'admin.conversationLogs.pageNext': 'Next',
   'admin.conversationLogs.pageLast': 'Last',
   'admin.conversationLogs.perPageLabel': 'Sessions per page',
+  'admin.conversationLogs.openLogs': 'Open conversation logs',
+  'admin.conversationLogs.close': 'Close',
   'admin.llm.title': 'LLM settings',
   'admin.llm.subtitle': 'Update your Anthropic API key and model. Test connectivity before saving.',
   'admin.llm.currentKey': 'Current key',
