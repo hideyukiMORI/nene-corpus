@@ -81,6 +81,14 @@ export function SourceDocumentsPanel({
   // ページネーション派生値
   const currentPage = total === 0 ? 1 : Math.floor(offset / pageSize) + 1;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // ページ入力フィールドの表示値（制御入力）
+  const [pageInput, setPageInput] = useState(String(currentPage));
+
+  // prev/next・pageSize 変更など外部からの currentPage 変化に追従
+  useEffect(() => {
+    setPageInput(String(currentPage));
+  }, [currentPage]);
   const from = total === 0 ? 0 : offset + 1;
   const to = Math.min(offset + pageSize, total);
   const hasPrev = offset > 0;
@@ -166,12 +174,25 @@ export function SourceDocumentsPanel({
     clearSelection();
   }
 
-  function handlePageInputBlur(event: React.FocusEvent<HTMLInputElement>): void {
-    const parsed = parseInt(event.target.value, 10);
+  function handlePageInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    const value = event.target.value;
+    setPageInput(value);
+    const parsed = parseInt(value, 10);
+    // 有効な範囲内であれば即ジャンプ（スピナークリック・キー入力どちらも対応）
+    if (!isNaN(parsed) && parsed >= 1 && parsed <= totalPages) {
+      setOffset((parsed - 1) * pageSize);
+    }
+  }
 
+  function handlePageInputBlur(): void {
+    const parsed = parseInt(pageInput, 10);
     if (!isNaN(parsed)) {
       const clamped = Math.max(1, Math.min(totalPages, parsed));
       setOffset((clamped - 1) * pageSize);
+      setPageInput(String(clamped));
+    } else {
+      // 空欄や無効値は現在ページに戻す
+      setPageInput(String(currentPage));
     }
   }
 
@@ -403,12 +424,12 @@ export function SourceDocumentsPanel({
                       {t(Msg.admin.documents.pagePrev)}
                     </button>
                     <input
-                      key={currentPage}
                       type="number"
-                      defaultValue={currentPage}
+                      value={pageInput}
                       min={1}
                       max={totalPages}
                       className="w-12 rounded-admin border border-border bg-surface px-1 py-0.5 text-center text-xs text-fg"
+                      onChange={handlePageInputChange}
                       onBlur={handlePageInputBlur}
                       onKeyDown={handlePageInputKeyDown}
                     />
