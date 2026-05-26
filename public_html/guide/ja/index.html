@@ -20,9 +20,10 @@
       }
     })();
   </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    /* Tailwind Play CDN: config must be set BEFORE the CDN script loads */
-    tailwind = { config: {
+    /* Tailwind Play CDN v3: tailwind.config は CDN 読み込み後に設定する */
+    tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
@@ -30,13 +31,12 @@
             brand: { DEFAULT:'#4d8f7f', dark:'#3a6e62', light:'#e6f2ef' },
           },
           fontFamily: {
-            sans: ['Noto Sans JP','system-ui','sans-serif','system-ui','sans-serif'],
+            sans: ['Noto Sans JP','system-ui','sans-serif'],
           },
         },
       },
-    }};
+    };
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html { scroll-behavior:smooth; }
     body { font-family: "Noto Sans JP", system-ui, sans-serif, sans-serif; }
