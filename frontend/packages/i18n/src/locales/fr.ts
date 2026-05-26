@@ -206,6 +206,8 @@ export const fr = defineMessages({
   'admin.llm.saveSuccess': 'Paramètres LLM enregistrés.',
   'admin.llm.saveFailed': 'Échec de l\'enregistrement des paramètres LLM.',
   'admin.llm.loadFailed': 'Impossible de charger les paramètres LLM.',
+  'admin.llm.alertBody': 'Le chat est indisponible car la clé API Anthropic n\'est pas configurée.',
+  'admin.llm.alertCta': 'Configurer le LLM',
   'admin.chatLimits.title': 'Limites d\'utilisation',
   'admin.chatLimits.subtitle': 'Configurez les limites de débit pour prévenir les abus et maîtriser les coûts. 0 = illimité.',
   'admin.chatLimits.maxMessageChars': 'Longueur max. du message (caractères)',

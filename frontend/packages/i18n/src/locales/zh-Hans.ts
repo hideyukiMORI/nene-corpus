@@ -202,6 +202,8 @@ export const zhHans = defineMessages({
   'admin.llm.saveSuccess': 'LLM 设置已保存。',
   'admin.llm.saveFailed': 'LLM 设置保存失败。',
   'admin.llm.loadFailed': 'LLM 设置加载失败。',
+  'admin.llm.alertBody': '由于未设置 Anthropic API 密钥，聊天功能不可用。',
+  'admin.llm.alertCta': '配置 LLM',
   'admin.chatLimits.title': '使用限制',
   'admin.chatLimits.subtitle': '配置速率限制以防止滥用并控制成本。0 表示无限制。',
   'admin.chatLimits.maxMessageChars': '最大消息长度（字符）',

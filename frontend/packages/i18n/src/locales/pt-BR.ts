@@ -206,6 +206,8 @@ export const ptBr = defineMessages({
   'admin.llm.saveSuccess': 'Configurações de LLM salvas.',
   'admin.llm.saveFailed': 'Falha ao salvar configurações de LLM.',
   'admin.llm.loadFailed': 'Falha ao carregar configurações de LLM.',
+  'admin.llm.alertBody': 'O chat está indisponível porque a chave da API Anthropic não foi configurada.',
+  'admin.llm.alertCta': 'Configurar LLM',
   'admin.chatLimits.title': 'Limites de uso',
   'admin.chatLimits.subtitle': 'Configure limites de taxa para prevenir abusos e controlar custos. 0 = sem limite.',
   'admin.chatLimits.maxMessageChars': 'Comprimento máximo da mensagem (caracteres)',

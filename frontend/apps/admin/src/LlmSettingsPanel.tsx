@@ -6,11 +6,22 @@ import { adminApiBase } from './config';
 
 interface LlmSettingsPanelProps {
   token: string;
+  /** 外部から開閉を制御する場合に渡す（未指定時は内部 state で管理） */
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** API キー設定済み状態が変化したときに通知する */
+  onConfiguredChange?: (configured: boolean) => void;
 }
 
-export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
+export function LlmSettingsPanel({ token, isOpen: isOpenProp, onOpenChange, onConfiguredChange }: LlmSettingsPanelProps) {
   const t = useMsg();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
+  const isOpen = isOpenProp !== undefined ? isOpenProp : isOpenInternal;
+  function setIsOpen(next: boolean | ((prev: boolean) => boolean)): void {
+    const value = typeof next === 'function' ? next(isOpen) : next;
+    setIsOpenInternal(value);
+    onOpenChange?.(value);
+  }
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -64,6 +75,7 @@ export function LlmSettingsPanel({ token }: LlmSettingsPanelProps) {
     setModel(loaded.model);
     setMaxTokens(String(loaded.max_tokens));
     setApiKeyDraft('');
+    onConfiguredChange?.(loaded.configured);
   }
 
   function buildTestPayload() {
