@@ -11,6 +11,147 @@ import { HelpLabel } from './HelpLabel';
 import { ROLE_MSG } from './i18nLabels';
 import { formatClientIp, hasSessionMetadata } from './conversationLogsFormat';
 
+// ───────────────────────────────────────────────
+// サマリーコンポーネント（ページ埋め込み用・最新 8 件）
+// ───────────────────────────────────────────────
+
+const SUMMARY_LIMIT = 8;
+
+interface ConversationLogsSummaryProps {
+  token: string;
+  onOpenLogs: () => void;
+}
+
+export function ConversationLogsSummary({ token, onOpenLogs }: ConversationLogsSummaryProps) {
+  const t = useMsg();
+  const { locale } = useLocale();
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load(): Promise<void> {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await listChatSessions(token, adminApiBase, { limit: SUMMARY_LIMIT, offset: 0 });
+
+        if (!cancelled) {
+          setSessions(response.sessions);
+          setTotal(response.total);
+        }
+      } catch (cause: unknown) {
+        if (!cancelled) {
+          setError(cause instanceof Error ? cause.message : t(Msg.admin.conversationLogs.loadFailed));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token, t]);
+
+  return (
+    <section className="nc-panel">
+      <div className="nc-panel-head flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-medium">{t(Msg.admin.conversationLogs.title)}</h2>
+          <p>{t(Msg.admin.conversationLogs.subtitle)}</p>
+        </div>
+        <button
+          className="nc-btn shrink-0 text-sm"
+          type="button"
+          onClick={onOpenLogs}
+        >
+          {t(Msg.admin.conversationLogs.openLogs)}
+        </button>
+      </div>
+
+      {isLoading ? (
+        <p className="px-4 py-4 nc-text-muted">{t(Msg.admin.conversationLogs.loadingSessions)}</p>
+      ) : error !== null ? (
+        <p className="px-4 py-4 text-sm text-red-600">{error}</p>
+      ) : sessions.length === 0 ? (
+        <p className="px-4 py-4 nc-text-muted">{t(Msg.admin.conversationLogs.empty)}</p>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="nc-table-head">
+                <tr>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnSession)}
+                      help={t(Msg.admin.conversationLogs.columnSessionHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnMessages)}
+                      help={t(Msg.admin.conversationLogs.columnMessagesHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnClientIp)}
+                      help={t(Msg.admin.conversationLogs.columnClientIpHelp)}
+                    />
+                  </th>
+                  <th className="px-4 py-2 font-medium">
+                    <HelpLabel
+                      label={t(Msg.admin.conversationLogs.columnLastActivity)}
+                      help={t(Msg.admin.conversationLogs.columnLastActivityHelp)}
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map((session) => (
+                  <tr
+                    key={session.session_id}
+                    className="nc-table-row cursor-pointer hover:bg-surface-muted"
+                    onClick={onOpenLogs}
+                  >
+                    <td className="px-4 py-2 font-medium tabular-nums">#{session.session_id}</td>
+                    <td className="px-4 py-2 tabular-nums">{session.message_count}</td>
+                    <td className="px-4 py-2 font-mono text-xs nc-text-muted" title={session.client_ip ?? undefined}>
+                      {formatClientIp(session.client_ip)}
+                    </td>
+                    <td className="px-4 py-2 nc-text-timestamp">
+                      {formatTimestamp(session.last_message_at ?? session.updated_at, locale)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* 全件リンク */}
+          <div className="border-t border-border px-4 py-2">
+            <button
+              className="text-xs text-primary hover:underline"
+              type="button"
+              onClick={onOpenLogs}
+            >
+              {t(Msg.admin.conversationLogs.openAllLogs, { total })}
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
 const DEFAULT_PAGE_SIZE = 25;
 

@@ -19,4 +19,6 @@ interface SourceRepositoryInterface
     public function update(Source $source): void;
 
     public function softDelete(int $id, string $deletedAt): void;
+
+    public function countAll(): int;
 }

@@ -25,8 +25,25 @@ export async function getAdminMe(token: string, apiBase = ''): Promise<AdminMeRe
   });
 }
 
-export async function listSources(token: string, apiBase = ''): Promise<ListSourcesResponse> {
-  return fetchJson<ListSourcesResponse>(`${apiBase}/admin/sources`, {
+export async function listSources(
+  token: string,
+  apiBase = '',
+  options: { limit?: number; offset?: number } = {},
+): Promise<ListSourcesResponse> {
+  const params = new URLSearchParams();
+
+  if (options.limit !== undefined) {
+    params.set('limit', String(options.limit));
+  }
+
+  if (options.offset !== undefined) {
+    params.set('offset', String(options.offset));
+  }
+
+  const query = params.toString();
+  const path = query.length > 0 ? `/admin/sources?${query}` : '/admin/sources';
+
+  return fetchJson<ListSourcesResponse>(`${apiBase}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }

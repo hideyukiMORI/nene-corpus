@@ -1770,11 +1770,16 @@ components:
       type: object
       required:
         - sources
+        - total
       properties:
         sources:
           type: array
           items:
             $ref: '#/components/schemas/SourceListItem'
+        total:
+          type: integer
+          format: int64
+          description: Total number of sources (regardless of limit/offset).
     ListDocumentsResponse:
       type: object
       required:

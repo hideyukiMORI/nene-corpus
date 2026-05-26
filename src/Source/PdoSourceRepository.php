@@ -144,6 +144,13 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
         );
     }
 
+    public function countAll(): int
+    {
+        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM sources WHERE is_deleted = 0', []);
+
+        return (int) ($rows[0]['cnt'] ?? 0);
+    }
+
     /**
      * @param array<string, mixed> $row
      */
