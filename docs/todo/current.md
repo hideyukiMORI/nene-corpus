@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (PR #212)
+Last updated: 2026-05-26 (PR #214)
 
 ## 最近の docs 更新
 
@@ -113,6 +113,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **パスワード・メールアドレス変更** | ✅ #208 — AccountPanel（設定モーダル「アカウント」タブ）、PUT /admin/auth/password・/email |
 | P2 | **設定モーダル Phase 2** | ✅ #205 — AppearancePanel を「デザイン」タブへ移動、メイン画面をログ・データ管理に特化 |
 | P2 | **メール通知** | ✅ #211 — 利用制限超過アラート・日次チャットレポート（PHPMailer SMTP、cron エンドポイント、Admin UI 通知タブ、6ロケール） |
+| P2 | **設定モーダル 概要ページ** | ✅ #213 — 初回表示を概要カードナビに変更（API キーが即露出しない） |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
