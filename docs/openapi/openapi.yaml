@@ -245,6 +245,53 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/settings/limits:
+    get:
+      tags:
+        - Admin
+      summary: Get chat limits settings
+      description: Returns the current chat abuse-prevention and cost-control limits. All values are non-negative integers; 0 means no limit.
+      operationId: getChatLimitsSettings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current chat limits settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatLimitsSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Admin
+      summary: Update chat limits settings
+      description: Saves chat limits. All fields are required. Pass 0 to disable a limit.
+      operationId: updateChatLimitsSettings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatLimitsSettingsRequest'
+      responses:
+        '200':
+          description: Updated chat limits settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatLimitsSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /admin/settings/llm/test:
     post:
       tags:
@@ -1556,6 +1603,68 @@ components:
         default_fallback_message:
           type: string
           description: The built-in default fallback message used when fallback_message is null.
+    ChatLimitsSettingsResponse:
+      type: object
+      required:
+        - max_message_chars
+        - message_interval_seconds
+        - session_requests_per_hour
+        - ip_requests_per_hour
+        - daily_requests_per_ip
+        - daily_requests_global
+      properties:
+        max_message_chars:
+          type: integer
+          minimum: 0
+          description: Max characters per user message. 0 = no limit.
+        message_interval_seconds:
+          type: integer
+          minimum: 0
+          description: Minimum seconds between messages in the same session. 0 = no limit.
+        session_requests_per_hour:
+          type: integer
+          minimum: 0
+          description: Max requests per session per hour. 0 = no limit.
+        ip_requests_per_hour:
+          type: integer
+          minimum: 0
+          description: Max requests per IP per hour. 0 = no limit.
+        daily_requests_per_ip:
+          type: integer
+          minimum: 0
+          description: Max requests per IP per rolling 24 h. 0 = no limit.
+        daily_requests_global:
+          type: integer
+          minimum: 0
+          description: Max requests across all IPs per rolling 24 h. 0 = no limit.
+    UpdateChatLimitsSettingsRequest:
+      type: object
+      required:
+        - max_message_chars
+        - message_interval_seconds
+        - session_requests_per_hour
+        - ip_requests_per_hour
+        - daily_requests_per_ip
+        - daily_requests_global
+      properties:
+        max_message_chars:
+          type: integer
+          minimum: 0
+        message_interval_seconds:
+          type: integer
+          minimum: 0
+        session_requests_per_hour:
+          type: integer
+          minimum: 0
+        ip_requests_per_hour:
+          type: integer
+          minimum: 0
+        daily_requests_per_ip:
+          type: integer
+          minimum: 0
+        daily_requests_global:
+          type: integer
+          minimum: 0
     UpdateChatSettingsRequest:
       type: object
       properties:

@@ -15,6 +15,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
@@ -45,6 +46,7 @@ final class ChatHttpTest extends TestCase
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);
+        ChatLimitsSchemaSetup::create($executor);
         $this->seedCorpus($executor);
     }
 

@@ -283,3 +283,20 @@ export interface UpdateChatSettingsRequest {
   fallback_message?: string | null;
 }
 
+export interface ChatLimitsSettingsResponse {
+  max_message_chars: number;
+  message_interval_seconds: number;
+  session_requests_per_hour: number;
+  ip_requests_per_hour: number;
+  daily_requests_per_ip: number;
+  daily_requests_global: number;
+}
+
+export interface UpdateChatLimitsSettingsRequest {
+  max_message_chars: number;
+  message_interval_seconds: number;
+  session_requests_per_hour: number;
+  ip_requests_per_hour: number;
+  daily_requests_per_ip: number;
+  daily_requests_global: number;
+}

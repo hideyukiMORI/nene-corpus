@@ -10,6 +10,7 @@ export {
 } from './appearance';
 export { getLlmSettings, updateLlmSettings, testLlmConnection } from './llm-settings';
 export { getChatSettings, updateChatSettings } from './chat-settings';
+export { getChatLimitsSettings, updateChatLimitsSettings } from './chat-limits';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
@@ -55,4 +56,6 @@ export type {
   TestLlmConnectionRequest,
   ChatSettingsResponse,
   UpdateChatSettingsRequest,
+  ChatLimitsSettingsResponse,
+  UpdateChatLimitsSettingsRequest,
 } from './types';

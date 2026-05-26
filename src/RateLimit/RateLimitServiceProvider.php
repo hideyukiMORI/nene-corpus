@@ -10,6 +10,7 @@ use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
+use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
 use Psr\Container\ContainerInterface;
 
 final readonly class RateLimitServiceProvider implements ServiceProviderInterface
@@ -19,10 +20,6 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
     public function register(ContainerBuilder $builder): void
     {
         $builder
-            ->set(
-                ChatRateLimitConfig::class,
-                static fn (ContainerInterface $container): ChatRateLimitConfig => ChatRateLimitConfig::fromEnvironment(),
-            )
             ->set(
                 RateLimitStorageInterface::class,
                 static function (ContainerInterface $container): RateLimitStorageInterface {
@@ -40,7 +37,7 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                 static function (ContainerInterface $container): ConsumerChatRateLimitMiddleware {
                     $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
                     $storage = $container->get(RateLimitStorageInterface::class);
-                    $config = $container->get(ChatRateLimitConfig::class);
+                    $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
 
                     if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
                         throw new LogicException('Problem details response factory service is invalid.');
@@ -50,11 +47,11 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Rate limit storage service is invalid.');
                     }
 
-                    if (!$config instanceof ChatRateLimitConfig) {
-                        throw new LogicException('Chat rate limit config service is invalid.');
+                    if (!$limitsRepository instanceof ChatLimitsRepositoryInterface) {
+                        throw new LogicException('Chat limits repository service is invalid.');
                     }
 
-                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $config);
+                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository);
                 },
             );
     }
