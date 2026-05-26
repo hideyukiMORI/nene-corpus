@@ -284,6 +284,8 @@ export const Msg = {
       assistantAvatarImageRemove: 'admin.appearance.assistantAvatarImageRemove',
       assistantAvatarImageUploadFailed: 'admin.appearance.assistantAvatarImageUploadFailed',
       assistantAvatarImageTooLarge: 'admin.appearance.assistantAvatarImageTooLarge',
+      customCssTitle: 'admin.appearance.customCssTitle',
+      customCssHelp: 'admin.appearance.customCssHelp',
       save: 'admin.appearance.save',
       saving: 'admin.appearance.saving',
       saveSuccess: 'admin.appearance.saveSuccess',

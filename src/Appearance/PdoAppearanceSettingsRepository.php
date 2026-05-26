@@ -16,7 +16,7 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
     public function get(): AppearanceSettings
     {
         $row = $this->query->fetchOne(
-            'SELECT widget_locale, theme_json, hero_json, chat_json, layout_json FROM appearance_settings ORDER BY id ASC LIMIT 1',
+            'SELECT widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css FROM appearance_settings ORDER BY id ASC LIMIT 1',
         );
 
         if ($row === null) {
@@ -34,6 +34,7 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
             hero: WidgetHero::fromArray(is_array($heroDecoded) ? $heroDecoded : []),
             chat: WidgetChat::fromArray(is_array($chatDecoded) ? $chatDecoded : []),
             layout: WidgetLayout::fromArray(is_array($layoutDecoded) ? $layoutDecoded : []),
+            customCss: is_string($row['custom_css'] ?? null) ? $row['custom_css'] : null,
         );
     }
 
@@ -48,16 +49,16 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
 
         if ($existing === null) {
             $this->query->execute(
-                'INSERT INTO appearance_settings (widget_locale, theme_json, hero_json, chat_json, layout_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $now, $now],
+                'INSERT INTO appearance_settings (widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, $now],
             );
 
             return;
         }
 
         $this->query->execute(
-            'UPDATE appearance_settings SET widget_locale = ?, theme_json = ?, hero_json = ?, chat_json = ?, layout_json = ?, updated_at = ? WHERE id = ?',
-            [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $now, (int) $existing['id']],
+            'UPDATE appearance_settings SET widget_locale = ?, theme_json = ?, hero_json = ?, chat_json = ?, layout_json = ?, custom_css = ?, updated_at = ? WHERE id = ?',
+            [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, (int) $existing['id']],
         );
     }
 }

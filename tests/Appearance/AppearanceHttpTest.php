@@ -519,6 +519,77 @@ final class AppearanceHttpTest extends TestCase
         self::assertSame(422, $response->getStatusCode());
     }
 
+    public function test_admin_can_save_and_retrieve_custom_css(): void
+    {
+        $token = $this->loginToken();
+
+        $css = '.nene-corpus-root { --test: 1; }';
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => self::defaultLayoutPayload(),
+            'custom_css' => $css,
+        ]);
+
+        self::assertSame(200, $response->getStatusCode());
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame($css, $payload['custom_css']);
+
+        $public = $this->decodeJson($this->dispatch('GET', '/widget/appearance'));
+
+        self::assertSame($css, $public['custom_css']);
+    }
+
+    public function test_update_rejects_forbidden_css_pattern(): void
+    {
+        $token = $this->loginToken();
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => self::defaultLayoutPayload(),
+            'custom_css' => '.x { background: url(https://evil.example/img.png); }',
+        ]);
+
+        self::assertSame(422, $response->getStatusCode());
+    }
+
+    public function test_custom_css_null_clears_value(): void
+    {
+        $token = $this->loginToken();
+
+        $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => self::defaultLayoutPayload(),
+            'custom_css' => '.nene-corpus-root { color: red; }',
+        ]);
+
+        $response = $this->authorizedPut($token, [
+            'widget_locale' => null,
+            'theme' => self::defaultThemePayload(),
+            'hero' => self::defaultHeroPayload(),
+            'chat' => self::defaultChatPayload(),
+            'layout' => self::defaultLayoutPayload(),
+            'custom_css' => null,
+        ]);
+
+        self::assertSame(200, $response->getStatusCode());
+
+        $payload = $this->decodeJson($response);
+
+        self::assertNull($payload['custom_css']);
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -111,6 +111,7 @@ final class CorpusSchemaSetup
                     hero_json TEXT NULL,
                     chat_json TEXT NULL,
                     layout_json TEXT NULL,
+                    custom_css TEXT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )
