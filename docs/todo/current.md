@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (session 3)
+Last updated: 2026-05-26 (session 4)
 
 ## 最近の docs 更新
 
@@ -11,6 +11,7 @@ Last updated: 2026-05-26 (session 3)
 - Tier A 完了 — web installer (#101)、release ZIP (#103)、shared-hosting docs (#105)
 - **CLAUDE.md 拡充 (#157)** — Cursor ルール統合・現在状態・バックログ・アーキテクチャ規約を追記（Claude Code 単独起動対応）
 - **Phase 3+ バックログ完了** — #160 #163 #165 #167 #169 をすべてマージ。未着手 Issue ゼロ。
+- **Admin UI UX 改善 (session 4)** — #171 #173 #175 #177 #179 #181 をすべてマージ。
 
 ## 状態サマリー
 
@@ -67,7 +68,13 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ソース表・一覧の折り返し** | ✅ #159 — `break-all min-w-0 max-w-xs` / `break-words` でソース名・ドキュメントタイトルの折り返し対応 |
 | P2 | **ドキュメント一覧ページング** | ✅ #160 — PAGE_SIZE=50 / offset 制御 / prev・next ボタン |
 | P2 | **ドキュメント検索（ソース内）** | ✅ #160 — タイトル LIKE 検索フォーム（AbortController パターン） |
-| P2 | **編集 UI をモーダル/ドロワー化** | ✅ #167 — \`<dialog>\` モーダル化（backdrop/ESC 閉じ・一覧位置維持） |
+| P2 | **編集 UI をモーダル/ドロワー化** | ✅ #167 — `<dialog>` モーダル化（backdrop/ESC 閉じ・一覧位置維持） |
+| P2 | **overflow 全体対応** | ✅ #171 — 会話ログ・チャンクプレビュー・PDF プレビューに `break-words` 追加 |
+| P2 | **vite alias 修正** | ✅ #173 — `@nene-corpus/api-client/chat-settings` alias 追加（build:release ENOTDIR 修正） |
+| P2 | **編集モーダル中央寄せ** | ✅ #175 — `<dialog>` に `m-auto` を追加（Tailwind preflight リセット対応） |
+| P2 | **ドキュメントパネルを全画面2カラムモーダル化** | ✅ #177 — アコーディオン廃止・`<dialog>` 2カラムレイアウト（リスト左・編集右） |
+| P2 | **ページャ強化（件数・ページ指定）** | ✅ #179 — 件数セレクタ（25/50/100/200）・直接ページ番号入力追加 |
+| P2 | **ページ入力 change/blur ジャンプ** | ✅ #181 — controlled input 化・スピナークリックでも即ジャンプ |
 
 ### Widget / チャット UX
 
