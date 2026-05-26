@@ -20,12 +20,12 @@ const BRAND_DARK = '#3a6e62';
 const BRAND_LIGHT= '#e6f2ef';
 
 const LOCALES = [
-  { id: 'ja',      lang: 'ja',    label: '日本語' },
-  { id: 'en',      lang: 'en',    label: 'English' },
-  { id: 'de',      lang: 'de',    label: 'Deutsch' },
-  { id: 'fr',      lang: 'fr',    label: 'Français' },
-  { id: 'zh-hans', lang: 'zh-Hans', label: '中文' },
-  { id: 'pt-br',   lang: 'pt-BR', label: 'Português' },
+  { id: 'ja',      lang: 'ja',     label: '日本語',   googleFont: 'Noto+Sans+JP:wght@400;500;700;900',      fontFamily: '"Noto Sans JP", system-ui, sans-serif' },
+  { id: 'en',      lang: 'en',     label: 'English',  googleFont: 'Inter:wght@400;500;600;700;800;900',     fontFamily: '"Inter", system-ui, sans-serif' },
+  { id: 'de',      lang: 'de',     label: 'Deutsch',  googleFont: 'Inter:wght@400;500;600;700;800;900',     fontFamily: '"Inter", system-ui, sans-serif' },
+  { id: 'fr',      lang: 'fr',     label: 'Français', googleFont: 'Inter:wght@400;500;600;700;800;900',     fontFamily: '"Inter", system-ui, sans-serif' },
+  { id: 'zh-hans', lang: 'zh-Hans', label: '中文',    googleFont: 'Noto+Sans+SC:wght@400;500;700;900',     fontFamily: '"Noto Sans SC", system-ui, sans-serif' },
+  { id: 'pt-br',   lang: 'pt-BR', label: 'Português', googleFont: 'Inter:wght@400;500;600;700;800;900',    fontFamily: '"Inter", system-ui, sans-serif' },
 ];
 
 // ── SVG イラスト ────────────────────────────────────────────────────────────
@@ -286,8 +286,21 @@ const DISCLAIMER = {
 
 // ── HTML ページ生成 ──────────────────────────────────────────────────────────
 
+/**
+ * ロケール文字列をHTMLに安全に変換する
+ * - バッククォート `...` → <code> タグ（中身をHTMLエスケープ）
+ * - <script> 等の生タグがブラウザに誤解釈されるのを防ぐ
+ */
+function renderText(str) {
+  return String(str).replace(/`([^`]*)`/g, (_, code) => {
+    const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<code class="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-[0.85em] font-mono">${escaped}</code>`;
+  });
+}
+
 function buildPage(locale, msgs, allLocales) {
-  const t = (key) => msgs[key] ?? key;
+  // t() はバッククォートを <code> に変換してHTMLエスケープ済みの文字列を返す
+  const t = (key) => renderText(msgs[key] ?? key);
 
   const langLinks = allLocales
     .map(({ id, label }) =>
@@ -367,6 +380,9 @@ function buildPage(locale, msgs, allLocales) {
   <meta property="og:title" content="${t('meta.title')}"/>
   <meta property="og:description" content="${t('meta.description')}"/>
   <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=${locale.googleFont}&display=swap" rel="stylesheet"/>
   <script>
     /* Tailwind Play CDN: config must be set BEFORE the CDN script loads */
     tailwind = { config: {
@@ -376,7 +392,7 @@ function buildPage(locale, msgs, allLocales) {
             brand: { DEFAULT:'${BRAND}', dark:'${BRAND_DARK}', light:'${BRAND_LIGHT}' },
           },
           fontFamily: {
-            sans: ['Inter','system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','sans-serif'],
+            sans: [${locale.fontFamily.split(',').map(f => `'${f.trim().replace(/"/g,"")}'`).join(',')},'system-ui','sans-serif'],
           },
         },
       },
@@ -385,6 +401,7 @@ function buildPage(locale, msgs, allLocales) {
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html { scroll-behavior:smooth; }
+    body { font-family: ${locale.fontFamily}, sans-serif; }
     details summary::-webkit-details-marker { display:none; }
     pre code { font-family:'Menlo','Monaco','Consolas',monospace; }
     .bento-card { border-radius:1.5rem; overflow:hidden; border:1px solid #f1f5f9; background:white; transition:box-shadow .25s,transform .25s; }
