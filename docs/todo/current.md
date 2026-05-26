@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-26 (session 4)
+Last updated: 2026-05-28
 
 ## 最近の docs 更新
 
@@ -12,6 +12,8 @@ Last updated: 2026-05-26 (session 4)
 - **CLAUDE.md 拡充 (#157)** — Cursor ルール統合・現在状態・バックログ・アーキテクチャ規約を追記（Claude Code 単独起動対応）
 - **Phase 3+ バックログ完了** — #160 #163 #165 #167 #169 をすべてマージ。未着手 Issue ゼロ。
 - **Admin UI UX 改善 (session 4)** — #171 #173 #175 #177 #179 #181 をすべてマージ。
+- **チャット利用制限 Phase A (#197 / PR #198)** — LLM 設定アコーディオン化 (#195)、ConversationLogsPanel Modal 化 (#193)、chat_limits_settings テーブル・ChatLimits モジュール・Admin UI（6 設定 + 4 プリセット）を実装。
+- **チャット日次トークン制限 Phase B (#199 / PR #200)** — input/output トークン数の記録と日次トークン予算チェック（IP 別・グローバル）を実装。
 
 ## 状態サマリー
 
@@ -98,6 +100,9 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | --- | --- | --- |
 | P1 | **LLM API キー管理 UI** | ✅ #130 — マスク表示・接続テスト・`.env` 更新（ADR 0004） |
 | P2 | **プロンプト / スコープ / フォールバック設定** | ✅ #163 — カスタムシステムプロンプト・フォールバックメッセージ UI（ChatSettingsPanel） |
+| P2 | **LLM 設定アコーディオン化** | ✅ #195 — デフォルト閉・遅延ロード・nc-panel 統一 |
+| P2 | **チャット利用制限 Phase A** | ✅ #197 — 文字数・インターバル・時間別/日次リクエスト制限 + Admin UI（4 プリセット） |
+| P2 | **チャット日次トークン制限 Phase B** | ✅ #199 — input/output トークン記録・日次トークン予算（IP 別・グローバル） |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
