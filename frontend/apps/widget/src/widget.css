@@ -410,3 +410,19 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* アクセシビリティ: モーション低減設定ではアニメーションを無効化 */
+@media (prefers-reduced-motion: reduce) {
+  .nene-corpus-chat__row {
+    animation: none;
+  }
+
+  .nene-corpus-chat__typing-dots span {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .nene-corpus-chat__messages {
+    scroll-behavior: auto;
+  }
+}
