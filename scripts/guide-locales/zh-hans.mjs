@@ -53,6 +53,7 @@ export default {
   'forAdmin.step4.title': '嵌入组件',
   'forAdmin.step4.desc': '从设置 → 设计选项卡复制嵌入代码，粘贴到页面 &lt;/body&gt; 之前。完成。',
   'forAdmin.embedCaption': '嵌入代码（从设置 → 设计选项卡复制）',
+  'forAdmin.howtoLink': '逐步教程 →',
 
   'forUser.title': '使用聊天组件',
   'forUser.subtitle': '聊天组件操作直观，3 步即可上手。',

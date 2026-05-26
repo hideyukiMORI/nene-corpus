@@ -53,6 +53,7 @@ export default {
   'forAdmin.step4.title': 'Widget einbetten',
   'forAdmin.step4.desc': 'Einbettungscode aus Einstellungen → Design kopieren und direkt vor &lt;/body&gt; einfügen. Fertig.',
   'forAdmin.embedCaption': 'Einbettungscode (aus Einstellungen → Design kopieren)',
+  'forAdmin.howtoLink': 'Schritt-für-Schritt-Tutorial →',
 
   'forUser.title': 'Chat-Widget verwenden',
   'forUser.subtitle': 'Das Widget ist intuitiv. So funktioniert es in 3 Schritten.',

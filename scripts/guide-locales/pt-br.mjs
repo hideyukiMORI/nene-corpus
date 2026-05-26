@@ -53,6 +53,7 @@ export default {
   'forAdmin.step4.title': 'Incorporar o Widget',
   'forAdmin.step4.desc': 'Copie o código de incorporação de Configurações → Design e cole logo antes de &lt;/body&gt;. Pronto.',
   'forAdmin.embedCaption': 'Código de incorporação (copiar de Configurações → Design)',
+  'forAdmin.howtoLink': 'Tutorial passo a passo →',
 
   'forUser.title': 'Usando o Widget de Chat',
   'forUser.subtitle': 'O widget é intuitivo. Veja como funciona em 3 passos.',

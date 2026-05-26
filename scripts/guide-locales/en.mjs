@@ -53,6 +53,7 @@ export default {
   'forAdmin.step4.title': 'Embed the Widget',
   'forAdmin.step4.desc': 'Copy the embed code from Settings → Design and paste it just before &lt;/body&gt;. That\'s all it takes to go live.',
   'forAdmin.embedCaption': 'Embed code (copy from Settings → Design)',
+  'forAdmin.howtoLink': 'Step-by-step tutorial →',
 
   'forUser.title': 'Using the Chat Widget',
   'forUser.subtitle': 'The widget is intuitive. Here\'s how it works in 3 steps.',
