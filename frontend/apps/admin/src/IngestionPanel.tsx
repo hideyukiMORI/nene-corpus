@@ -43,6 +43,7 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
     setMode(next);
     setFile(null);
     setTextBody('');
+    setSuccess(null);
     resetPreview();
   }
 
@@ -53,15 +54,22 @@ export function IngestionPanel({ token, onUploaded }: IngestionPanelProps) {
     setContentColumns([]);
     setMetadataColumns([]);
     setError(null);
-    setSuccess(null);
+    // NOTE: success is intentionally NOT cleared here.
+    // Callers that want to clear it (mode switch, new file selection) do so explicitly.
+    // This prevents React 18 batching from erasing the success message when
+    // handleIngest calls handleFileChange(null) immediately after setSuccess().
   }
 
   function handleFileChange(next: File | null): void {
     setFile(next);
     resetPreview();
 
-    if (next !== null && name.trim() === '') {
-      setName(next.name.replace(/\.(csv|pdf)$/i, ''));
+    if (next !== null) {
+      // New file selected — clear any previous success/error and auto-fill name
+      setSuccess(null);
+      if (name.trim() === '') {
+        setName(next.name.replace(/\.(csv|pdf)$/i, ''));
+      }
     }
   }
 
