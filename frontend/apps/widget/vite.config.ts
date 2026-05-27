@@ -6,7 +6,12 @@ import { workspacePackageFullReload } from '../../vite.workspace-package-full-re
 
 const appRoot = fileURLToPath(new URL('.', import.meta.url));
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  // Replace process.env.NODE_ENV at build time so the IIFE bundle works in
+  // browsers that do not have a `process` global (all standard browsers).
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(mode),
+  },
   plugins: [react(), workspacePackageFullReload(appRoot)],
   resolve: {
     alias: {
@@ -51,4 +56,4 @@ export default defineConfig({
     },
     cssCodeSplit: false,
   },
-});
+}));
