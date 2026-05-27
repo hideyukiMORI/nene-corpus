@@ -4,6 +4,8 @@
  */
 .nene-corpus-widget {
   --nc-color-primary: #2563eb;
+  --nc-color-on-primary: #ffffff;
+  --nc-color-error: #b91c1c;
   --nc-color-surface: #ffffff;
   --nc-color-text: #1f2937;
   --nc-font-family: system-ui, sans-serif;

@@ -75,13 +75,8 @@ export async function deleteDocument(
   documentId: number,
   apiBase = '',
 ): Promise<void> {
-  const response = await fetch(`${apiBase}/admin/documents/${documentId}`, {
+  await fetchJson<unknown>(`${apiBase}/admin/documents/${documentId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
-
-  if (!response.ok && response.status !== 204) {
-    const text = await response.text();
-    throw new Error(`HTTP ${response.status} for /admin/documents/${documentId}: ${text.slice(0, 160)}`);
-  }
 }

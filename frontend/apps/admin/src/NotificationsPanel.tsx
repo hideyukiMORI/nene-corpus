@@ -25,7 +25,7 @@ export function NotificationsPanel({ token }: NotificationsPanelProps) {
   const [smtpPassword, setSmtpPassword] = useState('');
   const [smtpEncryption, setSmtpEncryption] = useState<'tls' | 'ssl' | 'none'>('tls');
   const [smtpFromAddress, setSmtpFromAddress] = useState('');
-  const [smtpFromName, setSmtpFromName] = useState('NeNe Corpus');
+  const [smtpFromName, setSmtpFromName] = useState('');
   const [notifyEmail, setNotifyEmail] = useState('');
   const [rateLimitEnabled, setRateLimitEnabled] = useState(false);
   const [rateLimitCooldown, setRateLimitCooldown] = useState(60);
