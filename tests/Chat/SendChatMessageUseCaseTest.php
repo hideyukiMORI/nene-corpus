@@ -60,7 +60,7 @@ final class SendChatMessageUseCaseTest extends TestCase
                 ],
             ));
 
-        $limitsRepository = $this->createMock(ChatLimitsRepositoryInterface::class);
+        $limitsRepository = $this->createStub(ChatLimitsRepositoryInterface::class);
         $limitsRepository->method('get')->willReturn(new ChatLimitsSettings(
             maxMessageChars: 0,
             messageIntervalSeconds: 0,
@@ -71,7 +71,7 @@ final class SendChatMessageUseCaseTest extends TestCase
             dailyTokensPerIp: 0,
             dailyTokensGlobal: 0,
         ));
-        $tokenTracker = $this->createMock(ChatTokenTrackerInterface::class);
+        $tokenTracker = $this->createStub(ChatTokenTrackerInterface::class);
 
         $output = (new SendChatMessageUseCase(
             $sessions,
