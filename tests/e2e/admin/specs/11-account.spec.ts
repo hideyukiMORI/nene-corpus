@@ -172,4 +172,26 @@ test.describe('Account Settings', () => {
 
     await expect(page.locator('.text-red-600')).toBeVisible({ timeout: 6000 });
   });
+
+  test('11-08: change email — empty email field, HTML5 validation blocks API call', async ({
+    page,
+  }) => {
+    let emailCallMade = false;
+    await page.route('**/admin/auth/email', (route) => {
+      emailCallMade = true;
+      return route.continue();
+    });
+
+    await openSettingsSection(page, 'Account');
+
+    const emailInput = page.locator('input[type="email"]').first();
+    await emailInput.waitFor({ timeout: 8000 });
+    // Ensure empty (email input has required attr; HTML5 type="email" prevents invalid submission)
+    await emailInput.clear();
+
+    await page.locator('button:has-text("Change email")').first().click();
+
+    // HTML5 required / email validation should block the PUT call
+    expect(emailCallMade).toBe(false);
+  });
 });

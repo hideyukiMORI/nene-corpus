@@ -302,4 +302,62 @@ test.describe('Document Management', () => {
     // The component may debounce search — just verify the search field accepts input
     await expect(searchInput).toHaveValue('Beta');
   });
+
+  test('05-11: search returns 0 results — empty document message shown', async ({ page }) => {
+    await setupDocumentsPanel(page);
+
+    // Override documents route (LIFO: wins over setupDocumentsPanel's handler) to return empty
+    await page.route('**/admin/sources/1/documents**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(DOCUMENT_LIST_EMPTY),
+      }),
+    );
+
+    // Fill search and SUBMIT the form (search triggers on form submit / Enter, not typing alone)
+    const searchInput = page.locator('input[type="search"]').first();
+    await searchInput.fill('nonexistent-query-xyz-1234');
+    await searchInput.press('Enter');
+
+    await expect(page.locator('text=No documents in this source.')).toBeVisible({ timeout: 8000 });
+  });
+
+  test('05-12: empty title — HTML5 required blocks save, API not called', async ({ page }) => {
+    let saveCalled = false;
+    const detail = makeDocumentDetail({ document_id: 1, title: 'Document Alpha', content: 'content.' });
+
+    await page.route('**/admin/documents/1', async (route) => {
+      if (route.request().method() === 'GET') {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(detail) });
+      }
+      if (route.request().method() === 'PUT') {
+        saveCalled = true;
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(detail) });
+      }
+      return route.continue();
+    });
+
+    await setupDocumentsPanel(page);
+    await page.locator('text=Document Alpha').first().click();
+
+    const titleInput = page.locator('form.space-y-3 input[type="text"]');
+    await titleInput.waitFor({ timeout: 8000 });
+    // Clear the required field — HTML5 validation should block form submission
+    await titleInput.clear();
+    await page.locator('button:has-text("Save document")').click();
+
+    // HTML5 required attribute prevents PUT from being called
+    expect(saveCalled).toBe(false);
+  });
+
+  test('05-13: close documents panel — panel disappears', async ({ page }) => {
+    await setupDocumentsPanel(page);
+
+    // The panel header has button[aria-label="Close"] (renders as ✕ icon-only button)
+    await page.locator('button[aria-label="Close"]').first().click();
+
+    // Panel is gone — search input no longer visible
+    await expect(page.locator('input[type="search"]')).toHaveCount(0, { timeout: 6000 });
+  });
 });

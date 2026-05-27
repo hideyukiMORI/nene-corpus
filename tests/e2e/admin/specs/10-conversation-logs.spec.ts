@@ -186,6 +186,51 @@ test.describe('Conversation Logs', () => {
     }
   });
 
+  // ── Citations in message detail ─────────────────────────────────────────────
+
+  test('10-11: assistant message with citations — citation entries visible in log detail', async ({
+    page,
+  }) => {
+    await setupLogsPage(page, SESSION_LIST_THREE);
+
+    // Message with a citation (chunk_id: 1, page_number: 5)
+    const messagesWithCitations = {
+      session_id: 1,
+      messages: [
+        { message_id: 1, role: 'user', content: 'What is the return policy?', citations: [], created_at: '2025-01-15T10:00:00Z' },
+        {
+          message_id: 2,
+          role: 'assistant',
+          content: 'Returns are accepted within 30 days.',
+          citations: [
+            {
+              chunk_id: 1,
+              document_id: 1,
+              source_id: 1,
+              excerpt: 'Returns accepted within 30 days of purchase.',
+              page_number: 5,
+            },
+          ],
+          created_at: '2025-01-15T10:01:00Z',
+        },
+      ],
+    };
+
+    await page.route('**/admin/chat/sessions/1/messages**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(messagesWithCitations) }),
+    );
+
+    const openBtn = page.locator('button:has-text("View conversation logs"), button:has-text("View all"), button:has-text("Conversation logs")').last();
+    await openBtn.click();
+    await page.locator('[aria-modal="true"] tbody tr, dialog tbody tr, [role="dialog"] tbody tr').first().waitFor({ timeout: 6000 });
+    await page.locator('[aria-modal="true"] tbody tr, dialog tbody tr, [role="dialog"] tbody tr').first().click();
+
+    // Citation list renders: "Chunk {id}" text from i18n template
+    await expect(page.locator('text=Chunk 1').first()).toBeVisible({ timeout: 8000 });
+    // Page number rendered: "p.5"
+    await expect(page.locator('text=p.5').first()).toBeVisible({ timeout: 4000 });
+  });
+
   // ── Pagination ──────────────────────────────────────────────────────────────
 
   test('10-10: large session list — pagination info shown', async ({ page }) => {

@@ -140,6 +140,23 @@ test.describe('Usage Limits', () => {
     expect(count).toBeGreaterThanOrEqual(8);
   });
 
+  test('09-09: "🚀 Open" preset — sets max_message_chars to 2000', async ({ page }) => {
+    await page.route('**/admin/settings/limits', (route) => {
+      if (route.request().method() === 'GET') {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(DEFAULT_LIMITS) });
+      }
+      return route.continue();
+    });
+
+    await openSettingsSection(page, 'Usage Limits');
+    // Use emoji to uniquely identify "🚀 Open" preset button (avoids strict-mode match with other "Open" buttons)
+    await page.locator('button:has-text("🚀")').waitFor({ timeout: 8000 });
+    await page.locator('button:has-text("🚀")').click();
+
+    const charInput = page.locator('input[type="number"]').first();
+    await expect(charInput).toHaveValue('2000', { timeout: 4000 });
+  });
+
   // ── Save / Error ────────────────────────────────────────────────────────────
 
   test('09-08: save failure — error message shown', async ({ page }) => {

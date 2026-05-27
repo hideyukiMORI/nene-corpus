@@ -191,4 +191,31 @@ test.describe('LLM Settings', () => {
     await page.locator('button:has-text("Save")').first().click();
     await expect(page.locator('.text-red-600')).toBeVisible({ timeout: 6000 });
   });
+
+  test('07-10: all LLM form fields present — key input, model select, max_tokens, save and test buttons', async ({
+    page,
+  }) => {
+    await page.route('**/admin/settings/llm', (route) => {
+      if (route.request().method() === 'GET') {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(LLM_CONFIGURED) });
+      }
+      return route.continue();
+    });
+
+    await openSettingsSection(page, 'LLM');
+    await page.locator('button:has-text("Save")').first().waitFor({ timeout: 8000 });
+
+    // API key input (text or password)
+    await expect(
+      page.locator('input[placeholder*="key"], input[placeholder*="Key"], input[type="password"]').first(),
+    ).toBeVisible();
+    // Model select
+    await expect(page.locator('select').first()).toBeVisible();
+    // max_tokens numeric input
+    await expect(page.locator('input[type="number"]').first()).toBeVisible();
+    // Save button
+    await expect(page.locator('button:has-text("Save")').first()).toBeVisible();
+    // Test connection button
+    await expect(page.locator('button:has-text("Test connection")')).toBeVisible();
+  });
 });

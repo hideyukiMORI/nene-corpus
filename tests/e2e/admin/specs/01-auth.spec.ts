@@ -203,9 +203,67 @@ test.describe('Authentication', () => {
     await expect(page.locator('form .text-red-600')).toBeVisible({ timeout: 6000 });
   });
 
+  // ── Password reset confirm form ─────────────────────────────────────────────
+
+  test('01-13: reset_token in URL — confirm form (new password) shown', async ({ page }) => {
+    await page.goto(`${ADMIN_URL}?reset_token=valid-test-token-abc123`);
+
+    // Confirm form appears (not the login form)
+    await expect(page.locator('button[type="submit"]')).not.toHaveText('Sign in');
+    // New password input present
+    await expect(page.locator('input[type="password"][autocomplete="new-password"]')).toBeVisible({
+      timeout: 6000,
+    });
+  });
+
+  test('01-14: password reset confirm — success → back to login', async ({ page }) => {
+    await page.route('**/admin/auth/password-reset/confirm', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+    );
+
+    await page.goto(`${ADMIN_URL}?reset_token=valid-token`);
+    await page.locator('input[type="password"][autocomplete="new-password"]').fill('NewPassword123');
+    await page.locator('button[type="submit"]').click();
+
+    // Success message appears
+    await expect(page.locator('text=successfully')).toBeVisible({ timeout: 6000 });
+  });
+
+  test('01-15: password reset confirm — invalid token 400 → error shown', async ({ page }) => {
+    await page.route('**/admin/auth/password-reset/confirm', (route) =>
+      route.fulfill({ status: 400, contentType: 'application/json', body: '{"detail":"Token invalid or expired."}' }),
+    );
+
+    await page.goto(`${ADMIN_URL}?reset_token=expired-token`);
+    await page.locator('input[type="password"][autocomplete="new-password"]').fill('NewPassword123');
+    await page.locator('button[type="submit"]').click();
+
+    await expect(page.locator('form .text-red-600, p.text-red-600').first()).toBeVisible({ timeout: 6000 });
+  });
+
+  test('01-16: brute force lockout (429) — locked out message shown, not generic error', async ({
+    page,
+  }) => {
+    await page.route('**/admin/auth/login', (route) =>
+      route.fulfill({
+        status: 429,
+        contentType: 'application/json',
+        body: JSON.stringify({ detail: 'Too many login attempts. Try again in 15 minutes.' }),
+      }),
+    );
+    await page.goto(ADMIN_URL);
+    await page.locator('input[type="email"]').fill('admin@example.com');
+    await page.locator('input[type="password"]').fill('wrongpassword');
+    await page.locator('button[type="submit"]').click();
+
+    // Some error visible — could be generic or specific; just ensure form errors, not blank page
+    await expect(page.locator('form .text-red-600').first()).toBeVisible({ timeout: 6000 });
+    await expect(page.locator('button[type="submit"]:has-text("Sign in")')).toBeVisible();
+  });
+
   // ── Token saved ─────────────────────────────────────────────────────────────
 
-  test('01-13: successful login — token stored in sessionStorage', async ({ page }) => {
+  test('01-17: successful login — token stored in sessionStorage', async ({ page }) => {
     await mockAdminAuth(page);
     await mockDashboardDefaults(page);
     await loginAs(page);

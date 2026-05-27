@@ -230,4 +230,13 @@ test.describe('Source Management', () => {
     await setupSourcesPage(page, failedSource);
     await expect(page.locator('tbody')).toContainText('Failed');
   });
+
+  test('04-13: processing source shows "processing" status badge', async ({ page }) => {
+    const processingSource = {
+      sources: [makeSource({ source_id: 1, name: 'Ingesting Source', status: 'processing' })],
+      total: 1,
+    };
+    await setupSourcesPage(page, processingSource);
+    await expect(page.locator('tbody')).toContainText(/Processing|Ingesting/i);
+  });
 });

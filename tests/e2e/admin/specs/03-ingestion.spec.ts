@@ -247,4 +247,83 @@ test.describe('Content Ingestion', () => {
       timeout: 8000,
     });
   });
+
+  // ── Additional coverage ─────────────────────────────────────────────────────
+
+  test('03-11: file mode PDF — full ingest flow → success message', async ({ page }) => {
+    await page.route('**/admin/ingestion/pdf/preview', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(PDF_PREVIEW) }),
+    );
+    await page.route('**/admin/sources', (route) => {
+      if (route.request().method() === 'POST') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(CREATE_SOURCE_RESULT),
+        });
+      }
+      return route.continue();
+    });
+
+    await page.locator('button:has-text("File upload")').click();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'manual.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from('%PDF-1.4 fake pdf content for ingest test'),
+    });
+    await page.locator('button:has-text("Preview file")').click();
+    await page.locator('text=10 pages').waitFor({ timeout: 8000 });
+
+    // PDF ingest needs no column mapping — button should be enabled
+    await page.locator('button:has-text("Ingest into corpus")').click();
+    await expect(page.locator('.text-emerald-700').first()).toBeVisible({ timeout: 8000 });
+  });
+
+  test('03-12: unsupported file type (.docx) — error shown, no preview button', async ({
+    page,
+  }) => {
+    await page.locator('button:has-text("File upload")').click();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'report.docx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      buffer: Buffer.from('fake docx content'),
+    });
+
+    // Preview button should not appear — unsupported type warning shown
+    await expect(page.locator('.text-red-600').first()).toBeVisible({ timeout: 6000 });
+    await expect(page.locator('button:has-text("Preview file")')).toHaveCount(0);
+  });
+
+  test('03-13: CSV — Ingest button disabled after unchecking all content columns', async ({
+    page,
+  }) => {
+    await page.route('**/admin/ingestion/csv/preview', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(CSV_PREVIEW) }),
+    );
+
+    await page.locator('button:has-text("File upload")').click();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: 'catalog.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from('title,description\nA,B'),
+    });
+    await page.locator('button:has-text("Preview file")').click();
+    await page.locator('text=50 rows').waitFor({ timeout: 8000 });
+
+    // After preview, columns are auto-selected → Ingest button enabled
+    const ingestBtn = page.locator('button:has-text("Ingest into corpus")');
+    await expect(ingestBtn).toBeEnabled({ timeout: 4000 });
+
+    // Uncheck ALL content columns → Ingest button should become disabled
+    const contentGroup = page.getByRole('group', { name: /Content columns/i });
+    const contentCheckboxes = contentGroup.locator('input[type="checkbox"]');
+    const count = await contentCheckboxes.count();
+    for (let i = 0; i < count; i++) {
+      if (await contentCheckboxes.nth(i).isChecked()) {
+        await contentCheckboxes.nth(i).uncheck();
+      }
+    }
+
+    await expect(ingestBtn).toBeDisabled({ timeout: 4000 });
+  });
 });

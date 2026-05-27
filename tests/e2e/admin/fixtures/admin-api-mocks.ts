@@ -311,17 +311,32 @@ export const CREATE_SOURCE_RESULT = {
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 
+// Matches NotificationSettings interface in packages/api-client/src/notifications.ts
 export const DEFAULT_NOTIFICATION_SETTINGS = {
   smtp_host: '',
   smtp_port: 587,
   smtp_username: '',
-  smtp_password: '',
-  smtp_encryption: 'tls',
+  smtp_password_set: false,
+  smtp_encryption: 'tls' as const,
   smtp_from_address: '',
   smtp_from_name: '',
+  smtp_configured: false,
   notify_email: '',
-  rate_limit_notification_enabled: false,
-  rate_limit_notification_cooldown_minutes: 60,
+  rate_limit_notify_enabled: false,
+  rate_limit_cooldown_minutes: 60,
   daily_report_enabled: false,
-  webhook_token: null,
+  daily_report_token: '',
+};
+
+// Notification settings with SMTP configured (enables test-mail button)
+export const CONFIGURED_NOTIFICATION_SETTINGS = {
+  ...DEFAULT_NOTIFICATION_SETTINGS,
+  smtp_host: 'smtp.example.com',
+  smtp_port: 587,
+  smtp_username: 'notifications@example.com',
+  smtp_password_set: true,
+  smtp_from_address: 'noreply@example.com',
+  smtp_from_name: 'NeNe Corpus',
+  smtp_configured: true,
+  notify_email: 'admin@example.com',
 };
