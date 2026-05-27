@@ -1,9 +1,10 @@
 # Current Work
 
-Last updated: 2026-05-28 (PR #251, commit 40e3b91)
+Last updated: 2026-05-28 (Issue #253, commit 17bd890)
 
 ## 最近の docs 更新
 
+- **ペルソナ UX シナリオテスト (#253)** — 20 業種 × 10 行動パターン = 200 ペルソナ E2E。全 7 チェックポイント完走。200/200 グリーン（231s）。主要知見: ソース取り込み CP3 が最大摩擦点（実行可能シナリオ 73% 失敗）。P1〜P3 改善提案付き UX 分析レポートを `docs/research/2026-05-28-persona-ux-analysis.md` に保存。
 - **Admin E2E テストスイート拡充 (#250)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。
   新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。
   既存スペック全 12 ファイルに認証・LLM・限度・会話ログ・アカウント各テストを追加。157/157 グリーン。
@@ -122,7 +123,8 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ペルソナ HOWTO セットアップガイド** | ✅ #222 — /guide/howto/{locale}/、さくら（カフェオーナー）吹き出し×4ステップ + デモチャット、6ロケール |
 | 🔴 | **ログインブルートフォース対策** | ✅ #224 (PR #225) — AdminLoginRateLimitMiddleware（IP 別 10 回/15 分、rate_limit_buckets 再利用） |
 | 🔴 | **パスワードリセット** | ✅ #226 (PR #227) — メール経由リセットフロー（SHA-256 ハッシュ保存・列挙防止・1時間 TTL・使い捨てトークン） + Admin UI（忘れた場合リンク・リクエスト/確認フォーム）、6 ロケール |
-| 🟡 | **Admin E2E テスト** | ✅ #250 (PR #251) — Playwright E2E 119 件（01–12 全スペック・API モック・ingestion バグ修正） |
+| 🟡 | **Admin E2E テスト** | ✅ #250 (PR #251) — Playwright E2E 157 件（119→157、ギャップ補完 38 件・widget chat・notifications スペック追加） |
+| 🟡 | **ペルソナ UX シナリオテスト** | ✅ #253 — 200ペルソナ E2E（20業種×10行動パターン）、全7チェックポイント、200/200 pass (231s)、UX 分析レポート (`docs/research/2026-05-28-persona-ux-analysis.md`) |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
