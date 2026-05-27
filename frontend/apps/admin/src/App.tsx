@@ -4,6 +4,7 @@ import { getLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { LoginForm, SourcesPanel } from './SourcesPanel';
 import { IngestionPanel } from './IngestionPanel';
 import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLogsPanel';
+import { AnalyticsPanel } from './AnalyticsPanel';
 import { LlmUnconfiguredBanner } from './LlmUnconfiguredBanner';
 import { SettingsModal } from './SettingsModal';
 import type { SettingsSection } from './SettingsModal';
@@ -137,6 +138,7 @@ export function App() {
               onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
             />
             {/* ── 運用監視 ── */}
+            <AnalyticsPanel token={token} />
             <ConversationLogsSummary
               token={token}
               onOpenLogs={() => setLogsOpen(true)}
