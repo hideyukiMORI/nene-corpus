@@ -14,6 +14,8 @@ export { getChatLimitsSettings, updateChatLimitsSettings } from './chat-limits';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
+export { getAnalyticsSummary, getTopQuestions, buildExportUrl } from './analytics';
+export type { AnalyticsSummaryResponse, AnalyticsDailyCount, AnalyticsHourlyCount, TopQuestion, TopQuestionsResponse } from './analytics';
 export { fetchJson } from './fetch-json';
 export { DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_LAYOUT } from './types';
 export type {
