@@ -108,6 +108,42 @@ export async function mockMessageSequence(page: Page, responses: Array<{ status:
   });
 }
 
+/** Mock /chat/messages with an artificial delay (ms) before each response */
+export async function mockMessageDelayed(
+  page: Page,
+  delayMs: number,
+  body: object = DEFAULT_MESSAGE_RESPONSE,
+): Promise<void> {
+  await page.route('**/chat/messages', async (route: Route) => {
+    await new Promise((r) => setTimeout(r, delayMs));
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(body),
+    });
+  });
+}
+
+/** Mock /chat/messages with a delay sequence */
+export async function mockMessageDelayedSequence(
+  page: Page,
+  responses: Array<{ status: number; body: object; delayMs?: number }>,
+): Promise<void> {
+  let callIndex = 0;
+  await page.route('**/chat/messages', async (route: Route) => {
+    const resp = responses[callIndex] ?? responses[responses.length - 1];
+    callIndex++;
+    if (resp.delayMs) {
+      await new Promise((r) => setTimeout(r, resp.delayMs));
+    }
+    return route.fulfill({
+      status: resp.status,
+      contentType: 'application/json',
+      body: JSON.stringify(resp.body),
+    });
+  });
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Standard setup
 // ──────────────────────────────────────────────────────────────────────────────
@@ -194,4 +230,64 @@ export async function getErrorText(page: Page): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Composite-scenario helpers
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Send a message and wait for the assistant response to appear.
+ * Returns the assistant bubble count after the exchange.
+ */
+export async function sendAndWait(page: Page, text: string): Promise<void> {
+  const beforeCount = await page.locator('.nene-corpus-chat__bubble--assistant').count();
+  await sendMessage(page, text);
+  await page.locator('.nene-corpus-chat__bubble--assistant').nth(beforeCount).waitFor({
+    timeout: 8000,
+  });
+}
+
+/**
+ * Send a message and wait for an error to appear.
+ * Useful for error-path steps in multi-turn flows.
+ */
+export async function sendAndWaitForError(page: Page, text: string): Promise<void> {
+  await sendMessage(page, text);
+  await page.locator('.nene-corpus-chat__error').waitFor({ timeout: 8000 });
+}
+
+/**
+ * Wait until the widget is idle: no pending bubble and input is enabled.
+ */
+export async function waitForIdle(page: Page): Promise<void> {
+  await page.locator('.nene-corpus-chat__bubble--pending').waitFor({
+    state: 'hidden',
+    timeout: 10000,
+  });
+  await page.locator('.nene-corpus-chat__input').waitFor({ state: 'visible', timeout: 4000 });
+  // Re-enabled check
+  await page.waitForFunction(
+    () => !(document.querySelector('.nene-corpus-chat__input') as HTMLInputElement)?.disabled,
+    { timeout: 6000 },
+  );
+}
+
+/** Get count of all user bubbles currently rendered */
+export async function getUserBubbleCount(page: Page): Promise<number> {
+  return page.locator('.nene-corpus-chat__bubble--user').count();
+}
+
+/** Get count of all assistant bubbles currently rendered */
+export async function getAssistantBubbleCount(page: Page): Promise<number> {
+  return page.locator('.nene-corpus-chat__bubble--assistant').count();
+}
+
+/** Get the Nth assistant message text (0-indexed) */
+export async function getAssistantTextAt(page: Page, index: number): Promise<string> {
+  const locator = page
+    .locator('.nene-corpus-chat__bubble--assistant .nene-corpus-chat__bubble-text')
+    .nth(index);
+  await locator.waitFor({ timeout: 8000 });
+  return locator.innerText();
 }

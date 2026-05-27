@@ -226,6 +226,54 @@ export const ANSWER_WITH_SPECIAL_EXCERPT = makeMessageResponse({
 // Error response bodies (HTTP 4xx / 5xx)
 // ──────────────────────────────────────────────────────────────────────────────
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Multi-turn conversation sequence helpers
+// ──────────────────────────────────────────────────────────────────────────────
+
+/** Build a response sequence for N successful turns with distinct content */
+export function buildConversationSequence(n: number) {
+  return Array.from({ length: n }, (_, i) =>
+    makeMessageResponse({
+      message_id: i + 1,
+      content: `Turn ${i + 1}: This is assistant response number ${i + 1}.`,
+      citations: [],
+    }),
+  );
+}
+
+/** A response carrying a unique ID string for order verification */
+export function makeTaggedResponse(tag: string, messageId = 1) {
+  return makeMessageResponse({
+    message_id: messageId,
+    content: `[${tag}] Response content for tag ${tag}.`,
+    citations: [],
+  });
+}
+
+/** Large response body (~5000 chars) for rendering stress tests */
+export const STRESS_LARGE_RESPONSE = makeMessageResponse({
+  content: Array(50)
+    .fill(
+      'This is a long response to stress-test DOM rendering. ' +
+        'Each sentence adds more text to the bubble to simulate verbose LLM output. ',
+    )
+    .join(''),
+  citations: [],
+});
+
+/** Response with 5 citations — citation-heavy stress test */
+export const ANSWER_WITH_FIVE_CITATIONS = makeMessageResponse({
+  content: 'Here is a comprehensive answer with multiple source references.',
+  citations: Array.from({ length: 5 }, (_, i) =>
+    makeCitation({
+      chunk_id: i + 1,
+      document_id: i + 1,
+      excerpt: `Source ${i + 1}: This excerpt supports part of the answer (index ${i + 1}).`,
+      ...(i % 2 === 0 ? { page_number: (i + 1) * 3 } : {}),
+    }),
+  ),
+});
+
 export const ERROR_BODIES = {
   // Rate limit patterns (429)
   RATE_LIMIT_SESSION_HOURLY: {
