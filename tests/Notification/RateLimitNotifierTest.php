@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NeneCorpus\Tests\Notification;
 
 use Nene2\Middleware\RateLimitStorageInterface;
-use NeneCorpus\Mail\MailSendException;
 use NeneCorpus\Mail\MailerInterface;
+use NeneCorpus\Mail\MailSendException;
 use NeneCorpus\Notification\NotificationConfig;
 use NeneCorpus\Notification\RateLimitNotifier;
 use PHPUnit\Framework\TestCase;

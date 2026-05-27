@@ -91,6 +91,7 @@ final class UpdateNotificationSettingsUseCaseTest extends TestCase
         );
     }
 
+    /** @param array<string, mixed> $overrides */
     private function makeInput(array $overrides = []): UpdateNotificationSettingsInput
     {
         return new UpdateNotificationSettingsInput(
@@ -145,7 +146,7 @@ final class UpdateNotificationSettingsUseCaseTest extends TestCase
         ]));
 
         // After execute, env should have the new password
-        self::assertSame('brandnewpass', $_ENV['MAIL_PASSWORD'] ?? '');
+        self::assertSame('brandnewpass', (string) $_ENV['MAIL_PASSWORD']);
     }
 
     public function test_regenerates_daily_report_token_when_requested(): void
