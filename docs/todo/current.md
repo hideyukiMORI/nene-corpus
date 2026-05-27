@@ -1,9 +1,10 @@
 # Current Work
 
-Last updated: 2026-05-27 (PR #227)
+Last updated: 2026-05-28 (Issue #255, PR #256)
 
 ## 最近の docs 更新
 
+- **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
