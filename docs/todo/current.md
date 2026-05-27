@@ -1,13 +1,12 @@
 # Current Work
 
-Last updated: 2026-05-28 (Issue #253, commit 17bd890)
+Last updated: 2026-05-28 (Issue #255, PR #256)
 
 ## 最近の docs 更新
 
+- **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
 - **ペルソナ UX シナリオテスト (#253)** — 20 業種 × 10 行動パターン = 200 ペルソナ E2E。全 7 チェックポイント完走。200/200 グリーン（231s）。主要知見: ソース取り込み CP3 が最大摩擦点（実行可能シナリオ 73% 失敗）。P1〜P3 改善提案付き UX 分析レポートを `docs/research/2026-05-28-persona-ux-analysis.md` に保存。
-- **Admin E2E テストスイート拡充 (#250)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。
-  新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。
-  既存スペック全 12 ファイルに認証・LLM・限度・会話ログ・アカウント各テストを追加。157/157 グリーン。
+- **Admin E2E テストスイート拡充 (#250 #252)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。157/157 グリーン。
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)

@@ -13,6 +13,8 @@ use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\AdminJwtNotConfiguredExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidPasswordResetTokenExceptionHandler;
+use NeneCorpus\Analytics\AnalyticsRouteRegistrar;
+use NeneCorpus\Analytics\AnalyticsServiceProvider;
 use NeneCorpus\Appearance\AppearanceRouteRegistrar;
 use NeneCorpus\Appearance\AppearanceServiceProvider;
 use NeneCorpus\Chat\ChatRouteRegistrar;
@@ -74,6 +76,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new SettingsServiceProvider())
             ->addProvider(new ChatSettingsServiceProvider())
             ->addProvider(new NotificationServiceProvider())
+            ->addProvider(new AnalyticsServiceProvider())
             ->addProvider(new InstallServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
@@ -89,6 +92,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $chatSettings = $container->get(ChatSettingsServiceProvider::ROUTE_REGISTRAR);
                     $chatLimits = $container->get(ChatLimitsServiceProvider::ROUTE_REGISTRAR);
                     $notification = $container->get(NotificationServiceProvider::ROUTE_REGISTRAR);
+                    $analytics = $container->get(AnalyticsServiceProvider::ROUTE_REGISTRAR);
                     $install = $container->get(InstallServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
@@ -135,11 +139,15 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Notification route registrar service is invalid.');
                     }
 
+                    if (!$analytics instanceof AnalyticsRouteRegistrar) {
+                        throw new LogicException('Analytics route registrar service is invalid.');
+                    }
+
                     if (!$install instanceof InstallRouteRegistrar) {
                         throw new LogicException('Install route registrar service is invalid.');
                     }
 
-                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification];
+                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification, $analytics];
                 },
             )
             ->set(
