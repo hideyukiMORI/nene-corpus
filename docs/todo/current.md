@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-05-27 (PR #227)
+Last updated: 2026-05-28 (PR #251)
 
 ## 最近の docs 更新
 
@@ -119,6 +119,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ペルソナ HOWTO セットアップガイド** | ✅ #222 — /guide/howto/{locale}/、さくら（カフェオーナー）吹き出し×4ステップ + デモチャット、6ロケール |
 | 🔴 | **ログインブルートフォース対策** | ✅ #224 (PR #225) — AdminLoginRateLimitMiddleware（IP 別 10 回/15 分、rate_limit_buckets 再利用） |
 | 🔴 | **パスワードリセット** | ✅ #226 (PR #227) — メール経由リセットフロー（SHA-256 ハッシュ保存・列挙防止・1時間 TTL・使い捨てトークン） + Admin UI（忘れた場合リンク・リクエスト/確認フォーム）、6 ロケール |
+| 🟡 | **Admin E2E テスト** | ✅ #250 (PR #251) — Playwright E2E 119 件（01–12 全スペック・API モック・ingestion バグ修正） |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
 
