@@ -1,9 +1,12 @@
 # Current Work
 
-Last updated: 2026-05-28 (PR #251)
+Last updated: 2026-05-28 (PR #251, commit 40e3b91)
 
 ## 最近の docs 更新
 
+- **Admin E2E テストスイート拡充 (#250)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。
+  新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。
+  既存スペック全 12 ファイルに認証・LLM・限度・会話ログ・アカウント各テストを追加。157/157 グリーン。
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
