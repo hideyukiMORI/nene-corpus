@@ -60,16 +60,24 @@ Goal: operable product without curl; Tier A install path.
 
 **Status: complete (2026-05-25).** Milestone: [`milestones/2026-05-admin-ui-and-widget.md`](./milestones/2026-05-admin-ui-and-widget.md).
 
-## Phase 3+: Operator UX & settings (backlog)
+## Phase 3+: Operator UX & settings ✅ 完了
 
 Goal: day-2 operations without SSH or hosting-panel `.env` edits where possible.
 
-- **Conversation log metadata** — client IP, User-Agent (optional referer) on session create; admin detail view; privacy/retention notes
-- **LLM API key management** — rotate or switch Anthropic account from Admin (installer is first-time only today); masked key, test-before-save, never expose full secret in API responses
-- **Prompt / scope / fallback settings UI** — deferred from Phase 3 roadmap line
-- Widget UX polish (HERO, bubbles, CSS motion) — see [`todo/current.md`](./todo/current.md)
+- **Conversation log metadata** ✅ — client IP, User-Agent, referer on session create; admin detail view
+- **LLM API key management** ✅ — masked key, test-before-save, `.env` update from Admin (#130)
+- **Prompt / scope / fallback settings UI** ✅ — custom system prompt, fallback message (#163)
+- **Widget UX polish** ✅ — HERO, speech bubbles, avatar upload, CSS motion, custom CSS (#133 #134 #146 #165 #169)
+- **Chat limits** ✅ — message length, rate intervals, daily token budget per IP and global (#197 #199)
+- **Email notifications** ✅ — limit-exceeded alerts, daily chat report (PHPMailer, cron, Admin UI) (#211)
+- **Settings modal** ✅ — full-screen `<dialog>` unifying LLM / chat / limits / appearance / account tabs (#204 #205 #208)
+- **Login brute-force protection** ✅ — IP-based 10 attempts / 15 min (#224)
+- **Password reset** ✅ — email flow with SHA-256 token, 1 h TTL, single-use (#226)
+- **Conversation analytics dashboard** ✅ — KPI cards, daily trend chart, hourly distribution, top questions, CSV/JSON export (#255)
+- **Admin E2E test suite** ✅ — 157 Playwright specs covering all major flows (#250 #252)
+- **Persona UX scenario tests** ✅ — 200 personas × 10 patterns, 200/200 pass, UX analysis report (#253)
 
-Issue 化してから実装。詳細バックログ: [`docs/todo/current.md`](./todo/current.md) § Phase 3+.
+詳細バックログ: [`docs/todo/current.md`](./todo/current.md).
 
 ## Phase 4: Upstream Integrations
 

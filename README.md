@@ -58,7 +58,7 @@ Ops / AI (MCP)         ───────────────────
 
 - **Backend**: PHP 8.4, NENE2, Handler → UseCase → Repository
 - **API contract**: OpenAPI 3.1 ([`docs/openapi/openapi.yaml`](./docs/openapi/openapi.yaml))
-- **Ingestion**: PDF text extraction, CSV row mapping (planned)
+- **Ingestion**: PDF text extraction, CSV row mapping, plain-text direct input
 - **Chat**: **sync JSON chat** + citations, rate limits; widget CSS for loading/motion UX
 - **Deploy**: dual path — [`docs/deployment/README.md`](./docs/deployment/README.md)
 
@@ -68,9 +68,13 @@ Phases 1–3 core deliverables are complete. See [`docs/roadmap.md`](./docs/road
 
 | Area | State |
 | --- | --- |
-| Corpus ingestion + admin API | ✅ |
-| Sync JSON chat + citations | ✅ |
-| Admin UI + embed widget | ✅ |
+| Corpus ingestion (PDF / CSV / plain text) + admin API | ✅ |
+| Sync JSON chat + citations + rate limits | ✅ |
+| Admin UI + embed widget (i18n 6 locales, custom CSS, avatar, HERO) | ✅ |
+| Operator settings (LLM key, chat limits, notifications, appearance) | ✅ |
+| Conversation analytics dashboard + CSV export | ✅ |
+| Brute-force protection + password reset | ✅ |
+| Admin E2E tests (157 Playwright specs) | ✅ |
 | Tier A — installer + release ZIP + operator docs | ✅ |
 | Phase 4 — upstream integrations | Planned |
 
