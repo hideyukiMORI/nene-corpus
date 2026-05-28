@@ -21,6 +21,8 @@ tags:
     description: Admin read-only access to consumer chat logs.
   - name: Install
     description: First-time web installer for Tier A deployments.
+  - name: Superadmin
+    description: スーパー管理者専用の操作。テナント解決方式の切替・組織の CRUD。
 paths:
   /install/status:
     get:
@@ -1308,6 +1310,228 @@ paths:
           $ref: '#/components/responses/ValidationFailed'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /admin/superadmin/system-config:
+    get:
+      tags:
+        - Superadmin
+      summary: Get system configuration
+      description: Returns the current tenant resolution mode and related system configuration. Requires superadmin role.
+      operationId: getSuperadminSystemConfig
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: System configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemConfig'
+              examples:
+                single:
+                  summary: Single-tenant (default)
+                  value:
+                    tenant_resolution_mode: single
+                    tenant_org_slug: default
+                    tenant_base_domain: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+        - Superadmin
+      summary: Update system configuration
+      description: Updates the tenant resolution mode and related settings. Requires superadmin role.
+      operationId: patchSuperadminSystemConfig
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemConfig'
+      responses:
+        '200':
+          description: Updated system configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/superadmin/organizations:
+    get:
+      tags:
+        - Superadmin
+      summary: List organizations
+      description: Returns a paginated list of all organizations. Requires superadmin role.
+      operationId: listSuperadminOrganizations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Organization list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOrganizationsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Superadmin
+      summary: Create organization
+      description: Creates a new organization. Requires superadmin role.
+      operationId: createSuperadminOrganization
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationRequest'
+      responses:
+        '201':
+          description: Organization created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/superadmin/organizations/{id}:
+    get:
+      tags:
+        - Superadmin
+      summary: Get organization
+      description: Returns a single organization by ID. Requires superadmin role.
+      operationId: getSuperadminOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Organization detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+        - Superadmin
+      summary: Update organization
+      description: Updates an existing organization. Requires superadmin role.
+      operationId: patchSuperadminOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationRequest'
+      responses:
+        '200':
+          description: Updated organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Superadmin
+      summary: Delete organization
+      description: Deletes an organization and all associated data. Requires superadmin role.
+      operationId: deleteSuperadminOrganization
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Organization deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:
@@ -1456,6 +1680,152 @@ components:
                 detail: Chat session rate limit exceeded.
                 instance: /chat/messages
   schemas:
+    TenantResolutionMode:
+      type: string
+      enum:
+        - single
+        - subdomain
+        - path
+      description: >
+        テナント解決方式。
+        `single` = シングルテナント（org_slug で固定）、
+        `subdomain` = サブドメインでテナント判定（将来拡張）、
+        `path` = URL パスプレフィックスでテナント判定（将来拡張）。
+    SystemConfig:
+      type: object
+      properties:
+        tenant_resolution_mode:
+          $ref: '#/components/schemas/TenantResolutionMode'
+        tenant_org_slug:
+          type: string
+          nullable: true
+          description: single モード時に使用する組織スラッグ。
+          example: default
+        tenant_base_domain:
+          type: string
+          nullable: true
+          description: subdomain モード時のベースドメイン。
+          example: example.com
+    Organization:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - plan
+        - is_active
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: 組織の表示名。
+          example: Acme Inc.
+        slug:
+          type: string
+          description: URL セーフな一意識別子。
+          example: acme
+        custom_domain:
+          type: string
+          nullable: true
+          description: サブドメインモード用のカスタムドメイン。
+          example: chat.acme.com
+        plan:
+          type: string
+          enum:
+            - free
+            - pro
+            - enterprise
+          description: 課金プラン。
+          example: free
+        is_active:
+          type: boolean
+          description: 組織が有効かどうか。
+          example: true
+        external_id:
+          type: string
+          nullable: true
+          description: NeNe Records 連携用の外部 ID。
+          example: nene-records-org-abc123
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateOrganizationRequest:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          description: 組織の表示名。
+          example: Acme Inc.
+        slug:
+          type: string
+          description: URL セーフな一意識別子（英数字とハイフンのみ）。
+          example: acme
+        custom_domain:
+          type: string
+          nullable: true
+          description: サブドメインモード用のカスタムドメイン。
+          example: chat.acme.com
+        plan:
+          type: string
+          enum:
+            - free
+            - pro
+            - enterprise
+          default: free
+        is_active:
+          type: boolean
+          default: true
+        external_id:
+          type: string
+          nullable: true
+          description: NeNe Records 連携用の外部 ID。
+    UpdateOrganizationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 組織の表示名。
+          example: Acme Inc.
+        custom_domain:
+          type: string
+          nullable: true
+          description: サブドメインモード用のカスタムドメイン。
+        plan:
+          type: string
+          enum:
+            - free
+            - pro
+            - enterprise
+        is_active:
+          type: boolean
+        external_id:
+          type: string
+          nullable: true
+          description: NeNe Records 連携用の外部 ID。
+    ListOrganizationsResponse:
+      type: object
+      required:
+        - organizations
+        - total
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+        total:
+          type: integer
+          format: int64
+          description: フィルタ適用後の総件数。
     HealthResponse:
       type: object
       required:
@@ -1602,6 +1972,9 @@ components:
           format: email
         role:
           type: string
+          enum:
+            - admin
+            - superadmin
     ChangeAdminPasswordRequest:
       type: object
       required:
