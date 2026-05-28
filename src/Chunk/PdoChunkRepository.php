@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Chunk;
 
+use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChunkRepository implements ChunkRepositoryInterface
 {
@@ -15,14 +17,26 @@ final readonly class PdoChunkRepository implements ChunkRepositoryInterface
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new LogicException('Organization ID is not resolved. Check OrgResolverMiddleware setup.');
+        }
+
+        return $id;
     }
 
     public function findById(int $id): ?Chunk
     {
         $row = $this->query->fetchOne(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chunks WHERE id = ?',
-            [$id],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chunks WHERE id = ? AND organization_id = ?',
+            [$id, $this->orgId()],
         );
 
         return $row === null ? null : $this->mapRow($row);
@@ -32,8 +46,8 @@ final readonly class PdoChunkRepository implements ChunkRepositoryInterface
     public function findByDocumentId(int $documentId): array
     {
         $rows = $this->query->fetchAll(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chunks WHERE document_id = ? ORDER BY chunk_index ASC, id ASC',
-            [$documentId],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chunks WHERE document_id = ? AND organization_id = ? ORDER BY chunk_index ASC, id ASC',
+            [$documentId, $this->orgId()],
         );
 
         return array_map(fn (array $row): Chunk => $this->mapRow($row), $rows);
@@ -46,11 +60,12 @@ final readonly class PdoChunkRepository implements ChunkRepositoryInterface
         $this->query->execute(
             <<<'SQL'
                 INSERT INTO chunks (
-                    document_id, source_id, chunk_index, content, page_number,
+                    organization_id, document_id, source_id, chunk_index, content, page_number,
                     section_label, token_count, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 SQL,
             [
+                $this->orgId(),
                 $chunk->documentId,
                 $chunk->sourceId,
                 $chunk->chunkIndex,
@@ -68,12 +83,12 @@ final readonly class PdoChunkRepository implements ChunkRepositoryInterface
 
     public function deleteByDocumentId(int $documentId): void
     {
-        $this->query->execute('DELETE FROM chunks WHERE document_id = ?', [$documentId]);
+        $this->query->execute('DELETE FROM chunks WHERE document_id = ? AND organization_id = ?', [$documentId, $this->orgId()]);
     }
 
     public function deleteBySourceId(int $sourceId): void
     {
-        $this->query->execute('DELETE FROM chunks WHERE source_id = ?', [$sourceId]);
+        $this->query->execute('DELETE FROM chunks WHERE source_id = ? AND organization_id = ?', [$sourceId, $this->orgId()]);
     }
 
     /**

@@ -17,12 +17,15 @@ use NeneCorpus\Ingestion\CsvUploadValidator;
 use NeneCorpus\Ingestion\UploadStorage;
 use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceStatus;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class CreateCsvSourceUseCaseTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private string $uploadDirectory;
 
@@ -41,6 +44,9 @@ final class CreateCsvSourceUseCaseTest extends TestCase
         )));
 
         CorpusSchemaSetup::create($this->executor);
+
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
 
         $this->uploadDirectory = sys_get_temp_dir() . '/nene-corpus-uploads-' . uniqid('', true);
         mkdir($this->uploadDirectory, 0775, true);
@@ -68,9 +74,9 @@ Widget B,Another widget,200
 CSV;
 
         $useCase = new CreateCsvSourceUseCase(
-            new PdoSourceRepository($this->executor),
-            new PdoDocumentRepository($this->executor),
-            new PdoChunkRepository($this->executor),
+            new PdoSourceRepository($this->executor, $this->orgIdHolder),
+            new PdoDocumentRepository($this->executor, $this->orgIdHolder),
+            new PdoChunkRepository($this->executor, $this->orgIdHolder),
             new CsvUploadValidator(),
             new CsvParser(),
             new UploadStorage($this->uploadDirectory),
@@ -91,13 +97,13 @@ CSV;
         self::assertSame(2, $output->documentCount);
         self::assertSame(2, $output->chunkCount);
 
-        $source = (new PdoSourceRepository($this->executor))->findById($output->sourceId);
+        $source = (new PdoSourceRepository($this->executor, $this->orgIdHolder))->findById($output->sourceId);
         self::assertNotNull($source);
         self::assertSame('csv', $source->sourceType->value);
         self::assertSame('ready', $source->status->value);
         self::assertStringStartsWith('storage/uploads/', $source->storagePath);
 
-        $documents = (new PdoDocumentRepository($this->executor))->findBySourceId($output->sourceId, 10, 0);
+        $documents = (new PdoDocumentRepository($this->executor, $this->orgIdHolder))->findBySourceId($output->sourceId, 10, 0);
         self::assertCount(2, $documents);
         self::assertSame('Widget A', $documents[0]->title);
     }

@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class SearchServiceProvider implements ServiceProviderInterface
@@ -19,12 +20,17 @@ final readonly class SearchServiceProvider implements ServiceProviderInterface
                 ChunkSearchRepositoryInterface::class,
                 static function (ContainerInterface $container): ChunkSearchRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoChunkSearchRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoChunkSearchRepository($query, $orgIdHolder);
                 },
             )
             ->set(
