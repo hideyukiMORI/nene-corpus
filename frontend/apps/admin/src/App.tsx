@@ -1,198 +1,89 @@
 import { useEffect, useState } from 'react';
-import { Msg, resolveMsgKey, applyLocaleFontFamily, toBcp47, useLocale, useMsg, type MsgKey } from '@nene-corpus/i18n';
-import { getLlmSettings } from '@nene-corpus/api-client/llm-settings';
-import { LoginForm, SourcesPanel } from './SourcesPanel';
-import { IngestionPanel } from './IngestionPanel';
-import { ConversationLogsPanel, ConversationLogsSummary } from './ConversationLogsPanel';
-import { AnalyticsPanel } from './AnalyticsPanel';
-import { LlmUnconfiguredBanner } from './LlmUnconfiguredBanner';
-import { SettingsModal } from './SettingsModal';
-import type { SettingsSection } from './SettingsModal';
-import { HelpPanel } from './HelpPanel';
-import { LocaleSelector } from './LocaleSelector';
-import { ThemeToggle } from './ThemeToggle';
-import { scrollToHelp } from './scrollToHelp';
+import { applyLocaleFontFamily, toBcp47, useLocale } from '@nene-corpus/i18n';
 import { useAdminAuth } from './useAdminAuth';
-import { adminApiBase } from './config';
-import { PasswordResetRequestForm, PasswordResetConfirmForm } from './PasswordResetForms';
+import { LoginPage } from './v2/pages/LoginPage';
+import { DashboardPage } from './v2/pages/DashboardPage';
+import { SourcesPage } from './v2/pages/SourcesPage';
+import { ConversationsPage } from './v2/pages/ConversationsPage';
+import { SettingsPage } from './v2/pages/SettingsPage';
 
-type AuthView = 'login' | 'reset-request' | 'reset-confirm';
+type V2Route = 'login' | 'dashboard' | 'sources' | 'conversations' | 'settings';
+
+function resolveRoute(): V2Route {
+  const hash = window.location.hash;
+  if (hash.startsWith('#/sources'))        return 'sources';
+  if (hash.startsWith('#/conversations'))  return 'conversations';
+  if (hash.startsWith('#/settings'))       return 'settings';
+  if (hash.startsWith('#/login'))          return 'login';
+  if (hash.startsWith('#/dashboard'))      return 'dashboard';
+  // デフォルト
+  return 'dashboard';
+}
 
 export function App() {
-  const t = useMsg();
   const { locale } = useLocale();
-  const { token, profile, isReady, error, login, logout } = useAdminAuth();
-  const [sourcesReloadKey, setSourcesReloadKey] = useState(0);
-  const [logsOpen, setLogsOpen] = useState(false);
+  const { token, isReady, login, logout } = useAdminAuth();
+  const [route, setRoute] = useState<V2Route>(resolveRoute);
 
-  const [authView, setAuthView] = useState<AuthView>(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.has('reset_token') ? 'reset-confirm' : 'login';
-  });
-  const resetToken = new URLSearchParams(window.location.search).get('reset_token') ?? '';
-
-  // LLM 設定済みフラグ（null = ロード中 / 未チェック）
-  const [isLlmConfigured, setIsLlmConfigured] = useState<boolean | null>(null);
-
-  // 設定モーダル
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsSection, setSettingsSection] = useState<SettingsSection>('overview');
-
+  // ロケール適用（既存ロジックを維持）
   useEffect(() => {
     document.documentElement.lang = toBcp47(locale);
     applyLocaleFontFamily(locale);
   }, [locale]);
 
-  // ログイン直後に LLM 設定状態を取得してバナー表示を決定
+  // hash 変化を監視してルートを更新
   useEffect(() => {
-    if (token === null) {
-      setIsLlmConfigured(null);
-      return;
+    function handleHashChange() {
+      setRoute(resolveRoute());
     }
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
-    let cancelled = false;
-    getLlmSettings(token, adminApiBase)
-      .then((s) => { if (!cancelled) setIsLlmConfigured(s.configured); })
-      .catch(() => { /* 取得失敗時はバナーを出さない */ });
+  // 認証チェック: token なしで保護ルートにいたら #/login へ
+  useEffect(() => {
+    if (!isReady) return;
+    if (token === null && route !== 'login') {
+      window.location.hash = '#/login';
+    }
+  }, [isReady, token, route]);
 
-    return () => { cancelled = true; };
-  }, [token]);
-
-  function openSettings(section: SettingsSection = 'overview'): void {
-    setSettingsSection(section);
-    setSettingsOpen(true);
-  }
+  // ログイン後: #/login にいたら #/dashboard へリダイレクト
+  useEffect(() => {
+    if (!isReady) return;
+    if (token !== null && route === 'login') {
+      window.location.hash = '#/dashboard';
+    }
+  }, [isReady, token, route]);
 
   if (!isReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center nc-text-muted">
-        {t(Msg.common.loading)}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        fontFamily: '"Inter", system-ui, sans-serif',
+        fontSize: 14,
+        color: 'var(--ink-muted, #6E7081)',
+        background: 'var(--bg, #F7F5EE)',
+      }}>
+        読み込み中...
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen text-fg">
-      <header className="sticky top-0 z-40 border-b border-border bg-header/80 px-6 py-4 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-brand">{t(Msg.admin.app.title)}</h1>
-            {profile && <p className="nc-text-muted">{profile.email}</p>}
-          </div>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <ThemeToggle />
-            <LocaleSelector />
-            {token !== null && (
-              <button className="nc-btn nc-header-btn" type="button" onClick={() => openSettings('overview')}>
-                {t(Msg.admin.app.settings)}
-              </button>
-            )}
-            <button className="nc-btn nc-header-btn" type="button" onClick={scrollToHelp}>
-              {t(resolveMsgKey(Msg.admin.help?.open, 'admin.help.open'))}
-            </button>
-            {profile && (
-              <button className="nc-btn nc-header-btn" type="button" onClick={logout}>
-                {t(Msg.common.signOut)}
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-5xl space-y-6 px-6 py-8">
-        {token === null ? (
-          <>
-            {authView === 'reset-request' && (
-              <PasswordResetRequestForm onBack={() => setAuthView('login')} />
-            )}
-            {authView === 'reset-confirm' && (
-              <PasswordResetConfirmForm
-                rawToken={resetToken}
-                onBack={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.delete('reset_token');
-                  window.history.replaceState({}, '', url.toString());
-                  setAuthView('login');
-                }}
-              />
-            )}
-            {authView === 'login' && (
-              <LoginForm
-                error={error}
-                onLogin={login}
-                onForgotPassword={() => setAuthView('reset-request')}
-              />
-            )}
-            <HelpPanel />
-          </>
-        ) : (
-          <>
-            {/* ── LLM 未設定アラート ── */}
-            {isLlmConfigured === false && (
-              <LlmUnconfiguredBanner onConfigureLlm={() => openSettings('llm')} />
-            )}
-            {/* ── コンテンツ管理 ── */}
-            <IngestionPanel token={token} onUploaded={() => setSourcesReloadKey((key) => key + 1)} />
-            <SourcesPanel
-              token={token}
-              reloadKey={sourcesReloadKey}
-              onDocumentsChanged={() => setSourcesReloadKey((key) => key + 1)}
-            />
-            {/* ── 運用監視 ── */}
-            <AnalyticsPanel token={token} />
-            <ConversationLogsSummary
-              token={token}
-              onOpenLogs={() => setLogsOpen(true)}
-            />
-            {logsOpen && (
-              <ConversationLogsPanel token={token} onClose={() => setLogsOpen(false)} />
-            )}
-            <HelpPanel />
-          </>
-        )}
-      </main>
+  // 未認証: ログインページ
+  if (token === null || route === 'login') {
+    return <LoginPage onLogin={login} />;
+  }
 
-      {/* ── 設定モーダル ── */}
-      {settingsOpen && token !== null && (
-        <SettingsModal
-          token={token}
-          initialSection={settingsSection}
-          onClose={() => setSettingsOpen(false)}
-          onLlmConfiguredChange={setIsLlmConfigured}
-        />
-      )}
-
-      {/* ── フッター ── */}
-      <AdminFooter locale={locale} t={t} />
-    </div>
-  );
-}
-
-const GUIDE_URL_MAP: Record<string, string> = {
-  ja: '/guide/ja/',
-  en: '/guide/en/',
-  de: '/guide/de/',
-  fr: '/guide/fr/',
-  'pt-BR': '/guide/pt-br/',
-  'zh-Hans': '/guide/zh-hans/',
-};
-
-function AdminFooter({ locale, t }: { locale: string; t: (key: MsgKey) => string }) {
-  const guideUrl = GUIDE_URL_MAP[locale] ?? '/guide/en/';
-  return (
-    <footer className="mt-12 border-t border-border px-6 py-6 text-center text-xs nc-text-muted">
-      <p>
-        {t(resolveMsgKey(Msg.admin.footer?.poweredBy, 'admin.footer.poweredBy'))}{' '}
-        <a
-          href={guideUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-brand hover:underline"
-        >
-          NeNe Corpus
-        </a>
-        {' · '}
-        {t(resolveMsgKey(Msg.admin.footer?.copyright, 'admin.footer.copyright'))}
-      </p>
-    </footer>
-  );
+  // 認証済み: ルーティング
+  switch (route) {
+    case 'sources':       return <SourcesPage />;
+    case 'conversations': return <ConversationsPage />;
+    case 'settings':      return <SettingsPage token={token} onLogout={logout} />;
+    case 'dashboard':
+    default:              return <DashboardPage token={token} onLogout={logout} />;
+  }
 }

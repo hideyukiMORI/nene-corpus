@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/noto-sans-jp": "^5.2.9",
     "@fontsource/noto-sans-sc": "^5.2.9",
     "@nene-corpus/api-client": "*",
