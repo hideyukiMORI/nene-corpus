@@ -1,3 +1,4 @@
+import { LocaleSelector } from './LocaleSelector';
 import type { V2Theme } from './theme';
 
 interface TopbarProps {
@@ -33,6 +34,9 @@ export function Topbar({ crumb, theme, onToggleTheme, userEmail = 'admin@example
           <span>検索...</span>
           <span className="kbd">⌘K</span>
         </div>
+
+        {/* ロケール選択 */}
+        <LocaleSelector />
 
         {/* テーマトグル */}
         <div className="theme-toggle" role="group" aria-label="テーマ切替">
