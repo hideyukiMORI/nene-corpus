@@ -780,3 +780,216 @@
   border-color: var(--primary-border);
   background: var(--surface-hover);
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Auth — Login page extras (#260)
+   These classes live outside .v2-shell (login has no shell wrapper).
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Floating theme toggle (top-right, login page) */
+.auth-toptoggle {
+  position: fixed; top: 14px; right: 18px;
+  z-index: 10;
+}
+.auth-theme-toggle {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--hair-strong);
+  border-radius: 6px;
+  padding: 2px;
+  box-shadow: var(--shadow-card);
+}
+.auth-theme-toggle button {
+  width: 26px; height: 22px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.auth-theme-toggle button.on {
+  background: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: 0 1px 2px rgba(15,23,42,.06);
+}
+
+/* Login card heading + sub */
+.auth-heading {
+  font-size: 19px; font-weight: 700;
+  color: var(--ink-strong);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.auth-heading .en {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px; font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  display: block;
+  margin-top: 2px;
+  text-transform: none;
+}
+.auth-subheading {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-bottom: 22px;
+}
+
+/* Error alert */
+.auth-error {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-left: 3px solid var(--danger);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--danger-text);
+  margin-bottom: 16px;
+}
+
+/* Form field (auth context – outside .v2-shell) */
+.signin-field { margin-bottom: 14px; }
+.auth-field-label {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.auth-field-label .en {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; font-weight: 500;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.auth-field-input {
+  width: 100%; padding: 7px 10px;
+  height: 36px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid var(--hair-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-family: inherit;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.auth-field-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-tint);
+}
+.auth-field-input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Forgot password inline link */
+.auth-forgot-link {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.auth-forgot-link:hover { text-decoration: underline; }
+
+/* Remember checkbox row */
+.auth-remember {
+  display: flex; align-items: center; gap: 8px;
+  margin: 4px 0 16px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.auth-remember input[type="checkbox"] { margin: 0; cursor: pointer; }
+.auth-remember label { cursor: pointer; }
+
+/* Primary button (auth context) */
+.auth-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%;
+  height: 38px;
+  font-size: 14px; font-weight: 600;
+  background: var(--primary); color: var(--primary-fg);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  font-family: inherit;
+}
+.auth-btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.auth-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Spinner keyframe */
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+
+/* Side panel extras */
+.auth-side h2 {
+  font-size: 18px; font-weight: 700;
+  color: var(--ink-strong);
+  margin-bottom: 8px;
+}
+.auth-side p {
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.6;
+}
+.auth-side-head {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--primary);
+  padding: 4px 8px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+.auth-feature-list {
+  display: flex; flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  margin-bottom: 24px;
+}
+.auth-feature {
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.auth-feature-ic {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--hair-strong);
+  color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-feature-txt .t {
+  font-size: 13.5px; font-weight: 600;
+  color: var(--ink-strong);
+  margin-bottom: 1px;
+}
+.auth-feature-txt .d {
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+.auth-inline-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  background: var(--bg-soft);
+  padding: 0 4px;
+  border-radius: 3px;
+}
+.auth-side-footer {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  border-top: 1px solid var(--hair);
+  padding-top: 14px;
+}
