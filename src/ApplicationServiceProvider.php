@@ -10,6 +10,8 @@ use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\DomainExceptionHandlerInterface;
 use NeneCorpus\AdminAuth\AdminAuthRouteRegistrar;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
+use NeneCorpus\Bootstrap\BootstrapRouteRegistrar;
+use NeneCorpus\Bootstrap\BootstrapServiceProvider;
 use NeneCorpus\AdminAuth\AdminJwtNotConfiguredExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidAdminCredentialsExceptionHandler;
 use NeneCorpus\AdminAuth\InvalidPasswordResetTokenExceptionHandler;
@@ -60,6 +62,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
     public function register(ContainerBuilder $builder): void
     {
         $builder
+            ->addProvider(new BootstrapServiceProvider())
             ->addProvider(new SourceServiceProvider())
             ->addProvider(new DocumentServiceProvider())
             ->addProvider(new ChunkServiceProvider())
@@ -81,6 +84,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
+                    $bootstrap = $container->get(BootstrapServiceProvider::ROUTE_REGISTRAR);
                     $adminAuth = $container->get(AdminAuthServiceProvider::ROUTE_REGISTRAR);
                     $chat = $container->get(ChatServiceProvider::ROUTE_REGISTRAR);
                     $ingestion = $container->get(IngestionServiceProvider::ROUTE_REGISTRAR);
@@ -94,6 +98,10 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $notification = $container->get(NotificationServiceProvider::ROUTE_REGISTRAR);
                     $analytics = $container->get(AnalyticsServiceProvider::ROUTE_REGISTRAR);
                     $install = $container->get(InstallServiceProvider::ROUTE_REGISTRAR);
+
+                    if (!$bootstrap instanceof BootstrapRouteRegistrar) {
+                        throw new LogicException('Bootstrap route registrar service is invalid.');
+                    }
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -147,7 +155,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Install route registrar service is invalid.');
                     }
 
-                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification, $analytics];
+                    return [$install, $bootstrap, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification, $analytics];
                 },
             )
             ->set(

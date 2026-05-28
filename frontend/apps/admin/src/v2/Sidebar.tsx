@@ -1,3 +1,5 @@
+import { useNavigate } from './router';
+
 export type ActivePage =
   | 'dashboard'
   | 'sources'
@@ -17,7 +19,7 @@ interface SidebarProps {
 interface NavItemDef {
   id: ActivePage | 'logout';
   ja: string;
-  hash: string;
+  route: string;
   icon: React.ReactNode;
   badge?: string;
   dot?: 'ok' | 'warn' | 'bad';
@@ -37,29 +39,26 @@ const CORPUS_TREE: CorpusItem[] = [
 ];
 
 export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', modelStatus = 'bad' }: SidebarProps) {
+  const navigate = useNavigate();
   const countStr = corpusStatus.split(' ')[0] ?? '';
 
   const navOperation: NavItemDef[] = [
-    { id: 'dashboard',     ja: 'ダッシュボード', hash: '#/dashboard',     icon: <DashboardIcon /> },
-    { id: 'sources',       ja: 'ソース',         hash: '#/sources',       icon: <SourcesIcon />, badge: '3' },
-    { id: 'conversations', ja: '会話ログ',       hash: '#/conversations', icon: <ConversationsIcon />, badge: '86' },
-    { id: 'analytics',     ja: '分析',           hash: '#/analytics',     icon: <AnalyticsIcon /> },
+    { id: 'dashboard',     ja: 'ダッシュボード', route: '/dashboard',     icon: <DashboardIcon /> },
+    { id: 'sources',       ja: 'ソース',         route: '/sources',       icon: <SourcesIcon />, badge: '3' },
+    { id: 'conversations', ja: '会話ログ',       route: '/conversations', icon: <ConversationsIcon />, badge: '86' },
+    { id: 'analytics',     ja: '分析',           route: '/analytics',     icon: <AnalyticsIcon /> },
   ];
 
   const navModel: NavItemDef[] = [
-    { id: 'llm',        ja: 'LLM',    hash: '#/settings',     icon: <LlmIcon />,        dot: modelStatus },
-    { id: 'embeddings', ja: '埋め込み', hash: '#/settings',   icon: <EmbeddingsIcon /> },
-    { id: 'appearance', ja: '外観',   hash: '#/settings',     icon: <AppearanceIcon /> },
+    { id: 'llm',        ja: 'LLM',    route: '/settings',     icon: <LlmIcon />,        dot: modelStatus },
+    { id: 'embeddings', ja: '埋め込み', route: '/settings',   icon: <EmbeddingsIcon /> },
+    { id: 'appearance', ja: '外観',   route: '/settings',     icon: <AppearanceIcon /> },
   ];
 
   const navSystem: NavItemDef[] = [
-    { id: 'settings', ja: '設定',      hash: '#/settings', icon: <SettingsIcon /> },
-    { id: 'logout',   ja: 'ログアウト', hash: '#/login',    icon: <LogoutIcon /> },
+    { id: 'settings', ja: '設定',      route: '/settings', icon: <SettingsIcon /> },
+    { id: 'logout',   ja: 'ログアウト', route: '/login',    icon: <LogoutIcon /> },
   ];
-
-  function handleNav(hash: string): void {
-    window.location.hash = hash.replace('#/', '#/');
-  }
 
   function renderItem(item: NavItemDef) {
     const isActive = item.id === active;
@@ -68,7 +67,7 @@ export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', mod
         key={item.id}
         type="button"
         className={isActive ? 'nav-item active' : 'nav-item'}
-        onClick={() => handleNav(item.hash)}
+        onClick={() => { navigate(item.route); }}
         aria-current={isActive ? 'page' : undefined}
       >
         <span className="icon">{item.icon}</span>

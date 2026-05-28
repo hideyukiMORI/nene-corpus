@@ -6,6 +6,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useAdminAuth } from '../../useAdminAuth';
 import { PasswordResetRequestForm, PasswordResetConfirmForm } from '../../PasswordResetForms';
 import { useAdminTheme } from '../../ThemeProvider';
+import { useNavigate } from '../router';
 
 type LoginView = 'login' | 'reset-request' | 'reset-confirm';
 
@@ -88,6 +89,7 @@ interface LoginFormProps {
 
 function LoginForm({ onForgotPassword }: LoginFormProps) {
   const { login, error } = useAdminAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -98,7 +100,7 @@ function LoginForm({ onForgotPassword }: LoginFormProps) {
     setIsSubmitting(true);
     try {
       await login(email, password);
-      window.location.hash = '#/dashboard';
+      navigate('/dashboard');
     } catch {
       // エラーは useAdminAuth の error state に入る
     } finally {

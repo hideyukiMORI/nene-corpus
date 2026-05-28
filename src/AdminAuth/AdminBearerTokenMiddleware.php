@@ -21,6 +21,7 @@ final readonly class AdminBearerTokenMiddleware implements MiddlewareInterface
         '/admin/auth/password-reset/request',
         '/admin/auth/password-reset/confirm',
         '/admin/notifications/daily-report',
+        '/admin/bootstrap',
     ];
 
     public function __construct(
