@@ -1,12 +1,13 @@
 /**
  * SettingsPage — v2 リデザイン実装 (#264)
- * 左 rail（モデル / ウィジェット / アカウント / システム / スーパー管理者）+ 右セクション切替
+ * 左 rail（概要 / モデル / ウィジェット / アカウント / システム / スーパー管理者）+ 右セクション切替
+ * 概要セクション追加 (#296)
  */
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Layout } from '../Layout';
 import { getLlmSettings, testLlmConnection, updateLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { getChatSettings, updateChatSettings } from '@nene-corpus/api-client/chat-settings';
-import { getChatLimitsSettings, updateChatLimitsSettings } from '@nene-corpus/api-client';
+import { getChatLimitsSettings, updateChatLimitsSettings, listSources, getAnalyticsSummary } from '@nene-corpus/api-client';
 import {
   getNotificationSettings,
   updateNotificationSettings,
@@ -22,23 +23,27 @@ import type {
   ChatSettingsResponse,
   ChatLimitsSettingsResponse,
   AppearanceSettingsResponse,
+  ListSourcesResponse,
   WidgetLayout,
   WidgetTheme,
   WidgetPosition,
 } from '@nene-corpus/api-client/types';
 import type { NotificationSettings } from '@nene-corpus/api-client/notifications';
+import type { AnalyticsSummaryResponse } from '@nene-corpus/api-client/analytics';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from '../../config';
 import { buildEmbedSnippet } from '../../embedSnippet';
 import { DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client/types';
 import { TenantResolutionSection } from './superadmin/TenantResolutionSection';
 import { OrganizationsSection } from './superadmin/OrganizationsSection';
+import { useNavigate } from '../router';
 
 // ─────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────
 
 type Section =
+  | 'overview'
   | 'llm'
   | 'embed-widget'
   | 'appearance'
@@ -241,6 +246,321 @@ function StatusMsg({ type, text }: { type: 'error' | 'success'; text: string }) 
     }}>
       {text}
     </p>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Section: 概要（Overview）
+// ─────────────────────────────────────────────────────────────
+
+interface OverviewData {
+  sources: ListSourcesResponse | null;
+  llm: LlmSettingsResponse | null;
+  analytics: AnalyticsSummaryResponse | null;
+  notifications: NotificationSettings | null;
+  appearance: AppearanceSettingsResponse | null;
+  chatLimits: ChatLimitsSettingsResponse | null;
+}
+
+interface OverviewCardProps {
+  title: string;
+  titleEn: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+function OverviewCard({ title, titleEn, onClick, children }: OverviewCardProps) {
+  return (
+    <button
+      type="button"
+      className="set-card"
+      onClick={onClick}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0,
+        alignItems: 'flex-start',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'left',
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 8,
+        marginBottom: 10,
+        width: '100%',
+      }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-strong)' }}>{title}</span>
+        <span style={{
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: 10,
+          fontWeight: 500,
+          color: 'var(--ink-faint)',
+          letterSpacing: '0.04em',
+        }}>
+          {titleEn}
+        </span>
+      </div>
+      <div className="meta-grid" style={{ width: '100%' }}>
+        {children}
+      </div>
+    </button>
+  );
+}
+
+function OverviewSection({ token, onNavigate }: { token: string; onNavigate: (s: Section) => void }) {
+  const navigate = useNavigate();
+  const [data, setData] = useState<OverviewData>({
+    sources: null,
+    llm: null,
+    analytics: null,
+    notifications: null,
+    appearance: null,
+    chatLimits: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void Promise.allSettled([
+      listSources(token, adminApiBase, { limit: 200 }),
+      getLlmSettings(token, adminApiBase),
+      getAnalyticsSummary(token, adminApiBase),
+      getNotificationSettings(token, adminApiBase),
+      getAppearanceSettings(token, adminApiBase),
+      getChatLimitsSettings(token, adminApiBase),
+    ]).then(([sourcesRes, llmRes, analyticsRes, notifRes, appearanceRes, limitsRes]) => {
+      if (cancelled) return;
+      setData({
+        sources: sourcesRes.status === 'fulfilled' ? sourcesRes.value : null,
+        llm: llmRes.status === 'fulfilled' ? llmRes.value : null,
+        analytics: analyticsRes.status === 'fulfilled' ? analyticsRes.value : null,
+        notifications: notifRes.status === 'fulfilled' ? notifRes.value : null,
+        appearance: appearanceRes.status === 'fulfilled' ? appearanceRes.value : null,
+        chatLimits: limitsRes.status === 'fulfilled' ? limitsRes.value : null,
+      });
+    });
+
+    return () => { cancelled = true; };
+  }, [token]);
+
+  const dash = '—';
+
+  // Corpus stats
+  const sourceCount = data.sources !== null ? String(data.sources.total) : dash;
+  const chunkTotal = data.sources !== null
+    ? String(data.sources.sources.reduce((sum, s) => sum + s.chunk_count, 0))
+    : dash;
+  const processingCount = data.sources !== null
+    ? String(data.sources.sources.filter((s) => s.status === 'processing').length)
+    : dash;
+
+  // LLM stats
+  const llmConfigured = data.llm?.configured ?? null;
+  const llmProvider = 'Anthropic';
+  const llmModel = data.llm?.model ?? dash;
+
+  // Chat stats
+  const todaySessions = data.analytics !== null ? String(data.analytics.sessions.today) : dash;
+  const tokenInputUsed = data.analytics !== null ? data.analytics.tokens.input_total : null;
+  const tokenOutputUsed = data.analytics !== null ? data.analytics.tokens.output_total : null;
+  const dailyInputBudget = data.chatLimits?.daily_tokens_global ?? null;
+
+  function formatTokenCount(n: number): string {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+    return String(n);
+  }
+
+  const tokenUsageDisplay = tokenInputUsed !== null && tokenOutputUsed !== null
+    ? formatTokenCount(tokenInputUsed + tokenOutputUsed)
+    : dash;
+  const tokenBudgetDisplay = dailyInputBudget !== null && dailyInputBudget > 0
+    ? ` / ${formatTokenCount(dailyInputBudget)}`
+    : '';
+
+  // Notification stats
+  const smtpConfigured = data.notifications?.smtp_configured ?? null;
+  const dailyReportOn = data.notifications?.daily_report_enabled ?? null;
+
+  // Appearance stats
+  const themeColor = data.appearance?.theme.color_primary ?? null;
+  const heroImageSet = data.appearance?.hero.image_url !== null && data.appearance?.hero.image_url !== undefined;
+
+  return (
+    <div>
+      <div style={{
+        background: 'var(--surface)',
+        border: '1px solid var(--hair)',
+        borderRadius: 8,
+        padding: '22px 24px 24px',
+        marginBottom: 14,
+      }}>
+        <h3 style={{
+          fontSize: 16,
+          fontWeight: 700,
+          color: 'var(--ink-strong)',
+          marginBottom: 4,
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 10,
+        }}>
+          概要
+          <span style={{
+            fontFamily: '"JetBrains Mono", monospace',
+            fontSize: 11,
+            fontWeight: 500,
+            color: 'var(--ink-faint)',
+            letterSpacing: '0.04em',
+          }}>
+            // overview
+          </span>
+        </h3>
+        <div style={{
+          fontSize: 13,
+          color: 'var(--ink-muted)',
+          marginBottom: 20,
+          paddingBottom: 16,
+          borderBottom: '1px solid var(--hair)',
+        }}>
+          システム全体の状態を確認します。各カードをクリックすると設定に移動します。
+        </div>
+
+        <div className="settings-grid">
+          {/* 1. コーパス */}
+          <OverviewCard
+            title="コーパス"
+            titleEn="// corpus"
+            onClick={() => navigate('/sources')}
+          >
+            <span className="k">sources</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{sourceCount}</span>
+            <span className="k">chunks</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{chunkTotal}</span>
+            <span className="k">processing</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{processingCount}</span>
+          </OverviewCard>
+
+          {/* 2. LLM */}
+          <OverviewCard
+            title="LLM"
+            titleEn="// llm"
+            onClick={() => onNavigate('llm')}
+          >
+            <span className="k">status</span>
+            <span className="v" style={{ fontSize: 12 }}>
+              {llmConfigured === null
+                ? dash
+                : llmConfigured
+                  ? <span style={{ color: 'var(--success-fg)', fontWeight: 700 }}>✓ 設定済み</span>
+                  : <span style={{ color: 'var(--danger)', fontWeight: 700 }}>● 未設定</span>
+              }
+            </span>
+            <span className="k">provider</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{data.llm !== null ? llmProvider : dash}</span>
+            <span className="k">model</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{llmModel}</span>
+          </OverviewCard>
+
+          {/* 3. チャット */}
+          <OverviewCard
+            title="チャット"
+            titleEn="// chat"
+            onClick={() => navigate('/conversations')}
+          >
+            <span className="k">today sessions</span>
+            <span className="v mono" style={{ fontSize: 12 }}>{todaySessions}</span>
+            <span className="k">tokens (total)</span>
+            <span className="v mono" style={{ fontSize: 12 }}>
+              {tokenUsageDisplay}{tokenBudgetDisplay !== '' && <span style={{ color: 'var(--ink-faint)' }}>{tokenBudgetDisplay}</span>}
+            </span>
+          </OverviewCard>
+
+          {/* 4. 通知 */}
+          <OverviewCard
+            title="通知"
+            titleEn="// notifications"
+            onClick={() => onNavigate('notifications')}
+          >
+            <span className="k">SMTP</span>
+            <span className="v" style={{ fontSize: 12 }}>
+              {smtpConfigured === null
+                ? dash
+                : smtpConfigured
+                  ? <span style={{ color: 'var(--success-fg)', fontWeight: 700 }}>✓ 設定済み</span>
+                  : <span style={{ color: 'var(--ink-muted)' }}>未設定</span>
+              }
+            </span>
+            <span className="k">daily report</span>
+            <span className="v" style={{ fontSize: 12 }}>
+              {dailyReportOn === null
+                ? dash
+                : dailyReportOn
+                  ? <span style={{ color: 'var(--success-fg)', fontWeight: 700 }}>on</span>
+                  : <span style={{ color: 'var(--ink-muted)' }}>off</span>
+              }
+            </span>
+          </OverviewCard>
+
+          {/* 5. 外観 */}
+          <OverviewCard
+            title="外観"
+            titleEn="// appearance"
+            onClick={() => onNavigate('appearance')}
+          >
+            <span className="k">theme color</span>
+            <span className="v" style={{ fontSize: 12 }}>
+              {themeColor !== null
+                ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{
+                      display: 'inline-block',
+                      width: 14,
+                      height: 14,
+                      borderRadius: 3,
+                      background: themeColor,
+                      border: '1px solid var(--hair-strong)',
+                      flexShrink: 0,
+                    }} />
+                    <span style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 11 }}>{themeColor}</span>
+                  </span>
+                )
+                : dash
+              }
+            </span>
+            <span className="k">hero image</span>
+            <span className="v" style={{ fontSize: 12 }}>
+              {data.appearance === null
+                ? dash
+                : heroImageSet
+                  ? <span style={{ color: 'var(--success-fg)', fontWeight: 700 }}>✓ セット済み</span>
+                  : <span style={{ color: 'var(--ink-muted)' }}>未設定</span>
+              }
+            </span>
+          </OverviewCard>
+
+          {/* 6. ホスティング */}
+          <OverviewCard
+            title="ホスティング"
+            titleEn="// hosting"
+            onClick={() => onNavigate('hosting')}
+          >
+            <span className="k">version</span>
+            <span className="v mono" style={{ fontSize: 12 }}>NeNe Corpus v0.4.x</span>
+            <span className="k">storage</span>
+            <span className="v mono" style={{ fontSize: 12 }}>
+              {dash} <span style={{ color: 'var(--ink-faint)' }}>used</span>
+            </span>
+            <span className="k">chunks</span>
+            <span className="v mono" style={{ fontSize: 12 }}>
+              {chunkTotal !== dash ? chunkTotal : dash}
+            </span>
+          </OverviewCard>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1352,7 +1672,7 @@ function ChatSettingsSection({ token }: { token: string }) {
 // ─────────────────────────────────────────────────────────────
 
 export function SettingsPage({ token, onLogout: _onLogout, role }: SettingsPageProps) {
-  const [activeSection, setActiveSection] = useState<Section>('llm');
+  const [activeSection, setActiveSection] = useState<Section>('overview');
   const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
   const isSuperadmin = role === 'superadmin';
 
@@ -1376,6 +1696,7 @@ export function SettingsPage({ token, onLogout: _onLogout, role }: SettingsPageP
 
   function renderSection(): React.ReactNode {
     switch (activeSection) {
+      case 'overview':             return <OverviewSection token={token!} onNavigate={setActiveSection} />;
       case 'llm':                  return <LlmSection token={token!} />;
       case 'embed-widget':         return <EmbedWidgetSection />;
       case 'appearance':           return <AppearanceSection token={token!} />;
@@ -1425,6 +1746,8 @@ export function SettingsPage({ token, onLogout: _onLogout, role }: SettingsPageP
       }}>
         {/* Left rail */}
         <aside style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
+          <RailItem label="概要 // overview" section="overview" active={activeSection} onSelect={setActiveSection} />
+
           <RailSection label="モデル" />
           <RailItem label="LLM" section="llm" active={activeSection} indicator={llmIndicator} onSelect={setActiveSection} />
           <RailItem label="埋め込みウィジェット" section="embed-widget" active={activeSection} indicator="check" onSelect={setActiveSection} />
