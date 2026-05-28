@@ -16,7 +16,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
     public function findByEmail(string $email): ?AdminUser
     {
         $row = $this->query->fetchOne(
-            'SELECT id, email, password_hash, created_at, updated_at FROM admin_users WHERE email = ?',
+            'SELECT id, email, password_hash, role, organization_id, created_at, updated_at FROM admin_users WHERE email = ?',
             [$email],
         );
 
@@ -24,19 +24,13 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
             return null;
         }
 
-        return new AdminUser(
-            email: (string) $row['email'],
-            passwordHash: (string) $row['password_hash'],
-            id: (int) $row['id'],
-            createdAt: (string) $row['created_at'],
-            updatedAt: (string) $row['updated_at'],
-        );
+        return $this->mapRow($row);
     }
 
     public function findById(int $id): ?AdminUser
     {
         $row = $this->query->fetchOne(
-            'SELECT id, email, password_hash, created_at, updated_at FROM admin_users WHERE id = ?',
+            'SELECT id, email, password_hash, role, organization_id, created_at, updated_at FROM admin_users WHERE id = ?',
             [$id],
         );
 
@@ -44,10 +38,21 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
             return null;
         }
 
+        return $this->mapRow($row);
+    }
+
+    /** @param array<string, mixed> $row */
+    private function mapRow(array $row): AdminUser
+    {
+        $rawOrgId = $row['organization_id'] ?? null;
+        $orgId = is_numeric($rawOrgId) && (int) $rawOrgId !== 0 ? (int) $rawOrgId : null;
+
         return new AdminUser(
             email: (string) $row['email'],
             passwordHash: (string) $row['password_hash'],
             id: (int) $row['id'],
+            role: (string) ($row['role'] ?? 'admin'),
+            organizationId: $orgId,
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],
         );

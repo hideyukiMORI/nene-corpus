@@ -10,6 +10,8 @@ final readonly class AdminUser
         public string $email,
         public string $passwordHash,
         public ?int $id = null,
+        public string $role = 'admin',
+        public ?int $organizationId = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
     ) {

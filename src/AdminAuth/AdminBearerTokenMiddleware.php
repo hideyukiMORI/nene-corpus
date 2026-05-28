@@ -36,6 +36,28 @@ final readonly class AdminBearerTokenMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return $this->bearer->process($request, $handler);
+        // Wrap handler to extract role + org_id from JWT claims into typed request attributes
+        $wrappedHandler = new class ($handler) implements RequestHandlerInterface {
+            public function __construct(private readonly RequestHandlerInterface $inner)
+            {
+            }
+
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                /** @var array<string, mixed>|null $claims */
+                $claims = $request->getAttribute('nene2.auth.claims');
+
+                if (is_array($claims)) {
+                    $orgId = isset($claims['org_id']) && is_int($claims['org_id']) ? $claims['org_id'] : null;
+                    $request = $request
+                        ->withAttribute('nene-corpus.auth.role', (string) ($claims['role'] ?? 'admin'))
+                        ->withAttribute('nene-corpus.auth.org_id', $orgId);
+                }
+
+                return $this->inner->handle($request);
+            }
+        };
+
+        return $this->bearer->process($request, $wrappedHandler);
     }
 }

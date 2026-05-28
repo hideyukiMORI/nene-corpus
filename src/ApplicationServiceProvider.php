@@ -40,6 +40,8 @@ use NeneCorpus\Llm\LlmServiceProvider;
 use NeneCorpus\Message\MessageServiceProvider;
 use NeneCorpus\Notification\NotificationRouteRegistrar;
 use NeneCorpus\Notification\NotificationServiceProvider;
+use NeneCorpus\Organization\OrganizationRouteRegistrar;
+use NeneCorpus\Organization\OrganizationServiceProvider;
 use NeneCorpus\RateLimit\RateLimitServiceProvider;
 use NeneCorpus\Search\SearchServiceProvider;
 use NeneCorpus\Session\AdminChatRouteRegistrar;
@@ -49,6 +51,9 @@ use NeneCorpus\Settings\SettingsServiceProvider;
 use NeneCorpus\Source\SourceNotFoundExceptionHandler;
 use NeneCorpus\Source\SourceRouteRegistrar;
 use NeneCorpus\Source\SourceServiceProvider;
+use NeneCorpus\SystemConfig\SystemConfigRouteRegistrar;
+use NeneCorpus\SystemConfig\SystemConfigServiceProvider;
+use NeneCorpus\Tenancy\Context\TenancyServiceProvider;
 use Psr\Container\ContainerInterface;
 
 final readonly class ApplicationServiceProvider implements ServiceProviderInterface
@@ -78,6 +83,9 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new NotificationServiceProvider())
             ->addProvider(new AnalyticsServiceProvider())
             ->addProvider(new InstallServiceProvider())
+            ->addProvider(new OrganizationServiceProvider())
+            ->addProvider(new SystemConfigServiceProvider())
+            ->addProvider(new TenancyServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
@@ -94,6 +102,8 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                     $notification = $container->get(NotificationServiceProvider::ROUTE_REGISTRAR);
                     $analytics = $container->get(AnalyticsServiceProvider::ROUTE_REGISTRAR);
                     $install = $container->get(InstallServiceProvider::ROUTE_REGISTRAR);
+                    $organization = $container->get(OrganizationServiceProvider::ROUTE_REGISTRAR);
+                    $systemConfig = $container->get(SystemConfigServiceProvider::ROUTE_REGISTRAR);
 
                     if (!$adminAuth instanceof AdminAuthRouteRegistrar) {
                         throw new LogicException('Admin auth route registrar service is invalid.');
@@ -147,7 +157,15 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
                         throw new LogicException('Install route registrar service is invalid.');
                     }
 
-                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification, $analytics];
+                    if (!$organization instanceof OrganizationRouteRegistrar) {
+                        throw new LogicException('Organization route registrar service is invalid.');
+                    }
+
+                    if (!$systemConfig instanceof SystemConfigRouteRegistrar) {
+                        throw new LogicException('System config route registrar service is invalid.');
+                    }
+
+                    return [$install, $adminAuth, $chat, $ingestion, $source, $document, $adminChat, $appearance, $settings, $chatSettings, $chatLimits, $notification, $analytics, $organization, $systemConfig];
                 },
             )
             ->set(
