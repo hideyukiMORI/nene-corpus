@@ -180,6 +180,17 @@ frontend/
 **`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5173) と widget (:5174) を両方再起動する。
 **静的ビルド注意:** `:8080` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
 
+### MSW モック開発モード（バックエンドなしで Admin UI を動かす）
+
+```bash
+# frontend/ ディレクトリ内で
+npm run mock        # VITE_MOCK_API=true vite — ブラウザに MSW Service Worker を登録
+```
+
+- ハンドラーは `frontend/tests/msw/handlers/` に集約（vitest とブラウザで共用）
+- 新規 API を追加したら対応ハンドラーを同ディレクトリに追加し、`server.ts` と `src/mocks/browser.ts` の両方に登録する
+- `public/mockServiceWorker.js` は MSW が自動生成するファイル。コミット対象だが手動編集禁止
+
 ---
 
 ## 絶対禁止パターン

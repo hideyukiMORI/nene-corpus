@@ -37,7 +37,6 @@ final class CsvIngestionHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
-        AdminHttpTestSupport::seedTenancy($executor);
         AdminHttpTestSupport::seedCorpusSchema($executor);
     }
 

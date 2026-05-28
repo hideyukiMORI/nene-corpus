@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NeneCorpus\RateLimit;
 
-use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
@@ -60,15 +59,14 @@ final readonly class PdoRateLimitStorage implements RateLimitStorageInterface
         return ['count' => $count, 'reset_at' => $resetAt];
     }
 
+    /**
+     * Rate-limit buckets fall back to org_id = 0 for bypass paths
+     * (login / password-reset / health / install) where no tenant context is resolved.
+     * org_id = 0 is reserved for global (non-tenant) buckets and won't collide with real orgs (1+).
+     */
     private function orgId(): int
     {
-        $id = $this->orgIdHolder->getId();
-
-        if ($id === null) {
-            throw new LogicException('Organization ID is not resolved. Check OrgResolverMiddleware setup.');
-        }
-
-        return $id;
+        return $this->orgIdHolder->getId() ?? 0;
     }
 
     private function now(): string

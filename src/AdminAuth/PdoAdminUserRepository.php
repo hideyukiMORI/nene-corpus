@@ -87,7 +87,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
             );
         }
 
-        return array_values(array_map(fn (array $row): AdminUser => $this->mapRow($row), $rows));
+        return array_map(fn (array $row): AdminUser => $this->mapRow($row), $rows);
     }
 
     /**

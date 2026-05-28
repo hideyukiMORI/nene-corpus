@@ -16,7 +16,6 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Mail\MailerInterface;
-use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class AdminAuthServiceProvider implements ServiceProviderInterface
