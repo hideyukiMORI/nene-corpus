@@ -13,6 +13,7 @@ use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
 use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
 use NeneCorpus\Notification\RateLimitNotifier;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class RateLimitServiceProvider implements ServiceProviderInterface
@@ -25,13 +26,18 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
             ->set(
                 RateLimitStorageInterface::class,
                 static function (ContainerInterface $container): RateLimitStorageInterface {
-                    $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $query  = $container->get(DatabaseQueryExecutorInterface::class);
+                    $holder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoRateLimitStorage($query);
+                    if (!$holder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoRateLimitStorage($query, $holder);
                 },
             )
             ->set(

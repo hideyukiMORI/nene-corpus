@@ -16,6 +16,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Mail\MailerInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class AdminAuthServiceProvider implements ServiceProviderInterface
@@ -42,6 +43,9 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
+                    // PdoAdminUserRepository does not scope findByEmail/findById by org
+                    // (those methods are called from bypass-path use cases: login, password-reset).
+                    // listByOrganization and create do use the org argument explicitly.
                     return new PdoAdminUserRepository($query);
                 },
             )
