@@ -18,6 +18,8 @@ final class AdminHtaccessTest extends TestCase
         'documents',
         'notifications',
         'analytics',
+        'bootstrap',
+        'superadmin',
     ];
 
     public function test_admin_htaccess_files_route_api_prefixes_to_php(): void

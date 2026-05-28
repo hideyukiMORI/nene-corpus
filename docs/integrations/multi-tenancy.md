@@ -140,3 +140,56 @@ $stmt->execute([$orgId, $sourceId]);
 - ADR 0005: `docs/adr/0005-multi-tenancy-strategy.md`
 - NeNe Records 境界: `docs/integrations/nene-records-client.md`
 - OpenAPI: `docs/openapi/openapi.yaml`（`Superadmin` タグ参照）
+
+---
+
+## URL 構造（path router）
+
+Admin SPA は起動時に `GET /admin/bootstrap`（public、auth/rate-limit ともに bypass）を fetch して `tenant_resolution_mode` と `tenant_org_slug` を取得し、これに基づいて URL を構築する。
+
+### 構成要素
+
+```
+{install-base}/{org-slug?}/{route}
+```
+
+| 構成要素 | 例 | 説明 |
+|---|---|---|
+| `install-base` | `/admin` または `` | サブディレクトリ配置時のみ付く。`config.ts` の `resolveAdminApiBase()` が `pathname` を検査して自動検出 |
+| `org-slug` | `acme` | **`tenant_resolution_mode === 'path'` の時のみ** URL に含まれる |
+| `route` | `/dashboard` `/sources` `/settings` | アプリ内ルート |
+
+### mode 別の URL 例
+
+| mode | URL 例 | org 解決方法 |
+|---|---|---|
+| `single` | `/admin/dashboard` | system_config の固定 slug（`default`） |
+| `subdomain` | `/admin/dashboard`（hostname は `acme.example.com`） | hostname のサブドメイン |
+| `path` | `/admin/acme/dashboard` | URL の先頭セグメント（`acme`） |
+
+### `GET /admin/bootstrap` レスポンス例
+
+```json
+// single モード（現在）
+{ "tenant_resolution_mode": "single", "tenant_org_slug": "default" }
+
+// path モード（subdomain/path Strategy 完成後）
+{ "tenant_resolution_mode": "path", "tenant_org_slug": "acme" }
+```
+
+### SPA fallback (.htaccess)
+
+path-based routing では、ブラウザの直叩き（`/admin/dashboard`）や再読み込みでも `index.html` が返る必要がある。`public_html/admin/.htaccess` と `frontend/apps/admin/public/.htaccess` の両方に SPA fallback を設定済み:
+
+```apache
+# Static files are served as-is.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# SPA fallback — それ以外は index.html
+RewriteCond %{REQUEST_URI} !^.*\.(?:js|css|map|png|jpg|jpeg|svg|ico|woff2?|ttf|json|xml|txt)$
+RewriteRule . index.html [QSA,L]
+```
+
+詳細は ADR 0006（`docs/adr/0006-path-based-routing.md`）参照。
