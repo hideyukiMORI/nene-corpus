@@ -13,6 +13,7 @@ use NeneCorpus\Message\ChatMessageRepositoryInterface;
 use NeneCorpus\Message\ListChatSessionMessagesHandler;
 use NeneCorpus\Message\ListChatSessionMessagesUseCase;
 use NeneCorpus\Message\ListChatSessionMessagesUseCaseInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class SessionServiceProvider implements ServiceProviderInterface
@@ -26,12 +27,17 @@ final readonly class SessionServiceProvider implements ServiceProviderInterface
                 ChatSessionRepositoryInterface::class,
                 static function (ContainerInterface $container): ChatSessionRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $holder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoChatSessionRepository($query);
+                    if (!$holder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoChatSessionRepository($query, $holder);
                 },
             )
             ->set(

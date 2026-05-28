@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\Message;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChatMessageRepository implements ChatMessageRepositoryInterface
 {
@@ -14,14 +15,15 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
     public function findById(int $id): ?ChatMessage
     {
         $row = $this->query->fetchOne(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_messages WHERE id = ?',
-            [$id],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_messages WHERE id = ? AND organization_id = ?',
+            [$id, $this->orgId()],
         );
 
         return $row === null ? null : $this->mapRow($row);
@@ -31,8 +33,8 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
     public function findBySessionId(int $sessionId, int $limit, int $offset): array
     {
         $rows = $this->query->fetchAll(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_messages WHERE session_id = ? ORDER BY id ASC LIMIT ? OFFSET ?',
-            [$sessionId, $limit, $offset],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_messages WHERE session_id = ? AND organization_id = ? ORDER BY id ASC LIMIT ? OFFSET ?',
+            [$sessionId, $this->orgId(), $limit, $offset],
         );
 
         return array_map(fn (array $row): ChatMessage => $this->mapRow($row), $rows);
@@ -45,10 +47,11 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
         $this->query->execute(
             <<<'SQL'
                 INSERT INTO chat_messages (
-                    session_id, role, content, citations_json, input_tokens, output_tokens, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    organization_id, session_id, role, content, citations_json, input_tokens, output_tokens, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 SQL,
             [
+                $this->orgId(),
                 $message->sessionId,
                 $message->role->value,
                 $message->content,
@@ -61,6 +64,17 @@ final readonly class PdoChatMessageRepository implements ChatMessageRepositoryIn
         );
 
         return $this->query->lastInsertId();
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new \LogicException('Organization ID is not resolved.');
+        }
+
+        return $id;
     }
 
     /**
