@@ -80,7 +80,7 @@ export function App() {
 
   // 認証済み: ルーティング
   switch (route) {
-    case 'sources':       return <SourcesPage />;
+    case 'sources':       return <SourcesPage token={token} />;
     case 'conversations': return <ConversationsPage />;
     case 'settings':      return <SettingsPage token={token} onLogout={logout} />;
     case 'dashboard':
