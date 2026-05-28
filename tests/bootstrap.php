@@ -9,8 +9,10 @@ $loader = require dirname(__DIR__) . '/vendor/autoload.php';
 $worktreeRoot = dirname(__DIR__);
 $mainRepoRoot = realpath(dirname($worktreeRoot, 4)); // nene-corpus/.claude/worktrees/agent-X -> nene-corpus
 if ($mainRepoRoot !== false && $mainRepoRoot !== $worktreeRoot) {
-    $loader->addPsr4('NeneCorpus\\', [$worktreeRoot . '/src']);
-    $loader->addPsr4('NeneCorpus\\Tests\\', [$worktreeRoot . '/tests']);
+    // Use prepend=true so worktree classes shadow the main-repo classes when both share
+    // the NeneCorpus\ namespace via the symlinked vendor autoloader.
+    $loader->addPsr4('NeneCorpus\\', [$worktreeRoot . '/src'], true);
+    $loader->addPsr4('NeneCorpus\\Tests\\', [$worktreeRoot . '/tests'], true);
 }
 
 if (!isset($_ENV['NENE2_LOCAL_JWT_SECRET']) && !isset($_SERVER['NENE2_LOCAL_JWT_SECRET'])) {

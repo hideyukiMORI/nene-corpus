@@ -9,6 +9,7 @@ use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailSendException;
 use NeneCorpus\Notification\NotificationConfig;
 use NeneCorpus\Notification\RateLimitNotifier;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use PHPUnit\Framework\TestCase;
 
 final class RateLimitNotifierTest extends TestCase
@@ -24,6 +25,14 @@ final class RateLimitNotifierTest extends TestCase
         );
     }
 
+    private function makeHolder(int $orgId = 1): RequestScopedOrgIdHolder
+    {
+        $holder = new RequestScopedOrgIdHolder();
+        $holder->setId($orgId);
+
+        return $holder;
+    }
+
     public function test_does_nothing_when_rate_limit_notify_disabled(): void
     {
         $mailer  = $this->createMock(MailerInterface::class);
@@ -32,7 +41,7 @@ final class RateLimitNotifierTest extends TestCase
         $mailer->expects(self::never())->method('send');
         $storage->expects(self::never())->method('hit');
 
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
             $this->makeConfig(enabled: false),
             'ops@example.com',
             '1.2.3.4',
@@ -48,7 +57,7 @@ final class RateLimitNotifierTest extends TestCase
         $mailer->expects(self::once())->method('isConfigured')->willReturn(false);
         $mailer->expects(self::never())->method('send');
 
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
             $this->makeConfig(enabled: true),
             'ops@example.com',
             '1.2.3.4',
@@ -67,7 +76,7 @@ final class RateLimitNotifierTest extends TestCase
         // Both calls: daily hits tracking + cooldown gate
         $storage->method('hit')->willReturn(['count' => 1, 'reset_at' => time() + 3600]);
 
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '1.2.3.4',
@@ -94,7 +103,7 @@ final class RateLimitNotifierTest extends TestCase
             },
         );
 
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '192.168.0.1',
@@ -112,7 +121,7 @@ final class RateLimitNotifierTest extends TestCase
         $storage->method('hit')->willReturn(['count' => 1, 'reset_at' => time() + 3600]);
 
         // Must not throw
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '10.0.0.1',
@@ -130,18 +139,19 @@ final class RateLimitNotifierTest extends TestCase
         $mailer->method('isConfigured')->willReturn(true);
 
         $today = date('Y-m-d');
-        $hitsKeyPrefix = 'notify:ratelimit:hits:' . $today;
+        $orgId = 1;
+        $hitsKeyPrefix = 'notify:ratelimit:hits:' . $orgId . ':' . $today;
 
         // hit() must be called for the daily hits key
         $storage->expects(self::atLeastOnce())
             ->method('hit')
             ->with(self::logicalOr(
                 self::stringStartsWith($hitsKeyPrefix),
-                self::stringStartsWith('notify:ratelimit:cooldown'),
+                self::stringStartsWith('notify:ratelimit:cooldown:'),
             ))
             ->willReturn(['count' => 2, 'reset_at' => time() + 86400]);
 
-        (new RateLimitNotifier($mailer, $storage))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder($orgId)))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '1.2.3.4',

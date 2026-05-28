@@ -8,6 +8,7 @@ use Nene2\Config\DatabaseConfig;
 use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Notification\PdoDailyReportRepository;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 final class PdoDailyReportRepositoryTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+    private RequestScopedOrgIdHolder $orgIdHolder;
     private PdoDailyReportRepository $repo;
 
     protected function setUp(): void
@@ -34,7 +36,9 @@ final class PdoDailyReportRepositoryTest extends TestCase
         ChatSchemaSetup::create($this->executor);
         RateLimitSchemaSetup::create($this->executor);
 
-        $this->repo = new PdoDailyReportRepository($this->executor);
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
+        $this->repo = new PdoDailyReportRepository($this->executor, $this->orgIdHolder);
     }
 
     public function test_returns_zeros_for_empty_database(): void
@@ -107,9 +111,10 @@ final class PdoDailyReportRepositoryTest extends TestCase
     public function test_counts_rate_limit_hits_from_bucket(): void
     {
         $today = '2026-01-15';
+        $orgId = 1;
         $this->executor->execute(
             'INSERT INTO rate_limit_buckets (bucket_key, hit_count, reset_at, updated_at) VALUES (?, ?, ?, ?)',
-            ["notify:ratelimit:hits:{$today}", 17, time() + 86400, '2026-01-15 10:00:00'],
+            ["notify:ratelimit:hits:{$orgId}:{$today}", 17, time() + 86400, '2026-01-15 10:00:00'],
         );
 
         $stats = $this->repo->getStats($today);
@@ -128,7 +133,7 @@ final class PdoDailyReportRepositoryTest extends TestCase
     {
         $this->executor->execute(
             'INSERT INTO rate_limit_buckets (bucket_key, hit_count, reset_at, updated_at) VALUES (?, ?, ?, ?)',
-            ['notify:ratelimit:hits:2026-01-14', 99, time() + 86400, '2026-01-14 00:00:00'],
+            ['notify:ratelimit:hits:1:2026-01-14', 99, time() + 86400, '2026-01-14 00:00:00'],
         );
 
         $stats = $this->repo->getStats('2026-01-15');

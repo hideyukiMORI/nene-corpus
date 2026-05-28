@@ -10,6 +10,7 @@ use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use NeneCorpus\Tests\Support\SampleHeroImage;
+use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -36,6 +37,10 @@ final class AppearanceHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        TenancySchemaSetup::createOrganizations($executor);
+        TenancySchemaSetup::createSystemConfig($executor);
+        TenancySchemaSetup::seedDefaultOrganization($executor);
+        TenancySchemaSetup::seedSystemConfig($executor);
         CorpusSchemaSetup::createAdminUsers($executor);
         RateLimitSchemaSetup::create($executor);
         CorpusSchemaSetup::createAppearanceSettings($executor);
@@ -43,8 +48,8 @@ final class AppearanceHttpTest extends TestCase
         $hash = password_hash('secret-password', PASSWORD_ARGON2ID);
         $now = gmdate('Y-m-d H:i:s');
         $executor->execute(
-            'INSERT INTO admin_users (email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?)',
-            ['admin@example.com', $hash, $now, $now],
+            'INSERT INTO admin_users (email, password_hash, role, organization_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+            ['admin@example.com', $hash, 'admin', 1, $now, $now],
         );
     }
 

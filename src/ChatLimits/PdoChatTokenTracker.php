@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace NeneCorpus\ChatLimits;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 /**
  * Tracks daily token usage (input + output) in rate_limit_buckets.
  *
  * Uses a 24-hour rolling window, keyed as:
- *   chat:tokens:ip:{ip}    — per-IP daily total
- *   chat:tokens:global     — global daily total
+ *   chat:tokens:{orgId}:ip:{ip}    — per-IP daily total (org-scoped)
+ *   chat:tokens:{orgId}:global     — global daily total (org-scoped)
  *
  * hit_count stores the sum of (inputTokens + outputTokens) for each call.
  */
@@ -21,6 +22,7 @@ final readonly class PdoChatTokenTracker implements ChatTokenTrackerInterface
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
@@ -32,18 +34,24 @@ final readonly class PdoChatTokenTracker implements ChatTokenTrackerInterface
             return;
         }
 
-        $this->addToWindow('chat:tokens:ip:' . $ip, $total);
-        $this->addToWindow('chat:tokens:global', $total);
+        $orgId = $this->orgIdHolder->getId() ?? 1;
+
+        $this->addToWindow('chat:tokens:' . $orgId . ':ip:' . $ip, $total);
+        $this->addToWindow('chat:tokens:' . $orgId . ':global', $total);
     }
 
     public function dailyTokensForIp(string $ip): int
     {
-        return $this->peekWindow('chat:tokens:ip:' . $ip);
+        $orgId = $this->orgIdHolder->getId() ?? 1;
+
+        return $this->peekWindow('chat:tokens:' . $orgId . ':ip:' . $ip);
     }
 
     public function dailyTokensGlobal(): int
     {
-        return $this->peekWindow('chat:tokens:global');
+        $orgId = $this->orgIdHolder->getId() ?? 1;
+
+        return $this->peekWindow('chat:tokens:' . $orgId . ':global');
     }
 
     private function addToWindow(string $key, int $amount): void

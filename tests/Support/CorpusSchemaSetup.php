@@ -111,6 +111,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE corpus_chat_settings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     system_prompt TEXT NULL,
                     fallback_message TEXT NULL,
                     created_at TEXT NOT NULL,
@@ -126,6 +127,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE appearance_settings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     widget_locale TEXT NULL,
                     theme_json TEXT NOT NULL,
                     hero_json TEXT NULL,

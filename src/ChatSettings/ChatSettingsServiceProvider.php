@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Http\JsonResponseFactory;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class ChatSettingsServiceProvider implements ServiceProviderInterface
@@ -22,12 +23,17 @@ final readonly class ChatSettingsServiceProvider implements ServiceProviderInter
                 ChatSettingsRepositoryInterface::class,
                 static function (ContainerInterface $container): ChatSettingsRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoChatSettingsRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoChatSettingsRepository($query, $orgIdHolder);
                 },
             )
             ->set(
