@@ -13,56 +13,74 @@ use Phinx\Migration\AbstractMigration;
  *  3. 全 12 既存テーブルに organization_id カラム追加（DEFAULT 1 = default org）
  *  4. admin_users に role カラム追加
  *  5. 既存の最初の admin_user を superadmin に昇格
+ *
+ * すべて Phinx schema builder API を使い MySQL / SQLite 両対応。
  */
 final class CreateTenancyTablesAndOrgIdColumns extends AbstractMigration
 {
     public function up(): void
     {
-        // 1. organizations テーブル作成
-        $this->execute(<<<'SQL'
-            CREATE TABLE IF NOT EXISTS organizations (
-                id          INT UNSIGNED  NOT NULL AUTO_INCREMENT,
-                name        VARCHAR(255)  NOT NULL,
-                slug        VARCHAR(100)  NOT NULL,
-                custom_domain VARCHAR(255) NULL DEFAULT NULL,
-                plan        VARCHAR(32)   NOT NULL DEFAULT 'free',
-                is_active   TINYINT(1)    NOT NULL DEFAULT 1,
-                external_id VARCHAR(255)  NULL DEFAULT NULL,
-                created_at  DATETIME      NOT NULL,
-                updated_at  DATETIME      NOT NULL,
-                PRIMARY KEY (id),
-                UNIQUE KEY uq_organizations_slug (slug),
-                UNIQUE KEY uq_organizations_custom_domain (custom_domain),
-                UNIQUE KEY uq_organizations_external_id (external_id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        SQL);
-
-        // 2. system_config テーブル作成
-        $this->execute(<<<'SQL'
-            CREATE TABLE IF NOT EXISTS system_config (
-                `key`        VARCHAR(191)  NOT NULL,
-                `value`      VARCHAR(1024) NOT NULL DEFAULT '',
-                `updated_at` DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`key`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-        SQL);
-
-        // 3. Default Organization の seed
         $now = date('Y-m-d H:i:s');
-        $this->execute(<<<SQL
-            INSERT IGNORE INTO organizations (id, name, slug, plan, is_active, created_at, updated_at)
-            VALUES (1, 'Default Organization', 'default', 'free', 1, '{$now}', '{$now}')
-        SQL);
+
+        // 1. organizations テーブル作成
+        if (!$this->hasTable('organizations')) {
+            $this->table('organizations')
+                ->addColumn('name', 'string', ['limit' => 255, 'null' => false])
+                ->addColumn('slug', 'string', ['limit' => 100, 'null' => false])
+                ->addColumn('custom_domain', 'string', ['limit' => 255, 'null' => true, 'default' => null])
+                ->addColumn('plan', 'string', ['limit' => 32, 'null' => false, 'default' => 'free'])
+                ->addColumn('is_active', 'boolean', ['null' => false, 'default' => true])
+                ->addColumn('external_id', 'string', ['limit' => 255, 'null' => true, 'default' => null])
+                ->addColumn('created_at', 'datetime', ['null' => false])
+                ->addColumn('updated_at', 'datetime', ['null' => false])
+                ->addIndex(['slug'], ['unique' => true, 'name' => 'uq_organizations_slug'])
+                ->addIndex(['custom_domain'], ['unique' => true, 'name' => 'uq_organizations_custom_domain'])
+                ->addIndex(['external_id'], ['unique' => true, 'name' => 'uq_organizations_external_id'])
+                ->create();
+        }
+
+        // 2. system_config テーブル作成（PK は key、AUTO_INCREMENT 不要）
+        if (!$this->hasTable('system_config')) {
+            $this->table('system_config', ['id' => false, 'primary_key' => ['key']])
+                ->addColumn('key', 'string', ['limit' => 191, 'null' => false])
+                ->addColumn('value', 'string', ['limit' => 1024, 'null' => false, 'default' => ''])
+                ->addColumn('updated_at', 'datetime', ['null' => false, 'default' => 'CURRENT_TIMESTAMP'])
+                ->create();
+        }
+
+        // 3. Default Organization の seed (id=1)
+        $orgRow = $this->fetchRow('SELECT id FROM organizations WHERE id = 1');
+        if ($orgRow === false || $orgRow === null) {
+            $this->table('organizations')->insert([
+                'id' => 1,
+                'name' => 'Default Organization',
+                'slug' => 'default',
+                'plan' => 'free',
+                'is_active' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->saveData();
+        }
 
         // 4. system_config 初期値 seed
-        $this->execute(<<<'SQL'
-            INSERT IGNORE INTO system_config (`key`, `value`) VALUES
-                ('tenant_resolution_mode', 'single'),
-                ('tenant_org_slug',        'default'),
-                ('tenant_base_domain',     'localhost')
-        SQL);
+        $defaults = [
+            ['key' => 'tenant_resolution_mode', 'value' => 'single'],
+            ['key' => 'tenant_org_slug', 'value' => 'default'],
+            ['key' => 'tenant_base_domain', 'value' => 'localhost'],
+        ];
+        foreach ($defaults as $row) {
+            $key = $row['key'];
+            $existing = $this->fetchRow("SELECT `value` FROM system_config WHERE `key` = '{$key}'");
+            if ($existing === false || $existing === null) {
+                $this->table('system_config')->insert([
+                    'key' => $row['key'],
+                    'value' => $row['value'],
+                    'updated_at' => $now,
+                ])->saveData();
+            }
+        }
 
-        // 5. 既存テーブルに organization_id カラム追加（べき等: INFORMATION_SCHEMA でチェック）
+        // 5. 既存テーブルに organization_id カラム追加
         $tables = [
             'sources',
             'documents',
@@ -77,51 +95,64 @@ final class CreateTenancyTablesAndOrgIdColumns extends AbstractMigration
             'admin_password_resets',
         ];
 
-        foreach ($tables as $table) {
-            if ($this->hasTable($table) && !$this->columnExists($table, 'organization_id')) {
-                $this->execute("
-                    ALTER TABLE `{$table}`
-                        ADD COLUMN organization_id INT NOT NULL DEFAULT 1,
-                        ADD INDEX idx_{$table}_org_id (organization_id)
-                ");
+        foreach ($tables as $tableName) {
+            if (!$this->hasTable($tableName)) {
+                continue;
+            }
+            $table = $this->table($tableName);
+            if (!$table->hasColumn('organization_id')) {
+                $table
+                    ->addColumn('organization_id', 'integer', ['null' => false, 'default' => 1])
+                    ->addIndex(['organization_id'], ['name' => "idx_{$tableName}_org_id"])
+                    ->update();
             }
         }
 
         // 6. admin_users に role カラム追加
-        if ($this->hasTable('admin_users') && !$this->columnExists('admin_users', 'role')) {
-            $this->execute("
-                ALTER TABLE admin_users
-                    ADD COLUMN role VARCHAR(32) NOT NULL DEFAULT 'admin'
-            ");
+        if ($this->hasTable('admin_users')) {
+            $adminUsers = $this->table('admin_users');
+            if (!$adminUsers->hasColumn('role')) {
+                $adminUsers->addColumn('role', 'string', ['limit' => 32, 'null' => false, 'default' => 'admin'])->update();
+            }
         }
 
-        // 7. 既存の最初の admin_user を superadmin に昇格、organization_id を NULL に
-        //    （Tier A 自動アップグレード経路: 最初の admin が全テナントを管理）
+        // 7. 既存の最初の admin_user を superadmin に昇格、organization_id を 0（= グローバル）に
+        //    Tier A 自動アップグレード経路: 最初の admin が全テナントを管理
         if ($this->hasTable('admin_users')) {
-            if ($this->columnExists('admin_users', 'role')) {
-                $this->execute("
-                    UPDATE admin_users
-                    SET role = 'superadmin', organization_id = 0
-                    ORDER BY id ASC
-                    LIMIT 1
-                ");
+            $firstAdmin = $this->fetchRow('SELECT id FROM admin_users ORDER BY id ASC LIMIT 1');
+            if (is_array($firstAdmin) && isset($firstAdmin['id'])) {
+                $id = (int) $firstAdmin['id'];
+                $this->execute("UPDATE admin_users SET role = 'superadmin', organization_id = 0 WHERE id = {$id}");
+            }
+        }
+
+        // 8. rate_limit_buckets の UNIQUE 制約を compound (organization_id, bucket_key) に
+        //    org スコープ化されたので bucket_key だけでは衝突する。
+        if ($this->hasTable('rate_limit_buckets')) {
+            $rateBuckets = $this->table('rate_limit_buckets');
+            if ($rateBuckets->hasIndexByName('uniq_rate_limit_buckets_bucket_key')) {
+                $rateBuckets->removeIndexByName('uniq_rate_limit_buckets_bucket_key')->update();
+            }
+            if (!$rateBuckets->hasIndexByName('uniq_rate_limit_buckets_org_bucket_key')) {
+                $rateBuckets
+                    ->addIndex(['organization_id', 'bucket_key'], [
+                        'unique' => true,
+                        'name' => 'uniq_rate_limit_buckets_org_bucket_key',
+                    ])
+                    ->update();
             }
         }
     }
 
     public function down(): void
     {
-        // admin_users: superadmin を admin に戻す（逆順）
-        if ($this->hasTable('admin_users') && $this->columnExists('admin_users', 'role')) {
-            $this->execute("
-                UPDATE admin_users SET role = 'admin', organization_id = 1
-                WHERE role = 'superadmin'
-            ");
-        }
-
-        // admin_users: role カラム削除
-        if ($this->hasTable('admin_users') && $this->columnExists('admin_users', 'role')) {
-            $this->execute('ALTER TABLE admin_users DROP COLUMN role');
+        // admin_users: superadmin を admin に戻す
+        if ($this->hasTable('admin_users')) {
+            $adminUsers = $this->table('admin_users');
+            if ($adminUsers->hasColumn('role')) {
+                $this->execute("UPDATE admin_users SET role = 'admin', organization_id = 1 WHERE role = 'superadmin'");
+                $adminUsers->removeColumn('role')->update();
+            }
         }
 
         // 既存テーブルから organization_id 削除
@@ -139,29 +170,24 @@ final class CreateTenancyTablesAndOrgIdColumns extends AbstractMigration
             'sources',
         ];
 
-        foreach ($tables as $table) {
-            if ($this->hasTable($table) && $this->columnExists($table, 'organization_id')) {
-                $this->execute("ALTER TABLE `{$table}` DROP COLUMN organization_id");
+        foreach ($tables as $tableName) {
+            if (!$this->hasTable($tableName)) {
+                continue;
+            }
+            $table = $this->table($tableName);
+            if ($table->hasColumn('organization_id')) {
+                $table->removeIndexByName("idx_{$tableName}_org_id")->removeColumn('organization_id')->update();
             }
         }
 
         // system_config テーブル削除
-        $this->execute('DROP TABLE IF EXISTS system_config');
+        if ($this->hasTable('system_config')) {
+            $this->table('system_config')->drop()->update();
+        }
 
         // organizations テーブル削除
-        $this->execute('DROP TABLE IF EXISTS organizations');
-    }
-
-    private function columnExists(string $table, string $column): bool
-    {
-        $row = $this->fetchRow("
-            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA = DATABASE()
-              AND TABLE_NAME = '{$table}'
-              AND COLUMN_NAME = '{$column}'
-            LIMIT 1
-        ");
-
-        return $row !== false;
+        if ($this->hasTable('organizations')) {
+            $this->table('organizations')->drop()->update();
+        }
     }
 }
