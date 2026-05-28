@@ -22,7 +22,7 @@ function resolveRoute(): V2Route {
 
 export function App() {
   const { locale } = useLocale();
-  const { token, isReady, login, logout } = useAdminAuth();
+  const { token, profile, isReady, login, logout } = useAdminAuth();
   const [route, setRoute] = useState<V2Route>(resolveRoute);
 
   // ロケール適用（既存ロジックを維持）
@@ -82,7 +82,7 @@ export function App() {
   switch (route) {
     case 'sources':       return <SourcesPage token={token} />;
     case 'conversations': return <ConversationsPage />;
-    case 'settings':      return <SettingsPage token={token} onLogout={logout} />;
+    case 'settings':      return <SettingsPage token={token} onLogout={logout} role={profile?.role} />;
     case 'dashboard':
     default:              return <DashboardPage token={token} onLogout={logout} />;
   }

@@ -1,6 +1,6 @@
 /**
  * SettingsPage — v2 リデザイン実装 (#264)
- * 左 rail（モデル / ウィジェット / アカウント / システム）+ 右セクション切替
+ * 左 rail（モデル / ウィジェット / アカウント / システム / スーパー管理者）+ 右セクション切替
  */
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Layout } from '../Layout';
@@ -31,6 +31,8 @@ import { Msg, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from '../../config';
 import { buildEmbedSnippet } from '../../embedSnippet';
 import { DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client/types';
+import { TenantResolutionSection } from './superadmin/TenantResolutionSection';
+import { OrganizationsSection } from './superadmin/OrganizationsSection';
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -46,11 +48,14 @@ type Section =
   | 'chat-settings'
   | 'chat-limits'
   | 'notifications'
-  | 'hosting';
+  | 'hosting'
+  | 'tenant-resolution'
+  | 'organizations';
 
 interface SettingsPageProps {
   token?: string;
   onLogout?: () => void;
+  role?: 'admin' | 'superadmin';
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1346,9 +1351,10 @@ function ChatSettingsSection({ token }: { token: string }) {
 // Main Page
 // ─────────────────────────────────────────────────────────────
 
-export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) {
+export function SettingsPage({ token, onLogout: _onLogout, role }: SettingsPageProps) {
   const [activeSection, setActiveSection] = useState<Section>('llm');
   const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
+  const isSuperadmin = role === 'superadmin';
 
   // LLM 設定状態を一度だけフェッチして rail の indicator を更新
   useEffect(() => {
@@ -1370,17 +1376,19 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
 
   function renderSection(): React.ReactNode {
     switch (activeSection) {
-      case 'llm':             return <LlmSection token={token!} />;
-      case 'embed-widget':    return <EmbedWidgetSection />;
-      case 'appearance':      return <AppearanceSection token={token!} />;
-      case 'embed-snippet':   return <EmbedWidgetSection />;
-      case 'password':        return <PasswordSection token={token!} />;
-      case 'email':           return <EmailSection token={token!} />;
-      case 'chat-settings':   return <ChatSettingsSection token={token!} />;
-      case 'chat-limits':     return <ChatLimitsSection token={token!} />;
-      case 'notifications':   return <NotificationsSection token={token!} />;
-      case 'hosting':         return <HostingSection />;
-      default:                return null;
+      case 'llm':                  return <LlmSection token={token!} />;
+      case 'embed-widget':         return <EmbedWidgetSection />;
+      case 'appearance':           return <AppearanceSection token={token!} />;
+      case 'embed-snippet':        return <EmbedWidgetSection />;
+      case 'password':             return <PasswordSection token={token!} />;
+      case 'email':                return <EmailSection token={token!} />;
+      case 'chat-settings':        return <ChatSettingsSection token={token!} />;
+      case 'chat-limits':          return <ChatLimitsSection token={token!} />;
+      case 'notifications':        return <NotificationsSection token={token!} />;
+      case 'hosting':              return <HostingSection />;
+      case 'tenant-resolution':    return isSuperadmin ? <TenantResolutionSection token={token!} /> : null;
+      case 'organizations':        return isSuperadmin ? <OrganizationsSection token={token!} /> : null;
+      default:                     return null;
     }
   }
 
@@ -1434,6 +1442,14 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
           <RailItem label="チャット制限" section="chat-limits" active={activeSection} onSelect={setActiveSection} />
           <RailItem label="通知設定" section="notifications" active={activeSection} onSelect={setActiveSection} />
           <RailItem label="ホスティング" section="hosting" active={activeSection} onSelect={setActiveSection} />
+
+          {isSuperadmin && (
+            <>
+              <RailSection label="スーパー管理者" />
+              <RailItem label="テナント解決方式" section="tenant-resolution" active={activeSection} onSelect={setActiveSection} />
+              <RailItem label="組織管理" section="organizations" active={activeSection} onSelect={setActiveSection} />
+            </>
+          )}
         </aside>
 
         {/* Main panel */}
