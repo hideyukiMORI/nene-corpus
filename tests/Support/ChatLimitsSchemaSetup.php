@@ -14,6 +14,7 @@ final class ChatLimitsSchemaSetup
             <<<'SQL'
                 CREATE TABLE chat_limits_settings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     max_message_chars INTEGER NOT NULL DEFAULT 800,
                     message_interval_seconds INTEGER NOT NULL DEFAULT 10,
                     session_requests_per_hour INTEGER NOT NULL DEFAULT 20,

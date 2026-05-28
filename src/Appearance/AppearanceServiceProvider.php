@@ -12,6 +12,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Http\RuntimeServiceProvider;
 use NeneCorpus\Ingestion\UploadFilenameSanitizer;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -27,12 +28,17 @@ final readonly class AppearanceServiceProvider implements ServiceProviderInterfa
                 AppearanceSettingsRepositoryInterface::class,
                 static function (ContainerInterface $container): AppearanceSettingsRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoAppearanceSettingsRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoAppearanceSettingsRepository($query, $orgIdHolder);
                 },
             )
             ->set(

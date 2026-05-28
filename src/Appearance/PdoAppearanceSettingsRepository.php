@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace NeneCorpus\Appearance;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoAppearanceSettingsRepository implements AppearanceSettingsRepositoryInterface
 {
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
     public function get(): AppearanceSettings
     {
+        $orgId = $this->orgIdHolder->getId() ?? 1;
+
         $row = $this->query->fetchOne(
-            'SELECT widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css FROM appearance_settings ORDER BY id ASC LIMIT 1',
+            'SELECT widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css FROM appearance_settings WHERE organization_id = ? ORDER BY id ASC LIMIT 1',
+            [$orgId],
         );
 
         if ($row === null) {
@@ -40,25 +45,26 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
 
     public function save(AppearanceSettings $settings): void
     {
+        $orgId = $this->orgIdHolder->getId() ?? 1;
         $now = gmdate('Y-m-d H:i:s');
         $themeJson = json_encode($settings->theme->toArray(), JSON_THROW_ON_ERROR);
         $heroJson = json_encode($settings->hero->toArray(), JSON_THROW_ON_ERROR);
         $chatJson = json_encode($settings->chat->toArray(), JSON_THROW_ON_ERROR);
         $layoutJson = json_encode($settings->layout->toArray(), JSON_THROW_ON_ERROR);
-        $existing = $this->query->fetchOne('SELECT id FROM appearance_settings ORDER BY id ASC LIMIT 1');
+        $existing = $this->query->fetchOne('SELECT id FROM appearance_settings WHERE organization_id = ? ORDER BY id ASC LIMIT 1', [$orgId]);
 
         if ($existing === null) {
             $this->query->execute(
-                'INSERT INTO appearance_settings (widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, $now],
+                'INSERT INTO appearance_settings (organization_id, widget_locale, theme_json, hero_json, chat_json, layout_json, custom_css, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [$orgId, $settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, $now],
             );
 
             return;
         }
 
         $this->query->execute(
-            'UPDATE appearance_settings SET widget_locale = ?, theme_json = ?, hero_json = ?, chat_json = ?, layout_json = ?, custom_css = ?, updated_at = ? WHERE id = ?',
-            [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, (int) $existing['id']],
+            'UPDATE appearance_settings SET widget_locale = ?, theme_json = ?, hero_json = ?, chat_json = ?, layout_json = ?, custom_css = ?, updated_at = ? WHERE id = ? AND organization_id = ?',
+            [$settings->widgetLocale, $themeJson, $heroJson, $chatJson, $layoutJson, $settings->customCss, $now, (int) $existing['id'], $orgId],
         );
     }
 }

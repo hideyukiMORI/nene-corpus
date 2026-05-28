@@ -7,19 +7,21 @@ namespace NeneCorpus\Notification;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailMessage;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 /**
  * Fires a rate-limit-exceeded email to the operator, with cooldown to suppress burst notifications.
  */
 final readonly class RateLimitNotifier
 {
-    private const COOLDOWN_KEY = 'notify:ratelimit:cooldown';
-
     private const HITS_KEY_PREFIX = 'notify:ratelimit:hits:';
+
+    private const COOLDOWN_KEY_PREFIX = 'notify:ratelimit:cooldown:';
 
     public function __construct(
         private MailerInterface $mailer,
         private RateLimitStorageInterface $storage,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
@@ -37,13 +39,15 @@ final readonly class RateLimitNotifier
             return;
         }
 
-        // Track daily hits regardless of cooldown
-        $today = date('Y-m-d');
-        $this->storage->hit(self::HITS_KEY_PREFIX . $today, 86400);
+        $orgId = $this->orgIdHolder->getId() ?? 1;
 
-        // Cooldown check — use 1 hit-per-window as the gate
+        // Track daily hits regardless of cooldown (org-scoped)
+        $today = date('Y-m-d');
+        $this->storage->hit(self::HITS_KEY_PREFIX . $orgId . ':' . $today, 86400);
+
+        // Cooldown check — use 1 hit-per-window as the gate (org-scoped)
         $cooldownSeconds = $config->rateLimitCooldownMinutes * 60;
-        $result = $this->storage->hit(self::COOLDOWN_KEY, $cooldownSeconds);
+        $result = $this->storage->hit(self::COOLDOWN_KEY_PREFIX . $orgId, $cooldownSeconds);
 
         if ($result['count'] > 1) {
             // Still inside cooldown window; don't send again

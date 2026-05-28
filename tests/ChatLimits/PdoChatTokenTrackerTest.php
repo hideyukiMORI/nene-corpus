@@ -8,6 +8,7 @@ use Nene2\Config\DatabaseConfig;
 use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\ChatLimits\PdoChatTokenTracker;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -25,6 +26,7 @@ use PHPUnit\Framework\TestCase;
 final class PdoChatTokenTrackerTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+    private RequestScopedOrgIdHolder $orgIdHolder;
     private PdoChatTokenTracker $tracker;
 
     protected function setUp(): void
@@ -43,7 +45,9 @@ final class PdoChatTokenTrackerTest extends TestCase
 
         RateLimitSchemaSetup::create($this->executor);
 
-        $this->tracker = new PdoChatTokenTracker($this->executor);
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
+        $this->tracker = new PdoChatTokenTracker($this->executor, $this->orgIdHolder);
     }
 
     // ── ゼロトークン ──────────────────────────────────────────────────
