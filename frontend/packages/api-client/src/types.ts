@@ -36,7 +36,7 @@ export interface LoginAdminResponse {
 export interface AdminMeResponse {
   id: number;
   email: string;
-  role: string;
+  role: 'admin' | 'superadmin';
 }
 
 export interface SourceListItem {
