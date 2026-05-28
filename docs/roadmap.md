@@ -79,7 +79,20 @@ Goal: day-2 operations without SSH or hosting-panel `.env` edits where possible.
 
 詳細バックログ: [`docs/todo/current.md`](./todo/current.md).
 
-## Phase 4: Upstream Integrations
+## Phase 4: Multi-tenancy ✅ 完了
+
+Goal: single-instance multi-tenant support with configurable tenant resolution.
+
+- organizations テーブル・system_config テーブル・マイグレーション
+- OrgResolverMiddleware + RequestScopedOrgIdHolder（3 モード: single/subdomain/path）
+- 全モジュール org スコープ適用（Source / Document / Chunk / Chat / Session / Message / Settings / RateLimit / Analytics / AdminAuth）
+- Admin UI Superadmin パネル（テナント解決方式切替・組織 CRUD）
+- OpenAPI Superadmin tag + 7 endpoints + 5 schemas
+- ADR 0005 + docs/integrations/multi-tenancy.md + E2E spec
+
+**Status: complete (2026-05-29).** 詳細: `docs/integrations/multi-tenancy.md`, `docs/adr/0005-multi-tenancy-strategy.md`
+
+## Phase 5: Upstream Integrations
 
 Goal: optional NeNe Records and export APIs.
 
