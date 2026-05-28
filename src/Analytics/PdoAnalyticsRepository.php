@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Analytics;
 
+use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterface
 {
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
@@ -18,8 +21,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
     public function countSessionsToday(): int
     {
         $rows = $this->query->fetchAll(
-            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE DATE(created_at) = DATE('now')",
-            [],
+            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND DATE(created_at) = DATE('now')",
+            [$this->orgId()],
         );
 
         return (int) ($rows[0]['cnt'] ?? 0);
@@ -28,8 +31,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
     public function countSessionsThisWeek(): int
     {
         $rows = $this->query->fetchAll(
-            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE created_at >= DATE('now', '-7 days')",
-            [],
+            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND created_at >= DATE('now', '-7 days')",
+            [$this->orgId()],
         );
 
         return (int) ($rows[0]['cnt'] ?? 0);
@@ -37,7 +40,10 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function countSessionsTotal(): int
     {
-        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM chat_sessions', []);
+        $rows = $this->query->fetchAll(
+            'SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ?',
+            [$this->orgId()],
+        );
 
         return (int) ($rows[0]['cnt'] ?? 0);
     }
@@ -45,8 +51,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
     public function countMessagesByRole(string $role): int
     {
         $rows = $this->query->fetchAll(
-            'SELECT COUNT(*) AS cnt FROM chat_messages WHERE role = ?',
-            [$role],
+            'SELECT COUNT(*) AS cnt FROM chat_messages WHERE organization_id = ? AND role = ?',
+            [$this->orgId(), $role],
         );
 
         return (int) ($rows[0]['cnt'] ?? 0);
@@ -61,8 +67,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
         }
 
         $rows = $this->query->fetchAll(
-            "SELECT COALESCE(SUM({$column}), 0) AS total FROM chat_messages",
-            [],
+            "SELECT COALESCE(SUM({$column}), 0) AS total FROM chat_messages WHERE organization_id = ?",
+            [$this->orgId()],
         );
 
         return (int) ($rows[0]['total'] ?? 0);
@@ -77,8 +83,9 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
                          ELSE CAST(COUNT(*) AS REAL) / COUNT(DISTINCT session_id)
                     END AS avg_msg
                 FROM chat_messages
+                WHERE organization_id = ?
                 SQL,
-            [],
+            [$this->orgId()],
         );
 
         return round((float) ($rows[0]['avg_msg'] ?? 0.0), 2);
@@ -94,9 +101,10 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
                         AS REAL
                     ) / NULLIF(COUNT(*), 0) AS rate
                 FROM chat_messages
-                WHERE role = 'assistant'
+                WHERE organization_id = ?
+                  AND role = 'assistant'
                 SQL,
-            [],
+            [$this->orgId()],
         );
 
         $raw = $rows[0]['rate'] ?? null;
@@ -116,11 +124,12 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
                     COUNT(m.id) AS messages
                 FROM chat_sessions s
                 LEFT JOIN chat_messages m ON m.session_id = s.id
-                WHERE s.created_at >= DATE('now', '-{$days} days')
+                WHERE s.organization_id = ?
+                  AND s.created_at >= DATE('now', '-{$days} days')
                 GROUP BY DATE(s.created_at)
                 ORDER BY date ASC
                 SQL,
-            [],
+            [$this->orgId()],
         );
 
         return array_map(
@@ -141,10 +150,11 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
                     CAST(strftime('%H', created_at) AS INTEGER) AS hour,
                     COUNT(*) AS sessions
                 FROM chat_sessions
+                WHERE organization_id = ?
                 GROUP BY strftime('%H', created_at)
                 ORDER BY hour ASC
                 SQL,
-            [],
+            [$this->orgId()],
         );
 
         return array_map(
@@ -160,8 +170,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function topQuestions(int $limit, ?string $from, ?string $to): array
     {
-        $params = [];
-        $where  = ["role = 'user'"];
+        $params = [$this->orgId()];
+        $where  = ['organization_id = ?', "role = 'user'"];
 
         if ($from !== null) {
             $where[]  = 'created_at >= ?';
@@ -205,8 +215,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function exportSessions(?string $from, ?string $to): array
     {
-        $params = [];
-        $where  = ['1=1'];
+        $params = [$this->orgId()];
+        $where  = ['s.organization_id = ?'];
 
         if ($from !== null) {
             $where[]  = 's.created_at >= ?';
@@ -246,8 +256,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function exportConversations(?string $from, ?string $to): array
     {
-        $params = [];
-        $where  = ['1=1'];
+        $params = [$this->orgId()];
+        $where  = ['s.organization_id = ?'];
 
         if ($from !== null) {
             $where[]  = 's.created_at >= ?';
@@ -284,5 +294,16 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
         );
 
         return $rows;
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new LogicException('Organization ID is not resolved. Check OrgResolverMiddleware setup.');
+        }
+
+        return $id;
     }
 }

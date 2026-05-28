@@ -14,6 +14,7 @@ final class RateLimitSchemaSetup
             <<<'SQL'
                 CREATE TABLE rate_limit_buckets (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     bucket_key TEXT NOT NULL,
                     hit_count INTEGER NOT NULL DEFAULT 0,
                     reset_at INTEGER NOT NULL,
@@ -22,6 +23,6 @@ final class RateLimitSchemaSetup
                 SQL,
         );
 
-        $executor->execute('CREATE UNIQUE INDEX uniq_rate_limit_buckets_bucket_key ON rate_limit_buckets (bucket_key)');
+        $executor->execute('CREATE UNIQUE INDEX uniq_rate_limit_buckets_org_key ON rate_limit_buckets (organization_id, bucket_key)');
     }
 }
