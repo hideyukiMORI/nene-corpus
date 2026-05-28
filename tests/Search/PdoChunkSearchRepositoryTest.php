@@ -16,12 +16,15 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChunkSearchRepositoryTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private PdoChunkRepository $chunks;
 
@@ -45,7 +48,10 @@ final class PdoChunkSearchRepositoryTest extends TestCase
 
         CorpusSchemaSetup::create($this->executor);
 
-        $sourceRepository = new PdoSourceRepository($this->executor);
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
+
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Manual',
             sourceType: SourceType::Pdf,
@@ -53,14 +59,14 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             storagePath: 'storage/uploads/manual.pdf',
         ));
 
-        $documentRepository = new PdoDocumentRepository($this->executor);
+        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
         $this->documentId = $documentRepository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Safety guide',
             position: 0,
         ));
 
-        $this->chunks = new PdoChunkRepository($this->executor);
+        $this->chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
     }
 
     public function test_search_returns_chunks_matching_single_term(): void
@@ -78,7 +84,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 1,
         ));
 
-        $results = (new PdoChunkSearchRepository($this->executor))->search('safety', 10);
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
 
         self::assertCount(1, $results);
         self::assertSame('Equipment safety instructions for operators.', $results[0]->chunk->content);
@@ -100,7 +106,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 1,
         ));
 
-        $results = (new PdoChunkSearchRepository($this->executor))->search('equipment safety', 10);
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('equipment safety', 10);
 
         self::assertCount(2, $results);
         self::assertSame('Equipment safety instructions for operators.', $results[0]->chunk->content);
@@ -118,9 +124,9 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 0,
         ));
 
-        (new PdoSourceRepository($this->executor))->softDelete($this->sourceId, '2026-05-25 12:00:00');
+        (new PdoSourceRepository($this->executor, $this->orgIdHolder))->softDelete($this->sourceId, '2026-05-25 12:00:00');
 
-        $results = (new PdoChunkSearchRepository($this->executor))->search('safety', 10);
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
 
         self::assertSame([], $results);
     }
@@ -134,10 +140,34 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 0,
         ));
 
-        (new PdoDocumentRepository($this->executor))->softDelete($this->documentId, '2026-05-25 12:00:00');
+        (new PdoDocumentRepository($this->executor, $this->orgIdHolder))->softDelete($this->documentId, '2026-05-25 12:00:00');
 
-        $results = (new PdoChunkSearchRepository($this->executor))->search('safety', 10);
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
 
         self::assertSame([], $results);
+    }
+
+    public function test_search_org_isolation_excludes_other_org_chunks(): void
+    {
+        $org2Holder = new RequestScopedOrgIdHolder();
+        $org2Holder->setId(2);
+
+        // Org 1 chunk
+        $this->chunks->save(new Chunk(
+            documentId: $this->documentId,
+            sourceId: $this->sourceId,
+            content: 'Safety manual for org one operators.',
+            chunkIndex: 0,
+        ));
+
+        // Search from org 2 perspective — should return nothing
+        $results = (new PdoChunkSearchRepository($this->executor, $org2Holder))->search('safety', 10);
+
+        self::assertSame([], $results);
+
+        // Search from org 1 perspective — should return the chunk
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
+
+        self::assertCount(1, $results);
     }
 }

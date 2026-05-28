@@ -71,4 +71,16 @@ final class TenancySchemaSetup
             [$now],
         );
     }
+
+    /**
+     * Creates all tenancy tables and seeds the default organization and system config.
+     * Call this in HTTP test setUp before CorpusSchemaSetup::create().
+     */
+    public static function createAndSeed(PdoDatabaseQueryExecutor $executor): void
+    {
+        self::createOrganizations($executor);
+        self::createSystemConfig($executor);
+        self::seedDefaultOrganization($executor);
+        self::seedSystemConfig($executor);
+    }
 }

@@ -14,6 +14,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE sources (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     name TEXT NOT NULL,
                     source_type TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'pending',
@@ -35,6 +36,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE documents (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     source_id INTEGER NOT NULL,
                     title TEXT NOT NULL,
                     position INTEGER NOT NULL DEFAULT 0,
@@ -52,6 +54,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE chunks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     document_id INTEGER NOT NULL,
                     source_id INTEGER NOT NULL,
                     chunk_index INTEGER NOT NULL DEFAULT 0,

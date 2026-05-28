@@ -14,6 +14,7 @@ use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Http\RuntimeServiceProvider;
 use NeneCorpus\Ingestion\StoredFileWriter;
 use NeneCorpus\Source\SourceRepositoryInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
@@ -28,12 +29,17 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                 DocumentRepositoryInterface::class,
                 static function (ContainerInterface $container): DocumentRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoDocumentRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoDocumentRepository($query, $orgIdHolder);
                 },
             )
             ->set(

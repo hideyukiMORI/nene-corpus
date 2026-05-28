@@ -16,6 +16,7 @@ use NeneCorpus\Ingestion\PdfUploadValidator;
 use NeneCorpus\Ingestion\UploadStorage;
 use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceStatus;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\SampleTextPdf;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,8 @@ use PHPUnit\Framework\TestCase;
 final class CreatePdfSourceUseCaseTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private string $uploadDirectory;
 
@@ -41,6 +44,9 @@ final class CreatePdfSourceUseCaseTest extends TestCase
         )));
 
         CorpusSchemaSetup::create($this->executor);
+
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
 
         $this->uploadDirectory = sys_get_temp_dir() . '/nene-corpus-pdf-uploads-' . uniqid('', true);
         mkdir($this->uploadDirectory, 0775, true);
@@ -62,9 +68,9 @@ final class CreatePdfSourceUseCaseTest extends TestCase
     public function test_execute_persists_pdf_source_document_and_chunks(): void
     {
         $useCase = new CreatePdfSourceUseCase(
-            new PdoSourceRepository($this->executor),
-            new PdoDocumentRepository($this->executor),
-            new PdoChunkRepository($this->executor),
+            new PdoSourceRepository($this->executor, $this->orgIdHolder),
+            new PdoDocumentRepository($this->executor, $this->orgIdHolder),
+            new PdoChunkRepository($this->executor, $this->orgIdHolder),
             new PdfUploadValidator(),
             new PdfTextExtractor(),
             new UploadStorage($this->uploadDirectory),
@@ -80,13 +86,13 @@ final class CreatePdfSourceUseCaseTest extends TestCase
         self::assertSame(1, $output->documentCount);
         self::assertSame(1, $output->chunkCount);
 
-        $source = (new PdoSourceRepository($this->executor))->findById($output->sourceId);
+        $source = (new PdoSourceRepository($this->executor, $this->orgIdHolder))->findById($output->sourceId);
         self::assertNotNull($source);
         self::assertSame('pdf', $source->sourceType->value);
         self::assertSame('ready', $source->status->value);
 
-        $chunks = (new PdoChunkRepository($this->executor))->findByDocumentId(
-            (new PdoDocumentRepository($this->executor))->findBySourceId($output->sourceId, 1, 0)[0]->id ?? 0,
+        $chunks = (new PdoChunkRepository($this->executor, $this->orgIdHolder))->findByDocumentId(
+            (new PdoDocumentRepository($this->executor, $this->orgIdHolder))->findBySourceId($output->sourceId, 1, 0)[0]->id ?? 0,
         );
         self::assertCount(1, $chunks);
         self::assertSame(1, $chunks[0]->pageNumber);

@@ -15,12 +15,15 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChunkRepositoryTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private int $sourceId;
 
@@ -42,7 +45,10 @@ final class PdoChunkRepositoryTest extends TestCase
 
         CorpusSchemaSetup::create($this->executor);
 
-        $sourceRepository = new PdoSourceRepository($this->executor);
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
+
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Parent source',
             sourceType: SourceType::Pdf,
@@ -50,7 +56,7 @@ final class PdoChunkRepositoryTest extends TestCase
             storagePath: 'storage/uploads/parent.pdf',
         ));
 
-        $documentRepository = new PdoDocumentRepository($this->executor);
+        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
         $this->documentId = $documentRepository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Manual',
@@ -60,7 +66,7 @@ final class PdoChunkRepositoryTest extends TestCase
 
     public function test_save_and_find_by_id_returns_chunk(): void
     {
-        $repository = new PdoChunkRepository($this->executor);
+        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Chunk(
             documentId: $this->documentId,
             sourceId: $this->sourceId,
@@ -81,7 +87,7 @@ final class PdoChunkRepositoryTest extends TestCase
 
     public function test_find_by_document_id_returns_chunks_in_index_order(): void
     {
-        $repository = new PdoChunkRepository($this->executor);
+        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder);
         $repository->save(new Chunk(
             documentId: $this->documentId,
             sourceId: $this->sourceId,
@@ -100,5 +106,30 @@ final class PdoChunkRepositoryTest extends TestCase
         self::assertCount(2, $chunks);
         self::assertSame('First segment', $chunks[0]->content);
         self::assertSame('Second segment', $chunks[1]->content);
+    }
+
+    public function test_org_isolation_prevents_cross_org_access(): void
+    {
+        $org2Holder = new RequestScopedOrgIdHolder();
+        $org2Holder->setId(2);
+
+        $repoOrg1 = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $repoOrg2 = new PdoChunkRepository($this->executor, $org2Holder);
+
+        $id = $repoOrg1->save(new Chunk(
+            documentId: $this->documentId,
+            sourceId: $this->sourceId,
+            content: 'Org 1 chunk content',
+            chunkIndex: 0,
+        ));
+
+        // Org 2 cannot see Org 1's chunk
+        self::assertNull($repoOrg2->findById($id));
+
+        // Org 1 can still see its own chunk
+        self::assertNotNull($repoOrg1->findById($id));
+
+        // Org 2 sees empty list for same document
+        self::assertSame([], $repoOrg2->findByDocumentId($this->documentId));
     }
 }

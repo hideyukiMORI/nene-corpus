@@ -12,6 +12,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Document\DocumentRepositoryInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
@@ -26,12 +27,17 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                 SourceRepositoryInterface::class,
                 static function (ContainerInterface $container): SourceRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoSourceRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoSourceRepository($query, $orgIdHolder);
                 },
             )
             ->set(

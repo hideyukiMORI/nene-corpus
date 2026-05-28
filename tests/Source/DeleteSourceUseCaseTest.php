@@ -15,12 +15,15 @@ use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceNotFoundException;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class DeleteSourceUseCaseTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     protected function setUp(): void
     {
@@ -37,13 +40,16 @@ final class DeleteSourceUseCaseTest extends TestCase
         )));
 
         CorpusSchemaSetup::create($this->executor);
+
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
     }
 
     public function test_execute_soft_deletes_source_and_removes_chunks(): void
     {
-        $sources = new PdoSourceRepository($this->executor);
-        $documents = new PdoDocumentRepository($this->executor);
-        $chunks = new PdoChunkRepository($this->executor);
+        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
 
         $sourceId = $sources->save(new Source(
             name: 'Manual',
@@ -75,9 +81,9 @@ final class DeleteSourceUseCaseTest extends TestCase
         $this->expectException(SourceNotFoundException::class);
 
         (new DeleteSourceUseCase(
-            new PdoSourceRepository($this->executor),
-            new PdoDocumentRepository($this->executor),
-            new PdoChunkRepository($this->executor),
+            new PdoSourceRepository($this->executor, $this->orgIdHolder),
+            new PdoDocumentRepository($this->executor, $this->orgIdHolder),
+            new PdoChunkRepository($this->executor, $this->orgIdHolder),
         ))->execute(999);
     }
 }
