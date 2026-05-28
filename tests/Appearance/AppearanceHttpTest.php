@@ -7,6 +7,7 @@ namespace NeneCorpus\Tests\Appearance;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
+use NeneCorpus\Tests\Support\AdminHttpTestSupport;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use NeneCorpus\Tests\Support\SampleHeroImage;
@@ -36,6 +37,7 @@ final class AppearanceHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        AdminHttpTestSupport::seedTenancy($executor);
         CorpusSchemaSetup::createAdminUsers($executor);
         RateLimitSchemaSetup::create($executor);
         CorpusSchemaSetup::createAppearanceSettings($executor);

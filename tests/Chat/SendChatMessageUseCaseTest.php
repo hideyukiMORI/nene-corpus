@@ -19,6 +19,7 @@ use NeneCorpus\Message\MessageRole;
 use NeneCorpus\Message\PdoChatMessageRepository;
 use NeneCorpus\Session\ChatSession;
 use NeneCorpus\Session\PdoChatSessionRepository;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -40,7 +41,10 @@ final class SendChatMessageUseCaseTest extends TestCase
 
         ChatSchemaSetup::create($executor);
 
-        $sessions = new PdoChatSessionRepository($executor);
+        $holder = new RequestScopedOrgIdHolder();
+        $holder->setId(1);
+
+        $sessions = new PdoChatSessionRepository($executor, $holder);
         $sessionId = $sessions->save(new ChatSession(publicToken: 'token-abc'));
         $session = $sessions->findById($sessionId);
         self::assertNotNull($session);
@@ -75,7 +79,7 @@ final class SendChatMessageUseCaseTest extends TestCase
 
         $output = (new SendChatMessageUseCase(
             $sessions,
-            new PdoChatMessageRepository($executor),
+            new PdoChatMessageRepository($executor, $holder),
             $generateReply,
             $limitsRepository,
             $tokenTracker,
@@ -88,7 +92,7 @@ final class SendChatMessageUseCaseTest extends TestCase
         self::assertSame('Assistant answer.', $output->content);
         self::assertCount(1, $output->citations);
 
-        $messages = (new PdoChatMessageRepository($executor))->findBySessionId($sessionId, 10, 0);
+        $messages = (new PdoChatMessageRepository($executor, $holder))->findBySessionId($sessionId, 10, 0);
         self::assertCount(2, $messages);
         self::assertSame(MessageRole::User, $messages[0]->role);
         self::assertSame(MessageRole::Assistant, $messages[1]->role);

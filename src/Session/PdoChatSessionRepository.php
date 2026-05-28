@@ -6,6 +6,7 @@ namespace NeneCorpus\Session;
 
 use InvalidArgumentException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChatSessionRepository implements ChatSessionRepositoryInterface
 {
@@ -15,14 +16,15 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
     }
 
     public function findById(int $id): ?ChatSession
     {
         $row = $this->query->fetchOne(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_sessions WHERE id = ?',
-            [$id],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_sessions WHERE id = ? AND organization_id = ?',
+            [$id, $this->orgId()],
         );
 
         return $row === null ? null : $this->mapRow($row);
@@ -31,8 +33,8 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
     public function findByPublicToken(string $publicToken): ?ChatSession
     {
         $row = $this->query->fetchOne(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_sessions WHERE public_token = ?',
-            [$publicToken],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM chat_sessions WHERE public_token = ? AND organization_id = ?',
+            [$publicToken, $this->orgId()],
         );
 
         return $row === null ? null : $this->mapRow($row);
@@ -43,8 +45,8 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         $now = $this->now();
 
         $this->query->execute(
-            'INSERT INTO chat_sessions (public_token, client_ip, user_agent, referer, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-            [$session->publicToken, $session->clientIp, $session->userAgent, $session->referer, $now, $now],
+            'INSERT INTO chat_sessions (organization_id, public_token, client_ip, user_agent, referer, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [$this->orgId(), $session->publicToken, $session->clientIp, $session->userAgent, $session->referer, $now, $now],
         );
 
         return $this->query->lastInsertId();
@@ -57,8 +59,8 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         }
 
         $this->query->execute(
-            'UPDATE chat_sessions SET public_token = ?, updated_at = ? WHERE id = ?',
-            [$session->publicToken, $this->now(), $session->id],
+            'UPDATE chat_sessions SET public_token = ?, updated_at = ? WHERE id = ? AND organization_id = ?',
+            [$session->publicToken, $this->now(), $session->id, $this->orgId()],
         );
     }
 
@@ -80,10 +82,11 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
                         WHERE m.session_id = s.id
                     ) AS last_message_at
                 FROM chat_sessions s
+                WHERE s.organization_id = ?
                 ORDER BY s.id DESC
                 LIMIT ? OFFSET ?
                 SQL,
-            [$limit, $offset],
+            [$this->orgId(), $limit, $offset],
         );
 
         return array_map(
@@ -98,7 +101,7 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
 
     public function countAll(): int
     {
-        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM chat_sessions', []);
+        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ?', [$this->orgId()]);
 
         return (int) ($rows[0]['cnt'] ?? 0);
     }
@@ -108,9 +111,20 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
         $cutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
 
         $before = $this->countAll();
-        $this->query->execute('DELETE FROM chat_sessions WHERE created_at < ?', [$cutoff]);
+        $this->query->execute('DELETE FROM chat_sessions WHERE created_at < ? AND organization_id = ?', [$cutoff, $this->orgId()]);
 
         return max(0, $before - $this->countAll());
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new \LogicException('Organization ID is not resolved.');
+        }
+
+        return $id;
     }
 
     /**

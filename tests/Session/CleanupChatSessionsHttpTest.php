@@ -42,6 +42,7 @@ final class CleanupChatSessionsHttpTest extends TestCase
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
         $this->executor = $executor;
 
+        AdminHttpTestSupport::seedTenancy($executor);
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);
@@ -174,8 +175,8 @@ final class CleanupChatSessionsHttpTest extends TestCase
     {
         $createdAt = gmdate('Y-m-d H:i:s', time() - $daysAgo * 86400);
         $this->executor->execute(
-            'INSERT INTO chat_sessions (public_token, client_ip, user_agent, referer, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-            [$token, null, null, null, $createdAt, $createdAt],
+            'INSERT INTO chat_sessions (organization_id, public_token, client_ip, user_agent, referer, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [1, $token, null, null, null, $createdAt, $createdAt],
         );
     }
 

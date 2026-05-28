@@ -49,6 +49,7 @@ final class AdminChatHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        AdminHttpTestSupport::seedTenancy($executor);
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);

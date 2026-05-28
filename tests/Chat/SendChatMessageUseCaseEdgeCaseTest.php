@@ -21,6 +21,7 @@ use NeneCorpus\Llm\GenerateChatReplyUseCaseInterface;
 use NeneCorpus\Message\PdoChatMessageRepository;
 use NeneCorpus\Session\ChatSession;
 use NeneCorpus\Session\PdoChatSessionRepository;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -57,8 +58,11 @@ final class SendChatMessageUseCaseEdgeCaseTest extends TestCase
 
         ChatSchemaSetup::create($this->executor);
 
-        $this->sessions = new PdoChatSessionRepository($this->executor);
-        $this->messages = new PdoChatMessageRepository($this->executor);
+        $holder = new RequestScopedOrgIdHolder();
+        $holder->setId(1);
+
+        $this->sessions = new PdoChatSessionRepository($this->executor, $holder);
+        $this->messages = new PdoChatMessageRepository($this->executor, $holder);
     }
 
     // ── セッションエラー ───────────────────────────────────────────────

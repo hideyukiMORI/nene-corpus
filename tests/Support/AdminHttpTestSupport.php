@@ -27,4 +27,12 @@ final class AdminHttpTestSupport
             ['admin@example.com', $hash, $now, $now],
         );
     }
+
+    public static function seedTenancy(PdoDatabaseQueryExecutor $executor): void
+    {
+        TenancySchemaSetup::createOrganizations($executor);
+        TenancySchemaSetup::createSystemConfig($executor);
+        TenancySchemaSetup::seedDefaultOrganization($executor);
+        TenancySchemaSetup::seedSystemConfig($executor);
+    }
 }

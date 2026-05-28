@@ -15,6 +15,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tests\Support\AdminHttpTestSupport;
 use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
@@ -43,6 +44,7 @@ final class ChatHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        AdminHttpTestSupport::seedTenancy($executor);
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);
