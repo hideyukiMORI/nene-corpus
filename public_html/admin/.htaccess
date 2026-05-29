@@ -1,24 +1,23 @@
 RewriteEngine On
 
 # ── API ルーティング ─────────────────────────────────────────────────────────
-# /admin/sources など API と SPA route が同名のため、以下の条件で API と判定:
-#  - Authorization: Bearer ヘッダーがある（認証付き fetch）
+# /admin/sources/{id} など API と SPA route（path router の deep link）が同名のため、
+# 以下の条件で API と判定する:
+#  - auth サブパス / bootstrap / superadmin（SPA に同名ページ無し → 常に API）
 #  - 非 GET メソッド（POST/PUT/PATCH/DELETE は常に API 呼び出し）
+#  - Authorization: Bearer ヘッダーがある（admin API は常に認証付き fetch）
 #  - Accept: application/json ヘッダー（JSON 期待）
-#  - サブパス付き（/admin/sources/123, /admin/auth/login 等）
-# それ以外（ブラウザの直接ナビ）は SPA fallback に流す。
+# それ以外（ブラウザの直接ナビ。/admin/sources/{id}・/admin/settings/llm 等の
+# deep link を含む）は SPA fallback に流す。
 
 # 1. 必ず API: auth サブパス, bootstrap, superadmin
 RewriteRule ^(auth/.*|bootstrap|superadmin/.*) ../index.php [QSA,L]
 
-# 2. サブパス付き（/sources/123 のような ID 付き）は常に API
-RewriteRule ^(sources|ingestion|appearance|chat|settings|documents|notifications|analytics)/. ../index.php [QSA,L]
-
-# 3. 非 GET メソッド = API
+# 2. 非 GET メソッド = API
 RewriteCond %{REQUEST_METHOD} !^GET$
 RewriteRule ^(auth|sources|ingestion|appearance|chat|settings|documents|notifications|analytics|superadmin)(/|$) ../index.php [QSA,L]
 
-# 4. Authorization ヘッダー or JSON Accept → API
+# 3. Authorization ヘッダー or JSON Accept → API
 RewriteCond %{HTTP:Authorization} ^Bearer [OR]
 RewriteCond %{HTTP_ACCEPT} application/json
 RewriteRule ^(auth|sources|ingestion|appearance|chat|settings|documents|notifications|analytics|superadmin)(/|$) ../index.php [QSA,L]
