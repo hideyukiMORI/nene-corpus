@@ -44,9 +44,17 @@ export interface SourceListItem {
   name: string;
   source_type: 'csv' | 'pdf' | 'text';
   status: 'pending' | 'processing' | 'ready' | 'failed';
+  note?: string | null;
   document_count: number;
   chunk_count: number;
   created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateSourceResponse {
+  source_id: number;
+  name: string;
+  note: string | null;
   updated_at: string;
 }
 

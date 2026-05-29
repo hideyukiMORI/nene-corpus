@@ -5,6 +5,7 @@ import type {
   ListChatSessionsResponse,
   ListSourcesResponse,
   LoginAdminResponse,
+  UpdateSourceResponse,
 } from './types';
 
 export async function loginAdmin(
@@ -72,6 +73,27 @@ export async function deleteSource(token: string, sourceId: number, apiBase = ''
   await fetchJson<void>(`${apiBase}/admin/sources/${sourceId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function updateSource(
+  token: string,
+  sourceId: number,
+  payload: { name: string; note?: string | null },
+  apiBase = '',
+): Promise<UpdateSourceResponse> {
+  return fetchJson<UpdateSourceResponse>(`${apiBase}/admin/sources/${sourceId}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: payload.name, note: payload.note ?? null }),
+  });
+}
+
+export async function reindexSource(token: string, sourceId: number, apiBase = ''): Promise<void> {
+  await fetchJson<void>(`${apiBase}/admin/sources/${sourceId}/reindex`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
   });
 }
 
