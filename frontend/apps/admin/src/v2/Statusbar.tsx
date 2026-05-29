@@ -17,7 +17,6 @@ export function Statusbar({
 
   return (
     <div className="statusbar">
-      <span className="chunk env">本番 PROD</span>
       <span className="chunk">
         <span className="dot ok" />
         <span className="lbl">corpus:</span>

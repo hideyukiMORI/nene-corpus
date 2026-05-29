@@ -38,8 +38,6 @@ export function Topbar({ crumb, theme, onToggleTheme, onToggleDrawer, userEmail 
       <div className="topbar-mid">
         <span>AYANE</span>
         <span className="sep">/</span>
-        <span className="crumb">本番</span>
-        <span className="sep">/</span>
         <span className="leaf">{crumb}</span>
       </div>
       <div className="topbar-right">
