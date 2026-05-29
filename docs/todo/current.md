@@ -1,9 +1,10 @@
 # Current Work
 
-Last updated: 2026-05-29 (Issue #280, PR #281)
+Last updated: 2026-05-29 (PR #288 / #300)
 
 ## 最近の docs 更新
 
+- **v2 リデザイン仕上げ + マルチテナント main 統合 (PR #300 → #288)** — B-soft デザイン指示書に沿って Admin UI 全7画面（Login / Dashboard / Sources / Conversations / Settings / Analytics / Help）を仕上げ、旧パネルからの欠損機能8件（パスワード再設定・ソース編集モーダル・古いログ整理・Hero/アバター画像アップロード・ライブプレビュー・Analytics ページ + CSV エクスポート・アプリ内ヘルプ）を移植。レスポンシブ（hamburger ドロワー / tablet / mobile）、コンテンツ幅 1680px、認証ループ・ログアウト不具合の修正を含む。backend は **ソース編集 API（PUT /admin/sources/{id} + note カラム）** を追加。既存不具合（Analytics の MySQL 互換 SQL・CSV の PHP 8.4 deprecation・AdminHtaccess テスト）も修正。feat/298 → feat/tenancy-integration → main の順でマージし、マルチテナント一式と合わせて main に統合。重複サブ PR #281-285・Overview の #299 はクローズ。
 - **マルチテナント Phase D (#280)** — OpenAPI に Superadmin tag + 7 endpoint + 5 schema 追加。ADR 0005（multi-tenancy strategy）新規作成。`docs/integrations/multi-tenancy.md` 設定ガイド追加。CLAUDE.md に Tenancy 規約セクション・禁止パターン追加。E2E spec `tests/e2e/admin/specs/16-tenancy.spec.ts` 7 テスト追加。`docs/todo/current.md` / `docs/roadmap.md` Phase 4 完了マーク更新。
 - **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
 - **ペルソナ UX シナリオテスト (#253)** — 20 業種 × 10 行動パターン = 200 ペルソナ E2E。全 7 チェックポイント完走。200/200 グリーン（231s）。主要知見: ソース取り込み CP3 が最大摩擦点（実行可能シナリオ 73% 失敗）。P1〜P3 改善提案付き UX 分析レポートを `docs/research/2026-05-28-persona-ux-analysis.md` に保存。
