@@ -54,9 +54,9 @@ export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', mod
   ];
 
   const navModel: NavItemDef[] = [
-    { id: 'llm',        ja: 'LLM',    route: '/settings',     icon: <LlmIcon />,        dot: modelStatus },
-    { id: 'embeddings', ja: '埋め込み', route: '/settings',   icon: <EmbeddingsIcon /> },
-    { id: 'appearance', ja: '外観',   route: '/settings',     icon: <AppearanceIcon /> },
+    { id: 'llm',        ja: 'LLM',    route: '/settings/llm',        icon: <LlmIcon />,        dot: modelStatus },
+    { id: 'embeddings', ja: '埋め込み', route: '/settings/model',     icon: <EmbeddingsIcon /> },
+    { id: 'appearance', ja: '外観',   route: '/settings/widget',     icon: <AppearanceIcon /> },
   ];
 
   const navSystem: NavItemDef[] = [

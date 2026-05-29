@@ -20,6 +20,7 @@ import { formatTimestamp, useLocale } from '@nene-corpus/i18n';
 import { adminApiBase } from '../../config';
 import { useAdminAuth } from '../../useAdminAuth';
 import { Layout } from '../Layout';
+import { useRoute, useNavigate } from '../router';
 import { formatClientIp } from '../../conversationLogsFormat';
 
 // ─── 定数 ────────────────────────────────────────────────────────────────────
@@ -572,6 +573,8 @@ interface ConversationsPageProps {
 export function ConversationsPage({ onLogout }: ConversationsPageProps = {}) {
   const { token } = useAdminAuth();
   const { locale } = useLocale();
+  const route = useRoute();
+  const navigate = useNavigate();
 
   // ── KPI ステート ──────────────────────────────────────────────────────────
   const [kpiSessions, setKpiSessions] = useState<number | null>(null);
@@ -662,6 +665,14 @@ export function ConversationsPage({ onLogout }: ConversationsPageProps = {}) {
     void loadSessions(page, ctrl.signal);
     return () => ctrl.abort();
   }, [loadSessions, page]);
+
+  // URL → 選択同期（/conversations/{sessionId} の deep link）
+  useEffect(() => {
+    const m = /^\/conversations\/(\d+)/.exec(route);
+    if (m === null) return;
+    const id = Number(m[1]);
+    setSelectedId((prev) => (prev === id ? prev : id));
+  }, [route]);
 
   // ── 古いログ整理 (#6) ──────────────────────────────────────────────────────
   function openCleanup() {
@@ -840,6 +851,7 @@ export function ConversationsPage({ onLogout }: ConversationsPageProps = {}) {
           onSelect={(id) => {
             setSelectedId(id);
             setMessages([]);
+            navigate(`/conversations/${String(id)}`);
           }}
           total={total}
           page={page}
@@ -865,7 +877,7 @@ export function ConversationsPage({ onLogout }: ConversationsPageProps = {}) {
             messages={messages}
             isLoading={isLoadingMessages}
             error={messagesError}
-            onClose={() => setSelectedId(null)}
+            onClose={() => { setSelectedId(null); navigate('/conversations'); }}
             locale={locale}
           />
         ) : (
