@@ -12,6 +12,7 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Document\DocumentRepositoryInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
@@ -26,12 +27,17 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                 SourceRepositoryInterface::class,
                 static function (ContainerInterface $container): SourceRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoSourceRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoSourceRepository($query, $orgIdHolder);
                 },
             )
             ->set(
@@ -61,6 +67,35 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                     }
 
                     return new ListSourcesHandler($useCase, $response);
+                },
+            )
+            ->set(
+                UpdateSourceUseCaseInterface::class,
+                static function (ContainerInterface $container): UpdateSourceUseCaseInterface {
+                    $sources = $container->get(SourceRepositoryInterface::class);
+
+                    if (!$sources instanceof SourceRepositoryInterface) {
+                        throw new LogicException('Source repository service is invalid.');
+                    }
+
+                    return new UpdateSourceUseCase($sources);
+                },
+            )
+            ->set(
+                UpdateSourceHandler::class,
+                static function (ContainerInterface $container): UpdateSourceHandler {
+                    $useCase = $container->get(UpdateSourceUseCaseInterface::class);
+                    $response = $container->get(JsonResponseFactory::class);
+
+                    if (!$useCase instanceof UpdateSourceUseCaseInterface) {
+                        throw new LogicException('Update source use case service is invalid.');
+                    }
+
+                    if (!$response instanceof JsonResponseFactory) {
+                        throw new LogicException('JSON response factory service is invalid.');
+                    }
+
+                    return new UpdateSourceHandler($useCase, $response);
                 },
             )
             ->set(
@@ -119,6 +154,7 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                 static function (ContainerInterface $container): SourceRouteRegistrar {
                     $delete = $container->get(DeleteSourceHandler::class);
                     $list = $container->get(ListSourcesHandler::class);
+                    $update = $container->get(UpdateSourceHandler::class);
 
                     if (!$delete instanceof DeleteSourceHandler) {
                         throw new LogicException('Delete source handler service is invalid.');
@@ -128,7 +164,11 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                         throw new LogicException('List sources handler service is invalid.');
                     }
 
-                    return new SourceRouteRegistrar($delete, $list);
+                    if (!$update instanceof UpdateSourceHandler) {
+                        throw new LogicException('Update source handler service is invalid.');
+                    }
+
+                    return new SourceRouteRegistrar($delete, $list, $update);
                 },
             );
     }

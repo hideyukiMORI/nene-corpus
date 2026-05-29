@@ -26,6 +26,8 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
 
     public const LOGIN_RATE_LIMIT_MIDDLEWARE = 'nene-corpus.middleware.admin_login_rate_limit';
 
+    public const SUPERADMIN_MIDDLEWARE = 'nene-corpus.middleware.superadmin';
+
     public const TOKEN_ISSUER = 'nene-corpus.admin_auth.token_issuer';
 
     public function register(ContainerBuilder $builder): void
@@ -40,6 +42,9 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
+                    // PdoAdminUserRepository does not scope findByEmail/findById by org
+                    // (those methods are called from bypass-path use cases: login, password-reset).
+                    // listByOrganization and create do use the org argument explicitly.
                     return new PdoAdminUserRepository($query);
                 },
             )
@@ -339,6 +344,18 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     }
 
                     return new AdminAuthRouteRegistrar($login, $me, $changePassword, $changeEmail, $requestReset, $confirmReset);
+                },
+            )
+            ->set(
+                self::SUPERADMIN_MIDDLEWARE,
+                static function (ContainerInterface $container): SuperadminMiddleware {
+                    $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
+
+                    if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
+                        throw new LogicException('Problem details response factory service is invalid.');
+                    }
+
+                    return new SuperadminMiddleware($problemDetails);
                 },
             )
             ->set(

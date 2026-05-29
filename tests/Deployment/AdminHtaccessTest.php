@@ -8,7 +8,19 @@ use PHPUnit\Framework\TestCase;
 
 final class AdminHtaccessTest extends TestCase
 {
-    private const REQUIRED_API_PREFIXES = ['auth', 'sources', 'ingestion', 'appearance', 'chat', 'settings', 'documents'];
+    private const REQUIRED_API_PREFIXES = [
+        'auth',
+        'sources',
+        'ingestion',
+        'appearance',
+        'chat',
+        'settings',
+        'documents',
+        'notifications',
+        'analytics',
+        'bootstrap',
+        'superadmin',
+    ];
 
     public function test_admin_htaccess_files_route_api_prefixes_to_php(): void
     {
@@ -34,6 +46,10 @@ final class AdminHtaccessTest extends TestCase
 
     private function extractApiRouteRule(string $contents, string $label): string
     {
+        // API は複数の RewriteRule（サブパス / メソッド / ヘッダー判定）に分割されている
+        // ため、`../index.php` へ流す全ルールを集約して検証する。
+        $rules = [];
+
         foreach (preg_split('/\R/', $contents) ?: [] as $line) {
             $line = trim($line);
             if (!str_starts_with($line, 'RewriteRule ^(')) {
@@ -44,9 +60,13 @@ final class AdminHtaccessTest extends TestCase
                 continue;
             }
 
-            return $line;
+            $rules[] = $line;
         }
 
-        self::fail($label . ' must contain an admin API RewriteRule');
+        if ($rules === []) {
+            self::fail($label . ' must contain an admin API RewriteRule');
+        }
+
+        return implode("\n", $rules);
     }
 }

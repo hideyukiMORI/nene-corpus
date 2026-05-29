@@ -19,6 +19,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\SampleTextPdf;
 use PHPUnit\Framework\TestCase;
@@ -26,6 +27,8 @@ use PHPUnit\Framework\TestCase;
 final class ReindexSourceUseCaseTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private string $projectRoot;
 
@@ -47,6 +50,9 @@ final class ReindexSourceUseCaseTest extends TestCase
         )));
 
         CorpusSchemaSetup::create($this->executor);
+
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
     }
 
     protected function tearDown(): void
@@ -60,9 +66,9 @@ final class ReindexSourceUseCaseTest extends TestCase
         $storagePath = 'storage/uploads/' . $storedFilename;
         file_put_contents($this->projectRoot . '/' . $storagePath, SampleTextPdf::bytes());
 
-        $sources = new PdoSourceRepository($this->executor);
-        $documents = new PdoDocumentRepository($this->executor);
-        $chunks = new PdoChunkRepository($this->executor);
+        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
 
         $sourceId = $sources->save(new Source(
             name: 'Sample manual',

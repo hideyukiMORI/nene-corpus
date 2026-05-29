@@ -3,9 +3,11 @@
  * auth-shell の 2 カラム構成。シェル（Topbar/Sidebar）は使わない。
  */
 import { type FormEvent, useEffect, useState } from 'react';
-import { useAdminAuth } from '../../useAdminAuth';
-import { PasswordResetRequestForm, PasswordResetConfirmForm } from '../../PasswordResetForms';
+import { Msg, useMsg } from '@nene-corpus/i18n';
+import { confirmPasswordReset, requestPasswordReset } from '@nene-corpus/api-client';
+import { adminApiBase } from '../../config';
 import { useAdminTheme } from '../../ThemeProvider';
+import { useNavigate } from '../router';
 
 type LoginView = 'login' | 'reset-request' | 'reset-confirm';
 
@@ -51,6 +53,31 @@ function SpinnerIcon() {
   );
 }
 
+function CheckCircleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success-fg)" strokeWidth="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+  );
+}
+
+// ── ブランドヘッダー（auth-card 上部に常時表示） ──────────────────────────────
+
+function BrandHeader() {
+  return (
+    <div className="auth-brand">
+      <div className="brand-mark">n</div>
+      <div className="stack">
+        <span className="name">
+          NeNe <span className="dim">Corpus</span>
+        </span>
+        <span className="role">Admin</span>
+      </div>
+    </div>
+  );
+}
+
 // ── テーマトグル（フローティング） ────────────────────────────────────────────
 
 function AuthThemeToggle() {
@@ -84,10 +111,14 @@ function AuthThemeToggle() {
 
 interface LoginFormProps {
   onForgotPassword: () => void;
+  /** App（認証状態の所有者）から渡されるログイン関数 */
+  onLogin: (email: string, password: string) => Promise<void>;
+  /** App の認証エラー state */
+  error: string | null;
 }
 
-function LoginForm({ onForgotPassword }: LoginFormProps) {
-  const { login, error } = useAdminAuth();
+function LoginForm({ onForgotPassword, onLogin, error }: LoginFormProps) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -97,10 +128,11 @@ function LoginForm({ onForgotPassword }: LoginFormProps) {
     event.preventDefault();
     setIsSubmitting(true);
     try {
-      await login(email, password);
-      window.location.hash = '#/dashboard';
+      // App 所有の認証状態を更新する（独自インスタンスを作らない）
+      await onLogin(email, password);
+      navigate('/dashboard');
     } catch {
-      // エラーは useAdminAuth の error state に入る
+      // エラーは App の error state（props.error）に入る
     } finally {
       setIsSubmitting(false);
     }
@@ -108,16 +140,6 @@ function LoginForm({ onForgotPassword }: LoginFormProps) {
 
   return (
     <>
-      <div className="auth-brand">
-        <div className="brand-mark">n</div>
-        <div className="stack">
-          <span className="name">
-            NeNe <span className="dim">Corpus</span>
-          </span>
-          <span className="role">Admin</span>
-        </div>
-      </div>
-
       <h1 className="auth-heading">
         管理画面にログイン <span className="en">// welcome back</span>
       </h1>
@@ -159,7 +181,7 @@ function LoginForm({ onForgotPassword }: LoginFormProps) {
               className="auth-forgot-link"
               onClick={onForgotPassword}
             >
-              忘れた場合 →
+              パスワードをお忘れの場合 →
             </button>
           </label>
           <input
@@ -199,6 +221,164 @@ function LoginForm({ onForgotPassword }: LoginFormProps) {
           )}
         </button>
       </form>
+    </>
+  );
+}
+
+// ── パスワード再設定（リクエスト） ──────────────────────────────────────────────
+
+interface ResetFormProps {
+  onBack: () => void;
+}
+
+function ResetRequestForm({ onBack }: ResetFormProps) {
+  const t = useMsg();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await requestPasswordReset(email, adminApiBase);
+    } catch {
+      // 列挙攻撃を防ぐため、失敗時も成功表示にする
+    } finally {
+      setSubmitted(true);
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      <h1 className="auth-heading">{t(Msg.admin.passwordReset.requestTitle)}</h1>
+      <p className="auth-subheading">{t(Msg.admin.passwordReset.requestSubtitle)}</p>
+
+      {submitted ? (
+        <div className="auth-notice auth-notice-success" role="status">
+          <CheckCircleIcon />
+          <div>{t(Msg.admin.passwordReset.requestSuccess)}</div>
+        </div>
+      ) : (
+        <form onSubmit={(e) => void handleSubmit(e)}>
+          <div className="signin-field">
+            <label className="auth-field-label" htmlFor="reset-email">
+              メールアドレス <span className="en">// email</span>
+            </label>
+            <input
+              id="reset-email"
+              className="auth-field-input"
+              type="email"
+              autoFocus
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+          <button className="auth-btn-primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <SpinnerIcon />
+                {t(Msg.admin.passwordReset.requestSubmitting)}
+              </>
+            ) : (
+              t(Msg.admin.passwordReset.requestSubmit)
+            )}
+          </button>
+        </form>
+      )}
+
+      <button type="button" className="auth-link" onClick={onBack}>
+        ← {t(Msg.admin.passwordReset.backToLogin)}
+      </button>
+    </>
+  );
+}
+
+// ── パスワード再設定（新パスワード設定 / reset_token 経由） ───────────────────────
+
+interface ResetConfirmFormProps {
+  rawToken: string;
+  onBack: () => void;
+}
+
+function ResetConfirmForm({ rawToken, onBack }: ResetConfirmFormProps) {
+  const t = useMsg();
+  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [succeeded, setSucceeded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await confirmPasswordReset(rawToken, password, adminApiBase);
+      setSucceeded(true);
+      // URL から ?reset_token を除去（リロードなし）
+      const url = new URL(window.location.href);
+      url.searchParams.delete('reset_token');
+      window.history.replaceState({}, '', url.toString());
+    } catch {
+      setError(t(Msg.admin.passwordReset.tokenInvalid));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      <h1 className="auth-heading">{t(Msg.admin.passwordReset.confirmTitle)}</h1>
+      <p className="auth-subheading">{t(Msg.admin.passwordReset.confirmSubtitle)}</p>
+
+      {succeeded ? (
+        <div className="auth-notice auth-notice-success" role="status">
+          <CheckCircleIcon />
+          <div>{t(Msg.admin.passwordReset.confirmSuccess)}</div>
+        </div>
+      ) : (
+        <form onSubmit={(e) => void handleSubmit(e)}>
+          {error !== null && (
+            <div className="auth-error" role="alert">
+              {error}
+            </div>
+          )}
+          <div className="signin-field">
+            <label className="auth-field-label" htmlFor="reset-newpw">
+              {t(Msg.admin.passwordReset.newPassword)} <span className="en">// new password</span>
+            </label>
+            <input
+              id="reset-newpw"
+              className="auth-field-input"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+          <button className="auth-btn-primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <SpinnerIcon />
+                {t(Msg.admin.passwordReset.confirmSubmitting)}
+              </>
+            ) : (
+              t(Msg.admin.passwordReset.confirmSubmit)
+            )}
+          </button>
+        </form>
+      )}
+
+      <button type="button" className="auth-link" onClick={onBack}>
+        ← {t(Msg.admin.passwordReset.backToLogin)}
+      </button>
     </>
   );
 }
@@ -274,10 +454,11 @@ function AuthSide() {
 // ── メインエクスポート ─────────────────────────────────────────────────────────
 
 interface LoginPageProps {
-  onLogin?: (email: string, password: string) => Promise<void>;
+  onLogin: (email: string, password: string) => Promise<void>;
+  authError?: string | null;
 }
 
-export function LoginPage({ onLogin: _onLogin }: LoginPageProps) {
+export function LoginPage({ onLogin, authError = null }: LoginPageProps) {
   const [view, setView] = useState<LoginView>(resolveInitialView);
 
   // URL に reset_token が無くなったら login ビューへ戻す
@@ -311,14 +492,17 @@ export function LoginPage({ onLogin: _onLogin }: LoginPageProps) {
         {/* サインインペイン */}
         <div className="auth-pane">
           <div className="auth-card">
+            <BrandHeader />
             {view === 'login' && (
-              <LoginForm onForgotPassword={() => setView('reset-request')} />
+              <LoginForm
+                onForgotPassword={() => setView('reset-request')}
+                onLogin={onLogin}
+                error={authError}
+              />
             )}
-            {view === 'reset-request' && (
-              <PasswordResetRequestForm onBack={handleBack} />
-            )}
+            {view === 'reset-request' && <ResetRequestForm onBack={handleBack} />}
             {view === 'reset-confirm' && (
-              <PasswordResetConfirmForm rawToken={rawToken} onBack={handleBack} />
+              <ResetConfirmForm rawToken={rawToken} onBack={handleBack} />
             )}
           </div>
         </div>

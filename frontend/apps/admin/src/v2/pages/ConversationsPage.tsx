@@ -12,6 +12,7 @@ import {
   getAnalyticsSummary,
   listChatSessions,
   listChatSessionMessages,
+  cleanupChatSessions,
   type ChatMessageListItem,
   type ChatSessionSummary,
 } from '@nene-corpus/api-client';
@@ -225,7 +226,7 @@ function SessionList({
             会話セッションが見つかりません。
           </p>
         ) : (
-          <table>
+          <table className="tbl-sessions">
             <thead>
               <tr>
                 <th style={{ width: 70 }}>session</th>
@@ -564,7 +565,11 @@ function DetailPane({ session, messages, isLoading, error, onClose, locale }: De
 
 // ─── ConversationsPage (メイン) ───────────────────────────────────────────────
 
-export function ConversationsPage() {
+interface ConversationsPageProps {
+  onLogout?: () => void;
+}
+
+export function ConversationsPage({ onLogout }: ConversationsPageProps = {}) {
   const { token } = useAdminAuth();
   const { locale } = useLocale();
 
@@ -590,6 +595,13 @@ export function ConversationsPage() {
   const [messages, setMessages] = useState<ChatMessageListItem[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [messagesError, setMessagesError] = useState<string | null>(null);
+
+  // ── 古いログ整理 (#6) ──────────────────────────────────────────────────────
+  const [showCleanup, setShowCleanup] = useState(false);
+  const [cleanupDays, setCleanupDays] = useState(90);
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
+  const [cleanupError, setCleanupError] = useState<string | null>(null);
+  const [cleanupResult, setCleanupResult] = useState<number | null>(null);
 
   // ── KPI 読み込み ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -650,6 +662,31 @@ export function ConversationsPage() {
     void loadSessions(page, ctrl.signal);
     return () => ctrl.abort();
   }, [loadSessions, page]);
+
+  // ── 古いログ整理 (#6) ──────────────────────────────────────────────────────
+  function openCleanup() {
+    setCleanupDays(90);
+    setCleanupError(null);
+    setCleanupResult(null);
+    setShowCleanup(true);
+  }
+
+  async function handleCleanup(): Promise<void> {
+    if (!token) return;
+    setIsCleaningUp(true);
+    setCleanupError(null);
+    try {
+      const res = await cleanupChatSessions(token, adminApiBase, cleanupDays);
+      setCleanupResult(res.deleted_count);
+      setSelectedId(null);
+      setPage(1);
+      await loadSessions(1);
+    } catch (cause: unknown) {
+      setCleanupError(cause instanceof Error ? cause.message : '整理に失敗しました。');
+    } finally {
+      setIsCleaningUp(false);
+    }
+  }
 
   // ── メッセージロード ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -756,6 +793,7 @@ export function ConversationsPage() {
           ? `${kpiSessions} セッション · ${kpiMessages ?? 0} 通 · 引用 ${citationRatePct}`
           : undefined
       }
+      onLogout={onLogout}
     >
       {/* ページヘッド */}
       <div className="page-head">
@@ -779,6 +817,14 @@ export function ConversationsPage() {
             <button type="button">30d</button>
             <button type="button">全期間</button>
           </div>
+          <button type="button" className="btn btn-ghost" onClick={openCleanup}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+            </svg>
+            古いログを整理
+          </button>
         </div>
       </div>
 
@@ -845,6 +891,87 @@ export function ConversationsPage() {
           </div>
         )}
       </div>
+
+      {/* 古いログ整理モーダル (#6) */}
+      {showCleanup && (
+        <div
+          className="modal-backdrop"
+          onClick={() => { if (!isCleaningUp) setShowCleanup(false); }}
+        >
+          <div className="modal" style={{ maxWidth: 460 }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <h3>
+                古いログを整理 <span className="en">// cleanup</span>
+              </h3>
+              <button
+                className="modal-close"
+                type="button"
+                onClick={() => setShowCleanup(false)}
+                aria-label="閉じる"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {cleanupResult !== null ? (
+                <div className="auth-notice auth-notice-success" role="status" style={{ background: 'var(--success-soft)', border: '1px solid var(--success-border)', borderRadius: 8, padding: '14px 16px', fontSize: 13 }}>
+                  {cleanupResult} 件のセッションを削除しました。
+                </div>
+              ) : (
+                <>
+                  {cleanupError !== null && (
+                    <div className="warn-note" style={{ marginBottom: 12 }}>{cleanupError}</div>
+                  )}
+                  <div className="field">
+                    <label className="field-label">
+                      削除する範囲 <span className="en">older than</span>
+                    </label>
+                    <select
+                      className="field-select"
+                      value={cleanupDays}
+                      onChange={(e) => setCleanupDays(Number(e.target.value))}
+                      disabled={isCleaningUp}
+                    >
+                      <option value={90}>90 日より前のセッション</option>
+                      <option value={180}>180 日より前のセッション</option>
+                      <option value={365}>1 年より前のセッション</option>
+                    </select>
+                    <div className="field-hint">
+                      レンタルサーバーの容量節約のため、不要になった古い会話履歴を一括で削除します。
+                    </div>
+                  </div>
+                  <div className="warn-note">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0, marginTop: 1 }}>
+                      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <div>
+                      選択した範囲より古いセッションが完全に削除されます。この操作は取り消せません。分析の集計値には影響しません。
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="modal-foot">
+              {cleanupResult !== null ? (
+                <button className="btn btn-primary" type="button" onClick={() => setShowCleanup(false)}>
+                  閉じる
+                </button>
+              ) : (
+                <>
+                  <button className="btn btn-ghost" type="button" onClick={() => setShowCleanup(false)} disabled={isCleaningUp}>
+                    キャンセル
+                  </button>
+                  <button className="btn btn-danger" type="button" onClick={() => void handleCleanup()} disabled={isCleaningUp}>
+                    {isCleaningUp ? '整理中…' : '整理する'}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* conv-layout に必要なスタイル (ローカルスコープ) */}
       <style>{`

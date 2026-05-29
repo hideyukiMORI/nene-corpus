@@ -10,6 +10,7 @@ final class AdminHttpTestSupport
 {
     public static function seedCorpusSchema(PdoDatabaseQueryExecutor $executor): void
     {
+        TenancySchemaSetup::createAndSeed($executor);
         CorpusSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);
         self::seedAdminUser($executor);
@@ -26,5 +27,13 @@ final class AdminHttpTestSupport
             'INSERT INTO admin_users (email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?)',
             ['admin@example.com', $hash, $now, $now],
         );
+    }
+
+    public static function seedTenancy(PdoDatabaseQueryExecutor $executor): void
+    {
+        TenancySchemaSetup::createOrganizations($executor);
+        TenancySchemaSetup::createSystemConfig($executor);
+        TenancySchemaSetup::seedDefaultOrganization($executor);
+        TenancySchemaSetup::seedSystemConfig($executor);
     }
 }

@@ -15,11 +15,13 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\AdminHttpTestSupport;
 use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
+use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -49,6 +51,7 @@ final class AdminChatHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        TenancySchemaSetup::createAndSeed($executor);
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);
@@ -172,20 +175,23 @@ final class AdminChatHttpTest extends TestCase
 
     private function seedCorpus(PdoDatabaseQueryExecutor $executor): void
     {
-        $sourceId = (new PdoSourceRepository($executor))->save(new Source(
+        $orgIdHolder = new RequestScopedOrgIdHolder();
+        $orgIdHolder->setId(1);
+
+        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder))->save(new Source(
             name: 'Catalog',
             sourceType: SourceType::Pdf,
             status: SourceStatus::Ready,
             storagePath: 'storage/uploads/catalog.pdf',
         ));
 
-        $documentId = (new PdoDocumentRepository($executor))->save(new Document(
+        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder))->save(new Document(
             sourceId: $sourceId,
             title: 'Pairings',
             position: 0,
         ));
 
-        (new PdoChunkRepository($executor))->save(new Chunk(
+        (new PdoChunkRepository($executor, $orgIdHolder))->save(new Chunk(
             documentId: $documentId,
             sourceId: $sourceId,
             content: 'Dry ginjo pairs well with white fish and light seafood dishes.',

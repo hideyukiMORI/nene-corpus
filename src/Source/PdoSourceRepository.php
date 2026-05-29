@@ -5,25 +5,39 @@ declare(strict_types=1);
 namespace NeneCorpus\Source;
 
 use InvalidArgumentException;
+use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoSourceRepository implements SourceRepositoryInterface
 {
     private const SELECT_COLUMNS = <<<'SQL'
         id, name, source_type, status, storage_path, original_filename, mime_type,
-        byte_size, error_message, ingestion_config_json, created_at, updated_at, is_deleted, deleted_at
+        byte_size, error_message, ingestion_config_json, note, created_at, updated_at, is_deleted, deleted_at
         SQL;
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new LogicException('Organization ID is not resolved. Check OrgResolverMiddleware setup.');
+        }
+
+        return $id;
     }
 
     public function findById(int $id): ?Source
     {
         $row = $this->query->fetchOne(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM sources WHERE id = ? AND is_deleted = 0',
-            [$id],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM sources WHERE id = ? AND organization_id = ? AND is_deleted = 0',
+            [$id, $this->orgId()],
         );
 
         return $row === null ? null : $this->mapRow($row);
@@ -33,8 +47,8 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
     public function findAll(int $limit, int $offset): array
     {
         $rows = $this->query->fetchAll(
-            'SELECT ' . self::SELECT_COLUMNS . ' FROM sources WHERE is_deleted = 0 ORDER BY id ASC LIMIT ? OFFSET ?',
-            [$limit, $offset],
+            'SELECT ' . self::SELECT_COLUMNS . ' FROM sources WHERE organization_id = ? AND is_deleted = 0 ORDER BY id ASC LIMIT ? OFFSET ?',
+            [$this->orgId(), $limit, $offset],
         );
 
         return array_map(fn (array $row): Source => $this->mapRow($row), $rows);
@@ -46,7 +60,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             <<<'SQL'
                 SELECT
                     s.id, s.name, s.source_type, s.status, s.storage_path, s.original_filename,
-                    s.mime_type, s.byte_size, s.error_message, s.ingestion_config_json,
+                    s.mime_type, s.byte_size, s.error_message, s.ingestion_config_json, s.note,
                     s.created_at, s.updated_at, s.is_deleted, s.deleted_at,
                     (
                         SELECT COUNT(*)
@@ -59,11 +73,11 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                         WHERE c.source_id = s.id
                     ) AS chunk_count
                 FROM sources s
-                WHERE s.is_deleted = 0
+                WHERE s.organization_id = ? AND s.is_deleted = 0
                 ORDER BY s.id DESC
                 LIMIT ? OFFSET ?
                 SQL,
-            [$limit, $offset],
+            [$this->orgId(), $limit, $offset],
         );
 
         return array_map(
@@ -83,12 +97,13 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
         $this->query->execute(
             <<<'SQL'
                 INSERT INTO sources (
-                    name, source_type, status, storage_path, original_filename, mime_type,
+                    organization_id, name, source_type, status, storage_path, original_filename, mime_type,
                     byte_size, error_message, ingestion_config_json, created_at, updated_at,
                     is_deleted, deleted_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL)
                 SQL,
             [
+                $this->orgId(),
                 $source->name,
                 $source->sourceType->value,
                 $source->status->value,
@@ -118,7 +133,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                     name = ?, source_type = ?, status = ?, storage_path = ?,
                     original_filename = ?, mime_type = ?, byte_size = ?, error_message = ?,
                     ingestion_config_json = ?, updated_at = ?
-                WHERE id = ? AND is_deleted = 0
+                WHERE id = ? AND organization_id = ? AND is_deleted = 0
                 SQL,
             [
                 $source->name,
@@ -132,21 +147,33 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
                 $source->ingestionConfigJson,
                 $this->now(),
                 $source->id,
+                $this->orgId(),
             ],
+        );
+    }
+
+    public function updateNameAndNote(int $id, string $name, ?string $note): void
+    {
+        $this->query->execute(
+            <<<'SQL'
+                UPDATE sources SET name = ?, note = ?, updated_at = ?
+                WHERE id = ? AND organization_id = ? AND is_deleted = 0
+                SQL,
+            [$name, $note, $this->now(), $id, $this->orgId()],
         );
     }
 
     public function softDelete(int $id, string $deletedAt): void
     {
         $this->query->execute(
-            'UPDATE sources SET is_deleted = 1, deleted_at = ?, updated_at = ? WHERE id = ? AND is_deleted = 0',
-            [$deletedAt, $this->now(), $id],
+            'UPDATE sources SET is_deleted = 1, deleted_at = ?, updated_at = ? WHERE id = ? AND organization_id = ? AND is_deleted = 0',
+            [$deletedAt, $this->now(), $id, $this->orgId()],
         );
     }
 
     public function countAll(): int
     {
-        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM sources WHERE is_deleted = 0', []);
+        $rows = $this->query->fetchAll('SELECT COUNT(*) AS cnt FROM sources WHERE organization_id = ? AND is_deleted = 0', [$this->orgId()]);
 
         return (int) ($rows[0]['cnt'] ?? 0);
     }
@@ -166,6 +193,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             byteSize: isset($row['byte_size']) ? (int) $row['byte_size'] : null,
             errorMessage: isset($row['error_message']) ? (string) $row['error_message'] : null,
             ingestionConfigJson: isset($row['ingestion_config_json']) ? (string) $row['ingestion_config_json'] : null,
+            note: isset($row['note']) ? (string) $row['note'] : null,
             id: (int) $row['id'],
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],

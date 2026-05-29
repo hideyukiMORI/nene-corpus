@@ -108,6 +108,57 @@ final class SourceAdminHttpTest extends TestCase
         self::assertSame(404, $response->getStatusCode());
     }
 
+    public function test_update_source_renames_and_sets_note(): void
+    {
+        $sourceId = $this->createPdfSource();
+
+        $response = $this->authorizedRequest(
+            'PUT',
+            '/admin/sources/' . $sourceId,
+            json_encode(['name' => '改名後カタログ', 'note' => '社内メモ'], JSON_THROW_ON_ERROR),
+        );
+
+        $payload = $this->decodeJson($response);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame($sourceId, $payload['source_id']);
+        self::assertSame('改名後カタログ', $payload['name']);
+        self::assertSame('社内メモ', $payload['note']);
+
+        $container = (new RuntimeContainerFactory())->create();
+        $executor = $container->get(DatabaseQueryExecutorInterface::class);
+        self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
+
+        $row = $executor->fetchOne('SELECT name, note FROM sources WHERE id = ?', [$sourceId]);
+        self::assertIsArray($row);
+        self::assertSame('改名後カタログ', (string) $row['name']);
+        self::assertSame('社内メモ', (string) $row['note']);
+    }
+
+    public function test_update_source_empty_name_returns_422(): void
+    {
+        $sourceId = $this->createPdfSource();
+
+        $response = $this->authorizedRequest(
+            'PUT',
+            '/admin/sources/' . $sourceId,
+            json_encode(['name' => '   '], JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(422, $response->getStatusCode());
+    }
+
+    public function test_update_missing_source_returns_404(): void
+    {
+        $response = $this->authorizedRequest(
+            'PUT',
+            '/admin/sources/9999',
+            json_encode(['name' => 'x'], JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(404, $response->getStatusCode());
+    }
+
     public function test_list_sources_returns_summaries(): void
     {
         $sourceId = $this->createPdfSource();

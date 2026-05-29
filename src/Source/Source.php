@@ -16,6 +16,7 @@ final readonly class Source
         public ?int $byteSize = null,
         public ?string $errorMessage = null,
         public ?string $ingestionConfigJson = null,
+        public ?string $note = null,
         public ?int $id = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,

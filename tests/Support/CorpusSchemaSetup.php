@@ -14,6 +14,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE sources (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     name TEXT NOT NULL,
                     source_type TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'pending',
@@ -23,6 +24,7 @@ final class CorpusSchemaSetup
                     byte_size INTEGER NULL,
                     error_message TEXT NULL,
                     ingestion_config_json TEXT NULL,
+                    note TEXT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     is_deleted INTEGER NOT NULL DEFAULT 0,
@@ -35,6 +37,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE documents (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     source_id INTEGER NOT NULL,
                     title TEXT NOT NULL,
                     position INTEGER NOT NULL DEFAULT 0,
@@ -52,6 +55,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE chunks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     document_id INTEGER NOT NULL,
                     source_id INTEGER NOT NULL,
                     chunk_index INTEGER NOT NULL DEFAULT 0,
@@ -76,6 +80,8 @@ final class CorpusSchemaSetup
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     email TEXT NOT NULL,
                     password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'admin',
+                    organization_id INTEGER NULL DEFAULT NULL,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 )
@@ -109,6 +115,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE corpus_chat_settings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     system_prompt TEXT NULL,
                     fallback_message TEXT NULL,
                     created_at TEXT NOT NULL,
@@ -124,6 +131,7 @@ final class CorpusSchemaSetup
             <<<'SQL'
                 CREATE TABLE appearance_settings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    organization_id INTEGER NOT NULL DEFAULT 1,
                     widget_locale TEXT NULL,
                     theme_json TEXT NOT NULL,
                     hero_json TEXT NULL,

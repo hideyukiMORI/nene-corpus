@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Search;
 
+use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use NeneCorpus\Chunk\Chunk;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryInterface
 {
@@ -18,7 +20,19 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private RequestScopedOrgIdHolder $orgIdHolder,
     ) {
+    }
+
+    private function orgId(): int
+    {
+        $id = $this->orgIdHolder->getId();
+
+        if ($id === null) {
+            throw new LogicException('Organization ID is not resolved. Check OrgResolverMiddleware setup.');
+        }
+
+        return $id;
     }
 
     public function search(string $query, int $limit): array
@@ -46,6 +60,7 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
             $params[] = '%' . $this->escapeLike($term) . '%';
         }
 
+        $params[] = $this->orgId();
         $params[] = $limit;
 
         $scoreExpression = implode(' + ', $scoreParts);
@@ -56,7 +71,7 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
             . 'FROM chunks c '
             . 'INNER JOIN sources s ON s.id = c.source_id AND s.is_deleted = 0 '
             . 'INNER JOIN documents d ON d.id = c.document_id AND d.is_deleted = 0 '
-            . 'WHERE ' . $whereExpression . ' '
+            . 'WHERE (' . $whereExpression . ') AND c.organization_id = ? '
             . 'ORDER BY relevance_score DESC, c.id ASC '
             . 'LIMIT ?',
             $params,

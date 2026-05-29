@@ -23,7 +23,7 @@ Ops / MCP         ────────────────────�
 
 ## 現在の開発状況
 
-> **最終更新: 2026-05-28**（`docs/todo/current.md` が正本）
+> **最終更新: 2026-05-29**（`docs/todo/current.md` が正本）
 
 | フェーズ | 状態 |
 | --- | --- |
@@ -32,15 +32,16 @@ Ops / MCP         ────────────────────�
 | Phase 2 チャット・引用 | ✅ 完了 |
 | Phase 3 Admin UI・Widget・Tier A | ✅ 完了 |
 | **Phase 3+ オペレーター UX 改善** | ✅ 完了 |
-| **Phase 4 外部連携（NeNe Records）** | 🔲 バックログ（Issue 化してから着手） |
+| **Phase 4 マルチテナント** | ✅ 完了 |
+| **Phase 5 外部連携（NeNe Records）** | 🔲 バックログ（Issue 化してから着手） |
 
 **最近の主なマージ:**
 
 | PR | Issue | 内容 |
 | --- | --- | --- |
-| #200 | #199 | チャット日次トークン制限 Phase B（input/output トークン記録・日次予算） |
-| #198 | #197 | チャット利用制限 Phase A（文字数・インターバル・時間別/日次リクエスト制限） |
-| #196 | #195 | LLM 設定アコーディオン化 |
+| #280 | #280 | マルチテナント Phase D（OpenAPI + ADR 0005 + docs + E2E spec） |
+| #279 | #279 | マルチテナント Phase C（Admin UI superadmin パネル） |
+| #278 | #278 | マルチテナント Phase B（全モジュール org スコープ適用） |
 
 ---
 
@@ -123,6 +124,36 @@ src/
 
 **禁止フォルダ:** `src/Handlers/`, `src/Repositories/`, `src/UseCases/` など。
 
+### Tenancy（マルチテナント）
+
+**`OrgResolverMiddleware` の責務:**
+- リクエストごとにテナント解決方式（single / subdomain / path）に基づいて `organization_id` を特定する。
+- 解決した `organization_id` を `RequestScopedOrgIdHolder` に注入する。
+
+**bypass パス（テナント解決をスキップ）:**
+- `/admin/auth/*` — ログイン・JWT 取得（認証前なので解決不要）
+- `/admin/superadmin/*` — スーパー管理者操作（organization_id = null）
+- `/health` — ヘルスチェック
+- `/install` — Web インストーラー（Tier A 初期セットアップ）
+
+**`RequestScopedOrgIdHolder` の使い方:**
+- リクエストスコープの DI コンテナにバインドされる。
+- 全 `Pdo*Repository` のコンストラクタに注入される。
+- Repository 内では `$this->orgIdHolder->getOrganizationId()` で取得し、SQL の WHERE 句に付加する。
+
+**全 Repository は org scoped が原則:**
+- `Pdo*Repository` で発行する全 SELECT / INSERT / UPDATE / DELETE に `organization_id = :org_id` を必ず付加すること。
+- 付加し忘れるとテナント間データ漏洩（silent data leak）になる。
+
+**superadmin の特例:**
+- `admin_users.role = 'superadmin'` のユーザーは `organization_id IS NULL`（特定組織に属さない）。
+- `/admin/superadmin/*` エンドポイントのみアクセス可能（通常 admin は 403）。
+- `system_config` テーブルと `organizations` テーブルへのアクセスは superadmin 専用。
+
+詳細: `docs/integrations/multi-tenancy.md`, `docs/adr/0005-multi-tenancy-strategy.md`
+
+---
+
 ### 命名規則（主要）
 
 | 役割 | パターン | 例 |
@@ -180,6 +211,17 @@ frontend/
 **`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5173) と widget (:5174) を両方再起動する。
 **静的ビルド注意:** `:8080` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
 
+### MSW モック開発モード（バックエンドなしで Admin UI を動かす）
+
+```bash
+# frontend/ ディレクトリ内で
+npm run mock        # VITE_MOCK_API=true vite — ブラウザに MSW Service Worker を登録
+```
+
+- ハンドラーは `frontend/tests/msw/handlers/` に集約（vitest とブラウザで共用）
+- 新規 API を追加したら対応ハンドラーを同ディレクトリに追加し、`server.ts` と `src/mocks/browser.ts` の両方に登録する
+- `public/mockServiceWorker.js` は MSW が自動生成するファイル。コミット対象だが手動編集禁止
+
 ---
 
 ## 絶対禁止パターン
@@ -197,6 +239,8 @@ frontend/
 - Admin JWT をウィジェットに渡す
 - SSE ストリーミングの実装（非ゴール）
 - NeNe Records への直接 DB 接続や共有
+- `Pdo*Repository` で `RequestScopedOrgIdHolder` を経由しない SQL（org filter 漏れ → テナント間データ漏洩）
+- bypass パス以外で organization_id 未解決のままリクエストを通すこと
 
 ---
 

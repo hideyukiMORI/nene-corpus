@@ -24,10 +24,12 @@ use Nene2\Log\RequestIdHolder;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
 use NeneCorpus\AdminAuth\AdminBearerTokenMiddleware;
 use NeneCorpus\AdminAuth\AdminLoginRateLimitMiddleware;
+use NeneCorpus\AdminAuth\SuperadminMiddleware;
 use NeneCorpus\ApplicationServiceProvider;
 use NeneCorpus\Install\InstallServiceProvider;
 use NeneCorpus\RateLimit\ConsumerChatRateLimitMiddleware;
 use NeneCorpus\RateLimit\RateLimitServiceProvider;
+use NeneCorpus\Tenancy\Resolution\OrgResolverMiddleware;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -220,8 +222,10 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
 
                     $authMiddleware      = $container->get(AdminAuthServiceProvider::AUTH_MIDDLEWARE);
                     $loginRateLimit      = $container->get(AdminAuthServiceProvider::LOGIN_RATE_LIMIT_MIDDLEWARE);
+                    $superadminMiddleware = $container->get(AdminAuthServiceProvider::SUPERADMIN_MIDDLEWARE);
                     $chatRateLimit       = $container->get(RateLimitServiceProvider::CHAT_RATE_LIMIT_MIDDLEWARE);
                     $basePathMiddleware  = $container->get(InstallServiceProvider::BASE_PATH_MIDDLEWARE);
+                    $orgResolver         = $container->get(OrgResolverMiddleware::class);
 
                     if ($authMiddleware !== null && !$authMiddleware instanceof AdminBearerTokenMiddleware) {
                         throw new LogicException('Admin auth middleware service is invalid.');
@@ -229,6 +233,10 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
 
                     if (!$loginRateLimit instanceof AdminLoginRateLimitMiddleware) {
                         throw new LogicException('Admin login rate limit middleware service is invalid.');
+                    }
+
+                    if (!$superadminMiddleware instanceof SuperadminMiddleware) {
+                        throw new LogicException('Superadmin middleware service is invalid.');
                     }
 
                     if (!$chatRateLimit instanceof ConsumerChatRateLimitMiddleware) {
@@ -239,11 +247,17 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Base path middleware service is invalid.');
                     }
 
+                    if (!$orgResolver instanceof OrgResolverMiddleware) {
+                        throw new LogicException('Org resolver middleware service is invalid.');
+                    }
+
                     /** @var list<\Psr\Http\Server\MiddlewareInterface> $requestMiddleware */
                     $requestMiddleware = array_values(array_filter([
                         $basePathMiddleware,
                         $loginRateLimit,
                         $authMiddleware,
+                        $superadminMiddleware,
+                        $orgResolver,
                         $chatRateLimit,
                     ]));
 

@@ -13,12 +13,15 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class PdoDocumentRepositoryTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     private int $sourceId;
 
@@ -38,7 +41,10 @@ final class PdoDocumentRepositoryTest extends TestCase
 
         CorpusSchemaSetup::create($this->executor);
 
-        $sourceRepository = new PdoSourceRepository($this->executor);
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
+
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Parent source',
             sourceType: SourceType::Pdf,
@@ -49,7 +55,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_save_and_find_by_id_returns_document(): void
     {
-        $repository = new PdoDocumentRepository($this->executor);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Chapter 1',
@@ -67,7 +73,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_find_by_source_id_returns_documents_in_position_order(): void
     {
-        $repository = new PdoDocumentRepository($this->executor);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
         $repository->save(new Document(sourceId: $this->sourceId, title: 'Second', position: 2));
         $repository->save(new Document(sourceId: $this->sourceId, title: 'First', position: 1));
 
@@ -80,7 +86,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_soft_delete_excludes_document_from_find_by_id(): void
     {
-        $repository = new PdoDocumentRepository($this->executor);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Temporary',
@@ -90,5 +96,29 @@ final class PdoDocumentRepositoryTest extends TestCase
         $repository->softDelete($id, '2026-05-25 12:00:00');
 
         self::assertNull($repository->findById($id));
+    }
+
+    public function test_org_isolation_prevents_cross_org_access(): void
+    {
+        $org2Holder = new RequestScopedOrgIdHolder();
+        $org2Holder->setId(2);
+
+        $repoOrg1 = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $repoOrg2 = new PdoDocumentRepository($this->executor, $org2Holder);
+
+        $idOrg1 = $repoOrg1->save(new Document(
+            sourceId: $this->sourceId,
+            title: 'Org 1 Document',
+            position: 0,
+        ));
+
+        // Org 2 cannot see Org 1's document
+        self::assertNull($repoOrg2->findById($idOrg1));
+
+        // Org 1 can still see its own document
+        self::assertNotNull($repoOrg1->findById($idOrg1));
+
+        // Org 2 sees empty list for same source_id
+        self::assertSame([], $repoOrg2->findBySourceId($this->sourceId, 10, 0));
     }
 }

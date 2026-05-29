@@ -12,6 +12,7 @@ use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
+use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -42,6 +43,7 @@ final class CleanupChatSessionsHttpTest extends TestCase
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
         $this->executor = $executor;
 
+        TenancySchemaSetup::createAndSeed($executor);
         CorpusSchemaSetup::create($executor);
         ChatSchemaSetup::create($executor);
         RateLimitSchemaSetup::create($executor);

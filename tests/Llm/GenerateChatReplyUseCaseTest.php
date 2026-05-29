@@ -22,6 +22,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\InMemoryChatSettingsRepository;
 use PHPUnit\Framework\TestCase;
@@ -44,20 +45,23 @@ final class GenerateChatReplyUseCaseTest extends TestCase
 
         CorpusSchemaSetup::create($executor);
 
-        $sourceId = (new PdoSourceRepository($executor))->save(new Source(
+        $orgIdHolder = new RequestScopedOrgIdHolder();
+        $orgIdHolder->setId(1);
+
+        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder))->save(new Source(
             name: 'Catalog',
             sourceType: SourceType::Pdf,
             status: SourceStatus::Ready,
             storagePath: 'storage/uploads/catalog.pdf',
         ));
 
-        $documentId = (new PdoDocumentRepository($executor))->save(new Document(
+        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder))->save(new Document(
             sourceId: $sourceId,
             title: 'Pairings',
             position: 0,
         ));
 
-        (new PdoChunkRepository($executor))->save(new Chunk(
+        (new PdoChunkRepository($executor, $orgIdHolder))->save(new Chunk(
             documentId: $documentId,
             sourceId: $sourceId,
             content: 'Dry ginjo pairs well with white fish and light seafood dishes.',
@@ -66,7 +70,7 @@ final class GenerateChatReplyUseCaseTest extends TestCase
             sectionLabel: 'Pairings',
         ));
 
-        $search = new SearchChunksUseCase(new PdoChunkSearchRepository($executor));
+        $search = new SearchChunksUseCase(new PdoChunkSearchRepository($executor, $orgIdHolder));
         $useCase = new GenerateChatReplyUseCase(
             new StubClaudeMessagesClient(),
             new CorpusSearchTool($search),

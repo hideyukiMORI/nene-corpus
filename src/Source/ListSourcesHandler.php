@@ -31,6 +31,7 @@ final readonly class ListSourcesHandler
                     'name' => $summary->source->name,
                     'source_type' => $summary->source->sourceType->value,
                     'status' => $summary->source->status->value,
+                    'note' => $summary->source->note,
                     'document_count' => $summary->documentCount,
                     'chunk_count' => $summary->chunkCount,
                     'created_at' => $summary->source->createdAt,

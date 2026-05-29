@@ -23,6 +23,7 @@ import {
 } from '@nene-corpus/api-client';
 import { adminApiBase } from '../../config';
 import { Layout } from '../Layout';
+import { useNavigate } from '../router';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -192,7 +193,8 @@ function KpiRow({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function DashboardPage({ token }: DashboardPageProps) {
+export function DashboardPage({ token, onLogout }: DashboardPageProps) {
+  const navigate = useNavigate();
   const [range, setRange] = useState<RangeKey>('7d');
 
   // ── API state ──────────────────────────────────────────────────────────────
@@ -299,6 +301,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
       corpusStatus={corpusStatus ?? '読み込み中...'}
       modelStatus={isLlmConfigured ? 'ok' : 'bad'}
       stats={statsLabel}
+      onLogout={onLogout}
     >
       {/* ── Page head ──────────────────────────────────────────────────── */}
       <div className="page-head">
@@ -343,7 +346,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => { window.location.hash = '#/sources'; }}
+            onClick={() => { navigate('/sources'); }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -364,16 +367,13 @@ export function DashboardPage({ token }: DashboardPageProps) {
               「モデル」設定で Anthropic API キーを登録すると、サイトの埋め込みウィジェットからの問い合わせに回答できるようになります。
             </div>
           </div>
-          <a
+          <button
+            type="button"
             className="alert-cta"
-            href="#/settings"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.hash = '#/settings';
-            }}
+            onClick={() => { navigate('/settings'); }}
           >
             モデルを設定する →
-          </a>
+          </button>
         </div>
       )}
 
@@ -486,14 +486,15 @@ export function DashboardPage({ token }: DashboardPageProps) {
             <div className="title">
               ソース一覧 <span className="en">sources</span>
             </div>
-            <a
-              href="#/sources"
-              onClick={(e) => { e.preventDefault(); window.location.hash = '#/sources'; }}
+            <button
+              type="button"
+              className="panel-link"
+              onClick={() => { navigate('/sources'); }}
             >
               manage →
-            </a>
+            </button>
           </div>
-          <table>
+          <table className="tbl-src-mini">
             <thead>
               <tr>
                 <th>名前</th>
@@ -512,7 +513,11 @@ export function DashboardPage({ token }: DashboardPageProps) {
                 </tr>
               )}
               {sources.slice(0, 7).map((s) => (
-                <tr key={s.source_id}>
+                <tr
+                  key={s.source_id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => { navigate('/sources'); }}
+                >
                   <td>{s.name}</td>
                   <td>
                     <span className={`type-tag ${typeTagClass(s.source_type)}`}>
@@ -540,12 +545,13 @@ export function DashboardPage({ token }: DashboardPageProps) {
             <div className="title">
               よく聞かれる質問 <span className="en">top queries · {range}</span>
             </div>
-            <a
-              href="#/conversations"
-              onClick={(e) => { e.preventDefault(); window.location.hash = '#/conversations'; }}
+            <button
+              type="button"
+              className="panel-link"
+              onClick={() => { navigate('/conversations'); }}
             >
               all →
-            </a>
+            </button>
           </div>
           <div className="q-list">
             {questions.length === 0 && !isLoading && (
@@ -579,7 +585,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
         right="last 24h"
       />
       <div className="panel">
-        <table>
+        <table className="tbl-recent">
           <thead>
             <tr>
               <th style={{ width: 70 }}>セッション</th>

@@ -17,6 +17,7 @@ use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\NullMailer;
 use NeneCorpus\Mail\SmtpConfig;
 use NeneCorpus\Mail\SmtpMailer;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class NotificationServiceProvider implements ServiceProviderInterface
@@ -38,12 +39,17 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                 DailyReportRepositoryInterface::class,
                 static function (ContainerInterface $container): DailyReportRepositoryInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoDailyReportRepository($query);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoDailyReportRepository($query, $orgIdHolder);
                 },
             )
             ->set(
@@ -104,8 +110,9 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
             ->set(
                 RateLimitNotifier::class,
                 static function (ContainerInterface $container): RateLimitNotifier {
-                    $mailer  = $container->get(MailerInterface::class);
-                    $storage = $container->get(RateLimitStorageInterface::class);
+                    $mailer      = $container->get(MailerInterface::class);
+                    $storage     = $container->get(RateLimitStorageInterface::class);
+                    $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$mailer instanceof MailerInterface) {
                         throw new LogicException('Mailer service is invalid.');
@@ -115,7 +122,11 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                         throw new LogicException('RateLimitStorage service is invalid.');
                     }
 
-                    return new RateLimitNotifier($mailer, $storage);
+                    if (!$orgIdHolder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new RateLimitNotifier($mailer, $storage, $orgIdHolder);
                 },
             )
             ->set(

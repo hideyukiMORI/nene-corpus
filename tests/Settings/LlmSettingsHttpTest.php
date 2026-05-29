@@ -9,6 +9,7 @@ use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\Http\RuntimeContainerFactory;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
+use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -55,6 +56,7 @@ final class LlmSettingsHttpTest extends TestCase
         $executor = $container->get(DatabaseQueryExecutorInterface::class);
         self::assertInstanceOf(PdoDatabaseQueryExecutor::class, $executor);
 
+        TenancySchemaSetup::createAndSeed($executor);
         CorpusSchemaSetup::createAdminUsers($executor);
         RateLimitSchemaSetup::create($executor);
 

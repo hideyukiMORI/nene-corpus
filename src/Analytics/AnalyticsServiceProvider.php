@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Http\JsonResponseFactory;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -23,13 +24,18 @@ final readonly class AnalyticsServiceProvider implements ServiceProviderInterfac
             ->set(
                 AnalyticsRepositoryInterface::class,
                 static function (ContainerInterface $container): AnalyticsRepositoryInterface {
-                    $query = $container->get(DatabaseQueryExecutorInterface::class);
+                    $query  = $container->get(DatabaseQueryExecutorInterface::class);
+                    $holder = $container->get(RequestScopedOrgIdHolder::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoAnalyticsRepository($query);
+                    if (!$holder instanceof RequestScopedOrgIdHolder) {
+                        throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+                    }
+
+                    return new PdoAnalyticsRepository($query, $holder);
                 },
             )
             ->set(

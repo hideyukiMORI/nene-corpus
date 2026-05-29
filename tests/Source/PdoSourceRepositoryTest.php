@@ -11,12 +11,15 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\Source;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
 final class PdoSourceRepositoryTest extends TestCase
 {
     private PdoDatabaseQueryExecutor $executor;
+
+    private RequestScopedOrgIdHolder $orgIdHolder;
 
     protected function setUp(): void
     {
@@ -33,11 +36,14 @@ final class PdoSourceRepositoryTest extends TestCase
         )));
 
         CorpusSchemaSetup::create($this->executor);
+
+        $this->orgIdHolder = new RequestScopedOrgIdHolder();
+        $this->orgIdHolder->setId(1);
     }
 
     public function test_save_returns_new_id(): void
     {
-        $repository = new PdoSourceRepository($this->executor);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Source(
             name: 'Manual PDF',
             sourceType: SourceType::Pdf,
@@ -53,7 +59,7 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_by_id_returns_source_when_present(): void
     {
-        $repository = new PdoSourceRepository($this->executor);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Source(
             name: 'Catalog CSV',
             sourceType: SourceType::Csv,
@@ -71,14 +77,14 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_by_id_returns_null_when_source_is_absent(): void
     {
-        $repository = new PdoSourceRepository($this->executor);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
 
         self::assertNull($repository->findById(99));
     }
 
     public function test_soft_delete_excludes_source_from_find_by_id(): void
     {
-        $repository = new PdoSourceRepository($this->executor);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
         $id = $repository->save(new Source(
             name: 'To delete',
             sourceType: SourceType::Pdf,
@@ -93,7 +99,7 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_all_respects_limit_and_offset(): void
     {
-        $repository = new PdoSourceRepository($this->executor);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
 
         for ($i = 1; $i <= 3; $i++) {
             $repository->save(new Source(
@@ -108,5 +114,34 @@ final class PdoSourceRepositoryTest extends TestCase
 
         self::assertCount(1, $sources);
         self::assertSame('Source 2', $sources[0]->name);
+    }
+
+    public function test_org_isolation_prevents_cross_org_access(): void
+    {
+        $org1Holder = new RequestScopedOrgIdHolder();
+        $org1Holder->setId(1);
+
+        $org2Holder = new RequestScopedOrgIdHolder();
+        $org2Holder->setId(2);
+
+        $repoOrg1 = new PdoSourceRepository($this->executor, $org1Holder);
+        $repoOrg2 = new PdoSourceRepository($this->executor, $org2Holder);
+
+        $idOrg1 = $repoOrg1->save(new Source(
+            name: 'Org 1 Source',
+            sourceType: SourceType::Pdf,
+            status: SourceStatus::Pending,
+            storagePath: 'storage/uploads/org1.pdf',
+        ));
+
+        // Org 2 cannot see Org 1's source
+        self::assertNull($repoOrg2->findById($idOrg1));
+
+        // Org 1 can still see its own source
+        self::assertNotNull($repoOrg1->findById($idOrg1));
+
+        // Org 2 sees empty list
+        self::assertSame([], $repoOrg2->findAll(10, 0));
+        self::assertSame(0, $repoOrg2->countAll());
     }
 }

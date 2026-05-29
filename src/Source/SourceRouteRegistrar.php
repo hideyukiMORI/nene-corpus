@@ -12,6 +12,7 @@ final readonly class SourceRouteRegistrar
     public function __construct(
         private DeleteSourceHandler $deleteHandler,
         private ListSourcesHandler $listHandler,
+        private UpdateSourceHandler $updateHandler,
     ) {
     }
 
@@ -19,10 +20,16 @@ final readonly class SourceRouteRegistrar
     {
         $delete = $this->deleteHandler;
         $list = $this->listHandler;
+        $update = $this->updateHandler;
 
         $router->get(
             '/admin/sources',
             static fn (ServerRequestInterface $request) => $list->handle($request),
+        );
+
+        $router->put(
+            '/admin/sources/{id}',
+            static fn (ServerRequestInterface $request) => $update->handle($request),
         );
 
         $router->delete(

@@ -36,11 +36,12 @@ final readonly class LoginAdminUseCase implements LoginAdminUseCaseInterface
         $expiresAt = $now + self::TOKEN_TTL_SECONDS;
 
         $token = $this->tokenIssuer->issue([
-            'sub' => $user->id,
-            'email' => $user->email,
-            'role' => 'admin',
-            'iat' => $now,
-            'exp' => $expiresAt,
+            'sub'    => $user->id,
+            'email'  => $user->email,
+            'role'   => $user->role,
+            'org_id' => $user->organizationId,
+            'iat'    => $now,
+            'exp'    => $expiresAt,
         ]);
 
         return new LoginAdminOutput(

@@ -1,6 +1,6 @@
 /**
  * SettingsPage — v2 リデザイン実装 (#264)
- * 左 rail（モデル / ウィジェット / アカウント / システム）+ 右セクション切替
+ * 左 rail（モデル / ウィジェット / アカウント / システム / スーパー管理者）+ 右セクション切替
  */
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Layout } from '../Layout';
@@ -15,6 +15,8 @@ import {
 import {
   getAppearanceSettings,
   updateAppearanceSettings,
+  uploadHeroImage,
+  uploadAvatarImage,
 } from '@nene-corpus/api-client/appearance';
 import { changeAdminPassword, changeAdminEmail } from '@nene-corpus/api-client/account';
 import type {
@@ -25,109 +27,26 @@ import type {
   WidgetLayout,
   WidgetTheme,
   WidgetPosition,
+  WidgetHero,
+  WidgetChat,
 } from '@nene-corpus/api-client/types';
 import type { NotificationSettings } from '@nene-corpus/api-client/notifications';
 import { Msg, useMsg } from '@nene-corpus/i18n';
 import { adminApiBase } from '../../config';
 import { buildEmbedSnippet } from '../../embedSnippet';
-import { DEFAULT_WIDGET_LAYOUT } from '@nene-corpus/api-client/types';
+import { readFileAsBase64 } from '../../fileBase64';
+import { DEFAULT_WIDGET_LAYOUT, DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT } from '@nene-corpus/api-client/types';
+import { TenantResolutionSection } from './superadmin/TenantResolutionSection';
+import { OrganizationsSection } from './superadmin/OrganizationsSection';
 
 // ─────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────
 
-type Section =
-  | 'llm'
-  | 'embed-widget'
-  | 'appearance'
-  | 'embed-snippet'
-  | 'password'
-  | 'email'
-  | 'chat-settings'
-  | 'chat-limits'
-  | 'notifications'
-  | 'hosting';
-
 interface SettingsPageProps {
   token?: string;
   onLogout?: () => void;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Rail Nav item
-// ─────────────────────────────────────────────────────────────
-
-interface RailItemProps {
-  label: string;
-  section: Section;
-  active: Section;
-  indicator?: 'dot' | 'check' | null;
-  onSelect: (s: Section) => void;
-}
-
-function RailItem({ label, section, active, indicator, onSelect }: RailItemProps) {
-  const isOn = active === section;
-  return (
-    <button
-      type="button"
-      className="set-rail-item"
-      data-on={isOn ? '' : undefined}
-      onClick={() => onSelect(section)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        width: '100%',
-        padding: '7px 10px',
-        borderRadius: 5,
-        fontSize: 13,
-        color: isOn ? 'var(--primary)' : 'var(--ink-soft)',
-        background: isOn ? 'var(--primary-soft)' : 'none',
-        fontWeight: isOn ? 600 : 400,
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-        margin: '1px 0',
-        transition: 'background 120ms ease, color 120ms ease',
-      }}
-      onMouseEnter={(e) => {
-        if (!isOn) {
-          (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-hover)';
-          (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isOn) {
-          (e.currentTarget as HTMLButtonElement).style.background = 'none';
-          (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink-soft)';
-        }
-      }}
-    >
-      <span style={{ flex: 1 }}>{label}</span>
-      {indicator === 'dot' && (
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--danger)', flexShrink: 0 }} />
-      )}
-      {indicator === 'check' && (
-        <span style={{ color: 'var(--success-fg)', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>✓</span>
-      )}
-    </button>
-  );
-}
-
-function RailSection({ label }: { label: string }) {
-  return (
-    <div style={{
-      fontFamily: '"JetBrains Mono", monospace',
-      fontSize: 10,
-      fontWeight: 600,
-      color: 'var(--ink-faint)',
-      letterSpacing: '0.14em',
-      textTransform: 'uppercase',
-      padding: '12px 10px 6px',
-    }}>
-      {label}
-    </div>
-  );
+  role?: 'admin' | 'superadmin';
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -579,7 +498,11 @@ function AppearanceSection({ token }: { token: string }) {
   const [success, setSuccess] = useState<string | null>(null);
   const [theme, setTheme] = useState<WidgetTheme>(DEFAULT_THEME);
   const [layoutForm, setLayoutForm] = useState<WidgetLayout>(DEFAULT_WIDGET_LAYOUT);
+  const [hero, setHero] = useState<WidgetHero>(DEFAULT_WIDGET_HERO);
+  const [chat, setChat] = useState<WidgetChat>(DEFAULT_WIDGET_CHAT);
   const [widgetLocale, setWidgetLocale] = useState('');
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -590,6 +513,8 @@ function AppearanceSection({ token }: { token: string }) {
         if (!cancelled) {
           setTheme(s.theme);
           setLayoutForm(s.layout);
+          setHero(s.hero);
+          setChat(s.chat);
           setWidgetLocale(s.widget_locale ?? '');
           setIsLoading(false);
         }
@@ -626,8 +551,8 @@ function AppearanceSection({ token }: { token: string }) {
       await updateAppearanceSettings(token, {
         widget_locale: widgetLocale === '' ? null : (widgetLocale as AppearanceSettingsResponse['widget_locale']),
         theme,
-        hero: appSettings.hero,
-        chat: appSettings.chat,
+        hero,
+        chat,
         layout: layoutForm,
         custom_css: appSettings.custom_css ?? null,
       }, adminApiBase);
@@ -636,6 +561,35 @@ function AppearanceSection({ token }: { token: string }) {
       setError(cause instanceof Error ? cause.message : t(Msg.admin.appearance.saveFailed));
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  // Hero / アバター画像アップロード (#1)
+  async function handleHeroUpload(file: File): Promise<void> {
+    setUploadingHero(true);
+    setError(null);
+    try {
+      const content = await readFileAsBase64(file);
+      const res = await uploadHeroImage(token, { filename: file.name, content }, adminApiBase);
+      setHero((prev) => ({ ...prev, image_url: res.image_url, show_image: true }));
+    } catch (cause: unknown) {
+      setError(cause instanceof Error ? cause.message : 'Hero 画像のアップロードに失敗しました。');
+    } finally {
+      setUploadingHero(false);
+    }
+  }
+
+  async function handleAvatarUpload(file: File): Promise<void> {
+    setUploadingAvatar(true);
+    setError(null);
+    try {
+      const content = await readFileAsBase64(file);
+      const res = await uploadAvatarImage(token, { filename: file.name, content }, adminApiBase);
+      setChat((prev) => ({ ...prev, assistant_avatar_url: res.image_url, show_assistant_avatar: true }));
+    } catch (cause: unknown) {
+      setError(cause instanceof Error ? cause.message : 'アバター画像のアップロードに失敗しました。');
+    } finally {
+      setUploadingAvatar(false);
     }
   }
 
@@ -734,6 +688,100 @@ function AppearanceSection({ token }: { token: string }) {
               </Field>
             </div>
           )}
+
+          {/* あいさつ文 — ライブプレビューに即時反映 (#2) */}
+          <Field label="あいさつ文" labelEn="greeting">
+            <input
+              className="field-input"
+              type="text"
+              value={hero.title ?? ''}
+              placeholder="例: ご質問はお気軽にどうぞ"
+              onChange={(e) => setHero((prev) => ({ ...prev, title: e.target.value === '' ? null : e.target.value }))}
+            />
+          </Field>
+
+          {/* Hero / アバター画像アップロード (#1) */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <Field label="Hero 画像" labelEn="hero image">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {hero.image_url !== null && hero.image_url !== '' && (
+                  <img
+                    src={hero.image_url}
+                    alt=""
+                    style={{ width: 56, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--hair-strong)' }}
+                  />
+                )}
+                <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
+                  {uploadingHero ? 'アップロード中…' : '画像を選択'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    disabled={uploadingHero}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleHeroUpload(f); e.target.value = ''; }}
+                  />
+                </label>
+                {hero.image_url !== null && hero.image_url !== '' && (
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setHero((prev) => ({ ...prev, image_url: null }))}>
+                    削除
+                  </button>
+                )}
+              </div>
+            </Field>
+            <Field label="アバター画像" labelEn="avatar image">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {chat.assistant_avatar_url !== null && chat.assistant_avatar_url !== '' && (
+                  <img
+                    src={chat.assistant_avatar_url}
+                    alt=""
+                    style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: '50%', border: '1px solid var(--hair-strong)' }}
+                  />
+                )}
+                <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer' }}>
+                  {uploadingAvatar ? 'アップロード中…' : '画像を選択'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    disabled={uploadingAvatar}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleAvatarUpload(f); e.target.value = ''; }}
+                  />
+                </label>
+                {chat.assistant_avatar_url !== null && chat.assistant_avatar_url !== '' && (
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setChat((prev) => ({ ...prev, assistant_avatar_url: null }))}>
+                    削除
+                  </button>
+                )}
+              </div>
+            </Field>
+          </div>
+
+          {/* ライブプレビュー (#2) — accent / greeting / 画像を即時反映 */}
+          <div style={{ marginTop: 18 }}>
+            <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 10.5, fontWeight: 600, color: 'var(--ink-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
+              ライブプレビュー // live preview
+            </div>
+            <div style={{ width: 280, border: '1px solid var(--hair)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-card)', background: 'var(--surface)' }}>
+              <div style={{ height: 64, background: theme.color_primary, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#fff', color: theme.color_primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontFamily: '"JetBrains Mono", monospace', overflow: 'hidden', flexShrink: 0 }}>
+                  {chat.assistant_avatar_url !== null && chat.assistant_avatar_url !== '' ? (
+                    <img src={chat.assistant_avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : 'n'}
+                </div>
+                <span style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>NeNe Corpus</span>
+              </div>
+              {hero.image_url !== null && hero.image_url !== '' && (
+                <img src={hero.image_url} alt="" style={{ width: '100%', height: 72, objectFit: 'cover', display: 'block' }} />
+              )}
+              <div style={{ padding: '14px', fontSize: 13, color: 'var(--ink)', minHeight: 48, lineHeight: 1.5 }}>
+                {hero.title ?? 'ご質問はお気軽にどうぞ'}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderTop: '1px solid var(--hair)' }}>
+                <div style={{ flex: 1, height: 30, borderRadius: 99, background: 'var(--bg-soft)', border: '1px solid var(--hair)' }} />
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: theme.color_primary, flexShrink: 0 }} />
+              </div>
+            </div>
+          </div>
 
           {error !== null && <StatusMsg type="error" text={error} />}
           {success !== null && <StatusMsg type="success" text={success} />}
@@ -1346,9 +1394,12 @@ function ChatSettingsSection({ token }: { token: string }) {
 // Main Page
 // ─────────────────────────────────────────────────────────────
 
-export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) {
-  const [activeSection, setActiveSection] = useState<Section>('llm');
+type SettingsTab = 'model' | 'widget' | 'account' | 'system';
+
+export function SettingsPage({ token, onLogout, role }: SettingsPageProps) {
+  const [activeTab, setActiveTab] = useState<SettingsTab>('model');
   const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
+  const isSuperadmin = role === 'superadmin';
 
   // LLM 設定状態を一度だけフェッチして rail の indicator を更新
   useEffect(() => {
@@ -1360,7 +1411,7 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
 
   if (!token) {
     return (
-      <Layout active="settings" crumb="設定" corpusStatus="—" modelStatus="bad" stats="—">
+      <Layout active="settings" crumb="設定" corpusStatus="—" modelStatus="bad" stats="—" onLogout={onLogout}>
         <div style={{ padding: '24px', color: 'var(--ink-muted)', fontSize: 13 }}>
           認証が必要です。
         </div>
@@ -1368,24 +1419,43 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
     );
   }
 
-  function renderSection(): React.ReactNode {
-    switch (activeSection) {
-      case 'llm':             return <LlmSection token={token!} />;
-      case 'embed-widget':    return <EmbedWidgetSection />;
-      case 'appearance':      return <AppearanceSection token={token!} />;
-      case 'embed-snippet':   return <EmbedWidgetSection />;
-      case 'password':        return <PasswordSection token={token!} />;
-      case 'email':           return <EmailSection token={token!} />;
-      case 'chat-settings':   return <ChatSettingsSection token={token!} />;
-      case 'chat-limits':     return <ChatLimitsSection token={token!} />;
-      case 'notifications':   return <NotificationsSection token={token!} />;
-      case 'hosting':         return <HostingSection />;
-      default:                return null;
+  function renderTab(): React.ReactNode {
+    switch (activeTab) {
+      case 'model':
+        return (
+          <>
+            <LlmSection token={token!} />
+            <ChatSettingsSection token={token!} />
+            <ChatLimitsSection token={token!} />
+          </>
+        );
+      case 'widget':
+        return (
+          <>
+            <AppearanceSection token={token!} />
+            <EmbedWidgetSection />
+          </>
+        );
+      case 'account':
+        return (
+          <>
+            <PasswordSection token={token!} />
+            <EmailSection token={token!} />
+            <NotificationsSection token={token!} />
+          </>
+        );
+      case 'system':
+        return (
+          <>
+            <HostingSection />
+            {isSuperadmin && <TenantResolutionSection token={token!} />}
+            {isSuperadmin && <OrganizationsSection token={token!} />}
+          </>
+        );
+      default:
+        return null;
     }
   }
-
-  const llmIndicator: 'dot' | 'check' | null =
-    llmConfigured === null ? null : llmConfigured ? 'check' : 'dot';
 
   return (
     <Layout
@@ -1394,6 +1464,7 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
       corpusStatus="3 / 4 取り込み済み"
       modelStatus={llmConfigured === true ? 'ok' : 'bad'}
       stats="86 セッション · 428 通"
+      onLogout={onLogout}
     >
       <div className="page-head">
         <div>
@@ -1407,39 +1478,42 @@ export function SettingsPage({ token, onLogout: _onLogout }: SettingsPageProps) 
         </div>
       </div>
 
-      {/* Settings layout */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '200px 1fr',
-        gap: 24,
-        marginTop: 14,
-        alignItems: 'start',
-      }}>
-        {/* Left rail */}
-        <aside style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
-          <RailSection label="モデル" />
-          <RailItem label="LLM" section="llm" active={activeSection} indicator={llmIndicator} onSelect={setActiveSection} />
-          <RailItem label="埋め込みウィジェット" section="embed-widget" active={activeSection} indicator="check" onSelect={setActiveSection} />
+      {/* 上部 4 タブ */}
+      <nav className="set-tabs">
+        <button
+          type="button"
+          className={activeTab === 'model' ? 'on' : undefined}
+          onClick={() => setActiveTab('model')}
+        >
+          モデル
+          {llmConfigured === false && <span className="dot" aria-label="未設定" />}
+          {llmConfigured === true && <span className="check" aria-hidden="true">✓</span>}
+        </button>
+        <button
+          type="button"
+          className={activeTab === 'widget' ? 'on' : undefined}
+          onClick={() => setActiveTab('widget')}
+        >
+          ウィジェット
+        </button>
+        <button
+          type="button"
+          className={activeTab === 'account' ? 'on' : undefined}
+          onClick={() => setActiveTab('account')}
+        >
+          アカウント
+        </button>
+        <button
+          type="button"
+          className={activeTab === 'system' ? 'on' : undefined}
+          onClick={() => setActiveTab('system')}
+        >
+          システム
+        </button>
+      </nav>
 
-          <RailSection label="ウィジェット" />
-          <RailItem label="外観" section="appearance" active={activeSection} indicator="check" onSelect={setActiveSection} />
-          <RailItem label="埋め込み方法" section="embed-snippet" active={activeSection} onSelect={setActiveSection} />
-
-          <RailSection label="アカウント" />
-          <RailItem label="パスワード" section="password" active={activeSection} onSelect={setActiveSection} />
-          <RailItem label="メール変更" section="email" active={activeSection} onSelect={setActiveSection} />
-
-          <RailSection label="システム" />
-          <RailItem label="チャット設定" section="chat-settings" active={activeSection} onSelect={setActiveSection} />
-          <RailItem label="チャット制限" section="chat-limits" active={activeSection} onSelect={setActiveSection} />
-          <RailItem label="通知設定" section="notifications" active={activeSection} onSelect={setActiveSection} />
-          <RailItem label="ホスティング" section="hosting" active={activeSection} onSelect={setActiveSection} />
-        </aside>
-
-        {/* Main panel */}
-        <div>
-          {renderSection()}
-        </div>
+      <div className="set-content">
+        {renderTab()}
       </div>
     </Layout>
   );

@@ -1,17 +1,33 @@
+import { LocaleSelector } from './LocaleSelector';
+import { useNavigate } from './router';
 import type { V2Theme } from './theme';
 
 interface TopbarProps {
   crumb: string;
   theme: V2Theme;
   onToggleTheme: () => void;
+  onToggleDrawer?: () => void;
   userEmail?: string;
 }
 
-export function Topbar({ crumb, theme, onToggleTheme, userEmail = 'admin@example.com' }: TopbarProps) {
+export function Topbar({ crumb, theme, onToggleTheme, onToggleDrawer, userEmail = 'admin@example.com' }: TopbarProps) {
   const initials = userEmail.charAt(0).toLowerCase();
+  const navigate = useNavigate();
 
   return (
     <header className="topbar">
+      <button
+        type="button"
+        className="hamburger"
+        aria-label="メニューを開閉"
+        onClick={onToggleDrawer}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
       <div className="brand">
         <div className="brand-mark">n</div>
         <div className="brand-name">
@@ -33,6 +49,9 @@ export function Topbar({ crumb, theme, onToggleTheme, userEmail = 'admin@example
           <span>検索...</span>
           <span className="kbd">⌘K</span>
         </div>
+
+        {/* ロケール選択 */}
+        <LocaleSelector />
 
         {/* テーマトグル */}
         <div className="theme-toggle" role="group" aria-label="テーマ切替">
@@ -59,6 +78,11 @@ export function Topbar({ crumb, theme, onToggleTheme, userEmail = 'admin@example
           <BellIcon />
         </button>
 
+        {/* ヘルプ */}
+        <button type="button" className="icon-btn" aria-label="ヘルプ" onClick={() => navigate('/help')}>
+          <HelpQIcon />
+        </button>
+
         {/* ユーザー */}
         <div className="who">
           <div className="avatar">{initials}</div>
@@ -70,6 +94,16 @@ export function Topbar({ crumb, theme, onToggleTheme, userEmail = 'admin@example
 }
 
 /* ── Inline SVG icons ── */
+function HelpQIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
 function SearchIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

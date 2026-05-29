@@ -1,29 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { applyLocaleFontFamily, toBcp47, useLocale } from '@nene-corpus/i18n';
 import { useAdminAuth } from './useAdminAuth';
+import { RouterProvider, useRoute, useNavigate } from './v2/router';
 import { LoginPage } from './v2/pages/LoginPage';
 import { DashboardPage } from './v2/pages/DashboardPage';
 import { SourcesPage } from './v2/pages/SourcesPage';
 import { ConversationsPage } from './v2/pages/ConversationsPage';
 import { SettingsPage } from './v2/pages/SettingsPage';
+import { AnalyticsPage } from './v2/pages/AnalyticsPage';
+import { HelpPage } from './v2/pages/HelpPage';
 
-type V2Route = 'login' | 'dashboard' | 'sources' | 'conversations' | 'settings';
+// ── Inner app (needs Router context) ─────────────────────────────────────────
 
-function resolveRoute(): V2Route {
-  const hash = window.location.hash;
-  if (hash.startsWith('#/sources'))        return 'sources';
-  if (hash.startsWith('#/conversations'))  return 'conversations';
-  if (hash.startsWith('#/settings'))       return 'settings';
-  if (hash.startsWith('#/login'))          return 'login';
-  if (hash.startsWith('#/dashboard'))      return 'dashboard';
-  // デフォルト
-  return 'dashboard';
-}
-
-export function App() {
+function AppInner() {
   const { locale } = useLocale();
-  const { token, isReady, login, logout } = useAdminAuth();
-  const [route, setRoute] = useState<V2Route>(resolveRoute);
+  const { token, profile, isReady, login, logout, error } = useAdminAuth();
+  const route = useRoute();
+  const navigate = useNavigate();
 
   // ロケール適用（既存ロジックを維持）
   useEffect(() => {
@@ -31,30 +24,21 @@ export function App() {
     applyLocaleFontFamily(locale);
   }, [locale]);
 
-  // hash 変化を監視してルートを更新
-  useEffect(() => {
-    function handleHashChange() {
-      setRoute(resolveRoute());
-    }
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  // 認証チェック: token なしで保護ルートにいたら #/login へ
+  // 認証チェック: token なしで保護ルートにいたら /login へ
   useEffect(() => {
     if (!isReady) return;
-    if (token === null && route !== 'login') {
-      window.location.hash = '#/login';
+    if (token === null && route !== '/login') {
+      navigate('/login');
     }
-  }, [isReady, token, route]);
+  }, [isReady, token, route, navigate]);
 
-  // ログイン後: #/login にいたら #/dashboard へリダイレクト
+  // ログイン後: /login にいたら /dashboard へリダイレクト
   useEffect(() => {
     if (!isReady) return;
-    if (token !== null && route === 'login') {
-      window.location.hash = '#/dashboard';
+    if (token !== null && route === '/login') {
+      navigate('/dashboard');
     }
-  }, [isReady, token, route]);
+  }, [isReady, token, route, navigate]);
 
   if (!isReady) {
     return (
@@ -74,16 +58,25 @@ export function App() {
   }
 
   // 未認証: ログインページ
-  if (token === null || route === 'login') {
-    return <LoginPage onLogin={login} />;
+  if (token === null || route === '/login') {
+    return <LoginPage onLogin={login} authError={error} />;
   }
 
   // 認証済み: ルーティング
-  switch (route) {
-    case 'sources':       return <SourcesPage token={token} />;
-    case 'conversations': return <ConversationsPage />;
-    case 'settings':      return <SettingsPage token={token} onLogout={logout} />;
-    case 'dashboard':
-    default:              return <DashboardPage token={token} onLogout={logout} />;
-  }
+  if (route.startsWith('/sources')) return <SourcesPage token={token} onLogout={logout} />;
+  if (route.startsWith('/conversations')) return <ConversationsPage onLogout={logout} />;
+  if (route.startsWith('/analytics')) return <AnalyticsPage token={token} onLogout={logout} />;
+  if (route.startsWith('/help')) return <HelpPage onLogout={logout} />;
+  if (route.startsWith('/settings')) return <SettingsPage token={token} onLogout={logout} role={profile?.role} />;
+  return <DashboardPage token={token} onLogout={logout} />;
+}
+
+// ── Root export ───────────────────────────────────────────────────────────────
+
+export function App() {
+  return (
+    <RouterProvider>
+      <AppInner />
+    </RouterProvider>
+  );
 }

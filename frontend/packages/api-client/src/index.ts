@@ -1,4 +1,4 @@
-export { loginAdmin, requestPasswordReset, confirmPasswordReset, getAdminMe, listSources, deleteSource, listChatSessions, listChatSessionMessages, cleanupChatSessions } from './admin';
+export { loginAdmin, requestPasswordReset, confirmPasswordReset, getAdminMe, listSources, deleteSource, updateSource, reindexSource, listChatSessions, listChatSessionMessages, cleanupChatSessions } from './admin';
 export { listDocuments, getDocument, listDocumentChunks, updateDocument, deleteDocument } from './documents';
 export {
   getAppearanceSettings,
@@ -16,6 +16,10 @@ export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
 export { getAnalyticsSummary, getTopQuestions, buildExportUrl } from './analytics';
 export type { AnalyticsSummaryResponse, AnalyticsDailyCount, AnalyticsHourlyCount, TopQuestion, TopQuestionsResponse } from './analytics';
+export { getSystemConfig, updateSystemConfig } from './tenancy';
+export type { SystemConfigResponse, UpdateSystemConfigRequest } from './tenancy';
+export { listOrganizations, getOrganization, createOrganization, updateOrganization, deleteOrganization } from './organizations';
+export type { OrganizationItem, ListOrganizationsResponse, CreateOrganizationRequest, UpdateOrganizationRequest } from './organizations';
 export { fetchJson } from './fetch-json';
 export { DEFAULT_WIDGET_HERO, DEFAULT_WIDGET_CHAT, DEFAULT_WIDGET_LAYOUT } from './types';
 export type {

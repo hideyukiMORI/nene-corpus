@@ -1,9 +1,10 @@
 # Current Work
 
-Last updated: 2026-05-28 (Issue #255, PR #256)
+Last updated: 2026-05-29 (Issue #280, PR #281)
 
 ## 最近の docs 更新
 
+- **マルチテナント Phase D (#280)** — OpenAPI に Superadmin tag + 7 endpoint + 5 schema 追加。ADR 0005（multi-tenancy strategy）新規作成。`docs/integrations/multi-tenancy.md` 設定ガイド追加。CLAUDE.md に Tenancy 規約セクション・禁止パターン追加。E2E spec `tests/e2e/admin/specs/16-tenancy.spec.ts` 7 テスト追加。`docs/todo/current.md` / `docs/roadmap.md` Phase 4 完了マーク更新。
 - **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
 - **ペルソナ UX シナリオテスト (#253)** — 20 業種 × 10 行動パターン = 200 ペルソナ E2E。全 7 チェックポイント完走。200/200 グリーン（231s）。主要知見: ソース取り込み CP3 が最大摩擦点（実行可能シナリオ 73% 失敗）。P1〜P3 改善提案付き UX 分析レポートを `docs/research/2026-05-28-persona-ux-analysis.md` に保存。
 - **Admin E2E テストスイート拡充 (#250 #252)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。157/157 グリーン。
@@ -29,6 +30,18 @@ Last updated: 2026-05-28 (Issue #255, PR #256)
 **Phase 2 — Chat & Citations: 完了（2026-05-25）**
 
 **Phase 3 — Admin UI & Widget: 完了（2026-05-25）**
+
+**Phase 4 — Multi-tenancy: 完了（2026-05-29）**
+
+| 項目 | 状態 |
+| --- | --- |
+| organizations / system_config テーブル・マイグレーション | ✅ |
+| OrgResolverMiddleware + RequestScopedOrgIdHolder | ✅ |
+| 全モジュール（Source/Document/Chunk/Chat/Session/Message/Settings/RateLimit/Analytics/AdminAuth）org スコープ適用 | ✅ |
+| Admin UI Superadmin パネル（tenant resolution + org CRUD） | ✅ |
+| OpenAPI Superadmin endpoints + schemas | ✅ |
+| ADR 0005 + docs/integrations/multi-tenancy.md | ✅ |
+| E2E spec 16-tenancy.spec.ts（7 件） | ✅ |
 
 | 項目 | 状態 |
 | --- | --- |
