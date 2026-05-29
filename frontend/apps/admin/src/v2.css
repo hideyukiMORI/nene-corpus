@@ -430,9 +430,9 @@
   background: var(--bg);
 }
 .v2-shell .main-inner {
-  max-width: 1180px;
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 24px 28px 40px;
+  padding: 24px clamp(28px, 3.5vw, 72px) 48px;
 }
 
 /* ── Page head ── */
@@ -613,6 +613,7 @@
   font-size: 11px; font-weight: 600;
   font-family: "JetBrains Mono", monospace;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .v2-shell .pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .v2-shell .pill-ready { background: var(--success-soft); color: var(--success-fg); }
@@ -628,11 +629,203 @@
   font-family: "JetBrains Mono", monospace;
   font-size: 10px; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase;
+  white-space: nowrap;
 }
 .v2-shell .type-tag.csv  { color: var(--type-csv);  background: var(--type-csv-bg); }
 .v2-shell .type-tag.pdf  { color: var(--type-pdf);  background: var(--type-pdf-bg); }
 .v2-shell .type-tag.text { color: var(--type-text); background: var(--type-text-bg); }
 .v2-shell .type-tag.web  { color: var(--type-web);  background: var(--type-web-bg); }
+
+/* §8.2 折り返し対策: ID・タイムスタンプは折り返さず省略 */
+.v2-shell td.mono { white-space: nowrap; }
+
+/* ════════════════════════════════════════════════════════════════════
+   Dashboard (#261) — range-segment / alert subs / kpi subs / chart /
+   two-col / q-list （モック _shared.css から .v2-shell スコープで移植）
+   ════════════════════════════════════════════════════════════════════ */
+
+/* 期間切替セグメント */
+.v2-shell .range-segment {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--hair-strong);
+  border-radius: 6px;
+  padding: 2px;
+}
+.v2-shell .range-segment button {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px; font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  background: none; border: none; cursor: pointer;
+}
+.v2-shell .range-segment button.on {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* Alert サブ要素（icon/body/title/desc/cta） */
+.v2-shell .alert-icon {
+  width: 30px; height: 30px; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--warning);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+.v2-shell .alert-danger .alert-icon { background: var(--danger); }
+.v2-shell .alert-body { flex: 1; }
+.v2-shell .alert-title { font-weight: 600; color: var(--ink-strong); margin-bottom: 1px; font-size: 14px; }
+.v2-shell .alert-desc { font-size: 12.5px; color: var(--warning-text); }
+.v2-shell .alert-danger .alert-desc { color: var(--danger-text); }
+.v2-shell .alert-cta {
+  font-size: 12.5px; font-weight: 600;
+  padding: 6px 12px;
+  background: var(--surface);
+  color: var(--ink-strong);
+  border: 1px solid var(--warning-border);
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.v2-shell .alert-cta:hover { background: var(--bg-soft); }
+.v2-shell .alert-danger .alert-cta { border-color: var(--danger-border); }
+
+/* KPI サブ要素（meta/val/num/delta） */
+.v2-shell .kpi-row .meta {
+  display: flex; flex-direction: column; gap: 1px; min-width: 0;
+}
+.v2-shell .kpi-row .meta .ja { font-size: 13px; color: var(--ink); line-height: 1.3; }
+.v2-shell .kpi-row .meta .en {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+.v2-shell .kpi-row .val { text-align: right; }
+.v2-shell .kpi-row .val .num {
+  font-size: 22px; font-weight: 700;
+  color: var(--ink-strong);
+  letter-spacing: -0.02em;
+  font-feature-settings: 'tnum';
+  display: inline-flex; align-items: baseline; gap: 3px; line-height: 1;
+}
+.v2-shell .kpi-row .val .num .unit { font-size: 11px; font-weight: 500; color: var(--ink-muted); }
+.v2-shell .kpi-row .val .num.accent { color: var(--primary); }
+.v2-shell .kpi-row .val .num.success { color: var(--success-fg); }
+.v2-shell .kpi-row .val .num.danger { color: var(--danger); }
+.v2-shell .kpi-row .val .delta {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  display: block;
+  margin-top: 3px;
+}
+.v2-shell .kpi-row .val .delta.up { color: var(--success-fg); }
+.v2-shell .kpi-row .val .delta.down { color: var(--danger); }
+
+/* Chart（日別セッション棒グラフ） */
+.v2-shell .chart {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.v2-shell .bars {
+  display: flex; align-items: flex-end;
+  gap: 8px; height: 124px; padding: 0 4px;
+}
+.v2-shell .bars .bar {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.v2-shell .bars .num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; color: var(--ink-muted);
+  font-feature-settings: 'tnum';
+}
+.v2-shell .bars .col {
+  width: 100%; max-width: 28px;
+  background: var(--primary);
+  border-radius: 3px 3px 0 0;
+  position: relative;
+}
+.v2-shell .bars .col.dim { background: var(--primary-border); }
+.v2-shell .bars .col.peak { background: var(--primary-hover); }
+.v2-shell .bars .lbl {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+/* 2 カラムレイアウト */
+.v2-shell .two-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 14px; margin-top: 14px; }
+
+/* よく聞かれる質問リスト */
+.v2-shell .q-list .q {
+  display: grid;
+  grid-template-columns: 28px 1fr 100px 36px;
+  gap: 12px; align-items: center;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--hair-soft);
+}
+.v2-shell .q-list .q:last-child { border-bottom: none; }
+.v2-shell .q-list .q:hover { background: var(--surface-hover); cursor: pointer; }
+.v2-shell .q-list .q .n {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px; color: var(--ink-faint);
+}
+.v2-shell .q-list .q .text {
+  font-size: 13px; color: var(--ink);
+  min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.v2-shell .q-list .q .bar {
+  height: 6px; background: var(--bg-soft);
+  border-radius: 99px; overflow: hidden; position: relative;
+}
+.v2-shell .q-list .q .bar .fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--primary);
+  border-radius: 99px;
+}
+.v2-shell .q-list .q .c {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px; color: var(--primary);
+  font-weight: 700; text-align: right;
+  font-feature-settings: 'tnum';
+}
+
+/* パネル内テーブル（Dashboard ソース一覧・直近の会話など） */
+.v2-shell .panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.v2-shell .panel thead th {
+  text-align: left;
+  padding: 8px 14px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--hair);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px; font-weight: 600;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.v2-shell .panel thead th.num { text-align: right; }
+.v2-shell .panel tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--hair-soft);
+  vertical-align: middle;
+  color: var(--ink);
+}
+.v2-shell .panel tbody tr:last-child td { border-bottom: none; }
+.v2-shell .panel tbody tr:hover { background: var(--surface-hover); }
+.v2-shell .panel td.mono { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--ink-muted); }
+.v2-shell .panel td.num { text-align: right; font-family: "JetBrains Mono", monospace; font-feature-settings: 'tnum'; }
+.v2-shell .panel td.faint,
+.v2-shell .panel .faint { color: var(--ink-faint); }
 
 /* ── Auth (Login page – no shell) ── */
 .auth-shell {
@@ -1042,6 +1235,40 @@
   padding-top: 14px;
 }
 
+/* Centered text link (back to login / password reset の戻り導線) */
+.auth-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.auth-link:hover { text-decoration: underline; }
+
+/* Notice box (auth context — 成功メッセージなど) */
+.auth-notice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.auth-notice svg { flex-shrink: 0; margin-top: 1px; }
+.auth-notice-success {
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+}
+
 /* ════════════════════════════════════════════════════════════════════
    Sources page (#262) — sources-layout, filterbar, src-table, detail
    ════════════════════════════════════════════════════════════════════ */
@@ -1084,14 +1311,18 @@
   color: var(--ink-faint);
   letter-spacing: 0.06em; text-transform: uppercase;
 }
-.v2-shell .panel-head a {
+.v2-shell .panel-head a,
+.v2-shell .panel-head .panel-link {
   font-family: "JetBrains Mono", monospace;
   font-size: 11px; font-weight: 600;
   color: var(--primary);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-decoration: none;
+  background: none; border: none; padding: 0; cursor: pointer;
 }
+.v2-shell .panel-head a:hover,
+.v2-shell .panel-head .panel-link:hover { text-decoration: underline; }
 
 /* Sources two-column layout */
 .v2-shell .sources-layout {
@@ -1309,3 +1540,345 @@
   font-size: 12.5px; line-height: 1.6;
   color: var(--ink-soft);
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Modal（ソース編集/削除確認 #3）+ toggle + btn-danger
+   （モック _shared.css から .v2-shell スコープで移植）
+   ════════════════════════════════════════════════════════════════════ */
+.v2-shell .btn-danger {
+  background: transparent; color: var(--danger);
+  border: 1px solid var(--hair-strong);
+}
+.v2-shell .btn-danger:hover { background: var(--danger-soft); border-color: var(--danger-border); }
+
+.v2-shell .toggle {
+  position: relative;
+  display: inline-block; width: 36px; height: 20px;
+  border-radius: 99px;
+  background: var(--hair-strong);
+  cursor: pointer;
+  flex-shrink: 0;
+  border: none; padding: 0;
+  transition: background 150ms ease;
+}
+.v2-shell .toggle::after {
+  content: ''; position: absolute;
+  left: 2px; top: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15,23,42,.20);
+  transition: left 150ms ease;
+}
+.v2-shell .toggle.on { background: var(--primary); }
+.v2-shell .toggle.on::after { left: 18px; }
+
+.v2-shell .field-row-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.v2-shell .field-row-toggle .body { min-width: 0; }
+.v2-shell .field-row-toggle .title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.v2-shell .field-row-toggle .desc { font-size: 11.5px; color: var(--ink-muted); margin-top: 2px; line-height: 1.5; }
+
+.v2-shell .modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(10,12,16,.46);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.v2-shell .modal {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+  width: 100%; max-width: 520px;
+  box-shadow: var(--shadow-elev);
+  overflow: hidden;
+  max-height: 90vh; display: flex; flex-direction: column;
+}
+.v2-shell .modal-head {
+  padding: 15px 20px; border-bottom: 1px solid var(--hair);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.v2-shell .modal-head h3 {
+  font-size: 15px; font-weight: 700; color: var(--ink-strong);
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 0;
+}
+.v2-shell .modal-head h3 .en {
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+  font-weight: 500; color: var(--ink-faint); letter-spacing: 0.04em;
+}
+.v2-shell .modal-close {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-muted); flex-shrink: 0;
+  background: none; border: none; cursor: pointer;
+}
+.v2-shell .modal-close:hover { background: var(--bg-soft); color: var(--ink); }
+.v2-shell .modal-body { padding: 18px 20px; overflow-y: auto; }
+.v2-shell .modal-body .warn-note {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px; margin-top: 4px;
+  background: var(--danger-soft); border: 1px solid var(--danger-border);
+  border-radius: 6px; font-size: 12.5px; color: var(--danger-text);
+}
+.v2-shell .modal-foot {
+  padding: 14px 20px; border-top: 1px solid var(--hair);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Responsive（§8）— hamburger + オフキャンバスドロワー + tablet/mobile
+   （モック _shared.css 準拠。drawer は .v2-shell.drawer-open で制御）
+   ════════════════════════════════════════════════════════════════════ */
+.v2-shell .hamburger {
+  display: none;
+  width: 34px; height: 34px;
+  border-radius: 7px;
+  align-items: center; justify-content: center;
+  color: var(--ink-soft);
+  background: none; border: none; cursor: pointer;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.v2-shell .hamburger:hover { background: var(--bg-soft); color: var(--ink); }
+.v2-shell .side-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(10,12,16,.42);
+  z-index: 40;
+  opacity: 0; pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+/* TABLET（≤1024px）— サイドバーを狭めて維持 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .v2-shell .shell { grid-template-columns: 210px 1fr; }
+  .v2-shell .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* MOBILE（≤768px）— ドロワー化・1カラム・テーブルは要点列のみ */
+@media (max-width: 768px) {
+  .v2-shell .hamburger { display: inline-flex; }
+  .v2-shell .topbar { padding: 0 12px; gap: 8px; }
+  .v2-shell .brand-name .admin { display: none; }
+  .v2-shell .topbar-right { gap: 6px; }
+
+  .v2-shell .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    height: calc(100vh - 52px);
+    overflow-x: hidden;
+  }
+  .v2-shell .side {
+    position: fixed;
+    top: 52px; bottom: 0; left: 0;
+    width: 284px; max-width: 84vw;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 240ms cubic-bezier(.4, 0, .2, 1);
+    box-shadow: 0 0 40px rgba(10, 12, 16, .28);
+    grid-column: auto; grid-row: auto;
+  }
+  .v2-shell.drawer-open .side { transform: translateX(0); }
+  .v2-shell.drawer-open .side-backdrop { opacity: 1; pointer-events: auto; }
+
+  .v2-shell .main { grid-column: 1; grid-row: 1; overflow-x: hidden; min-width: 0; }
+  .v2-shell .main-inner { padding: 18px 16px 32px; }
+
+  .v2-shell .page-head { flex-direction: column; align-items: stretch; gap: 14px; }
+  .v2-shell .page-head h1 { font-size: 22px; }
+  .v2-shell .head-actions { flex-wrap: wrap; }
+
+  .v2-shell .kpi-grid { grid-template-columns: 1fr !important; }
+  .v2-shell .kpi-block { padding: 4px 14px; }
+
+  .v2-shell .two-col,
+  .v2-shell .sources-layout,
+  .v2-shell .conv-layout { grid-template-columns: 1fr !important; }
+  .v2-shell .two-col > *,
+  .v2-shell .sources-layout > *,
+  .v2-shell .conv-layout > * { min-width: 0; }
+  .v2-shell .set-content { max-width: 100%; }
+  .v2-shell .panel > table { min-width: 0; }
+
+  /* Dashboard ソース一覧 (名前/種別/状態/chunks/更新) → 名前+状態 */
+  .v2-shell .tbl-src-mini th:nth-child(2), .v2-shell .tbl-src-mini td:nth-child(2),
+  .v2-shell .tbl-src-mini th:nth-child(4), .v2-shell .tbl-src-mini td:nth-child(4),
+  .v2-shell .tbl-src-mini th:nth-child(5), .v2-shell .tbl-src-mini td:nth-child(5) { display: none; }
+
+  /* Dashboard 直近の会話 (session/通数/message/client/更新) → message+更新 */
+  .v2-shell .tbl-recent th:nth-child(1), .v2-shell .tbl-recent td:nth-child(1),
+  .v2-shell .tbl-recent th:nth-child(2), .v2-shell .tbl-recent td:nth-child(2),
+  .v2-shell .tbl-recent th:nth-child(4), .v2-shell .tbl-recent td:nth-child(4) { display: none; }
+
+  /* Sources 一覧 (種別/名前/状態/chunks/更新/actions) → 名前+状態 */
+  .v2-shell .src-table th:nth-child(1), .v2-shell .src-table td:nth-child(1),
+  .v2-shell .src-table th:nth-child(4), .v2-shell .src-table td:nth-child(4),
+  .v2-shell .src-table th:nth-child(5), .v2-shell .src-table td:nth-child(5),
+  .v2-shell .src-table th:nth-child(6), .v2-shell .src-table td:nth-child(6) { display: none; }
+
+  /* Conversations 一覧 (session/通数/lastmsg/引用/client/更新) → lastmsg+引用+更新 */
+  .v2-shell .tbl-sessions th:nth-child(1), .v2-shell .tbl-sessions td:nth-child(1),
+  .v2-shell .tbl-sessions th:nth-child(2), .v2-shell .tbl-sessions td:nth-child(2),
+  .v2-shell .tbl-sessions th:nth-child(5), .v2-shell .tbl-sessions td:nth-child(5) { display: none; }
+
+  .v2-shell .q-list .q { grid-template-columns: 22px 1fr auto; gap: 10px; }
+  .v2-shell .q-list .q .bar { display: none; }
+  .v2-shell .q-list .q .text { line-height: 1.4; }
+  .v2-shell .chat-stream { max-height: none; }
+
+  .v2-shell .set-tabs { flex-wrap: nowrap; gap: 0; }
+  .v2-shell .set-tabs button { flex: 1; justify-content: center; padding: 10px 4px; font-size: 12.5px; gap: 5px; }
+
+  .v2-shell .alert { flex-wrap: wrap; align-items: flex-start; }
+  .v2-shell .alert-body { flex: 1; min-width: 0; }
+  .v2-shell .alert-cta { flex: 1 0 100%; margin: 10px 0 0; text-align: center; }
+
+  .v2-shell .statusbar {
+    grid-column: 1; grid-row: 2;
+    overflow-x: auto; scrollbar-width: none; white-space: nowrap; min-width: 0;
+  }
+  .v2-shell .statusbar::-webkit-scrollbar { height: 0; }
+}
+
+/* Login（auth）モバイル — シェル外 */
+@media (max-width: 768px) {
+  .auth-card { max-width: 100%; border: none; box-shadow: none; padding: 28px 22px; }
+  .auth-pane { padding: 24px 18px; align-items: flex-start; }
+}
+
+/* 極小端末 */
+@media (max-width: 380px) {
+  .v2-shell .brand-name { font-size: 13px; }
+  .v2-shell .main-inner { padding: 16px 12px 28px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Settings（#5）— 上部 4 タブ + 読みやすい本文幅
+   ════════════════════════════════════════════════════════════════════ */
+.v2-shell .set-tabs {
+  display: flex; align-items: center; gap: 2px;
+  border-bottom: 1px solid var(--hair);
+  margin: 8px 0 24px;
+  flex-wrap: wrap;
+}
+.v2-shell .set-tabs button {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  font-size: 13.5px; font-weight: 500;
+  color: var(--ink-soft);
+  background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.v2-shell .set-tabs button:hover { color: var(--ink); }
+.v2-shell .set-tabs button.on {
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+.v2-shell .set-tabs button .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--danger);
+}
+.v2-shell .set-tabs button .check { color: var(--success-fg); font-size: 11px; }
+
+.v2-shell .set-content { max-width: 840px; }
+
+/* ════════════════════════════════════════════════════════════════════
+   Help（#8）— FAQ アコーディオン + 検索 + サイドカード + 文脈ヘルプ
+   ════════════════════════════════════════════════════════════════════ */
+.v2-shell .help-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; margin-top: 14px; }
+@media (max-width: 900px) { .v2-shell .help-layout { grid-template-columns: 1fr; } }
+
+.v2-shell .help-search {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; margin-bottom: 18px;
+  background: var(--surface); border: 1px solid var(--hair-strong);
+  border-radius: 8px;
+}
+.v2-shell .help-search svg { color: var(--ink-faint); flex-shrink: 0; }
+.v2-shell .help-search input {
+  flex: 1; font-size: 14px; background: none; color: var(--ink);
+  border: none; outline: none; font-family: inherit;
+}
+.v2-shell .help-search input::placeholder { color: var(--ink-faint); }
+
+.v2-shell .faq-item { border-bottom: 1px solid var(--hair-soft); }
+.v2-shell .faq-item:last-child { border-bottom: none; }
+.v2-shell .faq-q {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 4px; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--ink-strong);
+  background: none; border: none; width: 100%; text-align: left;
+}
+.v2-shell .faq-q .chev { margin-left: auto; color: var(--ink-faint); transition: transform 160ms ease; }
+.v2-shell .faq-item.open .faq-q .chev { transform: rotate(90deg); color: var(--primary); }
+.v2-shell .faq-q .tag {
+  font-family: "JetBrains Mono", monospace; font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 99px;
+  background: var(--primary-soft); color: var(--primary); flex-shrink: 0;
+}
+.v2-shell .faq-a {
+  padding: 0 4px 16px 34px;
+  font-size: 13px; line-height: 1.7; color: var(--ink-soft);
+}
+.v2-shell .faq-a code {
+  font-family: "JetBrains Mono", monospace; font-size: 12px;
+  background: var(--bg-soft); padding: 1px 5px; border-radius: 3px; color: var(--ink);
+}
+.v2-shell .faq-a a,
+.v2-shell .faq-a button.link {
+  color: var(--primary); font-weight: 600;
+  background: none; border: none; padding: 0; cursor: pointer; font: inherit;
+}
+
+.v2-shell .help-aside .card-box {
+  background: var(--surface); border: 1px solid var(--hair);
+  border-radius: 8px; padding: 16px 18px; margin-bottom: 12px;
+}
+.v2-shell .help-aside h4 {
+  font-size: 13px; font-weight: 700; color: var(--ink-strong);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.v2-shell .help-aside .qlink {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; font-size: 13px; color: var(--ink-soft);
+  border: none; border-top: 1px solid var(--hair-soft);
+  background: none; width: 100%; text-align: left; cursor: pointer;
+}
+.v2-shell .help-aside .qlink:first-of-type { border-top: none; }
+.v2-shell .help-aside .qlink:hover { color: var(--primary); }
+.v2-shell .help-aside .qlink .ic { color: var(--ink-faint); display: inline-flex; }
+.v2-shell .help-aside .qlink:hover .ic { color: var(--primary); }
+.v2-shell .help-aside .qlink .arrow { margin-left: auto; color: var(--ink-faint); }
+.v2-shell .contact-note { font-size: 12.5px; color: var(--ink-muted); line-height: 1.6; }
+.v2-shell .contact-note .mono { font-size: 11.5px; color: var(--ink); font-family: "JetBrains Mono", monospace; }
+
+/* 文脈ヘルプ help-tip（topbar「?」・各画面のラベル横） */
+.v2-shell .help-tip { position: relative; display: inline-flex; align-items: center; vertical-align: middle; }
+.v2-shell .help-tip > .q {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1px solid var(--ink-faint); color: var(--ink-muted);
+  font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: help; line-height: 1; background: none;
+}
+.v2-shell .help-tip:hover > .q { border-color: var(--primary); color: var(--primary); }
+.v2-shell .help-tip > .tip {
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(4px);
+  width: 240px; padding: 9px 11px; border-radius: 7px;
+  background: var(--ink); color: var(--bg);
+  font-family: "Inter", "Noto Sans JP", sans-serif;
+  font-size: 12px; font-weight: 400; line-height: 1.55;
+  letter-spacing: 0; text-transform: none;
+  opacity: 0; pointer-events: none; transition: opacity 130ms ease, transform 130ms ease;
+  z-index: 60; box-shadow: var(--shadow-elev);
+}
+.v2-shell .help-tip > .tip::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--ink);
+}
+.v2-shell .help-tip:hover > .tip { opacity: 1; transform: translateX(-50%) translateY(0); }

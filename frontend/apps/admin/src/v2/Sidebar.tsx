@@ -8,12 +8,16 @@ export type ActivePage =
   | 'llm'
   | 'embeddings'
   | 'appearance'
-  | 'settings';
+  | 'settings'
+  | 'help';
 
 interface SidebarProps {
   active: ActivePage;
   corpusStatus?: string;
   modelStatus?: 'ok' | 'warn' | 'bad';
+  onLogout?: () => void;
+  /** モバイルドロワーを閉じる（ナビ遷移時に呼ばれる） */
+  onNavigate?: () => void;
 }
 
 interface NavItemDef {
@@ -38,7 +42,7 @@ const CORPUS_TREE: CorpusItem[] = [
   { ja: 'Seasonal campaign note', meta: '取り込み中…',         status: 'bg', glyph: '▸' },
 ];
 
-export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', modelStatus = 'bad' }: SidebarProps) {
+export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', modelStatus = 'bad', onLogout, onNavigate }: SidebarProps) {
   const navigate = useNavigate();
   const countStr = corpusStatus.split(' ')[0] ?? '';
 
@@ -57,6 +61,7 @@ export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', mod
 
   const navSystem: NavItemDef[] = [
     { id: 'settings', ja: '設定',      route: '/settings', icon: <SettingsIcon /> },
+    { id: 'help',     ja: 'ヘルプ',     route: '/help',     icon: <HelpIcon /> },
     { id: 'logout',   ja: 'ログアウト', route: '/login',    icon: <LogoutIcon /> },
   ];
 
@@ -67,7 +72,14 @@ export function Sidebar({ active, corpusStatus = '3 / 4 取り込み済み', mod
         key={item.id}
         type="button"
         className={isActive ? 'nav-item active' : 'nav-item'}
-        onClick={() => { navigate(item.route); }}
+        onClick={() => {
+          if (item.id === 'logout') {
+            onLogout?.();
+            return;
+          }
+          navigate(item.route);
+          onNavigate?.();
+        }}
         aria-current={isActive ? 'page' : undefined}
       >
         <span className="icon">{item.icon}</span>
@@ -197,6 +209,16 @@ function LogoutIcon() {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
+function HelpIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
     </svg>
   );
 }
