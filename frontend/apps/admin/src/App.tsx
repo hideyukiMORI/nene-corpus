@@ -7,12 +7,14 @@ import { DashboardPage } from './v2/pages/DashboardPage';
 import { SourcesPage } from './v2/pages/SourcesPage';
 import { ConversationsPage } from './v2/pages/ConversationsPage';
 import { SettingsPage } from './v2/pages/SettingsPage';
+import { AnalyticsPage } from './v2/pages/AnalyticsPage';
+import { HelpPage } from './v2/pages/HelpPage';
 
 // ── Inner app (needs Router context) ─────────────────────────────────────────
 
 function AppInner() {
   const { locale } = useLocale();
-  const { token, profile, isReady, login, logout } = useAdminAuth();
+  const { token, profile, isReady, login, logout, error } = useAdminAuth();
   const route = useRoute();
   const navigate = useNavigate();
 
@@ -57,12 +59,14 @@ function AppInner() {
 
   // 未認証: ログインページ
   if (token === null || route === '/login') {
-    return <LoginPage onLogin={login} />;
+    return <LoginPage onLogin={login} authError={error} />;
   }
 
   // 認証済み: ルーティング
-  if (route.startsWith('/sources')) return <SourcesPage token={token} />;
-  if (route.startsWith('/conversations')) return <ConversationsPage />;
+  if (route.startsWith('/sources')) return <SourcesPage token={token} onLogout={logout} />;
+  if (route.startsWith('/conversations')) return <ConversationsPage onLogout={logout} />;
+  if (route.startsWith('/analytics')) return <AnalyticsPage token={token} onLogout={logout} />;
+  if (route.startsWith('/help')) return <HelpPage onLogout={logout} />;
   if (route.startsWith('/settings')) return <SettingsPage token={token} onLogout={logout} role={profile?.role} />;
   return <DashboardPage token={token} onLogout={logout} />;
 }

@@ -13,7 +13,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
 {
     private const SELECT_COLUMNS = <<<'SQL'
         id, name, source_type, status, storage_path, original_filename, mime_type,
-        byte_size, error_message, ingestion_config_json, created_at, updated_at, is_deleted, deleted_at
+        byte_size, error_message, ingestion_config_json, note, created_at, updated_at, is_deleted, deleted_at
         SQL;
 
     public function __construct(
@@ -60,7 +60,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             <<<'SQL'
                 SELECT
                     s.id, s.name, s.source_type, s.status, s.storage_path, s.original_filename,
-                    s.mime_type, s.byte_size, s.error_message, s.ingestion_config_json,
+                    s.mime_type, s.byte_size, s.error_message, s.ingestion_config_json, s.note,
                     s.created_at, s.updated_at, s.is_deleted, s.deleted_at,
                     (
                         SELECT COUNT(*)
@@ -152,6 +152,17 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
         );
     }
 
+    public function updateNameAndNote(int $id, string $name, ?string $note): void
+    {
+        $this->query->execute(
+            <<<'SQL'
+                UPDATE sources SET name = ?, note = ?, updated_at = ?
+                WHERE id = ? AND organization_id = ? AND is_deleted = 0
+                SQL,
+            [$name, $note, $this->now(), $id, $this->orgId()],
+        );
+    }
+
     public function softDelete(int $id, string $deletedAt): void
     {
         $this->query->execute(
@@ -182,6 +193,7 @@ final readonly class PdoSourceRepository implements SourceRepositoryInterface
             byteSize: isset($row['byte_size']) ? (int) $row['byte_size'] : null,
             errorMessage: isset($row['error_message']) ? (string) $row['error_message'] : null,
             ingestionConfigJson: isset($row['ingestion_config_json']) ? (string) $row['ingestion_config_json'] : null,
+            note: isset($row['note']) ? (string) $row['note'] : null,
             id: (int) $row['id'],
             createdAt: (string) $row['created_at'],
             updatedAt: (string) $row['updated_at'],

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Analytics;
 
+use DateTimeImmutable;
 use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
@@ -20,9 +21,15 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function countSessionsToday(): int
     {
+        $today = new DateTimeImmutable('today');
+
         $rows = $this->query->fetchAll(
-            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND DATE(created_at) = DATE('now')",
-            [$this->orgId()],
+            'SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND created_at >= ? AND created_at < ?',
+            [
+                $this->orgId(),
+                $today->format('Y-m-d 00:00:00'),
+                $today->modify('+1 day')->format('Y-m-d 00:00:00'),
+            ],
         );
 
         return (int) ($rows[0]['cnt'] ?? 0);
@@ -30,9 +37,11 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function countSessionsThisWeek(): int
     {
+        $since = (new DateTimeImmutable('-7 days'))->format('Y-m-d 00:00:00');
+
         $rows = $this->query->fetchAll(
-            "SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND created_at >= DATE('now', '-7 days')",
-            [$this->orgId()],
+            'SELECT COUNT(*) AS cnt FROM chat_sessions WHERE organization_id = ? AND created_at >= ?',
+            [$this->orgId(), $since],
         );
 
         return (int) ($rows[0]['cnt'] ?? 0);
@@ -80,7 +89,7 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
             <<<'SQL'
                 SELECT
                     CASE WHEN COUNT(DISTINCT session_id) = 0 THEN 0.0
-                         ELSE CAST(COUNT(*) AS REAL) / COUNT(DISTINCT session_id)
+                         ELSE 1.0 * COUNT(*) / COUNT(DISTINCT session_id)
                     END AS avg_msg
                 FROM chat_messages
                 WHERE organization_id = ?
@@ -96,10 +105,8 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
         $rows = $this->query->fetchAll(
             <<<'SQL'
                 SELECT
-                    CAST(
-                        SUM(CASE WHEN citations_json IS NOT NULL AND citations_json != '[]' THEN 1 ELSE 0 END)
-                        AS REAL
-                    ) / NULLIF(COUNT(*), 0) AS rate
+                    1.0 * SUM(CASE WHEN citations_json IS NOT NULL AND citations_json != '[]' THEN 1 ELSE 0 END)
+                        / NULLIF(COUNT(*), 0) AS rate
                 FROM chat_messages
                 WHERE organization_id = ?
                   AND role = 'assistant'
@@ -116,8 +123,10 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
 
     public function dailyTrendRaw(int $days): array
     {
+        $since = (new DateTimeImmutable("-{$days} days"))->format('Y-m-d 00:00:00');
+
         $rows = $this->query->fetchAll(
-            <<<SQL
+            <<<'SQL'
                 SELECT
                     DATE(s.created_at) AS date,
                     COUNT(DISTINCT s.id) AS sessions,
@@ -125,11 +134,11 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
                 FROM chat_sessions s
                 LEFT JOIN chat_messages m ON m.session_id = s.id
                 WHERE s.organization_id = ?
-                  AND s.created_at >= DATE('now', '-{$days} days')
+                  AND s.created_at >= ?
                 GROUP BY DATE(s.created_at)
                 ORDER BY date ASC
                 SQL,
-            [$this->orgId()],
+            [$this->orgId(), $since],
         );
 
         return array_map(
@@ -147,11 +156,11 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
         $rows = $this->query->fetchAll(
             <<<'SQL'
                 SELECT
-                    CAST(strftime('%H', created_at) AS INTEGER) AS hour,
+                    SUBSTR(created_at, 12, 2) AS hour,
                     COUNT(*) AS sessions
                 FROM chat_sessions
                 WHERE organization_id = ?
-                GROUP BY strftime('%H', created_at)
+                GROUP BY SUBSTR(created_at, 12, 2)
                 ORDER BY hour ASC
                 SQL,
             [$this->orgId()],
@@ -189,7 +198,7 @@ final readonly class PdoAnalyticsRepository implements AnalyticsRepositoryInterf
         $rows = $this->query->fetchAll(
             <<<SQL
                 SELECT
-                    TRIM(content) AS content,
+                    MAX(TRIM(content)) AS content,
                     COUNT(*) AS count,
                     MAX(created_at) AS last_asked_at
                 FROM chat_messages

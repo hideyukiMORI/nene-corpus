@@ -193,7 +193,7 @@ function KpiRow({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function DashboardPage({ token }: DashboardPageProps) {
+export function DashboardPage({ token, onLogout }: DashboardPageProps) {
   const navigate = useNavigate();
   const [range, setRange] = useState<RangeKey>('7d');
 
@@ -301,6 +301,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
       corpusStatus={corpusStatus ?? '読み込み中...'}
       modelStatus={isLlmConfigured ? 'ok' : 'bad'}
       stats={statsLabel}
+      onLogout={onLogout}
     >
       {/* ── Page head ──────────────────────────────────────────────────── */}
       <div className="page-head">
@@ -493,7 +494,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
               manage →
             </button>
           </div>
-          <table>
+          <table className="tbl-src-mini">
             <thead>
               <tr>
                 <th>名前</th>
@@ -512,7 +513,11 @@ export function DashboardPage({ token }: DashboardPageProps) {
                 </tr>
               )}
               {sources.slice(0, 7).map((s) => (
-                <tr key={s.source_id}>
+                <tr
+                  key={s.source_id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => { navigate('/sources'); }}
+                >
                   <td>{s.name}</td>
                   <td>
                     <span className={`type-tag ${typeTagClass(s.source_type)}`}>
@@ -580,7 +585,7 @@ export function DashboardPage({ token }: DashboardPageProps) {
         right="last 24h"
       />
       <div className="panel">
-        <table>
+        <table className="tbl-recent">
           <thead>
             <tr>
               <th style={{ width: 70 }}>セッション</th>

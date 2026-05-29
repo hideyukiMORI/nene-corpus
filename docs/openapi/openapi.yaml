@@ -884,6 +884,67 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
   /admin/sources/{id}:
+    put:
+      tags:
+        - Ingestion
+      summary: Update source
+      description: Rename a source and set an optional internal note.
+      operationId: updateSourceById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: New source name.
+                note:
+                  type: string
+                  nullable: true
+                  description: Optional internal note.
+      responses:
+        '200':
+          description: Source updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - source_id
+                  - name
+                  - updated_at
+                properties:
+                  source_id:
+                    type: integer
+                    format: int64
+                  name:
+                    type: string
+                  note:
+                    type: string
+                    nullable: true
+                  updated_at:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/SourceNotFound'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - Ingestion
@@ -2924,6 +2985,10 @@ components:
             - processing
             - ready
             - failed
+        note:
+          type: string
+          nullable: true
+          description: Optional internal note set via the edit dialog.
         document_count:
           type: integer
           format: int64

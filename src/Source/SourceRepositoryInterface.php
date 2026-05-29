@@ -18,6 +18,8 @@ interface SourceRepositoryInterface
 
     public function update(Source $source): void;
 
+    public function updateNameAndNote(int $id, string $name, ?string $note): void;
+
     public function softDelete(int $id, string $deletedAt): void;
 
     public function countAll(): int;

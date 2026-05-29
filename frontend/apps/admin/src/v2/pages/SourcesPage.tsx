@@ -9,6 +9,8 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import {
   createSource,
   deleteSource,
+  updateSource,
+  reindexSource,
   listDocuments,
   listDocumentChunks,
   listSources,
@@ -76,17 +78,27 @@ function IconX({ size = 12 }: { size?: number }) {
   );
 }
 
+function IconPencil({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+      <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+  );
+}
+
 // ── 型 ────────────────────────────────────────────────────────────
 
 type UploadMode = 'file' | 'text';
 
 interface SourcesPageProps {
   token: string;
+  onLogout?: () => void;
 }
 
 // ── SourcesPage (メイン) ──────────────────────────────────────────
 
-export function SourcesPage({ token }: SourcesPageProps) {
+export function SourcesPage({ token, onLogout }: SourcesPageProps) {
   const [sources, setSources] = useState<SourceListItem[]>([]);
   const [totalSources, setTotalSources] = useState(0);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
@@ -102,6 +114,45 @@ export function SourcesPage({ token }: SourcesPageProps) {
   // 削除
   const [confirmTarget, setConfirmTarget] = useState<SourceListItem | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  // 編集 (#3)
+  const [editTarget, setEditTarget] = useState<SourceListItem | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [editReindex, setEditReindex] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  function openEdit(source: SourceListItem) {
+    setEditTarget(source);
+    setEditName(source.name);
+    setEditNote(source.note ?? '');
+    setEditReindex(false);
+    setEditError(null);
+  }
+
+  async function handleEditSave() {
+    if (editTarget === null) return;
+    const name = editName.trim();
+    if (name === '') {
+      setEditError('ソース名を入力してください。');
+      return;
+    }
+    setIsSavingEdit(true);
+    setEditError(null);
+    try {
+      await updateSource(token, editTarget.source_id, { name, note: editNote.trim() || null }, adminApiBase);
+      if (editReindex) {
+        await reindexSource(token, editTarget.source_id, adminApiBase);
+      }
+      setEditTarget(null);
+      setReloadKey(k => k + 1);
+    } catch (cause: unknown) {
+      setEditError(cause instanceof Error ? cause.message : '保存に失敗しました。');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  }
 
   // コーパスステータス文字列（動的）
   const readyCount = sources.filter(s => s.status === 'ready').length;
@@ -180,6 +231,7 @@ export function SourcesPage({ token }: SourcesPageProps) {
       corpusStatus={corpusStatus}
       modelStatus="bad"
       stats="86 セッション · 428 通 · 引用 91.8%"
+      onLogout={onLogout}
     >
       {/* Page head */}
       <div className="page-head">
@@ -300,6 +352,7 @@ export function SourcesPage({ token }: SourcesPageProps) {
                       isDeleting={deletingId === source.source_id}
                       onClick={() => setSelectedSource(source)}
                       onDelete={() => setConfirmTarget(source)}
+                      onEdit={() => openEdit(source)}
                     />
                   ))}
                 </tbody>
@@ -332,6 +385,84 @@ export function SourcesPage({ token }: SourcesPageProps) {
         )}
       </div>
 
+      {/* ソース編集モーダル (#3) */}
+      {editTarget !== null && (
+        <div
+          className="modal-backdrop"
+          onClick={() => { if (!isSavingEdit) setEditTarget(null); }}
+        >
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-head">
+              <h3>
+                ソースを編集 <span className="en">// edit source</span>
+              </h3>
+              <button className="modal-close" type="button" onClick={() => setEditTarget(null)} aria-label="閉じる">
+                <IconX size={14} />
+              </button>
+            </div>
+            <div className="modal-body">
+              {editError !== null && (
+                <div className="warn-note" style={{ marginBottom: 12 }}>{editError}</div>
+              )}
+              <div className="field">
+                <label className="field-label">
+                  ソース名 <span className="en">name</span> <span className="req">*</span>
+                </label>
+                <input
+                  className="field-input"
+                  type="text"
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  disabled={isSavingEdit}
+                  autoFocus
+                />
+              </div>
+              <div className="field">
+                <label className="field-label">
+                  メモ <span className="en">note</span>
+                </label>
+                <input
+                  className="field-input"
+                  type="text"
+                  placeholder="社内向けの補足 (任意)"
+                  value={editNote}
+                  onChange={e => setEditNote(e.target.value)}
+                  disabled={isSavingEdit}
+                />
+              </div>
+              <div className="field" style={{ marginBottom: 0 }}>
+                <label className="field-label">
+                  再取り込み <span className="en">re-index</span>
+                </label>
+                <div className="field-row-toggle" style={{ border: '1px solid var(--hair)', borderRadius: 6, padding: '10px 12px' }}>
+                  <div className="body">
+                    <div className="title">保存時にチャンクを作り直す</div>
+                    <div className="desc">名前の変更だけなら不要です。元ファイルから再生成したい場合にオンにしてください。</div>
+                  </div>
+                  <button
+                    type="button"
+                    className={editReindex ? 'toggle on' : 'toggle'}
+                    role="switch"
+                    aria-checked={editReindex}
+                    aria-label="再取り込み"
+                    disabled={isSavingEdit}
+                    onClick={() => setEditReindex(v => !v)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="modal-foot">
+              <button className="btn btn-ghost" type="button" onClick={() => setEditTarget(null)} disabled={isSavingEdit}>
+                キャンセル
+              </button>
+              <button className="btn btn-primary" type="button" onClick={() => void handleEditSave()} disabled={isSavingEdit}>
+                {isSavingEdit ? '保存中…' : '保存'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 削除確認ダイアログ */}
       {confirmTarget !== null && (
         <ConfirmDialog
@@ -356,9 +487,10 @@ interface SourceRowProps {
   isDeleting: boolean;
   onClick: () => void;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
-function SourceRow({ source, isSelected, isDeleting, onClick, onDelete }: SourceRowProps) {
+function SourceRow({ source, isSelected, isDeleting, onClick, onDelete, onEdit }: SourceRowProps) {
   const typeLabel = source.source_type === 'text' ? 'txt' : source.source_type;
   const updatedDate = formatDate(source.updated_at);
 
@@ -381,6 +513,16 @@ function SourceRow({ source, isSelected, isDeleting, onClick, onDelete }: Source
       <td className="mono faint">{updatedDate}</td>
       <td>
         <span className="actions">
+          <button
+            className="row-icon-btn edit-btn"
+            title="編集"
+            onClick={e => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
+            <IconPencil size={12} />
+          </button>
           <button
             className="row-icon-btn danger"
             title="削除"

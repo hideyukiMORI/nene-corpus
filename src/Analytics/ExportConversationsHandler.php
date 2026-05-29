@@ -54,10 +54,10 @@ final readonly class ExportConversationsHandler
         // BOM for Excel UTF-8 compatibility
         fwrite($handle, "\xEF\xBB\xBF");
 
-        fputcsv($handle, $headers);
+        fputcsv($handle, $headers, ',', '"', '\\');
 
         foreach ($rows as $row) {
-            fputcsv($handle, $row);
+            fputcsv($handle, $row, ',', '"', '\\');
         }
 
         rewind($handle);
