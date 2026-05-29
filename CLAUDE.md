@@ -39,13 +39,13 @@ Ops / MCP         ────────────────────�
 
 | PR | Issue | 内容 |
 | --- | --- | --- |
+| #300 | — | v2 リデザイン全7画面 + 欠損機能8件 + レスポンシブ + ソース編集 API（PUT /admin/sources/{id} + note 列） |
+| #288 | #274–#280 | マルチテナント一式を main へ統合（organizations + system_config + 3-mode resolver + superadmin UI） |
 | #280 | #280 | マルチテナント Phase D（OpenAPI + ADR 0005 + docs + E2E spec） |
-| #279 | #279 | マルチテナント Phase C（Admin UI superadmin パネル） |
-| #278 | #278 | マルチテナント Phase B（全モジュール org スコープ適用） |
 
 ---
 
-## Phase 4 バックログ（Issue 化してから実装）
+## Phase 5 バックログ（Issue 化してから実装）
 
 ### NeNe Records 外部連携
 
@@ -173,14 +173,18 @@ JSON プロパティ名は **snake_case** 固定。公開 `operationId` はリ�
 
 | テーブル | 用途 |
 | --- | --- |
-| `sources` | アップロード元ファイル（type: csv / pdf / text） |
+| `sources` | アップロード元ファイル（type: csv / pdf / text、`note` 列あり） |
 | `documents` | ソースから生成される論理ドキュメント |
 | `chunks` | 検索・引用テキストセグメント |
 | `chat_sessions` | コンシューマーチャットセッション |
 | `chat_messages` | メッセージ（`citations_json` 付き） |
 | `rate_limit_buckets` | レートリミット |
-| `admin_users` | 管理者ユーザー |
+| `admin_users` | 管理者ユーザー（`role` / `organization_id`） |
 | `appearance_settings` | ウィジェット外観（theme / hero / chat / layout JSON） |
+| `organizations` | テナント（slug / plan / custom_domain） |
+| `system_config` | テナント解決方式などのシステム設定（superadmin 専用） |
+
+**マルチテナント:** 上記の業務テーブルは `organization_id` 列を持ち、`Pdo*Repository` が `RequestScopedOrgIdHolder` 経由で org スコープに絞り込む（詳細は「Tenancy」節）。
 
 マイグレーション: `database/migrations/`（Phinx）。スナップショット: `database/schema/`。
 SQL は `Pdo*Repository` 内のみ。
@@ -208,19 +212,8 @@ frontend/
 | JSON | `snake_case` のまま使う（クライアント側でリネームしない） |
 | 文字列 | UI 文字列はロケールカタログに。ハードコード禁止 |
 
-**`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5173) と widget (:5174) を両方再起動する。
+**`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5273) と widget (:5274) を両方再起動する。
 **静的ビルド注意:** `:8080` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
-
-### MSW モック開発モード（バックエンドなしで Admin UI を動かす）
-
-```bash
-# frontend/ ディレクトリ内で
-npm run mock        # VITE_MOCK_API=true vite — ブラウザに MSW Service Worker を登録
-```
-
-- ハンドラーは `frontend/tests/msw/handlers/` に集約（vitest とブラウザで共用）
-- 新規 API を追加したら対応ハンドラーを同ディレクトリに追加し、`server.ts` と `src/mocks/browser.ts` の両方に登録する
-- `public/mockServiceWorker.js` は MSW が自動生成するファイル。コミット対象だが手動編集禁止
 
 ---
 
