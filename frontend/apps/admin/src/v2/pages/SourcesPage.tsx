@@ -27,6 +27,7 @@ import { adminApiBase } from '../../config';
 import { detectSourceType, readFileAsBase64 } from '../../fileBase64';
 import { ConfirmDialog } from '../../ConfirmDialog';
 import { Layout } from '../Layout';
+import { useRoute, useNavigate } from '../router';
 
 // ── SVG アイコン ────────────────────────────────────────────────────
 
@@ -99,6 +100,8 @@ interface SourcesPageProps {
 // ── SourcesPage (メイン) ──────────────────────────────────────────
 
 export function SourcesPage({ token, onLogout }: SourcesPageProps) {
+  const route = useRoute();
+  const navigate = useNavigate();
   const [sources, setSources] = useState<SourceListItem[]>([]);
   const [totalSources, setTotalSources] = useState(0);
   const [isLoadingSources, setIsLoadingSources] = useState(true);
@@ -183,6 +186,21 @@ export function SourcesPage({ token, onLogout }: SourcesPageProps) {
     return () => controller.abort();
   }, [load, reloadKey]);
 
+  // URL → 選択同期（/sources/{id} の deep link）
+  useEffect(() => {
+    const idMatch = /^\/sources\/(\d+)/.exec(route);
+    if (idMatch === null) return;
+    const id = Number(idMatch[1]);
+    if (selectedSource?.source_id === id) return;
+    const found = sources.find((s) => s.source_id === id);
+    if (found !== undefined) setSelectedSource(found);
+  }, [route, sources, selectedSource]);
+
+  function selectSource(source: SourceListItem): void {
+    setSelectedSource(source);
+    navigate(`/sources/${source.source_id}`);
+  }
+
   function handleUploaded() {
     setReloadKey(k => k + 1);
   }
@@ -194,6 +212,7 @@ export function SourcesPage({ token, onLogout }: SourcesPageProps) {
     setConfirmTarget(null);
     if (selectedSource?.source_id === target.source_id) {
       setSelectedSource(null);
+      navigate('/sources');
     }
     try {
       await deleteSource(token, target.source_id, adminApiBase);
@@ -350,7 +369,7 @@ export function SourcesPage({ token, onLogout }: SourcesPageProps) {
                       source={source}
                       isSelected={selectedSource?.source_id === source.source_id}
                       isDeleting={deletingId === source.source_id}
-                      onClick={() => setSelectedSource(source)}
+                      onClick={() => selectSource(source)}
                       onDelete={() => setConfirmTarget(source)}
                       onEdit={() => openEdit(source)}
                     />

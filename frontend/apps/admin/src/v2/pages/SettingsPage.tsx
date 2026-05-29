@@ -4,6 +4,7 @@
  */
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Layout } from '../Layout';
+import { useRoute, useNavigate } from '../router';
 import { getLlmSettings, testLlmConnection, updateLlmSettings } from '@nene-corpus/api-client/llm-settings';
 import { getChatSettings, updateChatSettings } from '@nene-corpus/api-client/chat-settings';
 import { getChatLimitsSettings, updateChatLimitsSettings } from '@nene-corpus/api-client';
@@ -1396,10 +1397,33 @@ function ChatSettingsSection({ token }: { token: string }) {
 
 type SettingsTab = 'model' | 'widget' | 'account' | 'system';
 
+// URL セグメント → タブ（サイドバーの semantic 名も解決）
+const TAB_ALIASES: Record<string, SettingsTab> = {
+  model: 'model', llm: 'model', embeddings: 'model',
+  widget: 'widget', appearance: 'widget',
+  account: 'account',
+  system: 'system', superadmin: 'system',
+};
+
 export function SettingsPage({ token, onLogout, role }: SettingsPageProps) {
+  const route = useRoute();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SettingsTab>('model');
   const [llmConfigured, setLlmConfigured] = useState<boolean | null>(null);
   const isSuperadmin = role === 'superadmin';
+
+  // URL → タブ同期（/settings/{tab}・/settings/llm 等の deep link）
+  useEffect(() => {
+    const seg = /^\/settings\/([a-z-]+)/.exec(route)?.[1];
+    if (seg !== undefined && TAB_ALIASES[seg] !== undefined) {
+      setActiveTab(TAB_ALIASES[seg]);
+    }
+  }, [route]);
+
+  function selectTab(tab: SettingsTab): void {
+    setActiveTab(tab);
+    navigate(`/settings/${tab}`);
+  }
 
   // LLM 設定状態を一度だけフェッチして rail の indicator を更新
   useEffect(() => {
@@ -1483,7 +1507,7 @@ export function SettingsPage({ token, onLogout, role }: SettingsPageProps) {
         <button
           type="button"
           className={activeTab === 'model' ? 'on' : undefined}
-          onClick={() => setActiveTab('model')}
+          onClick={() => selectTab('model')}
         >
           モデル
           {llmConfigured === false && <span className="dot" aria-label="未設定" />}
@@ -1492,21 +1516,21 @@ export function SettingsPage({ token, onLogout, role }: SettingsPageProps) {
         <button
           type="button"
           className={activeTab === 'widget' ? 'on' : undefined}
-          onClick={() => setActiveTab('widget')}
+          onClick={() => selectTab('widget')}
         >
           ウィジェット
         </button>
         <button
           type="button"
           className={activeTab === 'account' ? 'on' : undefined}
-          onClick={() => setActiveTab('account')}
+          onClick={() => selectTab('account')}
         >
           アカウント
         </button>
         <button
           type="button"
           className={activeTab === 'system' ? 'on' : undefined}
-          onClick={() => setActiveTab('system')}
+          onClick={() => selectTab('system')}
         >
           システム
         </button>
