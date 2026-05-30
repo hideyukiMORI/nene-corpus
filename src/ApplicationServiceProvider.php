@@ -56,6 +56,7 @@ use NeneCorpus\Source\SourceServiceProvider;
 use NeneCorpus\SystemConfig\SystemConfigRouteRegistrar;
 use NeneCorpus\SystemConfig\SystemConfigServiceProvider;
 use NeneCorpus\Tenancy\Context\TenancyServiceProvider;
+use NeneCorpus\Upstream\UpstreamServiceProvider;
 use Psr\Container\ContainerInterface;
 
 final readonly class ApplicationServiceProvider implements ServiceProviderInterface
@@ -89,6 +90,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new OrganizationServiceProvider())
             ->addProvider(new SystemConfigServiceProvider())
             ->addProvider(new TenancyServiceProvider())
+            ->addProvider(new UpstreamServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {
