@@ -1,9 +1,10 @@
 # Current Work
 
-Last updated: 2026-05-29 (PR #288 / #300)
+Last updated: 2026-05-30 (PR #311 / #312 / #315)
 
 ## 最近の docs 更新
 
+- **後処理 3 件 + Phase 5 着手 (2026-05-30)** — (1) Docker 全18マイグレーション適用・Tier A release ZIP 再ビルド（nene-corpus-4203d52.zip / 19MB）。(2) deep-link × .htaccess E2E テスト追加（#308 / PR #311、17-deep-link.spec.ts 9件）。(3) release ZIP シンボリックリンクバグ修正（#310 / PR #312、tools/build-release.sh）。(4) 実装済み OPEN Issue 21件クローズ（v2 リデザイン #261-#298・テナント #275-#280）、UpdateSource 後追い Issue #309 記録・クローズ。Phase 5 P1 開始: NeNe Records 読み取りクライアント（#313 / PR #315）。
 - **v2 リデザイン仕上げ + マルチテナント main 統合 (PR #300 → #288)** — B-soft デザイン指示書に沿って Admin UI 全7画面（Login / Dashboard / Sources / Conversations / Settings / Analytics / Help）を仕上げ、旧パネルからの欠損機能8件（パスワード再設定・ソース編集モーダル・古いログ整理・Hero/アバター画像アップロード・ライブプレビュー・Analytics ページ + CSV エクスポート・アプリ内ヘルプ）を移植。レスポンシブ（hamburger ドロワー / tablet / mobile）、コンテンツ幅 1680px、認証ループ・ログアウト不具合の修正を含む。backend は **ソース編集 API（PUT /admin/sources/{id} + note カラム）** を追加。既存不具合（Analytics の MySQL 互換 SQL・CSV の PHP 8.4 deprecation・AdminHtaccess テスト）も修正。feat/298 → feat/tenancy-integration → main の順でマージし、マルチテナント一式と合わせて main に統合。重複サブ PR #281-285・Overview の #299 はクローズ。
 - **マルチテナント Phase D (#280)** — OpenAPI に Superadmin tag + 7 endpoint + 5 schema 追加。ADR 0005（multi-tenancy strategy）新規作成。`docs/integrations/multi-tenancy.md` 設定ガイド追加。CLAUDE.md に Tenancy 規約セクション・禁止パターン追加。E2E spec `tests/e2e/admin/specs/16-tenancy.spec.ts` 7 テスト追加。`docs/todo/current.md` / `docs/roadmap.md` Phase 4 完了マーク更新。
 - **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
