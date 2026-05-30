@@ -70,6 +70,19 @@ rsync -a \
 
 touch "$STAGING_DIR/storage/uploads/.gitkeep"
 
+echo "==> Dereference path-dependency symlinks in staging vendor"
+# vendor/vendor is a self-referential symlink that zip would follow infinitely
+rm -f "$STAGING_DIR/vendor/vendor"
+# vendor/hideyukimori/nene2 is a Composer path-repo symlink → copy real content
+NENE2_VENDOR_LINK="$STAGING_DIR/vendor/hideyukimori/nene2"
+if [[ -L "$NENE2_VENDOR_LINK" ]]; then
+  rm "$NENE2_VENDOR_LINK"
+  mkdir -p "$NENE2_VENDOR_LINK"
+  # Whitelist: copy only runtime-required files (src/ + composer.json)
+  rsync -a "$NENE2_DIR/src/" "$NENE2_VENDOR_LINK/src/"
+  cp "$NENE2_DIR/composer.json" "$NENE2_VENDOR_LINK/composer.json"
+fi
+
 echo "==> Create ZIP: ${ZIP_PATH}"
 mkdir -p "$(dirname "$ZIP_PATH")"
 rm -f "$ZIP_PATH"
