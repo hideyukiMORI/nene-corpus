@@ -56,7 +56,7 @@ Admin SPA は当初 `window.location.hash`（`#/dashboard` 等）でルーティ
 
 ### プラス
 
-- `http://localhost:5273/dashboard` のような URL 直打ちが動作する。
+- `http://localhost:5289/dashboard` のような URL 直打ちが動作する。
 - ブラウザの戻る/進むボタンが標準 History API で動作する。
 - `path` モード時の multi-tenant URL（`/admin/acme/dashboard`）に対応できる。
 

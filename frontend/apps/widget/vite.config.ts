@@ -27,15 +27,15 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     host: true,
-    port: 5274,
+    port: 5290,
     strictPort: true,
     watch: {
       ignored: ['**/node_modules/**', '!**/packages/**'],
     },
     proxy: {
-      '/chat': 'http://localhost:8080',
-      '/widget/appearance': 'http://localhost:8080',
-      '/media': 'http://localhost:8080',
+      '/chat': 'http://localhost:8989',
+      '/widget/appearance': 'http://localhost:8989',
+      '/media': 'http://localhost:8989',
     },
   },
   build: {

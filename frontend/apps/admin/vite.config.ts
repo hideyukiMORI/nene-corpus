@@ -33,17 +33,17 @@ export default defineConfig({
   },
   server: {
     host: true,
-    port: 5273,
+    port: 5289,
     strictPort: true,
     watch: {
       ignored: ['**/node_modules/**', '!**/packages/**'],
     },
     proxy: {
-      '/health': 'http://localhost:8080',
-      '/admin': 'http://localhost:8080',
-      '/widget': 'http://localhost:8080',
-      '/media': 'http://localhost:8080',
-      '/guide': 'http://localhost:8080',
+      '/health': 'http://localhost:8989',
+      '/admin': 'http://localhost:8989',
+      '/widget': 'http://localhost:8989',
+      '/media': 'http://localhost:8989',
+      '/guide': 'http://localhost:8989',
     },
   },
   build: {

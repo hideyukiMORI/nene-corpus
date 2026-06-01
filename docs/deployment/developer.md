@@ -11,7 +11,7 @@ git clone https://github.com/hideyukiMORI/nene-corpus.git
 cd nene-corpus
 cp .env.example .env
 docker compose up --build -d
-curl -fsS http://localhost:8080/health
+curl -fsS http://localhost:8989/health
 ```
 
 Full details: [`../development/docker.md`](../development/docker.md)
