@@ -6,7 +6,7 @@ info:
     NeNe Corpus public API contract — self-hosted knowledge chat on NENE2.
     Phase 2 adds consumer sync JSON chat with citations.
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8989
     description: Local development server
 tags:
   - name: System

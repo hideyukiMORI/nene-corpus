@@ -168,8 +168,8 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 composer check
 npm run check --prefix frontend
 docker compose up --build -d
-curl -fsS http://localhost:8080/health
-curl -fsS http://localhost:8080/openapi.php
+curl -fsS http://localhost:8989/health
+curl -fsS http://localhost:8989/openapi.php
 ```
 
 NENE2 path dependency: see [`docs/development/docker.md`](../development/docker.md#path-dependency-nene2).

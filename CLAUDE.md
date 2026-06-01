@@ -212,8 +212,37 @@ frontend/
 | JSON | `snake_case` のまま使う（クライアント側でリネームしない） |
 | 文字列 | UI 文字列はロケールカタログに。ハードコード禁止 |
 
-**`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5273) と widget (:5274) を両方再起動する。
-**静的ビルド注意:** `:8080` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
+**`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5289) と widget (:5290) を両方再起動する。
+**静的ビルド注意:** `:8989` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
+
+---
+
+## ローカル開発ポート（固定）
+
+複数の NeNe シリーズアプリを同一マシンで並行起動するため、**ポートは衝突しないユニークな固定値**にする。NeNe Corpus は **`89**` 帯**を占有する。勝手に変えない（変える場合は下表とこの一覧を両方更新）。
+
+| 用途 | ポート | 環境変数 / 設定箇所 |
+| --- | --- | --- |
+| API / Web（Apache） | **8989** | `NENE_CORPUS_PORT`（`compose.yaml`） |
+| MySQL | **3389** | `NENE_CORPUS_MYSQL_PORT`（`compose.yaml`） |
+| Vite admin SPA | **5289** | `frontend/apps/admin/vite.config.ts` |
+| Vite widget | **5290** | `frontend/apps/widget/vite.config.ts` |
+
+**他アプリの占有帯（衝突回避のため侵さない）:**
+
+| アプリ | ポート帯 |
+| --- | --- |
+| NeNe Clear | `83**` & 5173 |
+| NeNe Records | `180**` |
+| NENE2 | `82**` & 3316 |
+| NeNe Profile | `84**` & 3409 |
+| NeNe Invoice | `85**` & 5185 |
+| NeNe Vault | `86**` & 5186 |
+| NeNe Concierge | `87**` & 3790 |
+| NeNe Suite | `88**` & 3390 & 5188 |
+| **NeNe Corpus（本リポジトリ）** | **`89**` & 3389 & 5289/5290** |
+
+ローカルで別ポートを使いたい場合のみ、コミットせず `.env` の `NENE_CORPUS_PORT` / `NENE_CORPUS_MYSQL_PORT` で上書きする。
 
 ---
 
@@ -260,7 +289,7 @@ frontend/
 composer check                         # PHPUnit + PHPStan level8 + CS-Fixer + OpenAPI + MCP
 npm run check --prefix frontend        # TypeScript + lint
 docker compose up --build -d           # ローカルスタック確認
-curl -fsS http://localhost:8080/health
+curl -fsS http://localhost:8989/health
 ```
 
 ## セルフレビューチェックリスト（PR 本文に記載）

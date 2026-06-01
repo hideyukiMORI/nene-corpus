@@ -6,8 +6,10 @@ Local stack for NeNe Corpus backend development.
 
 | Service | Purpose | Default port |
 | --- | --- | --- |
-| `app` | PHP 8.4 Apache + NeNe Corpus | 8080 |
-| `mysql` | Optional MySQL 8.4 | 3307 |
+| `app` | PHP 8.4 Apache + NeNe Corpus | 8989 |
+| `mysql` | Optional MySQL 8.4 | 3389 |
+
+> ローカル開発ポートは他 NeNe アプリと衝突しない固定値（NeNe Corpus = `89**` 帯）。割り当て一覧は `CLAUDE.md`「ローカル開発ポート（固定）」を参照。
 
 SQLite is the default for host-side PHPUnit. Docker Compose uses MySQL for parity with production-like setups.
 
@@ -16,10 +18,10 @@ SQLite is the default for host-side PHPUnit. Docker Compose uses MySQL for parit
 ```bash
 cp .env.example .env
 docker compose up --build -d
-curl -fsS http://localhost:8080/health
+curl -fsS http://localhost:8989/health
 ```
 
-OpenAPI YAML: `http://localhost:8080/openapi.php`
+OpenAPI YAML: `http://localhost:8989/openapi.php`
 
 ## Environment
 
