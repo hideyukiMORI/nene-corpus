@@ -227,7 +227,7 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                     $basePathMiddleware  = $container->get(InstallServiceProvider::BASE_PATH_MIDDLEWARE);
                     $orgResolver         = $container->get(OrgResolverMiddleware::class);
 
-                    if ($authMiddleware !== null && !$authMiddleware instanceof AdminBearerTokenMiddleware) {
+                    if (!$authMiddleware instanceof AdminBearerTokenMiddleware) {
                         throw new LogicException('Admin auth middleware service is invalid.');
                     }
 
@@ -251,15 +251,18 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Org resolver middleware service is invalid.');
                     }
 
+                    // The admin auth middleware is now always present (the verifier
+                    // is built fail-closed), so it is added unconditionally rather
+                    // than being dropped by array_filter when no secret is set.
                     /** @var list<\Psr\Http\Server\MiddlewareInterface> $requestMiddleware */
-                    $requestMiddleware = array_values(array_filter([
+                    $requestMiddleware = [
                         $basePathMiddleware,
                         $loginRateLimit,
                         $authMiddleware,
                         $superadminMiddleware,
                         $orgResolver,
                         $chatRateLimit,
-                    ]));
+                    ];
 
                     return new RuntimeApplicationFactory(
                         $responseFactory,
@@ -269,7 +272,7 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
                         $exceptionHandlers,
                         $requestIdHolder,
                         $routeRegistrars,
-                        $requestMiddleware !== [] ? $requestMiddleware : null,
+                        $requestMiddleware,
                         [],
                         null,
                         $config->debug,
