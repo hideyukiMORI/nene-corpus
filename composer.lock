@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f6973017a615dfaaf0226418834cf4e",
+    "content-hash": "fc53d22d0461335a6e10b7555612caf3",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -394,11 +394,11 @@
         },
         {
             "name": "hideyukimori/nene2",
-            "version": "dev-feat/908-ft182-batchlog",
+            "version": "1.7.0",
             "dist": {
                 "type": "path",
                 "url": "../NENE2",
-                "reference": "5fbd940c6dffc3b06bbf5247855364e93b43ceda"
+                "reference": "8db980a6e48949ffc4a6c7d8eb655aca8fbdf894"
             },
             "require": {
                 "monolog/monolog": "^3.0",
@@ -419,6 +419,7 @@
                 "symfony/yaml": "^8.0"
             },
             "suggest": {
+                "robmorgan/phinx": "Required by Nene2\\Install\\DatabaseSchemaApplier. A consumer that uses it MUST add phinx to its require (NOT require-dev) — it is here only as a dev dependency, so a --no-dev production build would omit it and installs would fatally fail when applying migrations.",
                 "symfony/yaml": "Required to run validate-mcp-tools.php from a consumer project (add to your require-dev)"
             },
             "type": "library",
@@ -456,6 +457,12 @@
                 ],
                 "openapi:docs": [
                     "php tools/openapi-to-md.php"
+                ],
+                "howto:index": [
+                    "php tools/build-howto-index.php"
+                ],
+                "howto:frontmatter": [
+                    "php tools/validate-howto-frontmatter.php"
                 ],
                 "mcp": [
                     "php tools/validate-mcp-tools.php"
@@ -6252,9 +6259,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "hideyukimori/nene2": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
