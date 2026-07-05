@@ -12,6 +12,9 @@ services:
       APP_NAME: ${APP_NAME:-NeNe Corpus}
       NENE2_MACHINE_API_KEY: ${NENE2_MACHINE_API_KEY:-}
       NENE2_LOCAL_JWT_SECRET: ${NENE2_LOCAL_JWT_SECRET:-}
+      # Pass-through: empty by default so production fails closed. Set to 1 in a
+      # local .env to permit the injected development JWT secret.
+      NENE2_ALLOW_DEV_SECRET: ${NENE2_ALLOW_DEV_SECRET:-}
       PROBLEM_DETAILS_BASE_URL: ${PROBLEM_DETAILS_BASE_URL:-https://nene-corpus.dev/problems/}
       # Docker always uses MySQL — host .env may keep SQLite for PHPUnit.
       DB_ENV: local

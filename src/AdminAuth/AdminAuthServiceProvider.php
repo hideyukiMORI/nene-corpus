@@ -6,10 +6,10 @@ namespace NeneCorpus\AdminAuth;
 
 use LogicException;
 use Nene2\Auth\BearerTokenMiddleware;
+use Nene2\Auth\GuardedJwtSecretResolver;
 use Nene2\Auth\LocalBearerTokenVerifier;
 use Nene2\Auth\TokenIssuerInterface;
 use Nene2\Config\AppConfig;
-use Nene2\Config\AppEnvironment;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
@@ -32,9 +32,11 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
     public const TOKEN_ISSUER = 'nene-corpus.admin_auth.token_issuer';
 
     /**
-     * Dev/test-only fallback secret. Never reaches production: there
-     * {@see self::resolveJwtSecret()} fails closed instead. This value is
-     * publicly known, so it must never sign or verify real tokens.
+     * Dev/test-only fallback secret, injected into
+     * {@see GuardedJwtSecretResolver::fromConfig()}. It is used only off-production
+     * and only behind the NENE2_ALLOW_DEV_SECRET opt-in; production always fails
+     * closed. This value is publicly known, so it must never sign or verify real
+     * tokens.
      */
     private const DEFAULT_DEV_SECRET = 'nene-corpus-dev-secret';
 
@@ -68,7 +70,9 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     // Always build a verifier: the secret is resolved fail-closed
                     // (production without a secret refuses to boot), so admin auth
                     // is never silently disabled.
-                    return new LocalBearerTokenVerifier(self::resolveJwtSecret($config));
+                    return new LocalBearerTokenVerifier(
+                        GuardedJwtSecretResolver::fromConfig($config, self::DEFAULT_DEV_SECRET),
+                    );
                 },
             )
             ->set(
@@ -380,39 +384,16 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     }
 
                     // Always build the auth middleware so it is unconditionally part
-                    // of the chain; resolveJwtSecret() fails closed in production.
+                    // of the chain; the secret is resolved fail-closed in production.
                     $bearer = new BearerTokenMiddleware(
                         $problemDetails,
-                        new LocalBearerTokenVerifier(self::resolveJwtSecret($config)),
+                        new LocalBearerTokenVerifier(
+                            GuardedJwtSecretResolver::fromConfig($config, self::DEFAULT_DEV_SECRET),
+                        ),
                     );
 
                     return new AdminBearerTokenMiddleware($bearer);
                 },
             );
-    }
-
-    /**
-     * Resolves the HMAC secret for local admin bearer tokens, failing closed.
-     *
-     * The same secret signs and verifies admin bearer tokens, so a predictable
-     * value is a full authentication bypass (a forged superadmin token). In
-     * production the secret is therefore mandatory: if NENE2_LOCAL_JWT_SECRET is
-     * unset (or empty) we refuse to boot rather than silently fall back to the
-     * public dev constant. Local/test may use the dev fallback for convenience.
-     */
-    private static function resolveJwtSecret(AppConfig $config): string
-    {
-        if ($config->localJwtSecret !== null && $config->localJwtSecret !== '') {
-            return $config->localJwtSecret;
-        }
-
-        if ($config->environment === AppEnvironment::Production) {
-            throw new LogicException(
-                'NENE2_LOCAL_JWT_SECRET must be set in production. '
-                . 'Generate one with: php -r "echo bin2hex(random_bytes(32));"',
-            );
-        }
-
-        return self::DEFAULT_DEV_SECRET;
     }
 }

@@ -4,6 +4,13 @@
   colors="true"
   cacheDirectory=".phpunit.cache"
 >
+  <php>
+    <!-- Off-production tests may boot the admin auth stack; opt in to the
+         injected development JWT secret so GuardedJwtSecretResolver resolves it
+         instead of failing closed. Never disables auth. -->
+    <env name="APP_ENV" value="local"/>
+    <env name="NENE2_ALLOW_DEV_SECRET" value="1"/>
+  </php>
   <testsuites>
     <testsuite name="NeneCorpus">
       <directory>tests</directory>
