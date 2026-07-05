@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Tests\Support;
 
-use Nene2\Database\PdoDatabaseQueryExecutor;
+use Nene2\Database\DatabaseQueryExecutorInterface;
 
 final class CorpusSchemaSetup
 {
-    public static function create(PdoDatabaseQueryExecutor $executor): void
+    public static function create(DatabaseQueryExecutorInterface $executor): void
     {
         $executor->execute(
             <<<'SQL'
@@ -72,7 +72,7 @@ final class CorpusSchemaSetup
         );
     }
 
-    public static function createAdminUsers(PdoDatabaseQueryExecutor $executor): void
+    public static function createAdminUsers(DatabaseQueryExecutorInterface $executor): void
     {
         $executor->execute(
             <<<'SQL'
@@ -91,7 +91,7 @@ final class CorpusSchemaSetup
         $executor->execute('CREATE UNIQUE INDEX uniq_admin_users_email ON admin_users (email)');
     }
 
-    public static function createAdminPasswordResets(PdoDatabaseQueryExecutor $executor): void
+    public static function createAdminPasswordResets(DatabaseQueryExecutorInterface $executor): void
     {
         $executor->execute(
             <<<'SQL'
@@ -109,7 +109,7 @@ final class CorpusSchemaSetup
         $executor->execute('CREATE UNIQUE INDEX uniq_admin_password_resets_token_hash ON admin_password_resets (token_hash)');
     }
 
-    public static function createChatSettings(PdoDatabaseQueryExecutor $executor): void
+    public static function createChatSettings(DatabaseQueryExecutorInterface $executor): void
     {
         $executor->execute(
             <<<'SQL'
@@ -125,7 +125,7 @@ final class CorpusSchemaSetup
         );
     }
 
-    public static function createAppearanceSettings(PdoDatabaseQueryExecutor $executor): void
+    public static function createAppearanceSettings(DatabaseQueryExecutorInterface $executor): void
     {
         $executor->execute(
             <<<'SQL'

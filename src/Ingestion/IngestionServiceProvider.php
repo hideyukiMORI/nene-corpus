@@ -4,15 +4,22 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Ingestion;
 
+use Closure;
 use LogicException;
+use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Database\DatabaseTransactionManagerInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
+use NeneCorpus\Chunk\PdoChunkRepository;
 use NeneCorpus\Document\DocumentRepositoryInterface;
+use NeneCorpus\Document\PdoDocumentRepository;
 use NeneCorpus\Http\RuntimeServiceProvider;
+use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceRepositoryInterface;
+use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
 final readonly class IngestionServiceProvider implements ServiceProviderInterface
@@ -153,10 +160,23 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
             ->set(
                 CreatePdfSourceUseCaseInterface::class,
                 static function (ContainerInterface $container): CreatePdfSourceUseCaseInterface {
+                    $transactionManager = $container->get(DatabaseTransactionManagerInterface::class);
+                    $queryExecutor = $container->get(DatabaseQueryExecutorInterface::class);
+
+                    if (!$transactionManager instanceof DatabaseTransactionManagerInterface) {
+                        throw new LogicException('Database transaction manager service is invalid.');
+                    }
+
+                    if (!$queryExecutor instanceof DatabaseQueryExecutorInterface) {
+                        throw new LogicException('Database query executor service is invalid.');
+                    }
+
                     return new CreatePdfSourceUseCase(
-                        self::sourceRepository($container),
-                        self::documentRepository($container),
-                        self::chunkRepository($container),
+                        $transactionManager,
+                        self::sourceRepositoryFactory($container),
+                        self::documentRepositoryFactory($container),
+                        self::chunkRepositoryFactory($container),
+                        $queryExecutor,
                         self::pdfValidator($container),
                         self::pdfExtractor($container),
                         self::uploadStorage($container),
@@ -291,6 +311,41 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
         }
 
         return $chunks;
+    }
+
+    private static function orgIdHolder(ContainerInterface $container): RequestScopedOrgIdHolder
+    {
+        $holder = $container->get(RequestScopedOrgIdHolder::class);
+
+        if (!$holder instanceof RequestScopedOrgIdHolder) {
+            throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
+        }
+
+        return $holder;
+    }
+
+    /** @return Closure(DatabaseQueryExecutorInterface): SourceRepositoryInterface */
+    private static function sourceRepositoryFactory(ContainerInterface $container): Closure
+    {
+        $orgIdHolder = self::orgIdHolder($container);
+
+        return static fn (DatabaseQueryExecutorInterface $executor): SourceRepositoryInterface => new PdoSourceRepository($executor, $orgIdHolder);
+    }
+
+    /** @return Closure(DatabaseQueryExecutorInterface): DocumentRepositoryInterface */
+    private static function documentRepositoryFactory(ContainerInterface $container): Closure
+    {
+        $orgIdHolder = self::orgIdHolder($container);
+
+        return static fn (DatabaseQueryExecutorInterface $executor): DocumentRepositoryInterface => new PdoDocumentRepository($executor, $orgIdHolder);
+    }
+
+    /** @return Closure(DatabaseQueryExecutorInterface): ChunkRepositoryInterface */
+    private static function chunkRepositoryFactory(ContainerInterface $container): Closure
+    {
+        $orgIdHolder = self::orgIdHolder($container);
+
+        return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new PdoChunkRepository($executor, $orgIdHolder);
     }
 
     private static function csvValidator(ContainerInterface $container): CsvUploadValidator
