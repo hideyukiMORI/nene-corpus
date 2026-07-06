@@ -14,6 +14,7 @@ use NeneCorpus\Session\ChatSession;
 use NeneCorpus\Session\PdoChatSessionRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChatMessageRepositoryTest extends TestCase
@@ -42,7 +43,7 @@ final class PdoChatMessageRepositoryTest extends TestCase
         $holder = new RequestScopedOrgIdHolder();
         $holder->setId($orgId);
 
-        return new PdoChatSessionRepository($this->executor, $holder);
+        return new PdoChatSessionRepository($this->executor, $holder, new FixedClock());
     }
 
     private function makeMessages(int $orgId = 1): PdoChatMessageRepository

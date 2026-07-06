@@ -13,6 +13,7 @@ use NeneCorpus\AdminAuth\RequestPasswordResetUseCase;
 use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailMessage;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -70,7 +71,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $mailer->expects(self::never())->method('send');
         $mailer->method('isConfigured')->willReturn(true);
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
 
         // 例外なし・メール送信なし
         $useCase->execute('nobody@unknown.com', 'https://example.com/admin/');
@@ -87,7 +88,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $mailerNotConfigured->expects(self::never())->method('send');
         $mailerNotConfigured->method('isConfigured')->willReturn(false);
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailerNotConfigured);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailerNotConfigured, new FixedClock());
 
         // 既知メール → 例外なし（外から区別できない）
         $useCase->execute('known@example.com', 'https://example.com/admin/');
@@ -107,7 +108,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $mailer->method('isConfigured')->willReturn(false);
         $mailer->expects(self::never())->method('send');
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
         $useCase->execute('known@example.com', 'https://example.com/admin/');
 
         $countRow = $this->executor->fetchOne('SELECT COUNT(*) AS c FROM admin_password_resets');
@@ -129,7 +130,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
                 $capturedMessage = $msg;
             });
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
         $useCase->execute('known@example.com', 'https://example.com/admin/reset');
 
         // token が DB に保存された
@@ -157,7 +158,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
                 $capturedMessage = $msg;
             });
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
         $useCase->execute('known@example.com', 'https://example.com/admin/');
 
         self::assertNotNull($capturedMessage);
@@ -172,7 +173,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $mailer->method('send')->willReturnCallback(static function (): void {
         });
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
         $useCase->execute('known@example.com', 'https://example.com/admin/');
 
         $row = $this->executor->fetchOne('SELECT token_hash FROM admin_password_resets LIMIT 1');
@@ -196,7 +197,7 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $mailer->method('send')->willReturnCallback(static function (): void {
         });
 
-        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer);
+        $useCase = new RequestPasswordResetUseCase($this->users, $this->resets, $mailer, new FixedClock());
         $useCase->execute('known@example.com', 'https://example.com/admin/');
 
         // 期限切れ token は削除され、新しい token だけ残る

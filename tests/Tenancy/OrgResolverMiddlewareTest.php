@@ -12,6 +12,7 @@ use NeneCorpus\Organization\PdoOrganizationRepository;
 use NeneCorpus\SystemConfig\PdoSystemConfigRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tenancy\Resolution\OrgResolverMiddleware;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\ServerRequest;
@@ -52,8 +53,8 @@ final class OrgResolverMiddlewareTest extends TestCase
         $this->holder = new RequestScopedOrgIdHolder();
         $this->middleware = new OrgResolverMiddleware(
             $this->holder,
-            new PdoOrganizationRepository($this->executor),
-            new PdoSystemConfigRepository($this->executor),
+            new PdoOrganizationRepository($this->executor, new FixedClock()),
+            new PdoSystemConfigRepository($this->executor, new FixedClock()),
             new ProblemDetailsResponseFactory($psr17, $psr17, 'https://nene-corpus.example'),
         );
     }

@@ -11,6 +11,7 @@ use NeneCorpus\Session\ChatSession;
 use NeneCorpus\Session\PdoChatSessionRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChatSessionRepositoryTest extends TestCase
@@ -39,7 +40,7 @@ final class PdoChatSessionRepositoryTest extends TestCase
         $holder = new RequestScopedOrgIdHolder();
         $holder->setId($orgId);
 
-        return new PdoChatSessionRepository($this->executor, $holder);
+        return new PdoChatSessionRepository($this->executor, $holder, new FixedClock());
     }
 
     public function test_save_and_find_by_public_token(): void

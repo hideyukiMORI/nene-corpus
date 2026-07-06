@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Notification;
 
+use Nene2\Http\ClockInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailMessage;
@@ -22,6 +23,7 @@ final readonly class RateLimitNotifier
         private MailerInterface $mailer,
         private RateLimitStorageInterface $storage,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -42,7 +44,7 @@ final readonly class RateLimitNotifier
         $orgId = $this->orgIdHolder->getId() ?? 1;
 
         // Track daily hits regardless of cooldown (org-scoped)
-        $today = date('Y-m-d');
+        $today = $this->clock->now()->format('Y-m-d');
         $this->storage->hit(self::HITS_KEY_PREFIX . $orgId . ':' . $today, 86400);
 
         // Cooldown check — use 1 hit-per-window as the gate (org-scoped)
@@ -69,7 +71,7 @@ final readonly class RateLimitNotifier
 
     private function buildText(string $ip, string $scope, int $cooldownSeconds): string
     {
-        $time = date('Y-m-d H:i:s');
+        $time = $this->clock->now()->format('Y-m-d H:i:s');
         $nextNotify = (int) ($cooldownSeconds / 60);
 
         return implode("\n", [
@@ -88,7 +90,7 @@ final readonly class RateLimitNotifier
 
     private function buildHtml(string $ip, string $scope, int $cooldownSeconds): string
     {
-        $time       = htmlspecialchars(date('Y-m-d H:i:s'), ENT_QUOTES, 'UTF-8');
+        $time       = htmlspecialchars($this->clock->now()->format('Y-m-d H:i:s'), ENT_QUOTES, 'UTF-8');
         $ip         = htmlspecialchars($ip, ENT_QUOTES, 'UTF-8');
         $scope      = htmlspecialchars($scope, ENT_QUOTES, 'UTF-8');
         $nextNotify = (int) ($cooldownSeconds / 60);

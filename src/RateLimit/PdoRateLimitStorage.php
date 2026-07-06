@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\RateLimit;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
@@ -13,13 +14,14 @@ final readonly class PdoRateLimitStorage implements RateLimitStorageInterface
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
     public function hit(string $key, int $windowSeconds): array
     {
         $orgId = $this->orgId();
-        $now   = time();
+        $now   = $this->clock->now()->getTimestamp();
         $row   = $this->query->fetchOne(
             'SELECT hit_count, reset_at FROM rate_limit_buckets WHERE organization_id = ? AND bucket_key = ?',
             [$orgId, $key],
@@ -71,6 +73,6 @@ final readonly class PdoRateLimitStorage implements RateLimitStorageInterface
 
     private function now(): string
     {
-        return gmdate('Y-m-d H:i:s');
+        return $this->clock->now()->format('Y-m-d H:i:s');
     }
 }

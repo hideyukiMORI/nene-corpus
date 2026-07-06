@@ -9,6 +9,7 @@ use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\RateLimit\PdoRateLimitStorage;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -39,7 +40,7 @@ final class PdoRateLimitStorageTest extends TestCase
 
     public function test_hit_increments_count_within_window(): void
     {
-        $storage = new PdoRateLimitStorage($this->executor, $this->holder);
+        $storage = new PdoRateLimitStorage($this->executor, $this->holder, new FixedClock());
 
         $first  = $storage->hit('chat:session:abc', 60);
         $second = $storage->hit('chat:session:abc', 60);
@@ -51,12 +52,12 @@ final class PdoRateLimitStorageTest extends TestCase
 
     public function test_hit_resets_count_after_window_expires(): void
     {
-        $storage = new PdoRateLimitStorage($this->executor, $this->holder);
+        $storage = new PdoRateLimitStorage($this->executor, $this->holder, new FixedClock());
         $storage->hit('chat:ip:127.0.0.1', 60);
 
         $this->executor->execute(
             'UPDATE rate_limit_buckets SET reset_at = ? WHERE organization_id = ? AND bucket_key = ?',
-            [time() - 1, 1, 'chat:ip:127.0.0.1'],
+            [1, 1, 'chat:ip:127.0.0.1'],
         );
 
         $result = $storage->hit('chat:ip:127.0.0.1', 60);
@@ -68,11 +69,11 @@ final class PdoRateLimitStorageTest extends TestCase
     {
         $holderOrg1 = new RequestScopedOrgIdHolder();
         $holderOrg1->setId(1);
-        $storageOrg1 = new PdoRateLimitStorage($this->executor, $holderOrg1);
+        $storageOrg1 = new PdoRateLimitStorage($this->executor, $holderOrg1, new FixedClock());
 
         $holderOrg2 = new RequestScopedOrgIdHolder();
         $holderOrg2->setId(2);
-        $storageOrg2 = new PdoRateLimitStorage($this->executor, $holderOrg2);
+        $storageOrg2 = new PdoRateLimitStorage($this->executor, $holderOrg2, new FixedClock());
 
         // Org 1 hits twice, org 2 hits once with the same key
         $storageOrg1->hit('chat:session:xyz', 60);

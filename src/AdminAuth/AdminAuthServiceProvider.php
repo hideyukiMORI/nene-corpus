@@ -14,6 +14,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Mail\MailerInterface;
@@ -80,14 +81,19 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                 static function (ContainerInterface $container): LoginAdminUseCaseInterface {
                     $users = $container->get(AdminUserRepositoryInterface::class);
                     $issuer = $container->get(self::TOKEN_ISSUER);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!$users instanceof AdminUserRepositoryInterface) {
                         throw new LogicException('Admin user repository service is invalid.');
                     }
 
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
                     $issuer = $issuer instanceof TokenIssuerInterface ? $issuer : null;
 
-                    return new LoginAdminUseCase($users, $issuer);
+                    return new LoginAdminUseCase($users, $issuer, $clock);
                 },
             )
             ->set(
@@ -224,6 +230,7 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                     $users  = $container->get(AdminUserRepositoryInterface::class);
                     $resets = $container->get(AdminPasswordResetRepositoryInterface::class);
                     $mailer = $container->get(MailerInterface::class);
+                    $clock  = $container->get(ClockInterface::class);
 
                     if (!$users instanceof AdminUserRepositoryInterface) {
                         throw new LogicException('Admin user repository service is invalid.');
@@ -237,7 +244,11 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Mailer service is invalid.');
                     }
 
-                    return new RequestPasswordResetUseCase($users, $resets, $mailer);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new RequestPasswordResetUseCase($users, $resets, $mailer, $clock);
                 },
             )
             ->set(
@@ -245,6 +256,7 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                 static function (ContainerInterface $container): ConfirmPasswordResetUseCaseInterface {
                     $resets = $container->get(AdminPasswordResetRepositoryInterface::class);
                     $users  = $container->get(AdminUserRepositoryInterface::class);
+                    $clock  = $container->get(ClockInterface::class);
 
                     if (!$resets instanceof AdminPasswordResetRepositoryInterface) {
                         throw new LogicException('Admin password reset repository service is invalid.');
@@ -254,7 +266,11 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Admin user repository service is invalid.');
                     }
 
-                    return new ConfirmPasswordResetUseCase($resets, $users);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new ConfirmPasswordResetUseCase($resets, $users, $clock);
                 },
             )
             ->set(
@@ -308,6 +324,7 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                 static function (ContainerInterface $container): AdminLoginRateLimitMiddleware {
                     $problemDetails = $container->get(ProblemDetailsResponseFactory::class);
                     $storage        = $container->get(RateLimitStorageInterface::class);
+                    $clock          = $container->get(ClockInterface::class);
 
                     if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
                         throw new LogicException('Problem details response factory service is invalid.');
@@ -317,7 +334,11 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Rate limit storage service is invalid.');
                     }
 
-                    return new AdminLoginRateLimitMiddleware($problemDetails, $storage);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new AdminLoginRateLimitMiddleware($problemDetails, $storage, $clock);
                 },
             )
             ->set(

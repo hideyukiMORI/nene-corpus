@@ -13,6 +13,7 @@ use NeneCorpus\AdminAuth\InvalidPasswordResetTokenException;
 use NeneCorpus\AdminAuth\PdoAdminPasswordResetRepository;
 use NeneCorpus\AdminAuth\PdoAdminUserRepository;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,6 +29,9 @@ use PHPUnit\Framework\TestCase;
  */
 final class ConfirmPasswordResetUseCaseTest extends TestCase
 {
+    /** Fixed "now" used by the injected clock (UTC). */
+    private const NOW = '2026-06-15 12:00:00';
+
     private PdoDatabaseQueryExecutor $executor;
     private PdoAdminUserRepository $users;
     private PdoAdminPasswordResetRepository $resets;
@@ -63,7 +67,8 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->adminId = (int) $adminRow['id'];
         $this->users = new PdoAdminUserRepository($this->executor);
         $this->resets = new PdoAdminPasswordResetRepository($this->executor);
-        $this->useCase = new ConfirmPasswordResetUseCase($this->resets, $this->users);
+        // Fixed clock so token-expiry boundaries are deterministic (no wall-clock).
+        $this->useCase = new ConfirmPasswordResetUseCase($this->resets, $this->users, new FixedClock(self::NOW . 'Z'));
     }
 
     // ── ガード: 空トークン・短パスワード (DB前チェック) ──────────────
@@ -108,7 +113,7 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,
             adminUserId: $this->adminId,
-            expiresAt: gmdate('Y-m-d H:i:s', time() - 1), // 1秒前に期限切れ
+            expiresAt: '2026-06-15 11:59:59', // 固定 now の1秒前に期限切れ
             usedAt: null,
             createdAt: gmdate('Y-m-d H:i:s'),
         ));
@@ -126,7 +131,7 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,
             adminUserId: $this->adminId,
-            expiresAt: gmdate('Y-m-d H:i:s', time() + 3600),
+            expiresAt: '2026-06-15 13:00:00', // 固定 now の1時間後（有効）
             usedAt: gmdate('Y-m-d H:i:s'), // 使用済み
             createdAt: gmdate('Y-m-d H:i:s'),
         ));
@@ -146,7 +151,7 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,
             adminUserId: $this->adminId,
-            expiresAt: gmdate('Y-m-d H:i:s', time() + 3600),
+            expiresAt: '2026-06-15 13:00:00', // 固定 now の1時間後（有効）
             usedAt: null,
             createdAt: gmdate('Y-m-d H:i:s'),
         ));
@@ -167,7 +172,7 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,
             adminUserId: $this->adminId,
-            expiresAt: gmdate('Y-m-d H:i:s', time() + 3600),
+            expiresAt: '2026-06-15 13:00:00', // 固定 now の1時間後（有効）
             usedAt: null,
             createdAt: gmdate('Y-m-d H:i:s'),
         ));
@@ -189,7 +194,7 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,
             adminUserId: $this->adminId,
-            expiresAt: gmdate('Y-m-d H:i:s', time() + 3600),
+            expiresAt: '2026-06-15 13:00:00', // 固定 now の1時間後（有効）
             usedAt: null,
             createdAt: gmdate('Y-m-d H:i:s'),
         ));

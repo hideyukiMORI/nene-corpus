@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\RateLimit;
 
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Chat\SendChatMessageHandler;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
@@ -42,6 +43,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         private RateLimitStorageInterface $storage,
         private ChatLimitsRepositoryInterface $limitsRepository,
         private ChatTokenTrackerInterface $tokenTracker,
+        private ClockInterface $clock,
         private ?RateLimitNotifier $notifier = null,
     ) {
     }
@@ -126,7 +128,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
 
         // 5. Hourly per-IP limit
         $ipCount = 0;
-        $ipResetAt = time() + self::HOURLY_WINDOW;
+        $ipResetAt = $this->clock->now()->getTimestamp() + self::HOURLY_WINDOW;
 
         if ($limits->ipRequestsPerHour > 0) {
             $result = $this->storage->hit('chat:ip:' . $ip, self::HOURLY_WINDOW);
@@ -145,7 +147,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         }
 
         $sessionCount = 0;
-        $sessionResetAt = time() + self::HOURLY_WINDOW;
+        $sessionResetAt = $this->clock->now()->getTimestamp() + self::HOURLY_WINDOW;
 
         if ($sessionToken !== '') {
             // 6. Hourly per-session limit
@@ -214,7 +216,7 @@ final readonly class ConsumerChatRateLimitMiddleware implements MiddlewareInterf
         int $resetAt,
         string $scope,
     ): ResponseInterface {
-        $retryAfter = max(0, $resetAt - time());
+        $retryAfter = max(0, $resetAt - $this->clock->now()->getTimestamp());
 
         // Fire notification email (best-effort, never blocks response)
         if ($this->notifier !== null) {

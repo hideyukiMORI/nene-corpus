@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -23,12 +24,17 @@ final readonly class OrganizationServiceProvider implements ServiceProviderInter
                 OrganizationRepositoryInterface::class,
                 static function (ContainerInterface $c): OrganizationRepositoryInterface {
                     $query = $c->get(DatabaseQueryExecutorInterface::class);
+                    $clock = $c->get(ClockInterface::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoOrganizationRepository($query);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoOrganizationRepository($query, $clock);
                 },
             )
             ->set(

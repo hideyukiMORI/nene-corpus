@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Config\EnvironmentVariableUpdater;
@@ -95,6 +96,7 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                 static function (ContainerInterface $container): SendDailyReportUseCase {
                     $mailer = $container->get(MailerInterface::class);
                     $repo   = $container->get(DailyReportRepositoryInterface::class);
+                    $clock  = $container->get(ClockInterface::class);
 
                     if (!$mailer instanceof MailerInterface) {
                         throw new LogicException('Mailer service is invalid.');
@@ -104,7 +106,11 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                         throw new LogicException('DailyReportRepository service is invalid.');
                     }
 
-                    return new SendDailyReportUseCase($mailer, $repo);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new SendDailyReportUseCase($mailer, $repo, $clock);
                 },
             )
             ->set(
@@ -113,6 +119,7 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                     $mailer      = $container->get(MailerInterface::class);
                     $storage     = $container->get(RateLimitStorageInterface::class);
                     $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
+                    $clock       = $container->get(ClockInterface::class);
 
                     if (!$mailer instanceof MailerInterface) {
                         throw new LogicException('Mailer service is invalid.');
@@ -126,7 +133,11 @@ final readonly class NotificationServiceProvider implements ServiceProviderInter
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new RateLimitNotifier($mailer, $storage, $orgIdHolder);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new RateLimitNotifier($mailer, $storage, $orgIdHolder, $clock);
                 },
             )
             ->set(

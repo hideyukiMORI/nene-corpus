@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeneCorpus\AdminAuth;
 
+use Nene2\Http\ClockInterface;
+
 final readonly class ConfirmPasswordResetUseCase implements ConfirmPasswordResetUseCaseInterface
 {
     private const MIN_PASSWORD_LENGTH = 8;
@@ -11,6 +13,7 @@ final readonly class ConfirmPasswordResetUseCase implements ConfirmPasswordReset
     public function __construct(
         private AdminPasswordResetRepositoryInterface $resets,
         private AdminUserRepositoryInterface $users,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -27,7 +30,7 @@ final readonly class ConfirmPasswordResetUseCase implements ConfirmPasswordReset
         $tokenHash = hash('sha256', $rawToken);
         $reset = $this->resets->findByTokenHash($tokenHash);
 
-        if ($reset === null || $reset->isExpired() || $reset->isUsed()) {
+        if ($reset === null || $reset->isExpired($this->clock) || $reset->isUsed()) {
             throw new InvalidPasswordResetTokenException('The reset token is invalid, expired, or already used.');
         }
 
