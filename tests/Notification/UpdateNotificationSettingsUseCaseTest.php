@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Tests\Notification;
 
+use Nene2\Install\EnvironmentWriter;
 use NeneCorpus\Config\EnvironmentVariableUpdater;
 use NeneCorpus\Install\EnvFileWriter;
 use NeneCorpus\Notification\GetNotificationSettingsUseCase;
@@ -85,7 +86,7 @@ final class UpdateNotificationSettingsUseCaseTest extends TestCase
     private function makeUseCase(): UpdateNotificationSettingsUseCase
     {
         return new UpdateNotificationSettingsUseCase(
-            new EnvFileWriter($this->tmpDir),
+            new EnvFileWriter($this->tmpDir, new EnvironmentWriter()),
             new EnvironmentVariableUpdater(),
             new GetNotificationSettingsUseCase(),
         );

@@ -9,6 +9,7 @@ use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\JsonResponseFactory;
+use Nene2\Install\EnvironmentWriter;
 use NeneCorpus\Http\BasePathMiddleware;
 use NeneCorpus\Http\RuntimeServiceProvider;
 use Psr\Container\ContainerInterface;
@@ -55,7 +56,7 @@ final readonly class InstallServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Project root service is invalid.');
                     }
 
-                    return new EnvFileWriter($projectRoot);
+                    return new EnvFileWriter($projectRoot, new EnvironmentWriter());
                 },
             )
             ->set(
