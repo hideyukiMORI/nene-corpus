@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\AdminAuth;
 
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\Http\RequestMetadataExtractor;
 use Psr\Http\Message\ResponseInterface;
@@ -31,6 +32,7 @@ final readonly class AdminLoginRateLimitMiddleware implements MiddlewareInterfac
     public function __construct(
         private ProblemDetailsResponseFactory $problemDetails,
         private RateLimitStorageInterface $storage,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -49,7 +51,7 @@ final readonly class AdminLoginRateLimitMiddleware implements MiddlewareInterfac
         $result = $this->storage->hit($key, self::WINDOW_SECONDS);
 
         if ($result['count'] > self::MAX_ATTEMPTS) {
-            $retryAfter = max(0, $result['reset_at'] - time());
+            $retryAfter = max(0, $result['reset_at'] - $this->clock->now()->getTimestamp());
             $response   = $this->problemDetails->create(
                 $request,
                 'too_many_requests',

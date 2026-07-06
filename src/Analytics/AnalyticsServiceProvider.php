@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
@@ -42,12 +43,17 @@ final readonly class AnalyticsServiceProvider implements ServiceProviderInterfac
                 GetAnalyticsSummaryUseCaseInterface::class,
                 static function (ContainerInterface $container): GetAnalyticsSummaryUseCaseInterface {
                     $repo = $container->get(AnalyticsRepositoryInterface::class);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!$repo instanceof AnalyticsRepositoryInterface) {
                         throw new LogicException('Analytics repository service is invalid.');
                     }
 
-                    return new GetAnalyticsSummaryUseCase($repo);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new GetAnalyticsSummaryUseCase($repo, $clock);
                 },
             )
             ->set(

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NeneCorpus\AdminAuth;
 
+use Nene2\Http\ClockInterface;
+
 final readonly class AdminPasswordReset
 {
     public function __construct(
@@ -16,9 +18,9 @@ final readonly class AdminPasswordReset
     ) {
     }
 
-    public function isExpired(): bool
+    public function isExpired(ClockInterface $clock): bool
     {
-        return strtotime($this->expiresAt) < time();
+        return strtotime($this->expiresAt) < $clock->now()->getTimestamp();
     }
 
     public function isUsed(): bool

@@ -6,6 +6,7 @@ namespace NeneCorpus\Session;
 
 use InvalidArgumentException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChatSessionRepository implements ChatSessionRepositoryInterface
@@ -17,6 +18,7 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -108,7 +110,7 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
 
     public function deleteOlderThan(int $days): int
     {
-        $cutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
+        $cutoff = gmdate('Y-m-d H:i:s', $this->clock->now()->getTimestamp() - $days * 86400);
 
         $before = $this->countAll();
         $this->query->execute('DELETE FROM chat_sessions WHERE created_at < ? AND organization_id = ?', [$cutoff, $this->orgId()]);
@@ -145,6 +147,6 @@ final readonly class PdoChatSessionRepository implements ChatSessionRepositoryIn
 
     private function now(): string
     {
-        return gmdate('Y-m-d H:i:s');
+        return $this->clock->now()->format('Y-m-d H:i:s');
     }
 }

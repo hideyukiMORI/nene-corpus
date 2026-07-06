@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Notification;
 
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailMessage;
 use NeneCorpus\Mail\MailSendException;
@@ -13,6 +14,7 @@ final readonly class SendDailyReportUseCase
     public function __construct(
         private MailerInterface $mailer,
         private DailyReportRepositoryInterface $reportRepository,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -26,7 +28,7 @@ final readonly class SendDailyReportUseCase
             throw new NotificationException('SMTP is not configured.');
         }
 
-        $date  = $date ?? date('Y-m-d');
+        $date  = $date ?? $this->clock->now()->format('Y-m-d');
         $stats = $this->reportRepository->getStats($date);
 
         $subject = sprintf('[NeNe Corpus] 日次チャットレポート %s', $date);

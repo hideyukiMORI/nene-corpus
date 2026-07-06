@@ -16,9 +16,11 @@ use Nene2\Database\PdoDatabaseTransactionManager;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Http\ResponseEmitter;
 use Nene2\Http\RuntimeApplicationFactory;
+use Nene2\Http\UtcClock;
 use Nene2\Log\MonologLoggerFactory;
 use Nene2\Log\RequestIdHolder;
 use NeneCorpus\AdminAuth\AdminAuthServiceProvider;
@@ -46,6 +48,11 @@ final readonly class RuntimeServiceProvider implements ServiceProviderInterface
         $builder->addProvider(new ApplicationServiceProvider());
 
         $builder
+            // Single source of "now" for the whole app. Inject ClockInterface into
+            // use cases/services instead of reading the wall clock (time()/date())
+            // directly; UtcClock keeps production behaviour identical while tests can
+            // bind a fixed clock for determinism.
+            ->set(ClockInterface::class, static fn (ContainerInterface $container): ClockInterface => new UtcClock())
             ->set(
                 ConfigLoader::class,
                 static function (ContainerInterface $container): ConfigLoader {

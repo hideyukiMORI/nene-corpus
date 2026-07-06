@@ -10,6 +10,7 @@ use NeneCorpus\Notification\DailyReportRepositoryInterface;
 use NeneCorpus\Notification\DailyReportStats;
 use NeneCorpus\Notification\NotificationException;
 use NeneCorpus\Notification\SendDailyReportUseCase;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class SendDailyReportUseCaseTest extends TestCase
@@ -35,7 +36,7 @@ final class SendDailyReportUseCaseTest extends TestCase
         $this->expectException(NotificationException::class);
         $this->expectExceptionMessage('SMTP is not configured');
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('to@example.com', '2026-01-15');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('to@example.com', '2026-01-15');
     }
 
     public function test_sends_mail_and_returns_stats(): void
@@ -49,7 +50,7 @@ final class SendDailyReportUseCaseTest extends TestCase
         $mailer->method('isConfigured')->willReturn(true);
         $mailer->expects(self::once())->method('send');
 
-        $result = (new SendDailyReportUseCase($mailer, $repo))->execute('ops@example.com', '2026-01-15');
+        $result = (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('ops@example.com', '2026-01-15');
 
         self::assertSame($stats, $result);
     }
@@ -68,7 +69,7 @@ final class SendDailyReportUseCaseTest extends TestCase
             },
         );
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('report@example.com', '2026-01-15');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('report@example.com', '2026-01-15');
 
         self::assertNotNull($capturedMessage);
         self::assertSame('report@example.com', $capturedMessage->to);
@@ -88,7 +89,7 @@ final class SendDailyReportUseCaseTest extends TestCase
             },
         );
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('to@example.com', '2026-01-15');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('to@example.com', '2026-01-15');
 
         self::assertNotNull($capturedMessage);
         self::assertStringContainsString('2026-01-15', $capturedMessage->subject);
@@ -108,7 +109,7 @@ final class SendDailyReportUseCaseTest extends TestCase
             },
         );
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('to@example.com', '2026-01-15');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('to@example.com', '2026-01-15');
 
         self::assertNotNull($capturedMessage);
         // Stats values should appear in the HTML body
@@ -132,14 +133,14 @@ final class SendDailyReportUseCaseTest extends TestCase
         $mailer = $this->createStub(MailerInterface::class);
         $mailer->method('isConfigured')->willReturn(true);
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('to@example.com', '2025-12-31');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('to@example.com', '2025-12-31');
 
         self::assertSame('2025-12-31', $capturedDate);
     }
 
     public function test_uses_today_when_date_not_specified(): void
     {
-        $today = date('Y-m-d');
+        $today = '2026-01-15'; // 固定時計の日付に一致
         $capturedDate = null;
 
         $repo = $this->createStub(DailyReportRepositoryInterface::class);
@@ -153,7 +154,7 @@ final class SendDailyReportUseCaseTest extends TestCase
         $mailer = $this->createStub(MailerInterface::class);
         $mailer->method('isConfigured')->willReturn(true);
 
-        (new SendDailyReportUseCase($mailer, $repo))->execute('to@example.com');
+        (new SendDailyReportUseCase($mailer, $repo, new FixedClock()))->execute('to@example.com');
 
         self::assertSame($today, $capturedDate);
     }

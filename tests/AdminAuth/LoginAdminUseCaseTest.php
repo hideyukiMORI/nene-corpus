@@ -12,6 +12,7 @@ use NeneCorpus\AdminAuth\LoginAdminInput;
 use NeneCorpus\AdminAuth\LoginAdminUseCase;
 use NeneCorpus\AdminAuth\PdoAdminUserRepository;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class LoginAdminUseCaseTest extends TestCase
@@ -47,6 +48,7 @@ final class LoginAdminUseCaseTest extends TestCase
         $useCase = new LoginAdminUseCase(
             new PdoAdminUserRepository($this->executor),
             new LocalBearerTokenVerifier('test-jwt-secret'),
+            new FixedClock(),
         );
 
         $output = $useCase->execute(new LoginAdminInput(
@@ -64,6 +66,7 @@ final class LoginAdminUseCaseTest extends TestCase
         $useCase = new LoginAdminUseCase(
             new PdoAdminUserRepository($this->executor),
             new LocalBearerTokenVerifier('test-jwt-secret'),
+            new FixedClock(),
         );
 
         $this->expectException(\NeneCorpus\AdminAuth\InvalidAdminCredentialsException::class);

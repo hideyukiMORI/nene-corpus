@@ -23,6 +23,7 @@ use NeneCorpus\Session\ChatSession;
 use NeneCorpus\Session\PdoChatSessionRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -61,7 +62,7 @@ final class SendChatMessageUseCaseEdgeCaseTest extends TestCase
         $holder = new RequestScopedOrgIdHolder();
         $holder->setId(1);
 
-        $this->sessions = new PdoChatSessionRepository($this->executor, $holder);
+        $this->sessions = new PdoChatSessionRepository($this->executor, $holder, new FixedClock());
         $this->messages = new PdoChatMessageRepository($this->executor, $holder);
     }
 

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Analytics;
 
+use Nene2\Http\ClockInterface;
+
 final readonly class GetAnalyticsSummaryUseCase implements GetAnalyticsSummaryUseCaseInterface
 {
     public function __construct(
         private AnalyticsRepositoryInterface $repo,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -45,7 +48,7 @@ final readonly class GetAnalyticsSummaryUseCase implements GetAnalyticsSummaryUs
         $result = [];
 
         for ($i = $days - 1; $i >= 0; $i--) {
-            $date = gmdate('Y-m-d', time() - $i * 86400);
+            $date = gmdate('Y-m-d', $this->clock->now()->getTimestamp() - $i * 86400);
             $data = $byDate[$date] ?? null;
 
             $result[] = new DailyCount(

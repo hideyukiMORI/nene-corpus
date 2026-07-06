@@ -12,6 +12,7 @@ use NeneCorpus\SystemConfig\InvalidTenantResolutionModeException;
 use NeneCorpus\SystemConfig\PdoSystemConfigRepository;
 use NeneCorpus\SystemConfig\UpdateSystemConfigInput;
 use NeneCorpus\SystemConfig\UpdateSystemConfigUseCase;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -38,7 +39,7 @@ final class SystemConfigUseCaseTest extends TestCase
         TenancySchemaSetup::createSystemConfig($this->executor);
         TenancySchemaSetup::seedSystemConfig($this->executor);
 
-        $this->repository = new PdoSystemConfigRepository($this->executor);
+        $this->repository = new PdoSystemConfigRepository($this->executor, new FixedClock());
     }
 
     public function test_get_returns_default_config(): void

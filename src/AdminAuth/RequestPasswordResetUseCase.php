@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\AdminAuth;
 
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Mail\MailerInterface;
 use NeneCorpus\Mail\MailMessage;
 
@@ -16,6 +17,7 @@ final readonly class RequestPasswordResetUseCase implements RequestPasswordReset
         private AdminUserRepositoryInterface $users,
         private AdminPasswordResetRepositoryInterface $resets,
         private MailerInterface $mailer,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -39,8 +41,8 @@ final readonly class RequestPasswordResetUseCase implements RequestPasswordReset
 
         $rawToken = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $rawToken);
-        $now = gmdate('Y-m-d H:i:s');
-        $expiresAt = gmdate('Y-m-d H:i:s', time() + self::TOKEN_TTL_SECONDS);
+        $now = $this->clock->now()->format('Y-m-d H:i:s');
+        $expiresAt = gmdate('Y-m-d H:i:s', $this->clock->now()->getTimestamp() + self::TOKEN_TTL_SECONDS);
 
         $this->resets->save(new AdminPasswordReset(
             tokenHash: $tokenHash,

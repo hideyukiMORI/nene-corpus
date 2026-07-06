@@ -10,6 +10,7 @@ use NeneCorpus\Mail\MailSendException;
 use NeneCorpus\Notification\NotificationConfig;
 use NeneCorpus\Notification\RateLimitNotifier;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class RateLimitNotifierTest extends TestCase
@@ -41,7 +42,7 @@ final class RateLimitNotifierTest extends TestCase
         $mailer->expects(self::never())->method('send');
         $storage->expects(self::never())->method('hit');
 
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder(), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(enabled: false),
             'ops@example.com',
             '1.2.3.4',
@@ -57,7 +58,7 @@ final class RateLimitNotifierTest extends TestCase
         $mailer->expects(self::once())->method('isConfigured')->willReturn(false);
         $mailer->expects(self::never())->method('send');
 
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder(), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(enabled: true),
             'ops@example.com',
             '1.2.3.4',
@@ -76,7 +77,7 @@ final class RateLimitNotifierTest extends TestCase
         // Both calls: daily hits tracking + cooldown gate
         $storage->method('hit')->willReturn(['count' => 1, 'reset_at' => time() + 3600]);
 
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder(), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '1.2.3.4',
@@ -103,7 +104,7 @@ final class RateLimitNotifierTest extends TestCase
             },
         );
 
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder(), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '192.168.0.1',
@@ -121,7 +122,7 @@ final class RateLimitNotifierTest extends TestCase
         $storage->method('hit')->willReturn(['count' => 1, 'reset_at' => time() + 3600]);
 
         // Must not throw
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder()))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder(), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '10.0.0.1',
@@ -138,7 +139,7 @@ final class RateLimitNotifierTest extends TestCase
 
         $mailer->method('isConfigured')->willReturn(true);
 
-        $today = date('Y-m-d');
+        $today = '2026-01-15'; // 固定時計の日付に一致
         $orgId = 1;
         $hitsKeyPrefix = 'notify:ratelimit:hits:' . $orgId . ':' . $today;
 
@@ -151,7 +152,7 @@ final class RateLimitNotifierTest extends TestCase
             ))
             ->willReturn(['count' => 2, 'reset_at' => time() + 86400]);
 
-        (new RateLimitNotifier($mailer, $storage, $this->makeHolder($orgId)))->notifyIfNeeded(
+        (new RateLimitNotifier($mailer, $storage, $this->makeHolder($orgId), new FixedClock()))->notifyIfNeeded(
             $this->makeConfig(),
             'ops@example.com',
             '1.2.3.4',

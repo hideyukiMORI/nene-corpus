@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
@@ -41,6 +42,7 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                 static function (ContainerInterface $container): ChatTokenTrackerInterface {
                     $query = $container->get(DatabaseQueryExecutorInterface::class);
                     $orgIdHolder = $container->get(RequestScopedOrgIdHolder::class);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
@@ -50,7 +52,11 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoChatTokenTracker($query, $orgIdHolder);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoChatTokenTracker($query, $orgIdHolder, $clock);
                 },
             )
             ->set(

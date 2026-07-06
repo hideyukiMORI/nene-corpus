@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace NeneCorpus\SystemConfig;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 
 final readonly class PdoSystemConfigRepository implements SystemConfigRepositoryInterface
 {
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -25,7 +27,7 @@ final readonly class PdoSystemConfigRepository implements SystemConfigRepository
 
     public function set(string $key, string $value): void
     {
-        $now = date('Y-m-d H:i:s');
+        $now = $this->clock->now()->format('Y-m-d H:i:s');
 
         // Use REPLACE INTO for broad DB compatibility (MySQL and SQLite both support it).
         // MySQL: REPLACE = DELETE + INSERT on PK conflict.

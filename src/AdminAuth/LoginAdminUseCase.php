@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\AdminAuth;
 
 use Nene2\Auth\TokenIssuerInterface;
+use Nene2\Http\ClockInterface;
 
 final readonly class LoginAdminUseCase implements LoginAdminUseCaseInterface
 {
@@ -16,6 +17,7 @@ final readonly class LoginAdminUseCase implements LoginAdminUseCaseInterface
     public function __construct(
         private AdminUserRepositoryInterface $adminUsers,
         private ?TokenIssuerInterface $tokenIssuer,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -32,7 +34,7 @@ final readonly class LoginAdminUseCase implements LoginAdminUseCaseInterface
             throw new InvalidAdminCredentialsException('Invalid email or password.');
         }
 
-        $now = time();
+        $now = $this->clock->now()->getTimestamp();
         $expiresAt = $now + self::TOKEN_TTL_SECONDS;
 
         $token = $this->tokenIssuer->issue([

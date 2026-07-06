@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Middleware\RateLimitStorageInterface;
 use NeneCorpus\ChatLimits\ChatLimitsRepositoryInterface;
 use NeneCorpus\ChatLimits\ChatTokenTrackerInterface;
@@ -28,6 +29,7 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                 static function (ContainerInterface $container): RateLimitStorageInterface {
                     $query  = $container->get(DatabaseQueryExecutorInterface::class);
                     $holder = $container->get(RequestScopedOrgIdHolder::class);
+                    $clock  = $container->get(ClockInterface::class);
 
                     if (!$query instanceof DatabaseQueryExecutorInterface) {
                         throw new LogicException('Database query executor service is invalid.');
@@ -37,7 +39,11 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoRateLimitStorage($query, $holder);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoRateLimitStorage($query, $holder, $clock);
                 },
             )
             ->set(
@@ -47,6 +53,7 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                     $storage = $container->get(RateLimitStorageInterface::class);
                     $limitsRepository = $container->get(ChatLimitsRepositoryInterface::class);
                     $tokenTracker = $container->get(ChatTokenTrackerInterface::class);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!$problemDetails instanceof ProblemDetailsResponseFactory) {
                         throw new LogicException('Problem details response factory service is invalid.');
@@ -64,10 +71,14 @@ final readonly class RateLimitServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Chat token tracker service is invalid.');
                     }
 
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
                     /** @var RateLimitNotifier|null $notifier */
                     $notifier = $container->has(RateLimitNotifier::class) ? $container->get(RateLimitNotifier::class) : null;
 
-                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository, $tokenTracker, $notifier instanceof RateLimitNotifier ? $notifier : null);
+                    return new ConsumerChatRateLimitMiddleware($problemDetails, $storage, $limitsRepository, $tokenTracker, $clock, $notifier instanceof RateLimitNotifier ? $notifier : null);
                 },
             );
     }

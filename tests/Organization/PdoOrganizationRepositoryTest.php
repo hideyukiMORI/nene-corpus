@@ -11,6 +11,7 @@ use NeneCorpus\Organization\Organization;
 use NeneCorpus\Organization\OrganizationNotFoundException;
 use NeneCorpus\Organization\OrganizationSlugConflictException;
 use NeneCorpus\Organization\PdoOrganizationRepository;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -37,7 +38,7 @@ final class PdoOrganizationRepositoryTest extends TestCase
         TenancySchemaSetup::createOrganizations($this->executor);
         TenancySchemaSetup::seedDefaultOrganization($this->executor);
 
-        $this->repository = new PdoOrganizationRepository($this->executor);
+        $this->repository = new PdoOrganizationRepository($this->executor, new FixedClock());
     }
 
     public function test_findById_returns_organization(): void

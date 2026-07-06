@@ -9,6 +9,7 @@ use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\ChatLimits\PdoChatTokenTracker;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use PHPUnit\Framework\TestCase;
 
@@ -47,7 +48,7 @@ final class PdoChatTokenTrackerTest extends TestCase
 
         $this->orgIdHolder = new RequestScopedOrgIdHolder();
         $this->orgIdHolder->setId(1);
-        $this->tracker = new PdoChatTokenTracker($this->executor, $this->orgIdHolder);
+        $this->tracker = new PdoChatTokenTracker($this->executor, $this->orgIdHolder, new FixedClock());
     }
 
     // ── ゼロトークン ──────────────────────────────────────────────────
@@ -121,11 +122,11 @@ final class PdoChatTokenTrackerTest extends TestCase
         $now = gmdate('Y-m-d H:i:s');
         $this->executor->execute(
             'INSERT INTO rate_limit_buckets (bucket_key, hit_count, reset_at, updated_at) VALUES (?, ?, ?, ?)',
-            ['chat:tokens:ip:5.5.5.5', 9999, time() - 1, $now],
+            ['chat:tokens:ip:5.5.5.5', 9999, 1, $now],
         );
         $this->executor->execute(
             'INSERT INTO rate_limit_buckets (bucket_key, hit_count, reset_at, updated_at) VALUES (?, ?, ?, ?)',
-            ['chat:tokens:global', 9999, time() - 1, $now],
+            ['chat:tokens:global', 9999, 1, $now],
         );
 
         // 期限切れバケットは 0 として返す
@@ -139,7 +140,7 @@ final class PdoChatTokenTrackerTest extends TestCase
         $now = gmdate('Y-m-d H:i:s');
         $this->executor->execute(
             'INSERT INTO rate_limit_buckets (bucket_key, hit_count, reset_at, updated_at) VALUES (?, ?, ?, ?)',
-            ['chat:tokens:ip:6.6.6.6', 9999, time() - 1, $now],
+            ['chat:tokens:ip:6.6.6.6', 9999, 1, $now],
         );
 
         // 新しくトークンを track → リセットして 100 になる（9999 に加算されない）
