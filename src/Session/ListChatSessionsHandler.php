@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\Session;
 
 use Nene2\Http\JsonResponseFactory;
+use Nene2\Http\PaginationQueryParser;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,11 +19,15 @@ final readonly class ListChatSessionsHandler
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $query = $request->getQueryParams();
-        $limit = isset($query['limit']) ? (int) $query['limit'] : 50;
-        $offset = isset($query['offset']) ? (int) $query['offset'] : 0;
+        // Bound the page size structurally: an unbounded ?limit= is a DoS / limit-injection
+        // vector. The parser keeps the historical default of 50 and rejects out-of-range
+        // values with 422 (response envelope is intentionally left unchanged here).
+        $pagination = PaginationQueryParser::parse($request, defaultLimit: 50, maxLimit: 200);
 
-        $output = $this->useCase->execute(new ListChatSessionsInput(limit: $limit, offset: $offset));
+        $output = $this->useCase->execute(new ListChatSessionsInput(
+            limit: $pagination->limit,
+            offset: $pagination->offset,
+        ));
 
         return $this->response->create([
             'sessions' => array_map(
