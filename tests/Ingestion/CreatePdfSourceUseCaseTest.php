@@ -19,6 +19,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\SampleTextPdf;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -74,9 +75,9 @@ final class CreatePdfSourceUseCaseTest extends TestCase
     {
         $useCase = new CreatePdfSourceUseCase(
             $this->kit->transactionManager,
-            fn (DatabaseQueryExecutorInterface $e) => new PdoSourceRepository($e, $this->orgIdHolder),
-            fn (DatabaseQueryExecutorInterface $e) => new PdoDocumentRepository($e, $this->orgIdHolder),
-            fn (DatabaseQueryExecutorInterface $e) => new PdoChunkRepository($e, $this->orgIdHolder),
+            fn (DatabaseQueryExecutorInterface $e) => new PdoSourceRepository($e, $this->orgIdHolder, new FixedClock()),
+            fn (DatabaseQueryExecutorInterface $e) => new PdoDocumentRepository($e, $this->orgIdHolder, new FixedClock()),
+            fn (DatabaseQueryExecutorInterface $e) => new PdoChunkRepository($e, $this->orgIdHolder, new FixedClock()),
             $this->kit->queryExecutor,
             new PdfUploadValidator(),
             new PdfTextExtractor(),
@@ -93,13 +94,13 @@ final class CreatePdfSourceUseCaseTest extends TestCase
         self::assertSame(1, $output->documentCount);
         self::assertSame(1, $output->chunkCount);
 
-        $source = (new PdoSourceRepository($this->kit->queryExecutor, $this->orgIdHolder))->findById($output->sourceId);
+        $source = (new PdoSourceRepository($this->kit->queryExecutor, $this->orgIdHolder, new FixedClock()))->findById($output->sourceId);
         self::assertNotNull($source);
         self::assertSame('pdf', $source->sourceType->value);
         self::assertSame('ready', $source->status->value);
 
-        $chunks = (new PdoChunkRepository($this->kit->queryExecutor, $this->orgIdHolder))->findByDocumentId(
-            (new PdoDocumentRepository($this->kit->queryExecutor, $this->orgIdHolder))->findBySourceId($output->sourceId, 1, 0)[0]->id ?? 0,
+        $chunks = (new PdoChunkRepository($this->kit->queryExecutor, $this->orgIdHolder, new FixedClock()))->findByDocumentId(
+            (new PdoDocumentRepository($this->kit->queryExecutor, $this->orgIdHolder, new FixedClock()))->findBySourceId($output->sourceId, 1, 0)[0]->id ?? 0,
         );
         self::assertCount(1, $chunks);
         self::assertSame(1, $chunks[0]->pageNumber);
@@ -135,8 +136,8 @@ final class CreatePdfSourceUseCaseTest extends TestCase
 
         $useCase = new CreatePdfSourceUseCase(
             $this->kit->transactionManager,
-            fn (DatabaseQueryExecutorInterface $e) => new PdoSourceRepository($e, $this->orgIdHolder),
-            fn (DatabaseQueryExecutorInterface $e) => new PdoDocumentRepository($e, $this->orgIdHolder),
+            fn (DatabaseQueryExecutorInterface $e) => new PdoSourceRepository($e, $this->orgIdHolder, new FixedClock()),
+            fn (DatabaseQueryExecutorInterface $e) => new PdoDocumentRepository($e, $this->orgIdHolder, new FixedClock()),
             fn (DatabaseQueryExecutorInterface $e) => $failingChunks,
             $this->kit->queryExecutor,
             new PdfUploadValidator(),
@@ -155,10 +156,10 @@ final class CreatePdfSourceUseCaseTest extends TestCase
             self::assertSame('simulated chunk write failure', $exception->getMessage());
         }
 
-        $documents = (new PdoDocumentRepository($this->kit->queryExecutor, $this->orgIdHolder))->findBySourceId(1, 100, 0);
+        $documents = (new PdoDocumentRepository($this->kit->queryExecutor, $this->orgIdHolder, new FixedClock()))->findBySourceId(1, 100, 0);
         self::assertSame([], $documents, 'The transactional document insert must have been rolled back.');
 
-        $sourceRepository = new PdoSourceRepository($this->kit->queryExecutor, $this->orgIdHolder);
+        $sourceRepository = new PdoSourceRepository($this->kit->queryExecutor, $this->orgIdHolder, new FixedClock());
         $failedSource = $sourceRepository->findById(1);
         self::assertNotNull($failedSource, 'A single compensating Failed source row should exist.');
         self::assertSame('failed', $failedSource->status->value);

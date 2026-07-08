@@ -11,6 +11,7 @@ use NeneCorpus\ChatLimits\ChatLimitsSettings;
 use NeneCorpus\ChatLimits\PdoChatLimitsRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -44,7 +45,7 @@ final class PdoChatLimitsRepositoryOrgIsolationTest extends TestCase
     {
         $this->orgIdHolder->setId($orgId);
 
-        return new PdoChatLimitsRepository($this->executor, $this->orgIdHolder);
+        return new PdoChatLimitsRepository($this->executor, $this->orgIdHolder, new FixedClock());
     }
 
     private function settingsWithMaxChars(int $maxChars): ChatLimitsSettings

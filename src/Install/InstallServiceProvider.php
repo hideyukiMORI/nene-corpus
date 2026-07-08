@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use Nene2\Install\EnvironmentWriter;
 use NeneCorpus\Http\BasePathMiddleware;
@@ -39,12 +40,17 @@ final readonly class InstallServiceProvider implements ServiceProviderInterface
                 InstallLock::class,
                 static function (ContainerInterface $container): InstallLock {
                     $projectRoot = $container->get(RuntimeServiceProvider::PROJECT_ROOT);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!is_string($projectRoot) || $projectRoot === '') {
                         throw new LogicException('Project root service is invalid.');
                     }
 
-                    return new InstallLock($projectRoot);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new InstallLock($projectRoot, $clock);
                 },
             )
             ->set(
@@ -72,7 +78,18 @@ final readonly class InstallServiceProvider implements ServiceProviderInterface
                 },
             )
             ->set(DatabaseConnectionTester::class, static fn (): DatabaseConnectionTester => new DatabaseConnectionTester())
-            ->set(InstallAdminUserCreator::class, static fn (): InstallAdminUserCreator => new InstallAdminUserCreator())
+            ->set(
+                InstallAdminUserCreator::class,
+                static function (ContainerInterface $container): InstallAdminUserCreator {
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new InstallAdminUserCreator($clock);
+                },
+            )
             ->set(
                 GetInstallStatusUseCase::class,
                 static function (ContainerInterface $container): GetInstallStatusUseCase {

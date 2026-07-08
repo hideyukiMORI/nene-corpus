@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Install;
 
+use Nene2\Http\ClockInterface;
+
 final readonly class InstallLock
 {
     public function __construct(
         private string $projectRoot,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -26,7 +29,7 @@ final readonly class InstallLock
 
         $written = file_put_contents(
             $this->lockPath(),
-            gmdate('c') . PHP_EOL,
+            $this->clock->now()->format('c') . PHP_EOL,
             LOCK_EX,
         );
 

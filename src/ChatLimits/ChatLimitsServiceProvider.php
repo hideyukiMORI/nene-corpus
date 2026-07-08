@@ -34,7 +34,13 @@ final readonly class ChatLimitsServiceProvider implements ServiceProviderInterfa
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoChatLimitsRepository($query, $orgIdHolder);
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoChatLimitsRepository($query, $orgIdHolder, $clock);
                 },
             )
             ->set(

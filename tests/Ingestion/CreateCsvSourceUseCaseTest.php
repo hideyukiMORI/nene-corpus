@@ -19,6 +19,7 @@ use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class CreateCsvSourceUseCaseTest extends TestCase
@@ -74,9 +75,9 @@ Widget B,Another widget,200
 CSV;
 
         $useCase = new CreateCsvSourceUseCase(
-            new PdoSourceRepository($this->executor, $this->orgIdHolder),
-            new PdoDocumentRepository($this->executor, $this->orgIdHolder),
-            new PdoChunkRepository($this->executor, $this->orgIdHolder),
+            new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()),
+            new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock()),
+            new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock()),
             new CsvUploadValidator(),
             new CsvParser(),
             new UploadStorage($this->uploadDirectory),
@@ -97,13 +98,13 @@ CSV;
         self::assertSame(2, $output->documentCount);
         self::assertSame(2, $output->chunkCount);
 
-        $source = (new PdoSourceRepository($this->executor, $this->orgIdHolder))->findById($output->sourceId);
+        $source = (new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()))->findById($output->sourceId);
         self::assertNotNull($source);
         self::assertSame('csv', $source->sourceType->value);
         self::assertSame('ready', $source->status->value);
         self::assertStringStartsWith('storage/uploads/', $source->storagePath);
 
-        $documents = (new PdoDocumentRepository($this->executor, $this->orgIdHolder))->findBySourceId($output->sourceId, 10, 0);
+        $documents = (new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock()))->findBySourceId($output->sourceId, 10, 0);
         self::assertCount(2, $documents);
         self::assertSame('Widget A', $documents[0]->title);
     }

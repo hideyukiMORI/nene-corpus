@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Http\RuntimeServiceProvider;
@@ -39,7 +40,13 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoDocumentRepository($query, $orgIdHolder);
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoDocumentRepository($query, $orgIdHolder, $clock);
                 },
             )
             ->set(
@@ -119,6 +126,7 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                     return new DeleteDocumentUseCase(
                         self::documents($container),
                         self::chunks($container),
+                        self::clock($container),
                     );
                 },
             )
@@ -200,6 +208,17 @@ final readonly class DocumentServiceProvider implements ServiceProviderInterface
                     );
                 },
             );
+    }
+
+    private static function clock(ContainerInterface $container): ClockInterface
+    {
+        $clock = $container->get(ClockInterface::class);
+
+        if (!$clock instanceof ClockInterface) {
+            throw new LogicException('Clock service is invalid.');
+        }
+
+        return $clock;
     }
 
     private static function documents(ContainerInterface $container): DocumentRepositoryInterface

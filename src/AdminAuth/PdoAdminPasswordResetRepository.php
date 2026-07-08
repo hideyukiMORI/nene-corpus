@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace NeneCorpus\AdminAuth;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 
 final readonly class PdoAdminPasswordResetRepository implements AdminPasswordResetRepositoryInterface
 {
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -46,7 +48,7 @@ final readonly class PdoAdminPasswordResetRepository implements AdminPasswordRes
     {
         $this->query->execute(
             'UPDATE admin_password_resets SET used_at = ? WHERE token_hash = ?',
-            [gmdate('Y-m-d H:i:s'), $tokenHash],
+            [$this->clock->now()->format('Y-m-d H:i:s'), $tokenHash],
         );
     }
 
@@ -54,7 +56,7 @@ final readonly class PdoAdminPasswordResetRepository implements AdminPasswordRes
     {
         $this->query->execute(
             'DELETE FROM admin_password_resets WHERE expires_at < ? OR used_at IS NOT NULL',
-            [gmdate('Y-m-d H:i:s')],
+            [$this->clock->now()->format('Y-m-d H:i:s')],
         );
     }
 }

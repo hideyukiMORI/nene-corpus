@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\Appearance;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoAppearanceSettingsRepository implements AppearanceSettingsRepositoryInterface
@@ -12,6 +13,7 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -46,7 +48,7 @@ final readonly class PdoAppearanceSettingsRepository implements AppearanceSettin
     public function save(AppearanceSettings $settings): void
     {
         $orgId = $this->orgIdHolder->getId() ?? 1;
-        $now = gmdate('Y-m-d H:i:s');
+        $now = $this->clock->now()->format('Y-m-d H:i:s');
         $themeJson = json_encode($settings->theme->toArray(), JSON_THROW_ON_ERROR);
         $heroJson = json_encode($settings->hero->toArray(), JSON_THROW_ON_ERROR);
         $chatJson = json_encode($settings->chat->toArray(), JSON_THROW_ON_ERROR);

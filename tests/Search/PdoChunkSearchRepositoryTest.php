@@ -18,6 +18,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChunkSearchRepositoryTest extends TestCase
@@ -51,7 +52,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
         $this->orgIdHolder = new RequestScopedOrgIdHolder();
         $this->orgIdHolder->setId(1);
 
-        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Manual',
             sourceType: SourceType::Pdf,
@@ -59,14 +60,14 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             storagePath: 'storage/uploads/manual.pdf',
         ));
 
-        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $this->documentId = $documentRepository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Safety guide',
             position: 0,
         ));
 
-        $this->chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $this->chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
     }
 
     public function test_search_returns_chunks_matching_single_term(): void
@@ -124,7 +125,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 0,
         ));
 
-        (new PdoSourceRepository($this->executor, $this->orgIdHolder))->softDelete($this->sourceId, '2026-05-25 12:00:00');
+        (new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()))->softDelete($this->sourceId, '2026-05-25 12:00:00');
 
         $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
 
@@ -140,7 +141,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
             chunkIndex: 0,
         ));
 
-        (new PdoDocumentRepository($this->executor, $this->orgIdHolder))->softDelete($this->documentId, '2026-05-25 12:00:00');
+        (new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock()))->softDelete($this->documentId, '2026-05-25 12:00:00');
 
         $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
 

@@ -24,6 +24,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\InMemoryChatSettingsRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -48,20 +49,20 @@ final class GenerateChatReplyUseCaseTest extends TestCase
         $orgIdHolder = new RequestScopedOrgIdHolder();
         $orgIdHolder->setId(1);
 
-        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder))->save(new Source(
+        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder, new FixedClock()))->save(new Source(
             name: 'Catalog',
             sourceType: SourceType::Pdf,
             status: SourceStatus::Ready,
             storagePath: 'storage/uploads/catalog.pdf',
         ));
 
-        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder))->save(new Document(
+        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder, new FixedClock()))->save(new Document(
             sourceId: $sourceId,
             title: 'Pairings',
             position: 0,
         ));
 
-        (new PdoChunkRepository($executor, $orgIdHolder))->save(new Chunk(
+        (new PdoChunkRepository($executor, $orgIdHolder, new FixedClock()))->save(new Chunk(
             documentId: $documentId,
             sourceId: $sourceId,
             content: 'Dry ginjo pairs well with white fish and light seafood dishes.',

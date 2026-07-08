@@ -12,6 +12,7 @@ use NeneCorpus\AdminAuth\ChangeAdminPasswordInput;
 use NeneCorpus\AdminAuth\ChangeAdminPasswordUseCase;
 use NeneCorpus\AdminAuth\PdoAdminUserRepository;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -59,7 +60,7 @@ final class ChangeAdminPasswordUseCaseTest extends TestCase
         $adminRow = $this->executor->fetchOne('SELECT id FROM admin_users LIMIT 1');
         self::assertNotNull($adminRow);
         $this->adminId = (int) $adminRow['id'];
-        $this->repository = new PdoAdminUserRepository($this->executor);
+        $this->repository = new PdoAdminUserRepository($this->executor, new FixedClock());
         $this->useCase = new ChangeAdminPasswordUseCase($this->repository);
     }
 

@@ -9,6 +9,7 @@ use Nene2\Database\PdoConnectionFactory;
 use Nene2\Database\PdoDatabaseQueryExecutor;
 use NeneCorpus\AdminAuth\PdoAdminUserRepository;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -39,7 +40,7 @@ final class PdoAdminUserRepositoryOrgScopeTest extends TestCase
         )));
 
         CorpusSchemaSetup::createAdminUsers($this->executor);
-        $this->repository = new PdoAdminUserRepository($this->executor);
+        $this->repository = new PdoAdminUserRepository($this->executor, new FixedClock());
     }
 
     // ── create ────────────────────────────────────────────────────────────────

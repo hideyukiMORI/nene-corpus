@@ -11,6 +11,7 @@ use Nene2\Database\DatabaseTransactionManagerInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Chunk\PdoChunkRepository;
@@ -107,6 +108,7 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
                     return new SourceCorpusCleaner(
                         self::documentRepository($container),
                         self::chunkRepository($container),
+                        self::clock($container),
                     );
                 },
             )
@@ -313,6 +315,17 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
         return $chunks;
     }
 
+    private static function clock(ContainerInterface $container): ClockInterface
+    {
+        $clock = $container->get(ClockInterface::class);
+
+        if (!$clock instanceof ClockInterface) {
+            throw new LogicException('Clock service is invalid.');
+        }
+
+        return $clock;
+    }
+
     private static function orgIdHolder(ContainerInterface $container): RequestScopedOrgIdHolder
     {
         $holder = $container->get(RequestScopedOrgIdHolder::class);
@@ -328,24 +341,27 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
     private static function sourceRepositoryFactory(ContainerInterface $container): Closure
     {
         $orgIdHolder = self::orgIdHolder($container);
+        $clock = self::clock($container);
 
-        return static fn (DatabaseQueryExecutorInterface $executor): SourceRepositoryInterface => new PdoSourceRepository($executor, $orgIdHolder);
+        return static fn (DatabaseQueryExecutorInterface $executor): SourceRepositoryInterface => new PdoSourceRepository($executor, $orgIdHolder, $clock);
     }
 
     /** @return Closure(DatabaseQueryExecutorInterface): DocumentRepositoryInterface */
     private static function documentRepositoryFactory(ContainerInterface $container): Closure
     {
         $orgIdHolder = self::orgIdHolder($container);
+        $clock = self::clock($container);
 
-        return static fn (DatabaseQueryExecutorInterface $executor): DocumentRepositoryInterface => new PdoDocumentRepository($executor, $orgIdHolder);
+        return static fn (DatabaseQueryExecutorInterface $executor): DocumentRepositoryInterface => new PdoDocumentRepository($executor, $orgIdHolder, $clock);
     }
 
     /** @return Closure(DatabaseQueryExecutorInterface): ChunkRepositoryInterface */
     private static function chunkRepositoryFactory(ContainerInterface $container): Closure
     {
         $orgIdHolder = self::orgIdHolder($container);
+        $clock = self::clock($container);
 
-        return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new PdoChunkRepository($executor, $orgIdHolder);
+        return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new PdoChunkRepository($executor, $orgIdHolder, $clock);
     }
 
     private static function csvValidator(ContainerInterface $container): CsvUploadValidator

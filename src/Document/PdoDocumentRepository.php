@@ -6,6 +6,7 @@ namespace NeneCorpus\Document;
 
 use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoDocumentRepository implements DocumentRepositoryInterface
@@ -17,6 +18,7 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -181,7 +183,7 @@ final readonly class PdoDocumentRepository implements DocumentRepositoryInterfac
 
     private function now(): string
     {
-        return gmdate('Y-m-d H:i:s');
+        return $this->clock->now()->format('Y-m-d H:i:s');
     }
 
     /**

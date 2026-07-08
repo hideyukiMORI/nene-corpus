@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Source;
 
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Document\DocumentRepositoryInterface;
 
@@ -13,6 +14,7 @@ final readonly class DeleteSourceUseCase implements DeleteSourceUseCaseInterface
         private SourceRepositoryInterface $sources,
         private DocumentRepositoryInterface $documents,
         private ChunkRepositoryInterface $chunks,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -24,7 +26,7 @@ final readonly class DeleteSourceUseCase implements DeleteSourceUseCaseInterface
             throw new SourceNotFoundException($sourceId);
         }
 
-        $deletedAt = gmdate('Y-m-d H:i:s');
+        $deletedAt = $this->clock->now()->format('Y-m-d H:i:s');
 
         foreach ($this->documents->findBySourceId($sourceId, 100_000, 0) as $document) {
             if ($document->id !== null) {

@@ -46,7 +46,7 @@ final class LoginAdminUseCaseTest extends TestCase
     public function test_execute_returns_access_token_for_valid_credentials(): void
     {
         $useCase = new LoginAdminUseCase(
-            new PdoAdminUserRepository($this->executor),
+            new PdoAdminUserRepository($this->executor, new FixedClock()),
             new LocalBearerTokenVerifier('test-jwt-secret'),
             new FixedClock(),
         );
@@ -64,7 +64,7 @@ final class LoginAdminUseCaseTest extends TestCase
     public function test_execute_throws_for_invalid_password(): void
     {
         $useCase = new LoginAdminUseCase(
-            new PdoAdminUserRepository($this->executor),
+            new PdoAdminUserRepository($this->executor, new FixedClock()),
             new LocalBearerTokenVerifier('test-jwt-secret'),
             new FixedClock(),
         );

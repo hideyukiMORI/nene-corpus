@@ -21,6 +21,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\SampleTextPdf;
 use PHPUnit\Framework\TestCase;
 
@@ -66,9 +67,9 @@ final class ReindexSourceUseCaseTest extends TestCase
         $storagePath = 'storage/uploads/' . $storedFilename;
         file_put_contents($this->projectRoot . '/' . $storagePath, SampleTextPdf::bytes());
 
-        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder);
-        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
-        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
 
         $sourceId = $sources->save(new Source(
             name: 'Sample manual',
@@ -97,7 +98,7 @@ final class ReindexSourceUseCaseTest extends TestCase
             new CsvParser(),
             new PdfTextExtractor(),
             new StoredFileReader($this->projectRoot),
-            new SourceCorpusCleaner($documents, $chunks),
+            new SourceCorpusCleaner($documents, $chunks, new FixedClock()),
         );
 
         $output = $useCase->execute(new ReindexSourceInput(sourceId: $sourceId));

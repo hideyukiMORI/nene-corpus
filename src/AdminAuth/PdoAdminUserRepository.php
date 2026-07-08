@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\AdminAuth;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 
 final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterface
 {
@@ -12,6 +13,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
 
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -55,7 +57,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
     {
         $this->query->execute(
             'UPDATE admin_users SET password_hash = ?, updated_at = ? WHERE id = ?',
-            [$newPasswordHash, gmdate('Y-m-d H:i:s'), $id],
+            [$newPasswordHash, $this->clock->now()->format('Y-m-d H:i:s'), $id],
         );
     }
 
@@ -63,7 +65,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
     {
         $this->query->execute(
             'UPDATE admin_users SET email = ?, updated_at = ? WHERE id = ?',
-            [$newEmail, gmdate('Y-m-d H:i:s'), $id],
+            [$newEmail, $this->clock->now()->format('Y-m-d H:i:s'), $id],
         );
     }
 
@@ -96,7 +98,7 @@ final readonly class PdoAdminUserRepository implements AdminUserRepositoryInterf
      */
     public function create(string $email, string $passwordHash, string $role, int $organizationId): AdminUser
     {
-        $now = gmdate('Y-m-d H:i:s');
+        $now = $this->clock->now()->format('Y-m-d H:i:s');
 
         $this->query->execute(
             'INSERT INTO admin_users (email, password_hash, role, organization_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',

@@ -17,6 +17,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class DeleteSourceUseCaseTest extends TestCase
@@ -47,9 +48,9 @@ final class DeleteSourceUseCaseTest extends TestCase
 
     public function test_execute_soft_deletes_source_and_removes_chunks(): void
     {
-        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder);
-        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
-        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $sources = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $documents = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $chunks = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
 
         $sourceId = $sources->save(new Source(
             name: 'Manual',
@@ -69,7 +70,7 @@ final class DeleteSourceUseCaseTest extends TestCase
             content: 'Sample text',
         ));
 
-        (new DeleteSourceUseCase($sources, $documents, $chunks))->execute($sourceId);
+        (new DeleteSourceUseCase($sources, $documents, $chunks, new FixedClock()))->execute($sourceId);
 
         self::assertNull($sources->findById($sourceId));
         self::assertSame([], $chunks->findByDocumentId($documentId));
@@ -81,9 +82,10 @@ final class DeleteSourceUseCaseTest extends TestCase
         $this->expectException(SourceNotFoundException::class);
 
         (new DeleteSourceUseCase(
-            new PdoSourceRepository($this->executor, $this->orgIdHolder),
-            new PdoDocumentRepository($this->executor, $this->orgIdHolder),
-            new PdoChunkRepository($this->executor, $this->orgIdHolder),
+            new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()),
+            new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock()),
+            new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock()),
+            new FixedClock(),
         ))->execute(999);
     }
 }

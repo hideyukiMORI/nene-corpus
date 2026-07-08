@@ -13,6 +13,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoSourceRepositoryTest extends TestCase
@@ -43,7 +44,7 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_save_returns_new_id(): void
     {
-        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Source(
             name: 'Manual PDF',
             sourceType: SourceType::Pdf,
@@ -59,7 +60,7 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_by_id_returns_source_when_present(): void
     {
-        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Source(
             name: 'Catalog CSV',
             sourceType: SourceType::Csv,
@@ -77,14 +78,14 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_by_id_returns_null_when_source_is_absent(): void
     {
-        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
 
         self::assertNull($repository->findById(99));
     }
 
     public function test_soft_delete_excludes_source_from_find_by_id(): void
     {
-        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Source(
             name: 'To delete',
             sourceType: SourceType::Pdf,
@@ -99,7 +100,7 @@ final class PdoSourceRepositoryTest extends TestCase
 
     public function test_find_all_respects_limit_and_offset(): void
     {
-        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
 
         for ($i = 1; $i <= 3; $i++) {
             $repository->save(new Source(
@@ -124,8 +125,8 @@ final class PdoSourceRepositoryTest extends TestCase
         $org2Holder = new RequestScopedOrgIdHolder();
         $org2Holder->setId(2);
 
-        $repoOrg1 = new PdoSourceRepository($this->executor, $org1Holder);
-        $repoOrg2 = new PdoSourceRepository($this->executor, $org2Holder);
+        $repoOrg1 = new PdoSourceRepository($this->executor, $org1Holder, new FixedClock());
+        $repoOrg2 = new PdoSourceRepository($this->executor, $org2Holder, new FixedClock());
 
         $idOrg1 = $repoOrg1->save(new Source(
             name: 'Org 1 Source',

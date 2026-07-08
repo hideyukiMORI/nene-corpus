@@ -63,7 +63,7 @@ final class SendChatMessageUseCaseEdgeCaseTest extends TestCase
         $holder->setId(1);
 
         $this->sessions = new PdoChatSessionRepository($this->executor, $holder, new FixedClock());
-        $this->messages = new PdoChatMessageRepository($this->executor, $holder);
+        $this->messages = new PdoChatMessageRepository($this->executor, $holder, new FixedClock());
     }
 
     // ── セッションエラー ───────────────────────────────────────────────

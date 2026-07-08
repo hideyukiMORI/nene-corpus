@@ -12,6 +12,7 @@ use NeneCorpus\AdminAuth\ChangeAdminEmailInput;
 use NeneCorpus\AdminAuth\ChangeAdminEmailUseCase;
 use NeneCorpus\AdminAuth\PdoAdminUserRepository;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -58,7 +59,7 @@ final class ChangeAdminEmailUseCaseTest extends TestCase
         $adminRow = $this->executor->fetchOne('SELECT id FROM admin_users LIMIT 1');
         self::assertNotNull($adminRow);
         $this->adminId = (int) $adminRow['id'];
-        $this->repository = new PdoAdminUserRepository($this->executor);
+        $this->repository = new PdoAdminUserRepository($this->executor, new FixedClock());
         $this->useCase = new ChangeAdminEmailUseCase($this->repository);
     }
 

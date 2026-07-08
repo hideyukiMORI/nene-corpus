@@ -15,6 +15,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoDocumentRepositoryTest extends TestCase
@@ -44,7 +45,7 @@ final class PdoDocumentRepositoryTest extends TestCase
         $this->orgIdHolder = new RequestScopedOrgIdHolder();
         $this->orgIdHolder->setId(1);
 
-        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Parent source',
             sourceType: SourceType::Pdf,
@@ -55,7 +56,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_save_and_find_by_id_returns_document(): void
     {
-        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Chapter 1',
@@ -73,7 +74,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_find_by_source_id_returns_documents_in_position_order(): void
     {
-        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $repository->save(new Document(sourceId: $this->sourceId, title: 'Second', position: 2));
         $repository->save(new Document(sourceId: $this->sourceId, title: 'First', position: 1));
 
@@ -86,7 +87,7 @@ final class PdoDocumentRepositoryTest extends TestCase
 
     public function test_soft_delete_excludes_document_from_find_by_id(): void
     {
-        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Temporary',
@@ -103,8 +104,8 @@ final class PdoDocumentRepositoryTest extends TestCase
         $org2Holder = new RequestScopedOrgIdHolder();
         $org2Holder->setId(2);
 
-        $repoOrg1 = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
-        $repoOrg2 = new PdoDocumentRepository($this->executor, $org2Holder);
+        $repoOrg1 = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $repoOrg2 = new PdoDocumentRepository($this->executor, $org2Holder, new FixedClock());
 
         $idOrg1 = $repoOrg1->save(new Document(
             sourceId: $this->sourceId,
