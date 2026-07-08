@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeneCorpus\ChatSettings;
 
 use Nene2\Database\DatabaseQueryExecutorInterface;
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 final readonly class PdoChatSettingsRepository implements ChatSettingsRepositoryInterface
@@ -12,6 +13,7 @@ final readonly class PdoChatSettingsRepository implements ChatSettingsRepository
     public function __construct(
         private DatabaseQueryExecutorInterface $query,
         private RequestScopedOrgIdHolder $orgIdHolder,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -37,7 +39,7 @@ final readonly class PdoChatSettingsRepository implements ChatSettingsRepository
     public function save(ChatSettings $settings): void
     {
         $orgId = $this->orgIdHolder->getId() ?? 1;
-        $now = gmdate('Y-m-d H:i:s');
+        $now = $this->clock->now()->format('Y-m-d H:i:s');
         $existing = $this->query->fetchOne('SELECT id FROM corpus_chat_settings WHERE organization_id = ? ORDER BY id ASC LIMIT 1', [$orgId]);
 
         if ($existing === null) {

@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Install;
 
+use Nene2\Http\ClockInterface;
 use PDO;
 use PDOException;
 
 final readonly class InstallAdminUserCreator
 {
+    public function __construct(
+        private ClockInterface $clock,
+    ) {
+    }
+
     public function create(InstallDatabaseConfig $database, string $email, string $passwordHash): void
     {
         try {
@@ -19,7 +25,7 @@ final readonly class InstallAdminUserCreator
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
             );
 
-            $now = gmdate('Y-m-d H:i:s');
+            $now = $this->clock->now()->format('Y-m-d H:i:s');
 
             $statement = $pdo->prepare(
                 'INSERT INTO admin_users (email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?)',

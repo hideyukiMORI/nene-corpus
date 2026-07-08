@@ -17,6 +17,7 @@ use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Source\SourceType;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 final class PdoChunkRepositoryTest extends TestCase
@@ -48,7 +49,7 @@ final class PdoChunkRepositoryTest extends TestCase
         $this->orgIdHolder = new RequestScopedOrgIdHolder();
         $this->orgIdHolder->setId(1);
 
-        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder);
+        $sourceRepository = new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $this->sourceId = $sourceRepository->save(new Source(
             name: 'Parent source',
             sourceType: SourceType::Pdf,
@@ -56,7 +57,7 @@ final class PdoChunkRepositoryTest extends TestCase
             storagePath: 'storage/uploads/parent.pdf',
         ));
 
-        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder);
+        $documentRepository = new PdoDocumentRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $this->documentId = $documentRepository->save(new Document(
             sourceId: $this->sourceId,
             title: 'Manual',
@@ -66,7 +67,7 @@ final class PdoChunkRepositoryTest extends TestCase
 
     public function test_save_and_find_by_id_returns_chunk(): void
     {
-        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $id = $repository->save(new Chunk(
             documentId: $this->documentId,
             sourceId: $this->sourceId,
@@ -87,7 +88,7 @@ final class PdoChunkRepositoryTest extends TestCase
 
     public function test_find_by_document_id_returns_chunks_in_index_order(): void
     {
-        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder);
+        $repository = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
         $repository->save(new Chunk(
             documentId: $this->documentId,
             sourceId: $this->sourceId,
@@ -113,8 +114,8 @@ final class PdoChunkRepositoryTest extends TestCase
         $org2Holder = new RequestScopedOrgIdHolder();
         $org2Holder->setId(2);
 
-        $repoOrg1 = new PdoChunkRepository($this->executor, $this->orgIdHolder);
-        $repoOrg2 = new PdoChunkRepository($this->executor, $org2Holder);
+        $repoOrg1 = new PdoChunkRepository($this->executor, $this->orgIdHolder, new FixedClock());
+        $repoOrg2 = new PdoChunkRepository($this->executor, $org2Holder, new FixedClock());
 
         $id = $repoOrg1->save(new Chunk(
             documentId: $this->documentId,

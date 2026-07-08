@@ -11,6 +11,7 @@ use NeneCorpus\Appearance\AppearanceSettings;
 use NeneCorpus\Appearance\PdoAppearanceSettingsRepository;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -45,7 +46,7 @@ final class PdoAppearanceSettingsRepositoryOrgIsolationTest extends TestCase
     {
         $this->orgIdHolder->setId($orgId);
 
-        return new PdoAppearanceSettingsRepository($this->executor, $this->orgIdHolder);
+        return new PdoAppearanceSettingsRepository($this->executor, $this->orgIdHolder, new FixedClock());
     }
 
     private function settingsWithLocale(?string $locale): AppearanceSettings

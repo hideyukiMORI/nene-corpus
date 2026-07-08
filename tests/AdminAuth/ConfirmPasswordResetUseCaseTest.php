@@ -65,8 +65,8 @@ final class ConfirmPasswordResetUseCaseTest extends TestCase
         $adminRow = $this->executor->fetchOne('SELECT id FROM admin_users LIMIT 1');
         self::assertNotNull($adminRow);
         $this->adminId = (int) $adminRow['id'];
-        $this->users = new PdoAdminUserRepository($this->executor);
-        $this->resets = new PdoAdminPasswordResetRepository($this->executor);
+        $this->users = new PdoAdminUserRepository($this->executor, new FixedClock());
+        $this->resets = new PdoAdminPasswordResetRepository($this->executor, new FixedClock());
         // Fixed clock so token-expiry boundaries are deterministic (no wall-clock).
         $this->useCase = new ConfirmPasswordResetUseCase($this->resets, $this->users, new FixedClock(self::NOW . 'Z'));
     }

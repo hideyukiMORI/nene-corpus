@@ -8,6 +8,7 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
@@ -29,7 +30,13 @@ final readonly class ChunkServiceProvider implements ServiceProviderInterface
                     throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                 }
 
-                return new PdoChunkRepository($query, $orgIdHolder);
+                $clock = $container->get(ClockInterface::class);
+
+                if (!$clock instanceof ClockInterface) {
+                    throw new LogicException('Clock service is invalid.');
+                }
+
+                return new PdoChunkRepository($query, $orgIdHolder, $clock);
             },
         );
     }

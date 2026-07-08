@@ -51,7 +51,7 @@ final class PdoChatMessageRepositoryTest extends TestCase
         $holder = new RequestScopedOrgIdHolder();
         $holder->setId($orgId);
 
-        return new PdoChatMessageRepository($this->executor, $holder);
+        return new PdoChatMessageRepository($this->executor, $holder, new FixedClock());
     }
 
     public function test_save_and_find_by_session_id(): void

@@ -80,7 +80,7 @@ final class SendChatMessageUseCaseTest extends TestCase
 
         $output = (new SendChatMessageUseCase(
             $sessions,
-            new PdoChatMessageRepository($executor, $holder),
+            new PdoChatMessageRepository($executor, $holder, new FixedClock()),
             $generateReply,
             $limitsRepository,
             $tokenTracker,
@@ -93,7 +93,7 @@ final class SendChatMessageUseCaseTest extends TestCase
         self::assertSame('Assistant answer.', $output->content);
         self::assertCount(1, $output->citations);
 
-        $messages = (new PdoChatMessageRepository($executor, $holder))->findBySessionId($sessionId, 10, 0);
+        $messages = (new PdoChatMessageRepository($executor, $holder, new FixedClock()))->findBySessionId($sessionId, 10, 0);
         self::assertCount(2, $messages);
         self::assertSame(MessageRole::User, $messages[0]->role);
         self::assertSame(MessageRole::Assistant, $messages[1]->role);

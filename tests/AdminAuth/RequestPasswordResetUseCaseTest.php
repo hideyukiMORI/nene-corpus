@@ -59,8 +59,8 @@ final class RequestPasswordResetUseCaseTest extends TestCase
         $adminRow = $this->executor->fetchOne('SELECT id FROM admin_users LIMIT 1');
         self::assertNotNull($adminRow);
         $this->adminId = (int) $adminRow['id'];
-        $this->users = new PdoAdminUserRepository($this->executor);
-        $this->resets = new PdoAdminPasswordResetRepository($this->executor);
+        $this->users = new PdoAdminUserRepository($this->executor, new FixedClock());
+        $this->resets = new PdoAdminPasswordResetRepository($this->executor, new FixedClock());
     }
 
     // ── アカウント列挙防止 ────────────────────────────────────────────
@@ -185,11 +185,10 @@ final class RequestPasswordResetUseCaseTest extends TestCase
 
     public function test_execute_cleans_up_stale_tokens_before_saving_new_one(): void
     {
-        // 期限切れ token を事前に挿入
-        $now = gmdate('Y-m-d H:i:s');
+        // 期限切れ token を事前に挿入（FixedClock の固定 now = 2026-01-15 12:00:00 より過去）
         $this->executor->execute(
             'INSERT INTO admin_password_resets (token_hash, admin_user_id, expires_at, used_at, created_at) VALUES (?, ?, ?, ?, ?)',
-            ['old-hash', $this->adminId, gmdate('Y-m-d H:i:s', time() - 100), null, $now],
+            ['old-hash', $this->adminId, '2026-01-15 11:58:20', null, '2026-01-15 10:58:20'],
         );
 
         $mailer = $this->createStub(MailerInterface::class);

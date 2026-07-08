@@ -20,6 +20,7 @@ use NeneCorpus\Tests\Support\AdminHttpTestSupport;
 use NeneCorpus\Tests\Support\ChatLimitsSchemaSetup;
 use NeneCorpus\Tests\Support\ChatSchemaSetup;
 use NeneCorpus\Tests\Support\CorpusSchemaSetup;
+use NeneCorpus\Tests\Support\FixedClock;
 use NeneCorpus\Tests\Support\RateLimitSchemaSetup;
 use NeneCorpus\Tests\Support\TenancySchemaSetup;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -178,20 +179,20 @@ final class AdminChatHttpTest extends TestCase
         $orgIdHolder = new RequestScopedOrgIdHolder();
         $orgIdHolder->setId(1);
 
-        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder))->save(new Source(
+        $sourceId = (new PdoSourceRepository($executor, $orgIdHolder, new FixedClock()))->save(new Source(
             name: 'Catalog',
             sourceType: SourceType::Pdf,
             status: SourceStatus::Ready,
             storagePath: 'storage/uploads/catalog.pdf',
         ));
 
-        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder))->save(new Document(
+        $documentId = (new PdoDocumentRepository($executor, $orgIdHolder, new FixedClock()))->save(new Document(
             sourceId: $sourceId,
             title: 'Pairings',
             position: 0,
         ));
 
-        (new PdoChunkRepository($executor, $orgIdHolder))->save(new Chunk(
+        (new PdoChunkRepository($executor, $orgIdHolder, new FixedClock()))->save(new Chunk(
             documentId: $documentId,
             sourceId: $sourceId,
             content: 'Dry ginjo pairs well with white fish and light seafood dishes.',

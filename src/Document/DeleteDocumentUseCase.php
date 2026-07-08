@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NeneCorpus\Document;
 
+use Nene2\Http\ClockInterface;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 
 final readonly class DeleteDocumentUseCase implements DeleteDocumentUseCaseInterface
@@ -11,6 +12,7 @@ final readonly class DeleteDocumentUseCase implements DeleteDocumentUseCaseInter
     public function __construct(
         private DocumentRepositoryInterface $documents,
         private ChunkRepositoryInterface $chunks,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -22,7 +24,7 @@ final readonly class DeleteDocumentUseCase implements DeleteDocumentUseCaseInter
             throw new DocumentNotFoundException($documentId);
         }
 
-        $deletedAt = gmdate('Y-m-d H:i:s');
+        $deletedAt = $this->clock->now()->format('Y-m-d H:i:s');
 
         $this->chunks->deleteByDocumentId($document->id);
         $this->documents->softDelete($document->id, $deletedAt);

@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Error\ProblemDetailsResponseFactory;
+use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
 use NeneCorpus\Document\DocumentRepositoryInterface;
@@ -37,7 +38,13 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoSourceRepository($query, $orgIdHolder);
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoSourceRepository($query, $orgIdHolder, $clock);
                 },
             )
             ->set(
@@ -104,6 +111,7 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                     $sources = $container->get(SourceRepositoryInterface::class);
                     $documents = $container->get(DocumentRepositoryInterface::class);
                     $chunks = $container->get(ChunkRepositoryInterface::class);
+                    $clock = $container->get(ClockInterface::class);
 
                     if (!$sources instanceof SourceRepositoryInterface) {
                         throw new LogicException('Source repository service is invalid.');
@@ -117,7 +125,11 @@ final readonly class SourceServiceProvider implements ServiceProviderInterface
                         throw new LogicException('Chunk repository service is invalid.');
                     }
 
-                    return new DeleteSourceUseCase($sources, $documents, $chunks);
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new DeleteSourceUseCase($sources, $documents, $chunks, $clock);
                 },
             )
             ->set(

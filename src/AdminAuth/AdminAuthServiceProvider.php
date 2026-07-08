@@ -53,10 +53,16 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
                     // PdoAdminUserRepository does not scope findByEmail/findById by org
                     // (those methods are called from bypass-path use cases: login, password-reset).
                     // listByOrganization and create do use the org argument explicitly.
-                    return new PdoAdminUserRepository($query);
+                    return new PdoAdminUserRepository($query, $clock);
                 },
             )
             ->set(
@@ -221,7 +227,13 @@ final readonly class AdminAuthServiceProvider implements ServiceProviderInterfac
                         throw new LogicException('Database query executor service is invalid.');
                     }
 
-                    return new PdoAdminPasswordResetRepository($query);
+                    $clock = $container->get(ClockInterface::class);
+
+                    if (!$clock instanceof ClockInterface) {
+                        throw new LogicException('Clock service is invalid.');
+                    }
+
+                    return new PdoAdminPasswordResetRepository($query, $clock);
                 },
             )
             ->set(
