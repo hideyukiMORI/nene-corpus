@@ -64,7 +64,7 @@ Ops / AI (MCP)         ───────────────────
 
 ## Current Status
 
-Phases 1–3 core deliverables are complete. See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
+Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
 | Area | State |
 | --- | --- |
@@ -76,7 +76,8 @@ Phases 1–3 core deliverables are complete. See [`docs/roadmap.md`](./docs/road
 | Brute-force protection + password reset | ✅ |
 | Admin E2E tests (157 Playwright specs) | ✅ |
 | Tier A — installer + release ZIP + operator docs | ✅ |
-| Phase 4 — upstream integrations | Planned |
+| Phase 4 — multi-tenancy (organizations, single/subdomain/path tenant resolution, superadmin) | ✅ (2026-05-29) |
+| Phase 5 — upstream integrations (NeNe Records) | Planned |
 
 See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
