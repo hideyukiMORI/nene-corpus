@@ -44,6 +44,17 @@ curl -fsS http://localhost:8989/health
 
 > [`docs/deployment/shared-hosting.md`](./docs/deployment/shared-hosting.md)
 
+## Local ports
+
+NeNe Corpus owns the **`89**` port lane**; sibling products use their own lanes so several apps can run locally side by side (full port table: [`CLAUDE.md`](./CLAUDE.md#ローカル開発ポート固定)). Override the Docker ports via `NENE_CORPUS_PORT` / `NENE_CORPUS_MYSQL_PORT` in `.env`.
+
+| Service | Port |
+| --- | --- |
+| API / Web (Docker, Apache) | 8989 |
+| MySQL (Docker) | 3389 |
+| Vite admin SPA | 5289 |
+| Vite widget | 5290 |
+
 ## Architecture
 
 ```
@@ -62,7 +73,7 @@ Ops / AI (MCP)         ───────────────────
 - **Chat**: **sync JSON chat** + citations, rate limits; widget CSS for loading/motion UX
 - **Deploy**: dual path — [`docs/deployment/README.md`](./docs/deployment/README.md)
 
-## Current Status
+## Status
 
 Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
@@ -74,10 +85,10 @@ Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs
 | Operator settings (LLM key, chat limits, notifications, appearance) | ✅ |
 | Conversation analytics dashboard + CSV export | ✅ |
 | Brute-force protection + password reset | ✅ |
-| Admin E2E tests (157 Playwright specs) | ✅ |
+| Admin E2E tests (comprehensive Playwright E2E suite) | ✅ |
 | Tier A — installer + release ZIP + operator docs | ✅ |
 | Phase 4 — multi-tenancy (organizations, single/subdomain/path tenant resolution, superadmin) | ✅ (2026-05-29) |
-| Phase 5 — upstream integrations (NeNe Records) | Planned |
+| Phase 5 — upstream integrations (NeNe Records) | 🔄 In progress |
 
 See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
 
