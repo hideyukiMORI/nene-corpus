@@ -1,18 +1,11 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 
 export async function changeAdminPassword(
   token: string,
   body: { current_password: string; new_password: string },
   base = '',
 ): Promise<void> {
-  await fetchJson<unknown>(`${base}/admin/auth/password`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  await createAdminTransport(token, base).put<void>('/admin/auth/password', body);
 }
 
 export async function changeAdminEmail(
@@ -20,12 +13,5 @@ export async function changeAdminEmail(
   body: { current_password: string; new_email: string },
   base = '',
 ): Promise<void> {
-  await fetchJson<unknown>(`${base}/admin/auth/email`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  await createAdminTransport(token, base).put<void>('/admin/auth/email', body);
 }

@@ -14,6 +14,7 @@
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/noto-sans-jp": "^5.2.9",
     "@fontsource/noto-sans-sc": "^5.2.9",
+    "@hideyukimori/nene2-client": "^1.1.0",
     "@nene-corpus/api-client": "*",
     "@nene-corpus/i18n": "*",
     "@nene-corpus/tokens": "*",

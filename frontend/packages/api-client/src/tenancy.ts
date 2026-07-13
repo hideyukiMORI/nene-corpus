@@ -1,4 +1,4 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 
 export interface SystemConfigResponse {
   tenant_resolution_mode: 'single' | 'subdomain' | 'path';
@@ -13,9 +13,9 @@ export interface UpdateSystemConfigRequest {
 }
 
 export async function getSystemConfig(token: string, apiBase = ''): Promise<SystemConfigResponse> {
-  return fetchJson<SystemConfigResponse>(`${apiBase}/admin/superadmin/system-config`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<SystemConfigResponse>(
+    '/admin/superadmin/system-config',
+  );
 }
 
 export async function updateSystemConfig(
@@ -23,12 +23,8 @@ export async function updateSystemConfig(
   body: UpdateSystemConfigRequest,
   apiBase = '',
 ): Promise<SystemConfigResponse> {
-  return fetchJson<SystemConfigResponse>(`${apiBase}/admin/superadmin/system-config`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<SystemConfigResponse>(
+    '/admin/superadmin/system-config',
+    body,
+  );
 }

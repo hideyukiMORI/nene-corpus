@@ -12,7 +12,8 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   getAnalyticsSummary,
   getTopQuestions,
-  buildExportUrl,
+  buildExportPath,
+  createAdminTransport,
   type AnalyticsSummaryResponse,
   type TopQuestion,
 } from '@nene-corpus/api-client';
@@ -104,16 +105,12 @@ export function AnalyticsPage({ token, onLogout }: AnalyticsPageProps) {
   async function handleExport(format: 'sessions' | 'conversations'): Promise<void> {
     setIsExporting(true);
     try {
-      const url = buildExportUrl(adminApiBase, format);
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error(`HTTP ${String(res.status)}`);
-      const blob = await res.blob();
+      const transport = createAdminTransport(token, adminApiBase);
+      const { blob, filename } = await transport.getBlob(buildExportPath(format));
       const objectUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const disposition = res.headers.get('Content-Disposition') ?? '';
-      const match = /filename="([^"]+)"/.exec(disposition);
       a.href = objectUrl;
-      a.download = match?.[1] ?? `nene-corpus-${format}.csv`;
+      a.download = filename ?? `nene-corpus-${format}.csv`;
       a.click();
       URL.revokeObjectURL(objectUrl);
     } catch {

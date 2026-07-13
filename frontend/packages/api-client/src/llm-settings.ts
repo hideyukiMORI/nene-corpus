@@ -1,10 +1,8 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 import type { LlmSettingsResponse, TestLlmConnectionRequest, UpdateLlmSettingsRequest } from './types';
 
 export async function getLlmSettings(token: string, apiBase = ''): Promise<LlmSettingsResponse> {
-  return fetchJson<LlmSettingsResponse>(`${apiBase}/admin/settings/llm`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<LlmSettingsResponse>('/admin/settings/llm');
 }
 
 export async function updateLlmSettings(
@@ -12,14 +10,10 @@ export async function updateLlmSettings(
   body: UpdateLlmSettingsRequest,
   apiBase = '',
 ): Promise<LlmSettingsResponse> {
-  return fetchJson<LlmSettingsResponse>(`${apiBase}/admin/settings/llm`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<LlmSettingsResponse>(
+    '/admin/settings/llm',
+    body,
+  );
 }
 
 export async function testLlmConnection(
@@ -27,12 +21,8 @@ export async function testLlmConnection(
   body: TestLlmConnectionRequest = {},
   apiBase = '',
 ): Promise<{ ok: true }> {
-  return fetchJson<{ ok: true }>(`${apiBase}/admin/settings/llm/test`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).post<{ ok: true }>(
+    '/admin/settings/llm/test',
+    body,
+  );
 }

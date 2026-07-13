@@ -1,4 +1,4 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 
 export interface NotificationSettings {
   smtp_host: string;
@@ -35,9 +35,9 @@ export async function getNotificationSettings(
   token: string,
   base = '',
 ): Promise<NotificationSettings> {
-  return fetchJson<NotificationSettings>(`${base}/admin/notifications/settings`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, base).get<NotificationSettings>(
+    '/admin/notifications/settings',
+  );
 }
 
 export async function updateNotificationSettings(
@@ -45,27 +45,12 @@ export async function updateNotificationSettings(
   body: UpdateNotificationSettingsBody,
   base = '',
 ): Promise<NotificationSettings> {
-  return fetchJson<NotificationSettings>(`${base}/admin/notifications/settings`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, base).put<NotificationSettings>(
+    '/admin/notifications/settings',
+    body,
+  );
 }
 
-export async function sendTestMail(
-  token: string,
-  email: string,
-  base = '',
-): Promise<void> {
-  await fetchJson<unknown>(`${base}/admin/notifications/test-mail`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  });
+export async function sendTestMail(token: string, email: string, base = ''): Promise<void> {
+  await createAdminTransport(token, base).post<void>('/admin/notifications/test-mail', { email });
 }
