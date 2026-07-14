@@ -1,4 +1,4 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 import type {
   DocumentDetailResponse,
   ListDocumentChunksResponse,
@@ -27,11 +27,9 @@ export async function listDocuments(
   }
 
   const qs = params.toString();
-  const url = `${apiBase}/admin/sources/${sourceId}/documents${qs ? `?${qs}` : ''}`;
+  const path = `/admin/sources/${sourceId}/documents${qs ? `?${qs}` : ''}`;
 
-  return fetchJson<ListDocumentsResponse>(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListDocumentsResponse>(path);
 }
 
 export async function getDocument(
@@ -39,9 +37,9 @@ export async function getDocument(
   documentId: number,
   apiBase = '',
 ): Promise<DocumentDetailResponse> {
-  return fetchJson<DocumentDetailResponse>(`${apiBase}/admin/documents/${documentId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<DocumentDetailResponse>(
+    `/admin/documents/${documentId}`,
+  );
 }
 
 export async function listDocumentChunks(
@@ -49,9 +47,9 @@ export async function listDocumentChunks(
   documentId: number,
   apiBase = '',
 ): Promise<ListDocumentChunksResponse> {
-  return fetchJson<ListDocumentChunksResponse>(`${apiBase}/admin/documents/${documentId}/chunks`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListDocumentChunksResponse>(
+    `/admin/documents/${documentId}/chunks`,
+  );
 }
 
 export async function updateDocument(
@@ -60,14 +58,10 @@ export async function updateDocument(
   body: UpdateDocumentRequest,
   apiBase = '',
 ): Promise<DocumentDetailResponse> {
-  return fetchJson<DocumentDetailResponse>(`${apiBase}/admin/documents/${documentId}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<DocumentDetailResponse>(
+    `/admin/documents/${documentId}`,
+    body,
+  );
 }
 
 export async function deleteDocument(
@@ -75,8 +69,5 @@ export async function deleteDocument(
   documentId: number,
   apiBase = '',
 ): Promise<void> {
-  await fetchJson<unknown>(`${apiBase}/admin/documents/${documentId}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  await createAdminTransport(token, apiBase).delete<void>(`/admin/documents/${documentId}`);
 }

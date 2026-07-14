@@ -1,10 +1,8 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 import type { ChatSettingsResponse, UpdateChatSettingsRequest } from './types';
 
 export async function getChatSettings(token: string, apiBase = ''): Promise<ChatSettingsResponse> {
-  return fetchJson<ChatSettingsResponse>(`${apiBase}/admin/settings/chat`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ChatSettingsResponse>('/admin/settings/chat');
 }
 
 export async function updateChatSettings(
@@ -12,12 +10,8 @@ export async function updateChatSettings(
   body: UpdateChatSettingsRequest,
   apiBase = '',
 ): Promise<ChatSettingsResponse> {
-  return fetchJson<ChatSettingsResponse>(`${apiBase}/admin/settings/chat`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<ChatSettingsResponse>(
+    '/admin/settings/chat',
+    body,
+  );
 }

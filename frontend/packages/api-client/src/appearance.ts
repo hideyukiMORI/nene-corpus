@@ -1,4 +1,5 @@
 import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 import type {
   AppearanceSettingsResponse,
   UpdateAppearanceSettingsRequest,
@@ -16,9 +17,7 @@ export async function getAppearanceSettings(
   token: string,
   apiBase = '',
 ): Promise<AppearanceSettingsResponse> {
-  return fetchJson<AppearanceSettingsResponse>(`${apiBase}/admin/appearance`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<AppearanceSettingsResponse>('/admin/appearance');
 }
 
 export async function updateAppearanceSettings(
@@ -26,16 +25,13 @@ export async function updateAppearanceSettings(
   body: UpdateAppearanceSettingsRequest,
   apiBase = '',
 ): Promise<AppearanceSettingsResponse> {
-  return fetchJson<AppearanceSettingsResponse>(`${apiBase}/admin/appearance`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<AppearanceSettingsResponse>(
+    '/admin/appearance',
+    body,
+  );
 }
 
+// Unauthenticated (widget) — untouched by the transport migration, keeps `fetchJson`.
 export async function fetchWidgetAppearance(apiBase = ''): Promise<AppearanceSettingsResponse> {
   return fetchJson<AppearanceSettingsResponse>(`${apiBase}/widget/appearance`);
 }
@@ -45,14 +41,10 @@ export async function uploadHeroImage(
   body: UploadHeroImageRequest,
   apiBase = '',
 ): Promise<UploadHeroImageResponse> {
-  return fetchJson<UploadHeroImageResponse>(`${apiBase}/admin/appearance/hero-image`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).post<UploadHeroImageResponse>(
+    '/admin/appearance/hero-image',
+    body,
+  );
 }
 
 export async function uploadAvatarImage(
@@ -60,14 +52,10 @@ export async function uploadAvatarImage(
   body: UploadAvatarImageRequest,
   apiBase = '',
 ): Promise<UploadAvatarImageResponse> {
-  return fetchJson<UploadAvatarImageResponse>(`${apiBase}/admin/appearance/avatar-image`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).post<UploadAvatarImageResponse>(
+    '/admin/appearance/avatar-image',
+    body,
+  );
 }
 
 function appendHeroPreviewParams(params: URLSearchParams, hero: WidgetHero): void {

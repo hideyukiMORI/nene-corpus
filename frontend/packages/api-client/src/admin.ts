@@ -1,4 +1,5 @@
 import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 import type {
   AdminMeResponse,
   ListChatSessionMessagesResponse,
@@ -41,9 +42,7 @@ export async function confirmPasswordReset(
 }
 
 export async function getAdminMe(token: string, apiBase = ''): Promise<AdminMeResponse> {
-  return fetchJson<AdminMeResponse>(`${apiBase}/admin/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<AdminMeResponse>('/admin/auth/me');
 }
 
 export async function listSources(
@@ -64,16 +63,11 @@ export async function listSources(
   const query = params.toString();
   const path = query.length > 0 ? `/admin/sources?${query}` : '/admin/sources';
 
-  return fetchJson<ListSourcesResponse>(`${apiBase}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListSourcesResponse>(path);
 }
 
 export async function deleteSource(token: string, sourceId: number, apiBase = ''): Promise<void> {
-  await fetchJson<void>(`${apiBase}/admin/sources/${sourceId}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  await createAdminTransport(token, apiBase).delete<void>(`/admin/sources/${sourceId}`);
 }
 
 export async function updateSource(
@@ -82,19 +76,14 @@ export async function updateSource(
   payload: { name: string; note?: string | null },
   apiBase = '',
 ): Promise<UpdateSourceResponse> {
-  return fetchJson<UpdateSourceResponse>(`${apiBase}/admin/sources/${sourceId}`, {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: payload.name, note: payload.note ?? null }),
-  });
+  return createAdminTransport(token, apiBase).put<UpdateSourceResponse>(
+    `/admin/sources/${sourceId}`,
+    { name: payload.name, note: payload.note ?? null },
+  );
 }
 
 export async function reindexSource(token: string, sourceId: number, apiBase = ''): Promise<void> {
-  await fetchJson<void>(`${apiBase}/admin/sources/${sourceId}/reindex`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({}),
-  });
+  await createAdminTransport(token, apiBase).post<void>(`/admin/sources/${sourceId}/reindex`, {});
 }
 
 export async function listChatSessions(
@@ -115,9 +104,7 @@ export async function listChatSessions(
   const query = params.toString();
   const path = query.length > 0 ? `/admin/chat/sessions?${query}` : '/admin/chat/sessions';
 
-  return fetchJson<ListChatSessionsResponse>(`${apiBase}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListChatSessionsResponse>(path);
 }
 
 export async function listChatSessionMessages(
@@ -142,9 +129,7 @@ export async function listChatSessionMessages(
       ? `/admin/chat/sessions/${sessionId}/messages?${query}`
       : `/admin/chat/sessions/${sessionId}/messages`;
 
-  return fetchJson<ListChatSessionMessagesResponse>(`${apiBase}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListChatSessionMessagesResponse>(path);
 }
 
 export async function cleanupChatSessions(
@@ -152,11 +137,7 @@ export async function cleanupChatSessions(
   apiBase = '',
   maxAgeDays = 90,
 ): Promise<{ deleted_count: number }> {
-  return fetchJson<{ deleted_count: number }>(
-    `${apiBase}/admin/chat/sessions?max_age_days=${maxAgeDays}`,
-    {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    },
+  return createAdminTransport(token, apiBase).delete<{ deleted_count: number }>(
+    `/admin/chat/sessions?max_age_days=${maxAgeDays}`,
   );
 }

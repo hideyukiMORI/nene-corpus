@@ -8,7 +8,14 @@ interface ProblemDetailsPayload {
   errors?: ProblemDetailsError[];
 }
 
-function formatHttpError(status: number, url: string, payload: unknown): string {
+/**
+ * Exported for reuse by `transport.ts` (admin nene2-client adapter, issue #339):
+ * it reformats `Nene2ClientError`'s Problem Details payload into this exact
+ * string shape so existing `catch (e) { setError(e.message) }` call sites keep
+ * showing field-level validation detail after the Bearer paths move to
+ * `createNene2Transport`.
+ */
+export function formatHttpError(status: number, url: string, payload: unknown): string {
   if (payload !== null && typeof payload === 'object') {
     const problem = payload as ProblemDetailsPayload;
 

@@ -1,4 +1,4 @@
-import { fetchJson } from './fetch-json';
+import { createAdminTransport } from './transport';
 
 export interface OrganizationItem {
   id: number;
@@ -33,9 +33,9 @@ export async function listOrganizations(
   token: string,
   apiBase = '',
 ): Promise<ListOrganizationsResponse> {
-  return fetchJson<ListOrganizationsResponse>(`${apiBase}/admin/superadmin/organizations`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<ListOrganizationsResponse>(
+    '/admin/superadmin/organizations',
+  );
 }
 
 export async function getOrganization(
@@ -43,9 +43,9 @@ export async function getOrganization(
   id: number,
   apiBase = '',
 ): Promise<OrganizationItem> {
-  return fetchJson<OrganizationItem>(`${apiBase}/admin/superadmin/organizations/${String(id)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<OrganizationItem>(
+    `/admin/superadmin/organizations/${String(id)}`,
+  );
 }
 
 export async function createOrganization(
@@ -53,14 +53,10 @@ export async function createOrganization(
   body: CreateOrganizationRequest,
   apiBase = '',
 ): Promise<OrganizationItem> {
-  return fetchJson<OrganizationItem>(`${apiBase}/admin/superadmin/organizations`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).post<OrganizationItem>(
+    '/admin/superadmin/organizations',
+    body,
+  );
 }
 
 export async function updateOrganization(
@@ -69,14 +65,10 @@ export async function updateOrganization(
   body: UpdateOrganizationRequest,
   apiBase = '',
 ): Promise<OrganizationItem> {
-  return fetchJson<OrganizationItem>(`${apiBase}/admin/superadmin/organizations/${String(id)}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+  return createAdminTransport(token, apiBase).put<OrganizationItem>(
+    `/admin/superadmin/organizations/${String(id)}`,
+    body,
+  );
 }
 
 export async function deleteOrganization(
@@ -84,8 +76,7 @@ export async function deleteOrganization(
   id: number,
   apiBase = '',
 ): Promise<void> {
-  await fetchJson<null>(`${apiBase}/admin/superadmin/organizations/${String(id)}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  await createAdminTransport(token, apiBase).delete<null>(
+    `/admin/superadmin/organizations/${String(id)}`,
+  );
 }

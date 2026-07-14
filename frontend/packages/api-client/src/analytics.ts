@@ -1,4 +1,4 @@
-import { fetchJson } from './fetch-json.js';
+import { createAdminTransport } from './transport.js';
 
 // ── Response types ────────────────────────────────────────────────────────────
 
@@ -49,9 +49,9 @@ export async function getAnalyticsSummary(
   token: string,
   apiBase = '',
 ): Promise<AnalyticsSummaryResponse> {
-  return fetchJson<AnalyticsSummaryResponse>(`${apiBase}/admin/analytics/summary`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<AnalyticsSummaryResponse>(
+    '/admin/analytics/summary',
+  );
 }
 
 export async function getTopQuestions(
@@ -67,14 +67,11 @@ export async function getTopQuestions(
   const query = params.toString();
   const path = query ? `/admin/analytics/top-questions?${query}` : '/admin/analytics/top-questions';
 
-  return fetchJson<TopQuestionsResponse>(`${apiBase}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return createAdminTransport(token, apiBase).get<TopQuestionsResponse>(path);
 }
 
-/** Returns the download URL for the CSV export (opens directly via <a> tag). */
-export function buildExportUrl(
-  apiBase: string,
+/** Path (no `apiBase` prefix) for the CSV export endpoint — for use with `createAdminTransport().getBlob()`. */
+export function buildExportPath(
   format: 'sessions' | 'conversations',
   from?: string,
   to?: string,
@@ -83,5 +80,20 @@ export function buildExportUrl(
   if (from) params.set('from', from);
   if (to) params.set('to', to);
 
-  return `${apiBase}/admin/analytics/export?${params.toString()}`;
+  return `/admin/analytics/export?${params.toString()}`;
+}
+
+/**
+ * Returns the download URL for the CSV export (opens directly via <a> tag).
+ * Kept for backward compatibility (e.g. the unrouted `AnalyticsPanel.tsx`);
+ * the routed `AnalyticsPage.tsx` uses `buildExportPath` + `createAdminTransport().getBlob()`
+ * instead so the request goes through the X-Authorization mirror.
+ */
+export function buildExportUrl(
+  apiBase: string,
+  format: 'sessions' | 'conversations',
+  from?: string,
+  to?: string,
+): string {
+  return `${apiBase}${buildExportPath(format, from, to)}`;
 }
