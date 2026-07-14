@@ -27,12 +27,14 @@ export interface WidgetInitOptions {
 
 function WidgetRoot({
   apiBase,
+  mountEl,
   theme,
   hero,
   chat,
   layout,
 }: {
   apiBase?: string;
+  mountEl: HTMLElement;
   theme: WidgetTheme;
   hero: WidgetHero;
   chat: WidgetChat;
@@ -41,8 +43,11 @@ function WidgetRoot({
   const { locale } = useLocale();
 
   useEffect(() => {
-    document.documentElement.lang = toBcp47(locale);
-  }, [locale]);
+    // 埋め込み widget は <html> を所有しない。lang はテーマスコープと同一の
+    // マウントルート要素へ設定する（規約 01 §7-3・会議 R4 AM-18・WCAG 3.1.2）。
+    // document.documentElement.lang の書き換えはホスト文書の読み上げ言語を壊すため MUST NOT。
+    mountEl.lang = toBcp47(locale);
+  }, [locale, mountEl]);
 
   return <WidgetChrome apiBase={apiBase} theme={theme} hero={hero} chat={chat} layout={layout} />;
 }
@@ -123,7 +128,7 @@ export async function init(target: HTMLElement, options?: WidgetInitOptions): Pr
   createRoot(target).render(
     <StrictMode>
       <LocaleProvider storageKey={WIDGET_LOCALE_STORAGE_KEY} initialLocale={initialLocale}>
-        <WidgetRoot apiBase={config.apiBase} theme={theme} hero={hero} chat={chat} layout={layout} />
+        <WidgetRoot apiBase={config.apiBase} mountEl={target} theme={theme} hero={hero} chat={chat} layout={layout} />
       </LocaleProvider>
     </StrictMode>,
   );
