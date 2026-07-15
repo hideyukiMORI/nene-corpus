@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2695d5ed0ddfa3758e1bb6063461ef9",
+    "content-hash": "84b279d059f7fdca3a192d0f5695eaf2",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -394,11 +394,11 @@
         },
         {
             "name": "hideyukimori/nene2",
-            "version": "1.8.2",
+            "version": "1.11.0",
             "dist": {
                 "type": "path",
                 "url": "../NENE2",
-                "reference": "98869b1e494f6ec5c708694a3f3a51e923d43231"
+                "reference": "71651c457d48c1357b633bac51f1e7e26e6aad72"
             },
             "require": {
                 "monolog/monolog": "^3.0",

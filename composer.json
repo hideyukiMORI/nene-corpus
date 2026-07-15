@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": ">=8.4.1 <9.0",
-        "hideyukimori/nene2": "^1.8.2",
+        "hideyukimori/nene2": "^1.11",
         "phpmailer/phpmailer": "^7.1",
         "robmorgan/phinx": "^0.16.11",
         "smalot/pdfparser": "^2.12"
@@ -16,7 +16,7 @@
             "url": "../NENE2",
             "options": {
                 "versions": {
-                    "hideyukimori/nene2": "1.8.2"
+                    "hideyukimori/nene2": "1.11.0"
                 }
             }
         }
