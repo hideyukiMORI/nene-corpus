@@ -27,7 +27,9 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Typecheck
+      # npm run check = lint + typecheck (all workspaces) + test (vitest,
+      # currently packages/api-client only — issue #345).
+      - name: Check (lint, typecheck, test)
         working-directory: frontend
         run: npm run check
 

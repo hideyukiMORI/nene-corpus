@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "check": "npm run lint && npm run typecheck --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
     "build:release": "npm run build:release:admin && npm run build -w @nene-corpus/widget && node ../scripts/build-guide.mjs && node ../scripts/build-howto.mjs",
     "build:release:admin": "NENE_CORPUS_ADMIN_OUT=../../../public_html/admin npm run build -w @nene-corpus/admin",
