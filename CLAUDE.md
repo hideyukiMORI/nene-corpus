@@ -287,7 +287,7 @@ frontend/
 
 ```bash
 composer check                         # PHPUnit + PHPStan level8 + CS-Fixer + OpenAPI + MCP
-npm run check --prefix frontend        # TypeScript + lint
+npm run check --prefix frontend        # lint (ESLint) + typecheck + test (vitest)
 docker compose up --build -d           # ローカルスタック確認
 curl -fsS http://localhost:8989/health
 ```
