@@ -330,6 +330,7 @@ npx playwright test --config playwright.admin.config.ts    # admin スイート�
 | 目的 | ドキュメント |
 | --- | --- |
 | 現在のタスク | `docs/todo/current.md` |
+| 日報 | `docs/daily/<YYYY-MM-DD>.md`（置き場・書式・運用の正本は `_work/daily-report-convention.md`） |
 | ロードマップ | `docs/roadmap.md` |
 | ワークフロー詳細 | `docs/workflow.md` |
 | コミット規約 | `docs/development/commit-conventions.md` |
