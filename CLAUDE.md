@@ -292,6 +292,27 @@ docker compose up --build -d           # ローカルスタック確認
 curl -fsS http://localhost:8989/health
 ```
 
+## E2E テスト（`tests/e2e/` — CI 未配線・手動実行のみ）
+
+Playwright の 2 スイート。**npm workspaces（`frontend/`）の外**にあり、**どの CI workflow からも呼ばれていない**（merge ゲートではない）。API は全て `page.route()` でモックし、`public_html/` の静的ビルドを `python3 -m http.server 3001` で配信する方式（実バックエンド・LLM 不要）。
+
+```bash
+cd tests/e2e && npm install
+npx playwright install chromium                            # 初回のみ
+npx playwright test                                        # widget スイート（specs/ 103 テスト・約1分）
+npx playwright test --config playwright.admin.config.ts    # admin スイート（admin/specs/ 373 テスト・約1時間）
+```
+
+**現状（2026-07-18 実測）:**
+
+| スイート | 結果 | 備考 |
+| --- | --- | --- |
+| widget（`specs/`） | ✅ 103/103 pass（約1.1分） | 生きている |
+| admin（`admin/specs/`） | ❌ 226/373 pass・147 fail（約58分） | spec が現行 admin UI と乖離（最新ビルドでも `01-auth` は 3/17。例: email prefill 期待が現 UI に無い） |
+
+- admin スイートの対象は `public_html/admin/` の**コミット済み静的ビルド**。ソース変更後は `npm run build:release --prefix frontend` しないと反映されない（自動更新されない）。
+- **CI 配線と admin spec の現行 UI への再整備は今後の課題**（着手時は Issue 化してから）。CI 未配線のため drift が検知されない状態が続いている点に注意。
+
 ## セルフレビューチェックリスト（PR 本文に記載）
 
 | ファイル | 使う場面 |
