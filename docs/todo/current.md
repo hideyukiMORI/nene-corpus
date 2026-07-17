@@ -1,15 +1,29 @@
 # Current Work
 
-Last updated: 2026-05-30 (PR #311 / #312 / #315)
+Last updated: 2026-07-18 (PR #349 / #350 / #353 系)
+
+## E2E テストの実態（2026-07-18 実測 — 過去の「グリーン」記述より優先）
+
+本ファイル下方の「157/157 グリーン」「200/200 グリーン」は**当時（2026-05 末）の記録**であり現状ではない。最新の実測（#348 / PR #350 で CLAUDE.md にも記録）:
+
+| スイート | 実測結果 | 状態 |
+| --- | --- | --- |
+| widget（`tests/e2e/specs/` 103 テスト） | ✅ 103/103 pass（約1.1分） | 生きている |
+| admin（`tests/e2e/admin/specs/` 373 テスト） | ❌ **226/373 pass・147 fail**（約58分） | spec が現行 admin UI と乖離（最新ビルドでも `01-auth` 3/17）。再整備 = **#351**、CI 配線 = **#352**（いずれも W4 編入・順序固定: #351 → #352） |
+
+e2e は CI 未配線（merge ゲートではない）。実行方法は CLAUDE.md「E2E テスト」節を参照。
 
 ## 最近の docs 更新
 
+- **ドキュメント正直化 2 本 + E2E 実測 (2026-07-18)** — CLAUDE.md の frontend check コメントを実態（lint + typecheck + test）へ（#347 / PR #349）。CLAUDE.md に E2E の実行手段と現状（CI 未配線・実測値）を記録（#348 / PR #350）。後続: admin spec 再整備 #351・CI 配線 #352（W4）・本ファイル正直化 #353。
+- **W2a フリート波 (2026-07-14〜15)** — admin の Bearer 経路を `@hideyukimori/nene2-client` transport へ移行（#339 / PR #340）。eslint flat config 導入 + 公認差異 `corpus-widget-session-token` の override 実行可能登録（#341 / PR #342、base preset は W0b で別途）。X-Authorization フォールバック受け口を opt-in 有効化（#343 / PR #344）。vitest + msw のテスト基盤導入・api-client 両ヘッダ UT（#345 / PR #346）。
+- **検品・NENE2 準拠波 (2026-06〜07)** — 本番 JWT secret 未設定時フェイルクローズ（#320 / PR #321）→ `GuardedJwtSecretResolver` へ寄せ（#322 / PR #323）。composer.lock の NENE2 pin 是正 + PDF 取り込み TX 化（#324 / PR #325）。検品C 先行セキュリティ 2 件（pagination clamp / `.env` 0640・escape、#328）。生 `time()`/`date()`・`gmdate()` を NENE2 `ClockInterface` 注入へ（#329 / PR #330、#333 / PR #334）。準拠リンタ conformance を check ゲートに配線（#331 / PR #332）。README 実態同期 + 統一テンプレ（#335〜#338）。ローカル開発ポート 89** 帯統一（#316 / PR #317）。favicon / ブランドアセット整備（#318 / PR #319）。
 - **後処理 3 件 + Phase 5 着手 (2026-05-30)** — (1) Docker 全18マイグレーション適用・Tier A release ZIP 再ビルド（nene-corpus-4203d52.zip / 19MB）。(2) deep-link × .htaccess E2E テスト追加（#308 / PR #311、17-deep-link.spec.ts 9件）。(3) release ZIP シンボリックリンクバグ修正（#310 / PR #312、tools/build-release.sh）。(4) 実装済み OPEN Issue 21件クローズ（v2 リデザイン #261-#298・テナント #275-#280）、UpdateSource 後追い Issue #309 記録・クローズ。Phase 5 P1 開始: NeNe Records 読み取りクライアント（#313 / PR #315）。
 - **v2 リデザイン仕上げ + マルチテナント main 統合 (PR #300 → #288)** — B-soft デザイン指示書に沿って Admin UI 全7画面（Login / Dashboard / Sources / Conversations / Settings / Analytics / Help）を仕上げ、旧パネルからの欠損機能8件（パスワード再設定・ソース編集モーダル・古いログ整理・Hero/アバター画像アップロード・ライブプレビュー・Analytics ページ + CSV エクスポート・アプリ内ヘルプ）を移植。レスポンシブ（hamburger ドロワー / tablet / mobile）、コンテンツ幅 1680px、認証ループ・ログアウト不具合の修正を含む。backend は **ソース編集 API（PUT /admin/sources/{id} + note カラム）** を追加。既存不具合（Analytics の MySQL 互換 SQL・CSV の PHP 8.4 deprecation・AdminHtaccess テスト）も修正。feat/298 → feat/tenancy-integration → main の順でマージし、マルチテナント一式と合わせて main に統合。重複サブ PR #281-285・Overview の #299 はクローズ。
 - **マルチテナント Phase D (#280)** — OpenAPI に Superadmin tag + 7 endpoint + 5 schema 追加。ADR 0005（multi-tenancy strategy）新規作成。`docs/integrations/multi-tenancy.md` 設定ガイド追加。CLAUDE.md に Tenancy 規約セクション・禁止パターン追加。E2E spec `tests/e2e/admin/specs/16-tenancy.spec.ts` 7 テスト追加。`docs/todo/current.md` / `docs/roadmap.md` Phase 4 完了マーク更新。
 - **会話分析ダッシュボード (#255 / PR #256)** — GET /admin/analytics/summary・top-questions・export の 3 エンドポイント追加。src/Analytics/ モジュール（14 ファイル）+ AnalyticsPanel.tsx + 6 ロケール対応。
 - **ペルソナ UX シナリオテスト (#253)** — 20 業種 × 10 行動パターン = 200 ペルソナ E2E。全 7 チェックポイント完走。200/200 グリーン（231s）。主要知見: ソース取り込み CP3 が最大摩擦点（実行可能シナリオ 73% 失敗）。P1〜P3 改善提案付き UX 分析レポートを `docs/research/2026-05-28-persona-ux-analysis.md` に保存。
-- **Admin E2E テストスイート拡充 (#250 #252)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。157/157 グリーン。
+- **Admin E2E テストスイート拡充 (#250 #252)** — ギャップ分析で特定した漏れパターン 38 件を追加し 119 件→157 件に拡充。新規ファイル: `13-widget-chat.spec.ts`（12 件）・`14-notifications.spec.ts`（8 件）。157/157 グリーン（**当時**。2026-07-18 実測は 226/373 — 冒頭「E2E テストの実態」参照）。
 - Phase 1 完了 — corpus ingestion milestone (#7–#15)
 - Phase 2 完了 — chat sessions, chunk search, sync JSON, rate limiting
 - Phase 3 進行 — frontend monorepo, widget, admin UI, appearance, i18n, admin デザイン (#33–#92)
@@ -137,7 +151,7 @@ Issue 化してから実装。優先は Tier A 完了後に再整理。
 | P2 | **ペルソナ HOWTO セットアップガイド** | ✅ #222 — /guide/howto/{locale}/、さくら（カフェオーナー）吹き出し×4ステップ + デモチャット、6ロケール |
 | 🔴 | **ログインブルートフォース対策** | ✅ #224 (PR #225) — AdminLoginRateLimitMiddleware（IP 別 10 回/15 分、rate_limit_buckets 再利用） |
 | 🔴 | **パスワードリセット** | ✅ #226 (PR #227) — メール経由リセットフロー（SHA-256 ハッシュ保存・列挙防止・1時間 TTL・使い捨てトークン） + Admin UI（忘れた場合リンク・リクエスト/確認フォーム）、6 ロケール |
-| 🟡 | **Admin E2E テスト** | ✅ #250 (PR #251) — Playwright E2E 157 件（119→157、ギャップ補完 38 件・widget chat・notifications スペック追加） |
+| 🟡 | **Admin E2E テスト** | ✅ #250 (PR #251) — Playwright E2E 157 件（119→157、ギャップ補完 38 件・widget chat・notifications スペック追加）。⚠️ 2026-07-18 実測は 226/373 fail 込み — 再整備 #351（W4） |
 | 🟡 | **ペルソナ UX シナリオテスト** | ✅ #253 — 200ペルソナ E2E（20業種×10行動パターン）、全7チェックポイント、200/200 pass (231s)、UX 分析レポート (`docs/research/2026-05-28-persona-ux-analysis.md`) |
 
 **チャット transport:** **sync JSON chat** のみ。**SSE / token ストリーミングは非ゴール**（Tier A/B 共通）。
