@@ -7,7 +7,7 @@ See also: `docs/inheritance-from-nene2.md`.
 ## Standard Flow
 
 1. Create or reuse a focused GitHub Issue.
-2. Confirm context in `docs/roadmap.md`, `docs/milestones/`, and `docs/todo/current.md`.
+2. Confirm context in `docs/roadmap.md`, `docs/milestones/`, and private `nene-origin/internal-docs/corpus/todo/current.md`.
 3. Create a branch from `main` named like `type/issue-number-summary`.
 4. Implement the smallest useful change.
 5. Update docs, roadmap, milestone, or TODO files when the decision or state changes.
@@ -44,7 +44,7 @@ Every PR should include:
 
 - `docs/roadmap.md`: long-lived direction and phases
 - `docs/milestones/`: medium-sized goals and acceptance criteria
-- `docs/todo/current.md`: current task board
+- private `nene-origin/internal-docs/corpus/todo/current.md`: current task board（運用ログは private へ移設）
 - `docs/adr/`: major architecture decisions
 - `docs/inheritance-from-nene2.md`: NENE2 governance inheritance map
 
@@ -67,7 +67,7 @@ When asked to complete work, AI agents should run the **full lifecycle** unless 
 - commit with `(#issue)` in the subject
 - push the branch and open a PR with checklist name and `Closes #number`
 - merge after checks pass and sync local `main`
-- update `docs/todo/current.md` and milestones when state changes
+- update private `nene-origin/internal-docs/corpus/todo/current.md` and milestones when state changes
 
 Direct pushes to `main` are **not** part of the normal agent workflow.
 
