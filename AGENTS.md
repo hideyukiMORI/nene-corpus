@@ -4,7 +4,7 @@ This file is the entry point for AI agents working on NeNe Corpus.
 
 ## Read First
 
-- **Current work & status:** `docs/todo/current.md`
+- **Current work & status:** private `nene-origin/internal-docs/corpus/todo/current.md` (operational logs moved to the private mirror — P3, 2026-07-18; public docs stay Diátaxis + ADR/CHANGELOG only)
 - **Product vision:** `docs/explanation/product-vision.md`
 - **Glossary:** `docs/explanation/glossary.md`
 - **Naming conventions:** `docs/development/naming-conventions.md`
@@ -28,7 +28,7 @@ This file is the entry point for AI agents working on NeNe Corpus.
 - **Full lifecycle** (unless user limits scope): Issue → branch → implement → verify → commit → push → PR → merge → sync `main`.
 - Read NENE2 upstream docs for framework behavior; read local docs for product rules.
 - **Never integrate this chat system into NeNe Records.** Dependency direction is `NeNe Corpus → upstream APIs`, never the reverse. See ADR 0002.
-- Keep `docs/todo/current.md` and milestones aligned with Issues and PRs.
+- Keep private `nene-origin/internal-docs/corpus/todo/current.md` and milestones aligned with Issues and PRs.
 - Keep changes focused. Do not mix governance, feature work, and unrelated cleanup in one PR.
 - Do not commit secrets, credentials, local `.env` files, or generated build outputs.
 - Prefer explicit, typed, testable code over hidden framework behavior.

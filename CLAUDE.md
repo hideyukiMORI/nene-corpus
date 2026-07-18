@@ -23,7 +23,8 @@ Ops / MCP         ────────────────────�
 
 ## 現在の開発状況
 
-> **最終更新: 2026-05-29**（`docs/todo/current.md` が正本）
+> **運用ログ（`docs/todo`・`docs/daily`・field-trials 相当）は private `nene-origin/internal-docs/corpus/` に移設済み**（P3・2026-07-18）。最新の作業状況・申し送り・引き継ぎはそちらを読むこと。公開リポの docs は Diátaxis（tutorial/howto/reference/explanation）＋ADR/CHANGELOG のみを正とする。
+> 最新の作業レーンと未処理タスクは private `nene-origin/internal-docs/corpus/todo/current.md` を先に読むこと。
 
 | フェーズ | 状態 |
 | --- | --- |
@@ -61,12 +62,12 @@ Ops / MCP         ────────────────────�
 ## ワークフロー（守れない場合は作業しない）
 
 1. **GitHub Issue を作成**（または番号を確認）する。Issue なしに編集しない。
-2. `docs/roadmap.md`, `docs/todo/current.md`, 関連 Issue/PR を確認する。
+2. `docs/roadmap.md`, private `nene-origin/internal-docs/corpus/todo/current.md`, 関連 Issue/PR を確認する。
 3. `main` から `type/issue-number-summary` ブランチを切る。
 4. 実装 → 品質チェック（後述）→ commit。
 5. PR 作成：`Closes #N` + セルフレビューチェックリスト名を本文に記載。
 6. CI green → merge → ローカル `main` sync。
-7. `docs/todo/current.md` を最新状態に更新する。
+7. private `nene-origin/internal-docs/corpus/todo/current.md` を最新状態に更新する。
 
 **コミット形式（Conventional Commits）:**
 ```
@@ -329,8 +330,8 @@ npx playwright test --config playwright.admin.config.ts    # admin スイート�
 
 | 目的 | ドキュメント |
 | --- | --- |
-| 現在のタスク | `docs/todo/current.md` |
-| 日報 | `docs/daily/<YYYY-MM-DD>.md`（置き場・書式・運用の正本は `_work/daily-report-convention.md`） |
+| 現在のタスク | private `nene-origin/internal-docs/corpus/todo/current.md`（運用ログは private へ移設） |
+| 日報 | private `nene-origin/internal-docs/corpus/daily/<YYYY-MM-DD>.md`（置き場・書式・運用の正本は `_work/daily-report-convention.md`） |
 | ロードマップ | `docs/roadmap.md` |
 | ワークフロー詳細 | `docs/workflow.md` |
 | コミット規約 | `docs/development/commit-conventions.md` |
