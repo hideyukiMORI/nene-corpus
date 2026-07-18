@@ -75,7 +75,7 @@ Ops / AI (MCP)         ───────────────────
 
 ## Status
 
-Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
+Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs/roadmap.md`](./docs/roadmap.md). The operational task board moved to the private mirror `nene-origin/internal-docs/corpus/todo/current.md`.
 
 | Area | State |
 | --- | --- |
@@ -90,7 +90,7 @@ Phases 1–4 core deliverables are complete, including multi-tenancy. See [`docs
 | Phase 4 — multi-tenancy (organizations, single/subdomain/path tenant resolution, superadmin) | ✅ (2026-05-29) |
 | Phase 5 — upstream integrations (NeNe Records) | 🔄 In progress |
 
-See [`docs/roadmap.md`](./docs/roadmap.md) and [`docs/todo/current.md`](./docs/todo/current.md).
+See [`docs/roadmap.md`](./docs/roadmap.md). The operational task board moved to the private mirror `nene-origin/internal-docs/corpus/todo/current.md`.
 
 ## Non-goals
 

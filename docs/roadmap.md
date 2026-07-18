@@ -47,7 +47,7 @@ Goal: grounded Q&A with cited responses.
 - **sync JSON chat** endpoint (default for Tier A and Tier B)
 - **Citation** payload in responses
 - **Rate limit** per session/IP
-- **sync JSON chat** only — consumer UX via widget CSS (loading, bubble motion, scroll). **SSE streaming is a non-goal** (see ADR 0003 note in `docs/todo/current.md`)
+- **sync JSON chat** only — consumer UX via widget CSS (loading, bubble motion, scroll). **SSE streaming is a non-goal** (see ADR 0003 note in the private mirror `nene-origin/internal-docs/corpus/todo/current.md`)
 
 ## Phase 3: Admin UI & Widget
 
@@ -77,7 +77,7 @@ Goal: day-2 operations without SSH or hosting-panel `.env` edits where possible.
 - **Admin E2E test suite** ✅ — 157 Playwright specs covering all major flows (#250 #252)
 - **Persona UX scenario tests** ✅ — 200 personas × 10 patterns, 200/200 pass, UX analysis report (#253)
 
-詳細バックログ: [`docs/todo/current.md`](./todo/current.md).
+詳細バックログ: private `nene-origin/internal-docs/corpus/todo/current.md`（運用ログは private へ移設）。
 
 ## Phase 4: Multi-tenancy ✅ 完了
 

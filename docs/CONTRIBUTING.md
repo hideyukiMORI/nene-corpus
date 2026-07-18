@@ -19,7 +19,7 @@ NeNe Corpus is built through small, Issue-driven changes. This document is the s
 | AI tools | `docs/integrations/ai-tools.md` |
 | Agent entry point | `AGENTS.md` |
 | Roadmap | `docs/roadmap.md` |
-| Current work | `docs/todo/current.md` |
+| Current work | private `nene-origin/internal-docs/corpus/todo/current.md` |
 
 ## Collaboration Policy
 
@@ -33,7 +33,7 @@ Follow [`docs/workflow.md`](workflow.md) — inherited from [NENE2](https://gith
 Phase 0 bootstrap (2026-05-24 — 2026-05-25) used direct `main` commits as a one-time exception. **Phase 1 onward uses Issue → PR → merge only.**
 
 - Use one branch and one PR per focused work unit.
-- Keep `docs/milestones/`, `docs/roadmap.md`, and `docs/todo/current.md` updated when direction changes.
+- Keep `docs/milestones/`, `docs/roadmap.md`, and private `nene-origin/internal-docs/corpus/todo/current.md` updated when direction changes.
 - Explain intent, impact, verification, and remaining risk in PRs.
 - Prefer documentation that helps the next developer or AI agent decide what to do without rereading chat history.
 
