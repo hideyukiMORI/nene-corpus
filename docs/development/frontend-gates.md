@@ -12,6 +12,7 @@
 | テスト | `npm run test` | vitest |
 | 依存の脆弱性 | `npm run audit` | `audit-ci`（high/critical・allowlist は advisory 単位） |
 | ビルド出力 | `npm run verify:build` | ビルドが web ルートを壊していないこと（`build` / `build:release` の後段） |
+| widget のサイズ | `npm run size:check` | 第三者ページへ配信されるバンドルが太っていない／中身が落ちていないこと（`verify:build` に同乗） |
 
 ---
 
@@ -74,6 +75,29 @@ npm run lint:baseline -- --update    # 3 つのベースラインをまとめて
 
 ---
 
+## widget バンドルのサイズラチェット（`size:check`）
+
+`verify:build` に同乗して両ビルド経路で走る。ベースラインは `frontend/widget-size-baseline.json`（`widget.js` / `widget.css` の**生サイズと gzip サイズ**）。
+
+**増加も減少も赤にする。** 許容幅は ±1%。
+
+| 方向 | なぜ赤にするか |
+| --- | --- |
+| 増えた | widget は**第三者のホームページに `<script>` で配信される**。admin コードや Tailwind の preflight が紛れ込んでも、ビルドは成功しテストも CI も緑のまま通る（#368 の `publicDir` と同じ「静かに壊れる」型） |
+| 減った | **widget が壊れて中身が落ちてもサイズは減る。** 「静かに何もしない」の逆向きなので、動くことを確認してからベースラインを下げる |
+
+gzip 側も見るのは、**実際にネットワークを流れるのがそちら**で、生サイズだけだと圧縮率の変化（＝中身の性質の変化）を見逃すため。
+
+意図した変化なら:
+
+```bash
+npm run size:baseline -- --update    # 数字を更新（差分をコミットに含める）
+```
+
+数字がコミットに現れることそのものが目的でもある——レビューで「なぜ増えたのか」が問える形になる。
+
+---
+
 ## 陽性対照（ゲートが生きていることの実証）
 
 導入時に確認済み（#370）。ゲートを触ったら再確認すること。
@@ -86,6 +110,8 @@ npm run lint:baseline -- --update    # 3 つのベースラインをまとめて
 | ビルド出力 | `public_html/` 直下に favicon を置く | 「見知らぬ生成物」で exit 1 |
 | ビルド出力 | `public_html/.htaccess` を消す | 「消えています」で exit 1 |
 | ビルド出力（release） | `public_html/admin/index.html` を消して `verify:build:release` | 「無いか空です」で exit 1 |
+| widget サイズ（増加） | `widget.js` に 9 kB 追記（+2.2%） | 「増えました」で exit 1 |
+| widget サイズ（減少） | `widget.js` を切り詰め（-3.1%） | 「減りました・壊れて中身が落ちても減ります」で exit 1 |
 
 ---
 
