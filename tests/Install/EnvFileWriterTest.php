@@ -102,11 +102,28 @@ final class EnvFileWriterTest extends TestCase
         self::assertStringContainsString('# --- Admin auth', $content);
     }
 
-    public function test_value_with_newline_is_rejected(): void
+    #[DataProvider('controlCharacterValues')]
+    public function test_value_with_control_character_is_rejected(string $value): void
     {
         $this->expectException(InstallRuntimeException::class);
 
-        $this->writer()->write(['DB_PASSWORD' => "line1\nINJECTED=evil"]);
+        $this->writer()->write(['DB_PASSWORD' => $value]);
+    }
+
+    /**
+     * Every byte that could break out of a single `KEY=value` line. A line feed appends a
+     * forged assignment; a lone carriage return does the same on the parsers that split on
+     * it; a NUL byte truncates the value for C-level consumers while the rest of the line
+     * survives in the file.
+     *
+     * @return iterable<string, array{string}>
+     */
+    public static function controlCharacterValues(): iterable
+    {
+        yield 'line feed' => ["line1\nINJECTED=evil"];
+        yield 'carriage return' => ["line1\rINJECTED=evil"];
+        yield 'crlf' => ["line1\r\nINJECTED=evil"];
+        yield 'nul byte' => ["secret\0INJECTED=evil"];
     }
 
     private function writer(): EnvFileWriter
