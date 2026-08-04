@@ -2,25 +2,45 @@
   "name": "nene-corpus-frontend",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "check": "npm run lint && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
-    "build:release": "npm run build:release:admin && npm run build -w @nene-corpus/widget && node ../scripts/build-guide.mjs && node ../scripts/build-howto.mjs",
-    "build:release:admin": "NENE_CORPUS_ADMIN_OUT=../../../public_html/admin npm run build -w @nene-corpus/admin",
-    "dev:admin": "npm run dev -w @nene-corpus/admin",
-    "dev:widget": "npm run dev -w @nene-corpus/widget",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "npm run build:admin && npm run build:widget",
+    "build:admin": "npm run typecheck && vite build",
+    "build:widget": "vite build --config vite.widget.config.ts",
+    "build:release": "npm run build:release:admin && npm run build:widget && node ../scripts/build-guide.mjs && node ../scripts/build-howto.mjs",
+    "build:release:admin": "NENE_CORPUS_ADMIN_OUT=../public_html/admin npm run build:admin",
+    "dev": "vite",
+    "dev:admin": "vite",
+    "dev:widget": "vite --config vite.widget.config.ts",
     "lint": "eslint ."
   },
   "engines": {
     "node": ">=20"
   },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/noto-sans-jp": "^5.2.9",
+    "@fontsource/noto-sans-sc": "^5.2.9",
+    "@hideyukimori/nene2-client": "^1.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
   "devDependencies": {
     "@hideyukimori/nene2-standards": "^1.0.0",
-    "eslint": "^9.39.5"
+    "@tailwindcss/vite": "^4.1.7",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.39.5",
+    "jsdom": "^27.2.0",
+    "msw": "^2.12.3",
+    "tailwindcss": "^4.1.7",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^4.1.9"
   }
 }

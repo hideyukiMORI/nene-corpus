@@ -194,21 +194,33 @@ SQL は `Pdo*Repository` 内のみ。
 
 ## フロントエンド規約
 
+**単一パッケージ・単一 `src/` ツリー**（npm workspaces は #368 で廃止した）。2 つの成果物を 1 つのツリーから 2 つの Vite 設定でビルドする（フリート共通標準＝payout 型）。
+
 ```
 frontend/
-  apps/admin/       # 管理 SPA — Tailwind CSS v4 + React
-  apps/widget/      # 埋め込みウィジェット — BEM + CSS 変数 → widget.js
-  packages/
-    api-client/     # snake_case 型 + fetch ヘルパー（OpenAPI に追従）
-    i18n/           # Msg キー定数 + ロケールカタログ（ja/en/de/fr/zh-Hans/pt-BR）
-    tokens/         # nc.* BEM クラス定数 + CSS 変数名
+  index.html               # admin エントリ
+  widget-dev.html          # widget dev ページ（:5290/widget-dev.html）
+  vite.config.ts           # admin ビルド → public_html/admin/
+  vite.widget.config.ts    # widget ビルド（lib/iife）→ public_html/widget.js
+  vitest.config.ts
+  tests/                   # vitest 基盤（msw / setup）— @tests エイリアス
+  src/
+    main.tsx               # admin エントリ
+    *.tsx  v2/             # ⚠️ 平置きの admin。5 層への再配置は #361 P4
+    app/widget/            # 埋め込みウィジェット — BEM + CSS 変数 → widget.js
+    shared/api/            # snake_case 型 + transport（OpenAPI に追従）
+    shared/i18n/           # Msg キー定数 + ロケールカタログ（ja/en/de/fr/zh-Hans/pt-BR）
+    shared/config/widget-tokens/   # nc.* BEM クラス定数 + CSS 変数名
 ```
+
+**目標構造は FSD 5 層**（`app/pages/features/entities/shared`）。現状はその途中で、`src/` 直下の平置き admin は #361 の P4 で解消する。新規ファイルの置き場に迷ったら #361 の設計ノートを見る。
 
 | ルール | 内容 |
 | --- | --- |
-| Widget スタイル | BEM + `var(--nc-*)` のみ。**Tailwind 禁止** |
-| Widget クラス | `@nene-corpus/tokens` の `nc.*` 定数を使う。JSX へのハードコード禁止 |
+| Widget スタイル | BEM + `var(--nc-*)` のみ。**Tailwind 禁止**（第三者ページに preflight を持ち込まないため） |
+| Widget クラス | `@/shared/config/widget-tokens` の `nc.*` 定数を使う。JSX へのハードコード禁止 |
 | Admin スタイル | Tailwind utility classes in TSX |
+| import | スライス跨ぎは `@/` 絶対（`@`＝`src/`・`@tests`＝`tests/`）。同一ディレクトリ内は相対 |
 | JWT | Admin JWT をウィジェットに渡さない |
 | JSON | `snake_case` のまま使う（クライアント側でリネームしない） |
 | 文字列 | UI 文字列はロケールカタログに。ハードコード禁止 |
@@ -226,8 +238,8 @@ frontend/
 | --- | --- | --- |
 | API / Web（Apache） | **8989** | `NENE_CORPUS_PORT`（`compose.yaml`） |
 | MySQL | **3389** | `NENE_CORPUS_MYSQL_PORT`（`compose.yaml`） |
-| Vite admin SPA | **5289** | `frontend/apps/admin/vite.config.ts` |
-| Vite widget | **5290** | `frontend/apps/widget/vite.config.ts` |
+| Vite admin SPA | **5289** | `frontend/vite.config.ts` |
+| Vite widget | **5290** | `frontend/vite.widget.config.ts`（`/widget-dev.html`） |
 
 **他アプリの占有帯（衝突回避のため侵さない）:**
 
@@ -295,7 +307,7 @@ curl -fsS http://localhost:8989/health
 
 ## E2E テスト（`tests/e2e/` — CI 未配線・手動実行のみ）
 
-Playwright の 2 スイート。**npm workspaces（`frontend/`）の外**にあり、**どの CI workflow からも呼ばれていない**（merge ゲートではない）。API は全て `page.route()` でモックし、`public_html/` の静的ビルドを `python3 -m http.server 3001` で配信する方式（実バックエンド・LLM 不要）。
+Playwright の 2 スイート。**`frontend/` の npm パッケージの外**にあり、**どの CI workflow からも呼ばれていない**（merge ゲートではない）。API は全て `page.route()` でモックし、`public_html/` の静的ビルドを `python3 -m http.server 3001` で配信する方式（実バックエンド・LLM 不要）。
 
 ```bash
 npm run build:release --prefix frontend                    # ★先に必須（下記「叩く対象」参照）

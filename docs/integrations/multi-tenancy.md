@@ -179,7 +179,7 @@ Admin SPA は起動時に `GET /admin/bootstrap`（public、auth/rate-limit と�
 
 ### SPA fallback (.htaccess)
 
-path-based routing では、ブラウザの直叩き（`/admin/dashboard`）や再読み込みでも `index.html` が返る必要がある。`public_html/admin/.htaccess` と `frontend/apps/admin/public/.htaccess` の両方に SPA fallback を設定済み:
+path-based routing では、ブラウザの直叩き（`/admin/dashboard`）や再読み込みでも `index.html` が返る必要がある。`public_html/admin/.htaccess` と `frontend/public/.htaccess` の両方に SPA fallback を設定済み:
 
 ```apache
 # Static files are served as-is.

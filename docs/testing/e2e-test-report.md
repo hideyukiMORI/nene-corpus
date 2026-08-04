@@ -1,7 +1,7 @@
 # NeNe Corpus Widget — Browser E2E テストレポート
 
 > **生成日:** 2026-05-27  
-> **対象:** `frontend/apps/widget` — Embed Widget (widget.js)  
+> **対象:** `frontend/src/app/widget` — Embed Widget (widget.js)  
 > **テストフレームワーク:** Playwright 1.60 / Chromium  
 > **実行環境:** Python HTTP Server (port 3001)、API 全モック  
 > **LLM:** Anthropic Messages API レスポンスパターンをすべてモック化（実 LLM 呼び出しなし）  
@@ -29,7 +29,7 @@
 
 - **症状:** `widget.js` (IIFE バンドル) に `process.env.NODE_ENV` 参照が残留。ブラウザには `process` グローバルが存在しないため、ウィジェットが起動しない。
 - **原因:** Vite のライブラリモードビルドでは `process.env.NODE_ENV` の自動置換が行われない（通常ビルドと異なる挙動）。
-- **修正:** `frontend/apps/widget/vite.config.ts` に `define: { 'process.env.NODE_ENV': JSON.stringify(mode) }` を追加。
+- **修正:** `frontend/vite.widget.config.ts` に `define: { 'process.env.NODE_ENV': JSON.stringify(mode) }` を追加。
 - **効果:** バンドルサイズ 797 kB → **404 kB** (▲49% 削減)、開発版 React コードが完全に除去。
 
 ---
