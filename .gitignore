@@ -15,9 +15,7 @@
 /public_html/widget.css
 /build/
 /frontend/node_modules/
-/frontend/apps/*/node_modules/
-/frontend/packages/*/node_modules/
-/frontend/apps/*/dist/
+/frontend/dist/
 /storage/uploads/
 /test-results/
 /frontend/test-results/

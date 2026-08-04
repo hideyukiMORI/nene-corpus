@@ -27,7 +27,7 @@ final class AdminHtaccessTest extends TestCase
         $projectRoot = dirname(__DIR__, 2);
         $paths = [
             'public_html/admin/.htaccess' => $projectRoot . '/public_html/admin/.htaccess',
-            'frontend/apps/admin/public/.htaccess' => $projectRoot . '/frontend/apps/admin/public/.htaccess',
+            'frontend/public/.htaccess' => $projectRoot . '/frontend/public/.htaccess',
         ];
 
         $apiRules = [];
@@ -37,7 +37,7 @@ final class AdminHtaccessTest extends TestCase
             $apiRules[$label] = $this->extractApiRouteRule((string) file_get_contents($path), $label);
         }
 
-        self::assertSame($apiRules['public_html/admin/.htaccess'], $apiRules['frontend/apps/admin/public/.htaccess']);
+        self::assertSame($apiRules['public_html/admin/.htaccess'], $apiRules['frontend/public/.htaccess']);
 
         foreach (self::REQUIRED_API_PREFIXES as $prefix) {
             self::assertStringContainsString($prefix, $apiRules['public_html/admin/.htaccess']);
