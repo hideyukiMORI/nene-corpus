@@ -33,7 +33,7 @@
 | `mark-reversed.svg` | 反転（箱抜き） |
 | `favicon.svg` | light 既定 + `prefers-color-scheme: dark` で自動反転 |
 
-### 書き出し済み favicon（`frontend/apps/admin/public/`）
+### 書き出し済み favicon（`frontend/public/`）
 
 ビルド時に admin の配信ルート（dev は `/`、静的リリースは `public_html/admin/`）へコピーされ、`index.html` から参照される。
 
@@ -59,4 +59,4 @@ JetBrains Mono Bold の `n` をアウトライン化してから書き出して�
 - 歪めない・傾けない（縦横比変更・回転・せん断は不可）。
 - 濃色の地には reversed 版（箱を抜き、白の n と線のみ）。
 
-> アプリ内ロックアップ（Admin サイドバー / トップバー / ログイン）は `frontend/apps/admin/src/v2.css` の `.brand-mark` / `.auth-brand` で実装。
+> アプリ内ロックアップ（Admin サイドバー / トップバー / ログイン）は `frontend/src/v2.css` の `.brand-mark` / `.auth-brand` で実装。

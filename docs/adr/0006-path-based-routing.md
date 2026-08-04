@@ -32,7 +32,7 @@ Admin SPA は当初 `window.location.hash`（`#/dashboard` 等）でルーティ
 
 ### 2. フロントエンド: mode-aware Router
 
-- `frontend/apps/admin/src/v2/router/` に `RouterProvider` / `Link` / `useRoute` / `useNavigate` を新設。
+- `frontend/src/v2/router/` に `RouterProvider` / `Link` / `useRoute` / `useNavigate` を新設。
 - 起動時に `GET /admin/bootstrap` を fetch して `mode` と `orgSlug` を取得。
 - URL 構造:
 

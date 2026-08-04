@@ -157,7 +157,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Admin SPA routing uses `public_html/admin/.htaccess`. API routes under the same `/admin/` prefix (`/admin/auth/login`, `/admin/sources`, `/admin/settings/llm`, …) are rewritten to the PHP front controller before the SPA fallback. The release build copies this file from `frontend/apps/admin/public/.htaccess` — keep both in sync.
+Admin SPA routing uses `public_html/admin/.htaccess`. API routes under the same `/admin/` prefix (`/admin/auth/login`, `/admin/sources`, `/admin/settings/llm`, …) are rewritten to the PHP front controller before the SPA fallback. The release build copies this file from `frontend/public/.htaccess` — keep both in sync.
 
 ---
 

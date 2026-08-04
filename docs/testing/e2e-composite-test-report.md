@@ -1,7 +1,7 @@
 # NeNe Corpus Widget — 複合シナリオ E2E テストレポート
 
 > **生成日:** 2026-05-27  
-> **対象:** `frontend/apps/widget` — Embed Widget (widget.js)  
+> **対象:** `frontend/src/app/widget` — Embed Widget (widget.js)  
 > **テストフレームワーク:** Playwright 1.60 / Chromium  
 > **前フェーズ:** 単発シナリオ 68 件 (PR #247)  
 > **本フェーズ:** 複合・反復・負荷シナリオ 35 件追加  
