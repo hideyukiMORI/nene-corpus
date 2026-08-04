@@ -19,3 +19,7 @@
 /frontend/packages/*/node_modules/
 /frontend/apps/*/dist/
 /storage/uploads/
+/test-results/
+/frontend/test-results/
+/tests/e2e/test-results/
+/tests/e2e/playwright-report/
