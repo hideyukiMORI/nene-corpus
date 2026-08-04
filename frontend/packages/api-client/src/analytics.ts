@@ -82,18 +82,3 @@ export function buildExportPath(
 
   return `/admin/analytics/export?${params.toString()}`;
 }
-
-/**
- * Returns the download URL for the CSV export (opens directly via <a> tag).
- * Kept for backward compatibility (e.g. the unrouted `AnalyticsPanel.tsx`);
- * the routed `AnalyticsPage.tsx` uses `buildExportPath` + `createAdminTransport().getBlob()`
- * instead so the request goes through the X-Authorization mirror.
- */
-export function buildExportUrl(
-  apiBase: string,
-  format: 'sessions' | 'conversations',
-  from?: string,
-  to?: string,
-): string {
-  return `${apiBase}${buildExportPath(format, from, to)}`;
-}
