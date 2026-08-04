@@ -1,12 +1,4 @@
 {
-  "src/AccountPanel.tsx": {
-    "@typescript-eslint/no-deprecated": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
   "src/App.tsx": {
     "nene2/style-prop-css-vars-only": {
       "count": 8
@@ -15,134 +7,12 @@
       "count": 2
     }
   },
-  "src/AppearancePanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 29
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 1
-    },
-    "jsx-a11y/label-has-associated-control": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/ChatLimitsPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 11
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 1
-    },
-    "nene2/style-prop-css-vars-only": {
-      "count": 1
-    }
-  },
-  "src/ChatSettingsPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 4
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 1
-    }
-  },
-  "src/ColumnMappingGuide.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/EmbedSnippetSection.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    }
-  },
-  "src/FileUploadField.tsx": {
-    "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    },
-    "@typescript-eslint/restrict-template-expressions": {
-      "count": 1
-    }
-  },
-  "src/HelpLabel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 4
-    },
-    "nene2/style-prop-css-vars-only": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/LlmSettingsPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 4
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 1
-    },
-    "nene2/style-prop-css-vars-only": {
-      "count": 1
-    }
-  },
-  "src/LocaleSelector.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    }
-  },
   "src/Modal.tsx": {
     "jsx-a11y/click-events-have-key-events": {
       "count": 1
     },
     "jsx-a11y/no-noninteractive-element-interactions": {
       "count": 1
-    }
-  },
-  "src/NotificationsPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 14
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 1
-    },
-    "@typescript-eslint/no-misused-promises": {
-      "count": 3
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/SettingsModal.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 2
-    },
-    "jsx-a11y/click-events-have-key-events": {
-      "count": 1
-    },
-    "jsx-a11y/no-noninteractive-element-interactions": {
-      "count": 1
-    }
-  },
-  "src/SettingsOverviewPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 1
-    }
-  },
-  "src/SourceDocumentsPanel.tsx": {
-    "@typescript-eslint/no-confusing-void-expression": {
-      "count": 10
-    },
-    "@typescript-eslint/no-deprecated": {
-      "count": 2
-    },
-    "@typescript-eslint/restrict-template-expressions": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 2
     }
   },
   "src/app/widget/EmbedWidget.tsx": {
@@ -185,21 +55,6 @@
   "src/app/widget/useChatSession.ts": {
     "@typescript-eslint/restrict-template-expressions": {
       "count": 2
-    }
-  },
-  "src/appearanceChatToggleFallback.ts": {
-    "no-restricted-syntax": {
-      "count": 16
-    }
-  },
-  "src/appearanceHeroSpacingFallback.ts": {
-    "no-restricted-syntax": {
-      "count": 14
-    }
-  },
-  "src/appearanceHeroToggleFallback.ts": {
-    "no-restricted-syntax": {
-      "count": 16
     }
   },
   "src/authStorage.ts": {
