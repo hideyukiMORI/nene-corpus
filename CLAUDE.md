@@ -225,6 +225,8 @@ frontend/
 | JSON | `snake_case` のまま使う（クライアント側でリネームしない） |
 | 文字列 | UI 文字列はロケールカタログに。ハードコード禁止 |
 
+**ゲート:** フロントの機械ゲートは全部 `npm run check` に集約してある（CI の required なので落ちれば merge がブロックされる）。既存違反は 3 つのベースラインに凍結済みで、**減る方向にしか動かせない**。直したら `npm run lint:baseline -- --update` を実行して差分をコミットに含める。一覧と直し方は [`docs/development/frontend-gates.md`](docs/development/frontend-gates.md)。
+
 **`keys.ts` 更新後の注意:** dev サーバーが古い `Msg` を返すことがある。admin (:5289) と widget (:5290) を両方再起動する。
 **静的ビルド注意:** `:8989` 利用時は `npm run build:release --prefix frontend` が必要（`public_html/admin/` は自動更新されない）。
 
@@ -300,7 +302,7 @@ frontend/
 
 ```bash
 composer check                         # PHPUnit + PHPStan level8 + CS-Fixer + OpenAPI + MCP
-npm run check --prefix frontend        # lint (ESLint) + typecheck + test (vitest)
+npm run check --prefix frontend        # lint + baseline ratchet + typecheck + test + audit-ci
 docker compose up --build -d           # ローカルスタック確認
 curl -fsS http://localhost:8989/health
 ```
