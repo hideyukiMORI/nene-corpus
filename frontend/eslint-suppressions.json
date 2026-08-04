@@ -1,0 +1,551 @@
+{
+  "src/AccountPanel.tsx": {
+    "@typescript-eslint/no-deprecated": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/App.tsx": {
+    "nene2/style-prop-css-vars-only": {
+      "count": 8
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/AppearancePanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 29
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/ChatLimitsPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 11
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 1
+    }
+  },
+  "src/ChatSettingsPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 4
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    }
+  },
+  "src/ColumnMappingGuide.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/EmbedSnippetSection.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    }
+  },
+  "src/FileUploadField.tsx": {
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 1
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
+    }
+  },
+  "src/HelpLabel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 4
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/LlmSettingsPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 4
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 1
+    }
+  },
+  "src/LocaleSelector.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    }
+  },
+  "src/Modal.tsx": {
+    "jsx-a11y/click-events-have-key-events": {
+      "count": 1
+    },
+    "jsx-a11y/no-noninteractive-element-interactions": {
+      "count": 1
+    }
+  },
+  "src/NotificationsPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 14
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "@typescript-eslint/no-misused-promises": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/SettingsModal.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 2
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "count": 1
+    },
+    "jsx-a11y/no-noninteractive-element-interactions": {
+      "count": 1
+    }
+  },
+  "src/SettingsOverviewPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    }
+  },
+  "src/SourceDocumentsPanel.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 10
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 2
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/app/widget/EmbedWidget.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    }
+  },
+  "src/app/widget/WidgetChrome.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 2
+    }
+  },
+  "src/app/widget/layout.ts": {
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 2
+    }
+  },
+  "src/app/widget/main.tsx": {
+    "no-restricted-imports": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/app/widget/resolveHeroDisplay.ts": {
+    "@typescript-eslint/no-unnecessary-boolean-literal-compare": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 3
+    }
+  },
+  "src/app/widget/useChatSession.ts": {
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 2
+    }
+  },
+  "src/appearanceChatToggleFallback.ts": {
+    "no-restricted-syntax": {
+      "count": 16
+    }
+  },
+  "src/appearanceHeroSpacingFallback.ts": {
+    "no-restricted-syntax": {
+      "count": 14
+    }
+  },
+  "src/appearanceHeroToggleFallback.ts": {
+    "no-restricted-syntax": {
+      "count": 16
+    }
+  },
+  "src/authStorage.ts": {
+    "no-restricted-imports": {
+      "count": 1
+    }
+  },
+  "src/fileBase64.ts": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 1
+    }
+  },
+  "src/main.tsx": {
+    "@typescript-eslint/no-non-null-assertion": {
+      "count": 1
+    }
+  },
+  "src/shared/api/account.ts": {
+    "@typescript-eslint/no-invalid-void-type": {
+      "count": 2
+    }
+  },
+  "src/shared/api/admin.ts": {
+    "@typescript-eslint/no-invalid-void-type": {
+      "count": 4
+    },
+    "@typescript-eslint/no-unnecessary-type-arguments": {
+      "count": 1
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 6
+    }
+  },
+  "src/shared/api/documents.ts": {
+    "@typescript-eslint/no-invalid-void-type": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-type-arguments": {
+      "count": 1
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 5
+    }
+  },
+  "src/shared/api/fetch-json.ts": {
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 4
+    },
+    "no-restricted-globals": {
+      "count": 1
+    }
+  },
+  "src/shared/api/notifications.ts": {
+    "@typescript-eslint/no-invalid-void-type": {
+      "count": 1
+    }
+  },
+  "src/shared/api/transport.test.ts": {
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 2
+    }
+  },
+  "src/shared/api/transport.ts": {
+    "no-restricted-imports": {
+      "count": 2
+    }
+  },
+  "src/shared/i18n/format.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/shared/i18n/locale.ts": {
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 2
+    }
+  },
+  "src/shared/i18n/locales/ja.ts": {
+    "no-restricted-syntax": {
+      "count": 460
+    }
+  },
+  "src/shared/i18n/locales/zh-Hans.ts": {
+    "no-restricted-syntax": {
+      "count": 461
+    }
+  },
+  "src/shared/i18n/translate.ts": {
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 2
+    }
+  },
+  "src/useAdminAuth.ts": {
+    "@typescript-eslint/no-non-null-assertion": {
+      "count": 1
+    }
+  },
+  "src/v2/Layout.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 2
+    }
+  },
+  "src/v2/LocaleSelector.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 4
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "count": 1
+    },
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": {
+      "count": 2
+    }
+  },
+  "src/v2/Sidebar.tsx": {
+    "no-restricted-syntax": {
+      "count": 16
+    }
+  },
+  "src/v2/Statusbar.tsx": {
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/v2/Topbar.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 8
+    }
+  },
+  "src/v2/pages/AnalyticsPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 2
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 7
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 75
+    },
+    "no-restricted-imports": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 38
+    }
+  },
+  "src/v2/pages/ConversationsPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 12
+    },
+    "@typescript-eslint/no-non-null-assertion": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 2
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 6
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "count": 2
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "count": 1
+    },
+    "jsx-a11y/no-static-element-interactions": {
+      "count": 2
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 86
+    },
+    "no-restricted-imports": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 62
+    }
+  },
+  "src/v2/pages/DashboardPage.tsx": {
+    "@typescript-eslint/no-unnecessary-template-expression": {
+      "count": 1
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 9
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 28
+    },
+    "no-restricted-imports": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 59
+    }
+  },
+  "src/v2/pages/HelpPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 7
+    },
+    "@typescript-eslint/no-non-null-assertion": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 1
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 5
+    },
+    "no-restricted-syntax": {
+      "count": 50
+    }
+  },
+  "src/v2/pages/LoginPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 7
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 3
+    },
+    "jsx-a11y/no-autofocus": {
+      "count": 2
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 5
+    },
+    "no-restricted-imports": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 20
+    }
+  },
+  "src/v2/pages/SettingsPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 37
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 7
+    },
+    "@typescript-eslint/no-non-null-assertion": {
+      "count": 9
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 2
+    },
+    "@typescript-eslint/no-unused-vars": {
+      "count": 1
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 284
+    },
+    "no-restricted-imports": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 85
+    }
+  },
+  "src/v2/pages/SourcesPage.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 23
+    },
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-condition": {
+      "count": 3
+    },
+    "@typescript-eslint/restrict-template-expressions": {
+      "count": 11
+    },
+    "jsx-a11y/click-events-have-key-events": {
+      "count": 2
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "count": 9
+    },
+    "jsx-a11y/no-autofocus": {
+      "count": 1
+    },
+    "jsx-a11y/no-static-element-interactions": {
+      "count": 2
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 177
+    },
+    "no-restricted-imports": {
+      "count": 3
+    },
+    "no-restricted-syntax": {
+      "count": 94
+    }
+  },
+  "src/v2/pages/superadmin/OrganizationsSection.tsx": {
+    "@typescript-eslint/no-deprecated": {
+      "count": 2
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 172
+    },
+    "no-restricted-imports": {
+      "count": 2
+    },
+    "no-restricted-syntax": {
+      "count": 48
+    }
+  },
+  "src/v2/pages/superadmin/TenantResolutionSection.tsx": {
+    "@typescript-eslint/no-deprecated": {
+      "count": 1
+    },
+    "jsx-a11y/label-has-associated-control": {
+      "count": 1
+    },
+    "nene2/style-prop-css-vars-only": {
+      "count": 94
+    },
+    "no-restricted-imports": {
+      "count": 1
+    },
+    "no-restricted-syntax": {
+      "count": 27
+    }
+  },
+  "src/v2/router/Router.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    },
+    "no-restricted-globals": {
+      "count": 1
+    },
+    "no-restricted-imports": {
+      "count": 1
+    }
+  },
+  "src/v2/theme.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  }
+}

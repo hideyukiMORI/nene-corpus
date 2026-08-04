@@ -1,0 +1,16 @@
+{
+  // 依存の脆弱性ゲート（#370）。素の `npm audit --audit-level=high` と違い、
+  // 「なぜ許すのか」を根拠つきで残せる。
+  //
+  // ゲートは鋭いままにする: allowlist に無い high/critical は全部ビルドを落とす。
+  // allowlist は **advisory 単位（GHSA id）**であって、severity を下げる形では書かない。
+  //
+  // 追加するときは、このファイルに (1) advisory id (2) なぜ**このコードベースには**効かないのかを
+  // 実測で（推測でなく） (3) 失効日 (4) 何が済めば不要になるか、の4点を書く。
+  // 失効したエントリは「更新するもの」ではなく「やること」——反射で延長しない。
+  "$schema": "https://github.com/IBM/audit-ci/raw/main/docs/schema.json",
+  "moderate": false,
+  "high": true,
+  "critical": true,
+  "allowlist": [],
+}
