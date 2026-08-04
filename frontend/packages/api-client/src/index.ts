@@ -14,7 +14,7 @@ export { getChatLimitsSettings, updateChatLimitsSettings } from './chat-limits';
 export { createSource, previewCsvIngestion, previewPdfIngestion } from './ingestion';
 export type { CreateSourcePayload } from './ingestion';
 export { createChatSession, sendChatMessage } from './chat';
-export { getAnalyticsSummary, getTopQuestions, buildExportUrl, buildExportPath } from './analytics';
+export { getAnalyticsSummary, getTopQuestions, buildExportPath } from './analytics';
 export type { AnalyticsSummaryResponse, AnalyticsDailyCount, AnalyticsHourlyCount, TopQuestion, TopQuestionsResponse } from './analytics';
 export { createAdminTransport } from './transport';
 export type { AdminTransport } from './transport';
