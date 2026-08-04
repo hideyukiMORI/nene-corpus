@@ -10,7 +10,7 @@
     "build": "npm run build:admin && npm run build:widget && npm run verify:build",
     "build:admin": "npm run typecheck && vite build",
     "build:widget": "vite build --config vite.widget.config.ts",
-    "build:release": "npm run build:release:admin && npm run build:widget && node ../scripts/build-guide.mjs && node ../scripts/build-howto.mjs && npm run verify:build",
+    "build:release": "npm run build:release:admin && npm run build:widget && node ../scripts/build-guide.mjs && node ../scripts/build-howto.mjs && npm run verify:build:release",
     "build:release:admin": "NENE_CORPUS_ADMIN_OUT=../public_html/admin npm run build:admin",
     "verify:build": "node ../tools/verify-build-output.mjs",
     "dev": "vite",
@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "lint:baseline": "node ../tools/lint-ratchet.mjs",
     "knip": "knip",
-    "audit": "audit-ci --config audit-ci.jsonc"
+    "audit": "audit-ci --config audit-ci.jsonc",
+    "verify:build:release": "node ../tools/verify-build-output.mjs --release"
   },
   "engines": {
     "node": ">=20"

@@ -19,8 +19,13 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const webRoot = resolve(projectRoot, 'public_html');
 const failures = [];
 
+// `npm run build` は admin を frontend/dist/ へ出し、web ルートに触るのは widget ビルド
+// だけ。admin が public_html/admin/ に入るのは build:release のときだけなので、そちらは
+// --release でのみ要求する（そうしないと通常ビルドの CI が「出ていないもの」を探して落ちる）。
+const release = process.argv.includes('--release');
+
 /** 1) ビルド生成物が実際に置かれたか（検査自体が空振りしていないことの担保）。 */
-for (const artifact of ['admin/index.html', 'widget.js', 'widget.css']) {
+for (const artifact of release ? ['admin/index.html', 'widget.js', 'widget.css'] : ['widget.js', 'widget.css']) {
   const path = resolve(webRoot, artifact);
 
   if (!existsSync(path) || statSync(path).size === 0) {

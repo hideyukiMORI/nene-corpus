@@ -53,9 +53,16 @@ npm run lint:baseline -- --update    # 3 つのベースラインをまとめて
 
 `build` と `build:release` の後段で走る。**バンドラ非依存**の形にしてあるので、vite でも esbuild でも同じ検査が成立する。
 
+2 段になっている。`npm run build` は admin を `frontend/dist/` へ出し、**web ルートに触るのは widget ビルドだけ**。admin が `public_html/admin/` に入るのは `build:release` のときだけなので、そこは `--release` でのみ要求する。
+
+| コマンド | 呼ばれる場所 | 追加で要求するもの |
+| --- | --- | --- |
+| `verify:build` | `build` の後段（CI の frontend job） | — |
+| `verify:build:release` | `build:release` の後段（release-zip job・`tools/build-release.sh`） | `public_html/admin/index.html` |
+
 見ているのは 3 点:
 
-1. **生成物があるか** — `public_html/admin/index.html` / `widget.js` / `widget.css` が存在して空でない（検査自体が空振りしていないことの担保）
+1. **生成物があるか** — `widget.js` / `widget.css`（`--release` なら `admin/index.html` も）が存在して空でない（検査自体が空振りしていないことの担保）
 2. **web ルートの `.htaccess` が書き換わっていないか** — `index.php` への catch-all があり、SPA fallback（`index.html`）を含まないこと
 3. **web ルート直下に見知らぬファイルが増えていないか** — 許可リストで囲う
 
@@ -78,6 +85,7 @@ npm run lint:baseline -- --update    # 3 つのベースラインをまとめて
 | ビルド出力 | `public_html/.htaccess` を admin 版で上書き | catch-all 欠落 + SPA fallback 混入の 2 件で exit 1 |
 | ビルド出力 | `public_html/` 直下に favicon を置く | 「見知らぬ生成物」で exit 1 |
 | ビルド出力 | `public_html/.htaccess` を消す | 「消えています」で exit 1 |
+| ビルド出力（release） | `public_html/admin/index.html` を消して `verify:build:release` | 「無いか空です」で exit 1 |
 
 ---
 
