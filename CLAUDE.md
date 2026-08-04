@@ -298,6 +298,7 @@ curl -fsS http://localhost:8989/health
 Playwright の 2 スイート。**npm workspaces（`frontend/`）の外**にあり、**どの CI workflow からも呼ばれていない**（merge ゲートではない）。API は全て `page.route()` でモックし、`public_html/` の静的ビルドを `python3 -m http.server 3001` で配信する方式（実バックエンド・LLM 不要）。
 
 ```bash
+npm run build:release --prefix frontend                    # ★先に必須（下記「叩く対象」参照）
 cd tests/e2e && npm install
 npx playwright install chromium                            # 初回のみ
 npx playwright test                                        # widget スイート（specs/ 103 テスト・約1分）
@@ -311,8 +312,13 @@ npx playwright test --config playwright.admin.config.ts    # admin スイート�
 | widget（`specs/`） | ✅ 103/103 pass（約1.1分） | 生きている |
 | admin（`admin/specs/`） | ❌ 226/373 pass・147 fail（約58分） | spec が現行 admin UI と乖離（最新ビルドでも `01-auth` は 3/17。例: email prefill 期待が現 UI に無い） |
 
-- admin スイートの対象は `public_html/admin/` の**コミット済み静的ビルド**。ソース変更後は `npm run build:release --prefix frontend` しないと反映されない（自動更新されない）。
-- **CI 配線と admin spec の現行 UI への再整備は今後の課題**（着手時は Issue 化してから）。CI 未配線のため drift が検知されない状態が続いている点に注意。
+**叩く対象は「ローカルでビルドした未追跡の成果物」（#365 で訂正）:**
+
+- admin スイートの対象は `public_html/admin/` の静的ビルドだが、これは**コミットされていない**。`.gitignore` が `/public_html/admin/*`（`!.htaccess` のみ例外）なので、**追跡されているのは `.htaccess` 1 ファイルだけ**。`index.html` / `assets/` は各マシンのローカルビルド成果物。
+- したがって **E2E を回す前に `npm run build:release --prefix frontend` が必須**。ビルドしていない checkout には対象そのものが存在せず、古いビルドが残っていれば**古い UI に対してテストしている**ことになる。
+- この性質上、**「N/M pass」という数字は必ず「どの時点のビルドに対する測定か」とセットでしか意味を持たない**。上表の 2026-07-18 実測も同様。
+- **CI 配線（#352）にはビルドステップが要る。** CI は fresh checkout なので `public_html/admin/` は `.htaccess` しか無く、「コミット済みビルドを配信するだけ」では動かない。
+- **CI 配線と admin spec の現行 UI への再整備は今後の課題**（着手時は Issue 化してから。#351 → #352・順序固定。#351 の受入条件には**基準ビルドの固定**を入れる）。CI 未配線のため drift が検知されない状態が続いている点に注意。
 
 ## セルフレビューチェックリスト（PR 本文に記載）
 
