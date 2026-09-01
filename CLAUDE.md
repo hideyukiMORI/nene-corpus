@@ -34,15 +34,16 @@ Ops / MCP         ────────────────────�
 | Phase 3 Admin UI・Widget・Tier A | ✅ 完了 |
 | **Phase 3+ オペレーター UX 改善** | ✅ 完了 |
 | **Phase 4 マルチテナント** | ✅ 完了 |
-| **Phase 5 外部連携（NeNe Records）** | 🔲 バックログ（Issue 化してから着手） |
+| **Phase 5 外部連携（NeNe Records）** | 🔄 進行中 — **P1 読み取りクライアントは完了**（#313 / PR #315・2026-05-30）。残りは #314 ほか |
 
-**最近の主なマージ:**
+**最近のマージ履歴はここに置かない。** 正本は private `nene-origin/internal-docs/corpus/todo/current.md`。
 
-| PR | Issue | 内容 |
-| --- | --- | --- |
-| #300 | — | v2 リデザイン全7画面 + 欠損機能8件 + レスポンシブ + ソース編集 API（PUT /admin/sources/{id} + note 列） |
-| #288 | #274–#280 | マルチテナント一式を main へ統合（organizations + system_config + 3-mode resolver + superadmin UI） |
-| #280 | #280 | マルチテナント Phase D（OpenAPI + ADR 0005 + docs + E2E spec） |
+> 🔴 **かつてここに「最近の主なマージ」表があったが、削除した（#383・2026-09-01）。**
+> 最新が **PR #300 / #288 / #280 のまま約3ヶ月更新されず**、その間に main へ載った #354〜#387 が
+> 1件も反映されていなかった。**private ミラーと同じ情報を2箇所で持つ限り、必ず一方が腐る**——
+> しかも腐るのは「入口だと自称している側」なので被害が大きい。
+> **再追加しないこと。** マージ履歴が要るなら `git log` と GitHub の PR 一覧が一次情報で、
+> 文脈つきの要約は private ミラーが持つ。
 
 ---
 
@@ -52,7 +53,7 @@ Ops / MCP         ────────────────────�
 
 | 優先 | 項目 | 概要 |
 | --- | --- | --- |
-| P1 | NeNe Records 読み取りクライアント | `src/Upstream/` に `NeneRecordsClientInterface` + `HttpNeneRecordsClient` 実装 |
+| ✅ 完了 | NeNe Records 読み取りクライアント | **実装済み**（#313 / PR #315・2026-05-30）。`src/Upstream/` に `NeneRecordsClientInterface` / `HttpNeneRecordsClient` / `NullNeneRecordsClient` / `NeneRecordsConfig` / `NeneRecordsEntity` / `UpstreamServiceProvider` が実在する。🔴 **これから作るものとして読まないこと**（二重実装の罠） |
 | P1 | Admin 設定 UI | `NENE_RECORDS_API_BASE_URL` / `NENE_RECORDS_BEARER_TOKEN` を `.env` 経由で設定 |
 | P2 | ローカル corpus + upstream 統合検索 | `search_corpus` ツール拡張：ローカル chunks + NeNe Records API 結果をマージ |
 | P3 | Webhook / ポーリング再インデックス | NeNe Records 更新時にローカル chunks を自動更新 |
