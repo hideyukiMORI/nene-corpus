@@ -23,7 +23,7 @@ Ops / MCP         ────────────────────�
 
 ## 現在の開発状況
 
-> **運用ログ（`docs/todo`・`docs/daily`・field-trials 相当）は private `nene-origin/internal-docs/corpus/` に移設済み**（P3・2026-07-18）。最新の作業状況・申し送り・引き継ぎはそちらを読むこと。公開リポの docs は Diátaxis（tutorial/howto/reference/explanation）＋ADR/CHANGELOG のみを正とする。
+> **運用ログ（`docs/todo`・`docs/daily`・field-trials 相当）は private `nene-origin/internal-docs/corpus/` に移設済み**（P3・2026-07-18）。最新の作業状況・申し送り・引き継ぎはそちらを読むこと。公開リポの docs は Diátaxis（tutorial/howto/reference/explanation）＋ADR のみを正とする（**CHANGELOG.md はこのリポに存在しない**。フリートでも保有は42リポ中10でタグ数と無相関＝型が決まっていないため、要否は板 `(C) 2026-09-01 … due:2026-09-19` で判断する。#390）。
 > 最新の作業レーンと未処理タスクは private `nene-origin/internal-docs/corpus/todo/current.md` を先に読むこと。
 
 | フェーズ | 状態 |
