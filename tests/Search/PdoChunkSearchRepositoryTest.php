@@ -89,7 +89,7 @@ final class PdoChunkSearchRepositoryTest extends TestCase
 
         self::assertCount(1, $results);
         self::assertSame('Equipment safety instructions for operators.', $results[0]->chunk->content);
-        self::assertSame(1, $results[0]->score);
+        self::assertSame(1.0, $results[0]->score);
     }
 
     public function test_search_ranks_chunks_by_matching_term_count(): void
@@ -111,9 +111,9 @@ final class PdoChunkSearchRepositoryTest extends TestCase
 
         self::assertCount(2, $results);
         self::assertSame('Equipment safety instructions for operators.', $results[0]->chunk->content);
-        self::assertSame(2, $results[0]->score);
+        self::assertSame(2.0, $results[0]->score);
         self::assertSame('Safety overview for operators.', $results[1]->chunk->content);
-        self::assertSame(1, $results[1]->score);
+        self::assertSame(1.0, $results[1]->score);
     }
 
     public function test_search_excludes_soft_deleted_source(): void
