@@ -11,6 +11,10 @@ on:
 jobs:
   release-zip:
     runs-on: ubuntu-latest
+    # 🔴 タイムアウトは検査ではなく損切り（板 L111）。値の正確さより「設定されていること」が効く。
+    # 既定は 360分（6時間）で、吊ったジョブがその間 PR をブロックし runner 時間を焼く。
+    # 発火実績: invoice / profile が `npx playwright install` の吊りで長時間ブロック（2026-08-19 深夜）。
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
