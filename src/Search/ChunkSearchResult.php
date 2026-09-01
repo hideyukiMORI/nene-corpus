@@ -10,7 +10,7 @@ final readonly class ChunkSearchResult
 {
     public function __construct(
         public Chunk $chunk,
-        public int $score,
+        public float $score,
     ) {
     }
 }

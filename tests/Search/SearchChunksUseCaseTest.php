@@ -35,7 +35,7 @@ final class SearchChunksUseCaseTest extends TestCase
         $search->expects(self::once())
             ->method('search')
             ->with('safety', 50)
-            ->willReturn([new ChunkSearchResult(chunk: $chunk, score: 1)]);
+            ->willReturn([new ChunkSearchResult(chunk: $chunk, score: 1.0)]);
 
         $results = (new SearchChunksUseCase($search))->execute(new SearchChunksInput(query: 'safety', limit: 999));
 

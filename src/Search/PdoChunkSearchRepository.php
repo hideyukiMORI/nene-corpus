@@ -80,7 +80,7 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
         return array_map(
             fn (array $row): ChunkSearchResult => new ChunkSearchResult(
                 chunk: $this->mapRow($row),
-                score: (int) $row['relevance_score'],
+                score: (float) $row['relevance_score'],
             ),
             $rows,
         );
