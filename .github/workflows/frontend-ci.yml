@@ -42,7 +42,9 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
+      # id は下の Audit ステップの `if:` から outcome を参照するために要る。
       - name: Install dependencies
+        id: install
         working-directory: frontend
         run: npm ci
 
@@ -62,8 +64,16 @@ jobs:
       # 🔴 `if: !cancelled()` — 既定の挙動（前段が赤なら skip）にしない。advisory は我々のコミット
       #    ではなく向こう側の時計で公開されるので、コードの赤とは独立にこの信号を出したい。
       #    `always()` ではなく `!cancelled()` を使う（cancel された run の無意味な赤を出さないため）。
+      # 🔴 `steps.install.outcome == 'success'` を **併せて** 要求する（#386）。`!cancelled()` だけだと、
+      #    前段が落ちて `npm ci` が skip された木でもこのステップが走り、`audit-ci: not found` で
+      #    **2つ目の赤**を出す。実害が出るのは `simulate_failure` の陽性対照で、
+      #    「意図した exit 1」以外の赤が混ざって**何を確かめたのか分からなくなる**
+      #    ——L30-33 が Simulate の位置で避けたはずの形を、ここで作り直していた。
+      #    ⚠️ 逆に「Simulate を npm ci の後ろへ移す」で直してはいけない（L32-33 が却下済み）。
+      #    install が成功して check / build が落ちた**通常の赤では Audit は走る**ので、
+      #    上の「コードの赤とは独立に信号を出す」意図はこの条件でも損なわれない。
       - name: Audit (fail on high/critical)
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: frontend
         run: npm run audit
 
