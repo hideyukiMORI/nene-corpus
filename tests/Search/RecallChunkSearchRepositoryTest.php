@@ -173,6 +173,31 @@ final class RecallChunkSearchRepositoryTest extends TestCase
         self::assertSame([], $this->repository()->search('安全', 10));
     }
 
+    public function test_chunk_of_a_failed_source_is_dropped_even_when_recall_returns_it(): void
+    {
+        $id = $this->saveChunk('Equipment safety instructions.');
+
+        // The ingestion run died after committing this chunk. The write-through
+        // decorator had already pushed it to Recall, and nothing deletes it there
+        // — so Recall keeps returning it. The guard is what stops it.
+        $this->markSourceStatus(SourceStatus::Failed);
+
+        $this->recall->willReturn([new RecallSearchHit(chunkId: 900, externalId: $id, score: 0.9)]);
+
+        self::assertSame([], $this->repository()->search('安全', 10));
+    }
+
+    private function markSourceStatus(SourceStatus $status): void
+    {
+        (new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()))->update(new Source(
+            name: 'Manual',
+            sourceType: SourceType::Pdf,
+            status: $status,
+            storagePath: 'storage/uploads/manual.pdf',
+            id: $this->sourceId,
+        ));
+    }
+
     public function test_chunk_of_another_org_is_dropped_even_when_recall_returns_it(): void
     {
         $otherOrg = new RequestScopedOrgIdHolder();

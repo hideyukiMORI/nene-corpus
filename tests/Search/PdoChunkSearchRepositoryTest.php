@@ -148,6 +148,59 @@ final class PdoChunkSearchRepositoryTest extends TestCase
         self::assertSame([], $results);
     }
 
+    public function test_search_excludes_chunks_of_a_failed_source(): void
+    {
+        // Ingestion writes chunks before it raises the source to `ready`, and on
+        // failure it only flips the status — the rows it already committed stay.
+        $this->chunks->save(new Chunk(
+            documentId: $this->documentId,
+            sourceId: $this->sourceId,
+            content: 'Safety instructions from a half-finished ingestion.',
+            chunkIndex: 0,
+        ));
+
+        $this->markSourceFailed();
+
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
+
+        self::assertSame([], $results);
+    }
+
+    public function test_search_excludes_chunks_of_a_source_still_processing(): void
+    {
+        // A reindex clears the old chunks first, so mid-run the corpus for this
+        // source is incomplete by definition. `ready` is an allow list, not
+        // "anything but failed".
+        $this->chunks->save(new Chunk(
+            documentId: $this->documentId,
+            sourceId: $this->sourceId,
+            content: 'Safety instructions being reindexed right now.',
+            chunkIndex: 0,
+        ));
+
+        $this->markSourceStatus(SourceStatus::Processing);
+
+        $results = (new PdoChunkSearchRepository($this->executor, $this->orgIdHolder))->search('safety', 10);
+
+        self::assertSame([], $results);
+    }
+
+    private function markSourceFailed(): void
+    {
+        $this->markSourceStatus(SourceStatus::Failed);
+    }
+
+    private function markSourceStatus(SourceStatus $status): void
+    {
+        (new PdoSourceRepository($this->executor, $this->orgIdHolder, new FixedClock()))->update(new Source(
+            name: 'Manual',
+            sourceType: SourceType::Pdf,
+            status: $status,
+            storagePath: 'storage/uploads/manual.pdf',
+            id: $this->sourceId,
+        ));
+    }
+
     public function test_search_org_isolation_excludes_other_org_chunks(): void
     {
         $org2Holder = new RequestScopedOrgIdHolder();

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed（2026-09-02）
+Accepted（2026-09-03）— 施主判断で PR #393 が main にマージされた（`ba3343a`・2026-09-03）。
 
 ## Context
 
@@ -40,7 +40,11 @@ CLAUDE.md の層の表に「Repository は上流クライアント interface を
 
 - org は `RequestScopedOrgIdHolder::getId()`。未解決は既存と同じ `LogicException`。
 - Recall の結果（`external_id` = Corpus の `chunks.id`）を `PdoChunkSearchGuard::filterAlive(list<int> $chunkIds): array<int, Chunk>` に通す。
-  1本の SQL: `chunks c JOIN sources s ON … AND s.is_deleted = 0 JOIN documents d ON … AND d.is_deleted = 0 WHERE c.id IN (…) AND c.organization_id = ?`。
+  1本の SQL: `chunks c JOIN sources s ON … AND s.is_deleted = 0 AND s.status = 'ready' JOIN documents d ON … AND d.is_deleted = 0 WHERE c.id IN (…) AND c.organization_id = ?`。
+  🔴 **二段フィルタは soft delete に加えて取り込み状態も見る**（#394 で追加）。取り込みは chunk を書いてから
+  status を Ready に上げるので、失敗した source は半端な chunk 行を持ったまま `failed` で残る。
+  条件の実体は `SourceStatus::SEARCHABLE_SOURCE_SQL` の1箇所で、`PdoChunkSearchRepository` と
+  `PdoRecallReindexReader::listAliveChunks` も同じ定数を使う。
   返る `Chunk` は DB 行（`createdAt`/`updatedAt`/`tokenCount` が埋まる）。id をキーにした配列で返し、Recall の順位は呼び出し側が
   `ChunkSearchResult(chunk, score)` の並びとして復元する。
   🔴 **org を引数で受け取らず、ガード自身が `RequestScopedOrgIdHolder` から引く。** CLAUDE.md の絶対禁止パターンに
@@ -69,6 +73,9 @@ Recall の失敗は **fail-loud**（`RecallUnavailableException` をそのまま
 PHPStan と CS-Fixer の対象に追加した**——ゲートの外に置いた入口は、いずれ検査されていないことを忘れられる。
 
 読み取りの SQL は `src/Recall/PdoRecallReindexReader.php`（`Pdo` 接頭辞・holder 経由の org スコープ）。
+🔴 **2つのメソッドの絞り込みは意図的に非対称である**（#394）。`listAliveChunks`（投入する側）は `ready` 以外を落とすが、
+`listAliveSourceIds`（先に `deleteBySource` を打つ掃除の側）は落とさない。掃除の側を絞ると、
+取り込みに失敗した source の chunk が **Recall に残ったまま二度と消えなくなる。**
 `ChunkRepositoryInterface` に全走査を足さなかったのは、そこに足すと**全実装（PDO・デコレータ）に、
 運用コマンドのためだけのメソッドが増える**からである。再索引は保守作業であって chunk の永続化の契約ではない。
 

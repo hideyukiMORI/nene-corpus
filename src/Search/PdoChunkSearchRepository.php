@@ -7,8 +7,14 @@ namespace NeneCorpus\Search;
 use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use NeneCorpus\Chunk\Chunk;
+use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
+/**
+ * The join to `sources` carries two conditions, not one: the source must not be
+ * soft-deleted **and** it must be `ready`. See {@see SourceStatus::SEARCHABLE}
+ * for why a `failed` source can still own rows in `chunks`.
+ */
 final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryInterface
 {
     private const LIKE_ESCAPE_CHAR = '!';
@@ -69,7 +75,7 @@ final readonly class PdoChunkSearchRepository implements ChunkSearchRepositoryIn
         $rows = $this->query->fetchAll(
             'SELECT ' . self::SELECT_COLUMNS . ', (' . $scoreExpression . ') AS relevance_score '
             . 'FROM chunks c '
-            . 'INNER JOIN sources s ON s.id = c.source_id AND s.is_deleted = 0 '
+            . 'INNER JOIN sources s ON s.id = c.source_id AND ' . SourceStatus::SEARCHABLE_SOURCE_SQL . ' '
             . 'INNER JOIN documents d ON d.id = c.document_id AND d.is_deleted = 0 '
             . 'WHERE (' . $whereExpression . ') AND c.organization_id = ? '
             . 'ORDER BY relevance_score DESC, c.id ASC '
