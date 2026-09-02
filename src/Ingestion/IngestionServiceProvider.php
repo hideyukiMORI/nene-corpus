@@ -14,10 +14,12 @@ use Nene2\Error\ProblemDetailsResponseFactory;
 use Nene2\Http\ClockInterface;
 use Nene2\Http\JsonResponseFactory;
 use NeneCorpus\Chunk\ChunkRepositoryInterface;
+use NeneCorpus\Chunk\IndexedChunkRepository;
 use NeneCorpus\Chunk\PdoChunkRepository;
 use NeneCorpus\Document\DocumentRepositoryInterface;
 use NeneCorpus\Document\PdoDocumentRepository;
 use NeneCorpus\Http\RuntimeServiceProvider;
+use NeneCorpus\Recall\RecallServiceProvider;
 use NeneCorpus\Source\PdoSourceRepository;
 use NeneCorpus\Source\SourceRepositoryInterface;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
@@ -361,7 +363,21 @@ final readonly class IngestionServiceProvider implements ServiceProviderInterfac
         $orgIdHolder = self::orgIdHolder($container);
         $clock = self::clock($container);
 
-        return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new PdoChunkRepository($executor, $orgIdHolder, $clock);
+        // The repository built here is transaction-scoped (it is handed the
+        // transaction's executor), so the container binding cannot be reused —
+        // the Recall decorator has to be applied at this seam as well, or PDF
+        // ingestion would write chunks that never reach the index (ADR 0007).
+        if (!RecallServiceProvider::config($container)->isConfigured()) {
+            return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new PdoChunkRepository($executor, $orgIdHolder, $clock);
+        }
+
+        $recall = RecallServiceProvider::client($container);
+
+        return static fn (DatabaseQueryExecutorInterface $executor): ChunkRepositoryInterface => new IndexedChunkRepository(
+            new PdoChunkRepository($executor, $orgIdHolder, $clock),
+            $recall,
+            $orgIdHolder,
+        );
     }
 
     private static function csvValidator(ContainerInterface $container): CsvUploadValidator

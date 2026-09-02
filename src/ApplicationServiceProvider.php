@@ -45,6 +45,7 @@ use NeneCorpus\Notification\NotificationServiceProvider;
 use NeneCorpus\Organization\OrganizationRouteRegistrar;
 use NeneCorpus\Organization\OrganizationServiceProvider;
 use NeneCorpus\RateLimit\RateLimitServiceProvider;
+use NeneCorpus\Recall\RecallServiceProvider;
 use NeneCorpus\Search\SearchServiceProvider;
 use NeneCorpus\Session\AdminChatRouteRegistrar;
 use NeneCorpus\Session\SessionServiceProvider;
@@ -91,6 +92,7 @@ final readonly class ApplicationServiceProvider implements ServiceProviderInterf
             ->addProvider(new SystemConfigServiceProvider())
             ->addProvider(new TenancyServiceProvider())
             ->addProvider(new UpstreamServiceProvider())
+            ->addProvider(new RecallServiceProvider())
             ->set(
                 self::ROUTE_REGISTRARS,
                 static function (ContainerInterface $container): array {

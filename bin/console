@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Operator command line for NeNe Corpus.
+ *
+ * Deliberately thin: it boots the same container the HTTP front controller uses
+ * and hands argv to a command object in src/, so the behaviour is covered by
+ * `composer check` (this file is a wiring shim, not logic).
+ *
+ * Commands:
+ *   recall:reindex [--org=<id>]   Rebuild the NeNe Recall index (ADR 0007)
+ */
+
+use NeneCorpus\Http\RuntimeContainerFactory;
+use NeneCorpus\Recall\RecallReindexCommand;
+
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$arguments = array_slice($argv, 1);
+$command = array_shift($arguments);
+
+$out = static function (string $line): void {
+    fwrite(STDOUT, $line . PHP_EOL);
+};
+
+if ($command !== RecallReindexCommand::NAME) {
+    fwrite(STDERR, 'Available commands:' . PHP_EOL);
+    fwrite(STDERR, '  ' . RecallReindexCommand::USAGE . PHP_EOL);
+
+    exit(1);
+}
+
+$container = (new RuntimeContainerFactory(dirname(__DIR__)))->create();
+$reindex = $container->get(RecallReindexCommand::class);
+assert($reindex instanceof RecallReindexCommand);
+
+exit($reindex->run($arguments, $out));

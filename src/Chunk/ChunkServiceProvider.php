@@ -9,6 +9,7 @@ use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
 use Nene2\Http\ClockInterface;
+use NeneCorpus\Recall\RecallServiceProvider;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
 
@@ -36,7 +37,19 @@ final readonly class ChunkServiceProvider implements ServiceProviderInterface
                     throw new LogicException('Clock service is invalid.');
                 }
 
-                return new PdoChunkRepository($query, $orgIdHolder, $clock);
+                $chunks = new PdoChunkRepository($query, $orgIdHolder, $clock);
+
+                // Undecorated unless Recall is configured, so a deployment
+                // without it performs no upstream writes at all (ADR 0007).
+                if (!RecallServiceProvider::config($container)->isConfigured()) {
+                    return $chunks;
+                }
+
+                return new IndexedChunkRepository(
+                    $chunks,
+                    RecallServiceProvider::client($container),
+                    $orgIdHolder,
+                );
             },
         );
     }

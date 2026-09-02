@@ -8,8 +8,10 @@ use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use Nene2\DependencyInjection\ContainerBuilder;
 use Nene2\DependencyInjection\ServiceProviderInterface;
+use NeneCorpus\Recall\RecallServiceProvider;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 final readonly class SearchServiceProvider implements ServiceProviderInterface
 {
@@ -30,7 +32,29 @@ final readonly class SearchServiceProvider implements ServiceProviderInterface
                         throw new LogicException('RequestScopedOrgIdHolder service is invalid.');
                     }
 
-                    return new PdoChunkSearchRepository($query, $orgIdHolder);
+                    $likeSearch = new PdoChunkSearchRepository($query, $orgIdHolder);
+                    $recallConfig = RecallServiceProvider::config($container);
+
+                    // Without NENE_RECALL_BASE_URL the LIKE search is the whole
+                    // search stack, exactly as before this integration existed.
+                    if (!$recallConfig->isConfigured()) {
+                        return $likeSearch;
+                    }
+
+                    $logger = $container->get(LoggerInterface::class);
+
+                    if (!$logger instanceof LoggerInterface) {
+                        throw new LogicException('Logger service is invalid.');
+                    }
+
+                    return new RecallChunkSearchRepository(
+                        recall: RecallServiceProvider::client($container),
+                        guard: new PdoChunkSearchGuard($query, $orgIdHolder),
+                        fallback: $likeSearch,
+                        orgIdHolder: $orgIdHolder,
+                        logger: $logger,
+                        strict: $recallConfig->strict,
+                    );
                 },
             )
             ->set(
