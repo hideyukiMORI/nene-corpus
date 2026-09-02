@@ -97,7 +97,12 @@ Handler → UseCase → RepositoryInterface → PdoRepository
 | Handler | HTTP パース・DTO 構築・UseCase 呼び出し・JSON レスポンス | SQL・ビジネスロジック・LLM 直呼び出し |
 | UseCase | ビジネスロジック・オーケストレーション | `$_SERVER`・PDO・生 HTTP クライアント |
 | Repository | SQL / 永続化のみ | HTTP・セッションロジック |
+| 上流クライアント (`Upstream/` `Recall/`) | 外部 API の HTTP 呼び出し | SQL・ドメインロジック |
 | Llm アダプター (`Llm/`) | Claude API 呼び出し | ドメイン不変条件 |
+
+**Repository は上流クライアント interface を呼んでよい（ADR 0007）。** 禁止しているのは Repository が
+HTTP を直に叩くことであって、上流クライアント（`Upstream/` `Recall/`）に委譲することではない。
+実例は `RecallChunkSearchRepository`（SQL を1行も持たず、上流クライアントと `PdoChunkSearchGuard` を合成する）。
 
 **全 PHP ファイルに `declare(strict_types=1);`。クラスは `final readonly` 推奨。**
 
@@ -115,7 +120,8 @@ src/
   Chat/           # sync JSON chat（SendChatMessageUseCase）
   Session/        # チャットセッション管理
   Message/        # チャットメッセージ管理
-  Search/         # 全文検索（LIKE + スコアリング）
+  Search/         # 全文検索（LIKE + スコアリング。設定時は Recall へ委譲 — ADR 0007）
+  Recall/         # 任意の検索バックエンド NeNe Recall の上流クライアント（ADR 0007）
   Llm/            # Claude API オーケストレーション（tool_use、最大 3 ラウンド）
   RateLimit/      # レートリミット（セッション / IP）
   Appearance/     # ウィジェット外観設定
