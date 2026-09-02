@@ -7,12 +7,20 @@ namespace NeneCorpus\Recall;
 use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use NeneCorpus\Chunk\Chunk;
+use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 /**
  * SQL for `recall:reindex`. Org-scoped through {@see RequestScopedOrgIdHolder}
  * like every other Pdo* class, so the reindex of one tenant can never read
  * another one's chunks.
+ *
+ * 🔴 The two methods filter differently on purpose (#394).
+ * `listAliveSourceIds()` is the **clear** list — {@see RecallReindexer} sends a
+ * `deleteBySource` for every id it returns before writing anything — so it stays
+ * as wide as possible. `listAliveChunks()` is the **write** list and drops
+ * sources that are not `ready`. Narrowing the clear list the same way would leave
+ * a failed source's chunks sitting in Recall with nothing left to ever delete them.
  */
 final readonly class PdoRecallReindexReader implements RecallReindexReaderInterface
 {
@@ -44,7 +52,7 @@ final readonly class PdoRecallReindexReader implements RecallReindexReaderInterf
         $rows = $this->query->fetchAll(
             'SELECT ' . self::SELECT_COLUMNS . ' '
             . 'FROM chunks c '
-            . 'INNER JOIN sources s ON s.id = c.source_id AND s.is_deleted = 0 '
+            . 'INNER JOIN sources s ON s.id = c.source_id AND ' . SourceStatus::SEARCHABLE_SOURCE_SQL . ' '
             . 'INNER JOIN documents d ON d.id = c.document_id AND d.is_deleted = 0 '
             . 'WHERE c.organization_id = ? AND c.id > ? '
             . 'ORDER BY c.id ASC '

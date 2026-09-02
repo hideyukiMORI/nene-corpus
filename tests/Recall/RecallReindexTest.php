@@ -62,8 +62,12 @@ final class RecallReindexTest extends TestCase
         );
     }
 
-    private function seedSource(int $orgId, string $name, bool $deleted = false): int
-    {
+    private function seedSource(
+        int $orgId,
+        string $name,
+        bool $deleted = false,
+        SourceStatus $status = SourceStatus::Ready,
+    ): int {
         $holder = new RequestScopedOrgIdHolder();
         $holder->setId($orgId);
 
@@ -71,7 +75,7 @@ final class RecallReindexTest extends TestCase
         $sourceId = $sources->save(new Source(
             name: $name,
             sourceType: SourceType::Text,
-            status: SourceStatus::Ready,
+            status: $status,
             storagePath: 'storage/uploads/' . $name . '.txt',
         ));
 
@@ -129,6 +133,37 @@ final class RecallReindexTest extends TestCase
         self::assertSame(1, $report->clearedSources);
         self::assertSame(1, $report->indexedChunks);
         self::assertSame('生きている', $this->recall->puts[0]['chunks'][0]->content);
+    }
+
+    public function test_reindex_does_not_write_chunks_of_a_failed_source(): void
+    {
+        $live = $this->seedSource(1, 'manual');
+        $this->seedChunk(1, $live, '生きている');
+
+        $broken = $this->seedSource(1, 'broken', status: SourceStatus::Failed);
+        $this->seedChunk(1, $broken, '取り込みに失敗した途中の内容');
+
+        $report = $this->reindexer->reindex(1);
+
+        self::assertSame(1, $report->indexedChunks);
+        self::assertSame('生きている', $this->recall->puts[0]['chunks'][0]->content);
+    }
+
+    public function test_reindex_still_clears_a_failed_source_in_recall(): void
+    {
+        // The write list drops failed sources; the clear list must not. The
+        // decorator pushes each chunk to Recall as it is saved, so a run that
+        // failed halfway has already put rows there. If the reindex stopped
+        // sending `deleteBySource` for that source, nothing ever would.
+        $broken = $this->seedSource(1, 'broken', status: SourceStatus::Failed);
+        $this->seedChunk(1, $broken, '取り込みに失敗した途中の内容');
+
+        $report = $this->reindexer->reindex(1);
+
+        self::assertSame([['org_id' => 1, 'source_id' => $broken]], $this->recall->sourceDeletes);
+        self::assertSame(1, $report->clearedSources);
+        self::assertSame(0, $report->indexedChunks);
+        self::assertSame([], $this->recall->puts);
     }
 
     public function test_reindex_never_reads_another_org(): void

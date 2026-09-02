@@ -7,6 +7,7 @@ namespace NeneCorpus\Search;
 use LogicException;
 use Nene2\Database\DatabaseQueryExecutorInterface;
 use NeneCorpus\Chunk\Chunk;
+use NeneCorpus\Source\SourceStatus;
 use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
 
 /**
@@ -24,9 +25,13 @@ use NeneCorpus\Tenancy\Context\RequestScopedOrgIdHolder;
  *    hard-deleted, and the delete is pushed to Recall separately. If that push is
  *    ever missed, deleted material would come back; the `is_deleted = 0` joins
  *    are the second line of defence, matching {@see PdoChunkSearchRepository}.
+ * 3. **Ingestion state.** A source that is not `ready` can still own rows in
+ *    `chunks` — a failed run leaves what it had already committed behind. Those
+ *    rows are a half-written corpus, so `s.status` is checked too (#394).
+ *    See {@see SourceStatus::SEARCHABLE}.
  *
- * Both faults are invisible in single-tenant development, which is exactly why
- * the filter is not optional.
+ * All three faults are invisible in single-tenant, happy-path development, which
+ * is exactly why the filter is not optional.
  */
 final readonly class PdoChunkSearchGuard
 {
@@ -59,7 +64,7 @@ final readonly class PdoChunkSearchGuard
         $rows = $this->query->fetchAll(
             'SELECT ' . self::SELECT_COLUMNS . ' '
             . 'FROM chunks c '
-            . 'INNER JOIN sources s ON s.id = c.source_id AND s.is_deleted = 0 '
+            . 'INNER JOIN sources s ON s.id = c.source_id AND ' . SourceStatus::SEARCHABLE_SOURCE_SQL . ' '
             . 'INNER JOIN documents d ON d.id = c.document_id AND d.is_deleted = 0 '
             . 'WHERE c.id IN (' . $placeholders . ') AND c.organization_id = ?',
             $params,
