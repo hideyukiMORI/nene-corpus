@@ -4,7 +4,7 @@ This file is the entry point for AI agents working on NeNe Corpus.
 
 ## Read First
 
-- **Current work & status:** private `nene-origin/internal-docs/corpus/todo/current.md` (operational logs moved to the private mirror — P3, 2026-07-18; public docs stay Diátaxis + ADR/CHANGELOG only)
+- **Current work & status:** private `nene-origin/internal-docs/corpus/todo/current.md` (operational logs moved to the private mirror — P3, 2026-07-18; public docs stay Diátaxis + ADR only — there is no `CHANGELOG.md` in this repo; see #390)
 - **Product vision:** `docs/explanation/product-vision.md`
 - **Glossary:** `docs/explanation/glossary.md`
 - **Naming conventions:** `docs/development/naming-conventions.md`
